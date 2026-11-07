@@ -6,14 +6,14 @@ import {
   decodeSaveEventRoutineResult,
   decodeWebhookSecret,
   decodeWebhookTestResult,
-} from "@openbot/contracts/ipc-events";
-import { EVENTS_CAPABILITY, EVENTS_ROUTES } from "@openbot/contracts/team-protocol/events-v1";
+} from "@whilo/contracts/ipc-events";
+import { EVENTS_CAPABILITY, EVENTS_ROUTES } from "@whilo/contracts/team-protocol/events-v1";
 import {
   ROUTINE_RECOVERY_CAPABILITY,
   ROUTINE_RECOVERY_ROUTES,
-} from "@openbot/contracts/team-protocol/routine-recovery-v1";
-import { WEBHOOK_TESTS_CAPABILITY, WEBHOOK_TESTS_ROUTES } from "@openbot/contracts/team-protocol/webhook-tests-v1";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/team-protocol/routine-recovery-v1";
+import { WEBHOOK_TESTS_CAPABILITY, WEBHOOK_TESTS_ROUTES } from "@whilo/contracts/team-protocol/webhook-tests-v1";
+import { sourceText } from "@whilo/i18n/source";
 import type { Effect } from "effect";
 import { runCauseEffect } from "../../backend/effect-boundary";
 import type { HostEventsApi } from "../host-events-api";

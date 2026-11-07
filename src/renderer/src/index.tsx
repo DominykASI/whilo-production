@@ -1,4 +1,4 @@
-import { installPointerFocusGuard } from "@openbot/ui/pointer-focus";
+import { installPointerFocusGuard } from "@whilo/ui/pointer-focus";
 import { render } from "@solidjs/web";
 // Copying a selection with a formula in it gives its LaTeX source, not the typeset glyphs twice.
 import "katex/contrib/copy-tex";
@@ -9,6 +9,7 @@ import { startActionSounds } from "./action-sounds";
 import { syncAppearance } from "./appearance-choice";
 import { readChatWindowTarget } from "./features/window/chat-window";
 import { syncLogoColor } from "./logo-color";
+import { syncInterfaceLook } from "./interface-look";
 import "./styles.css";
 
 const root = document.getElementById("root");
@@ -18,10 +19,11 @@ if (!root) {
 }
 
 // A startup mark for `dev:bench`, after the bundle is parsed.
-performance.mark("openbot:renderer-start");
+performance.mark("whilo:renderer-start");
 installPointerFocusGuard();
 syncAppearance({ windowGlass: true });
 syncLogoColor();
+syncInterfaceLook();
 startActionSounds();
 
 // `App` must stay a static import. Main sends the first runtime snapshot on `did-finish-load`,

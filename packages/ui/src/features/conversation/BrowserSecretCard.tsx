@@ -1,9 +1,9 @@
-import type { BrowserPreview, BrowserTakeoverRequest, LocalBrowserSecretResponse } from "@openbot/contracts/ipc";
-import { Button, Checkbox, ErrorReference, Input, Lock, Maximize2, Monitor, ShieldCheck, X } from "@openbot/ui";
-import { OtpInput } from "@openbot/ui/features/account/OtpInput";
-import { BrowserTakeoverPreview } from "@openbot/ui/features/conversation/BrowserTakeoverPreview";
-import { useText } from "@openbot/ui/text";
-import { errorReference } from "@openbot/user-errors";
+import type { BrowserPreview, BrowserTakeoverRequest, LocalBrowserSecretResponse } from "@whilo/contracts/ipc";
+import { Button, Checkbox, ErrorReference, Input, Lock, Maximize2, Monitor, ShieldCheck, X } from "@whilo/ui";
+import { OtpInput } from "@whilo/ui/features/account/OtpInput";
+import { BrowserTakeoverPreview } from "@whilo/ui/features/conversation/BrowserTakeoverPreview";
+import { useText } from "@whilo/ui/text";
+import { errorReference } from "@whilo/user-errors";
 import { createEffect, createMemo, createSignal, createUniqueId, onCleanup, Show } from "solid-js";
 
 /**

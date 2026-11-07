@@ -8,8 +8,8 @@
  * not the folders in it.
  */
 
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import type { SidebarLayoutAction, SidebarLayoutSnapshot } from "@openbot/contracts/ipc";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import type { SidebarLayoutAction, SidebarLayoutSnapshot } from "@whilo/contracts/ipc";
 
 export interface SectionDuplicateDeps {
   /** The layout when the user chose Duplicate. */

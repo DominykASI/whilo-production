@@ -30,6 +30,7 @@ import {
 } from "@/features/workspace/context/mobile-workspace-context";
 import { AdaptiveSplit, useSplitLayout } from "@/shared/components/adaptive-split";
 import { androidBackOptions } from "@/shared/components/android-header-button";
+import { WorkspaceErrorBoundary } from "@/shared/components/workspace-error-boundary";
 import { headerFontOptions } from "@/shared/lib/app-font";
 import { useReducedMotion } from "@/shared/lib/motion";
 import { isAndroid, isIOS } from "@/shared/lib/platform";
@@ -66,7 +67,7 @@ function AuthenticatedStack() {
   const chatAnimation = useSplitLayout() ? "fade" : pushAnimation;
   const { t } = useText();
   const background = useThemeColor("background");
-  const sheetBackground = String(useCSSVariable("--openbot-bg-sheet") ?? background);
+  const sheetBackground = String(useCSSVariable("--whilo-bg-sheet") ?? background);
   // iOS shows the native bar over a chat and the browser, so its bar items morph with the items of the
   // screen under it. The screen fills the bar with Back, the title and the buttons. Android draws them.
   const nativeBarOptions = {
@@ -593,22 +594,25 @@ export default function AuthenticatedLayout() {
   const workspaceKey = session ? `${session.apiUrl}:${session.user.id}` : "signed-out";
 
   return (
-    <MobileWorkspaceProvider key={workspaceKey}>
-      <HomeOnboardingProvider>
-        <OutboxProvider>
-          <AgentPinTransitionProvider>
-            <AppDrawerShell>
-              <QueuedMessagesProvider>
-                <AuthenticatedSplit>
-                  <AuthenticatedStack />
-                </AuthenticatedSplit>
-                <MermaidRendererHost />
-                <AudioWaveformHost />
-              </QueuedMessagesProvider>
-            </AppDrawerShell>
-          </AgentPinTransitionProvider>
-        </OutboxProvider>
-      </HomeOnboardingProvider>
-    </MobileWorkspaceProvider>
+    // Outside the providers of the group: a provider that throws on a platform has a screen too.
+    <WorkspaceErrorBoundary key={workspaceKey}>
+      <MobileWorkspaceProvider key={workspaceKey}>
+        <HomeOnboardingProvider>
+          <OutboxProvider>
+            <AgentPinTransitionProvider>
+              <AppDrawerShell>
+                <QueuedMessagesProvider>
+                  <AuthenticatedSplit>
+                    <AuthenticatedStack />
+                  </AuthenticatedSplit>
+                  <MermaidRendererHost />
+                  <AudioWaveformHost />
+                </QueuedMessagesProvider>
+              </AppDrawerShell>
+            </AgentPinTransitionProvider>
+          </OutboxProvider>
+        </HomeOnboardingProvider>
+      </MobileWorkspaceProvider>
+    </WorkspaceErrorBoundary>
   );
 }

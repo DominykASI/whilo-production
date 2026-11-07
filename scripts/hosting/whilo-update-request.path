@@ -1,0 +1,11 @@
+# Whilo asks for an update now with an empty file in its runtime directory. This starts
+# whilo-update-request.service as root, which removes the file and never reads it.
+[Unit]
+Description=Watch for an Whilo update request
+
+[Path]
+PathExists=/run/whilo/update-stage
+PathExists=/run/whilo/update-install
+
+[Install]
+WantedBy=paths.target

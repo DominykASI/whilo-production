@@ -1,5 +1,5 @@
-import { parseHostedServerName } from "@openbot/contracts/hosted-servers";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { parseHostedServerName } from "@whilo/contracts/hosted-servers";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import type {
   AvatarImageInput,
   CentralAuthUser,
@@ -14,8 +14,8 @@ import type {
   TeamInviteSummary,
   TeamPresenceMember,
   UpdateTeamMemberInput,
-} from "@openbot/contracts/ipc";
-import { currentText } from "@openbot/ui/text";
+} from "@whilo/contracts/ipc";
+import { currentText } from "@whilo/ui/text";
 import { createEffect, createMemo, createSignal, flush, onCleanup } from "solid-js";
 import { desktopAnalytics } from "../../analytics";
 import { createSimpleContext } from "../../simple-context";
@@ -54,7 +54,7 @@ function withMcpSignInPage(pages: Record<string, string>, url: string, tabId: st
 }
 
 /** The generated name when the account gives no usable one. Its slug is long enough for a host address. */
-const FALLBACK_SERVER_NAME = "OpenBot";
+const FALLBACK_SERVER_NAME = "Whilo";
 
 /**
  * A name for a server that the user publishes before naming it, such as "Ann’s server". The first
@@ -490,7 +490,7 @@ const ServerSettings = createSimpleContext({
      * The MCP list.
      *
      * It is read when the MCP section opens, not when the dialog opens, because most visits to this
-     * dialog never reach that section. Nothing connects here: OpenBot connects only when the user
+     * dialog never reach that section. Nothing connects here: Whilo connects only when the user
      * asks for a test, and the providers make their own connections when an agent starts.
      */
     async function refreshMcpServers(): Promise<void> {

@@ -4,7 +4,7 @@
  * its key, its runtime and its use, each as a settings card with at most one button on a row.
  */
 
-import { ProviderLogo } from "@openbot/brand";
+import { ProviderLogo } from "@whilo/brand";
 import {
   type AgentProviderId,
   type AgentProviderStatus,
@@ -19,8 +19,8 @@ import {
   type ProviderRuntimeDownload,
   type ProviderUsageResetOutcome,
   type ProviderUsageResets,
-} from "@openbot/contracts/ipc";
-import type { AppFormat, AppMessages, AppTextKey, AppTranslate } from "@openbot/i18n";
+} from "@whilo/contracts/ipc";
+import type { AppFormat, AppMessages, AppTextKey, AppTranslate } from "@whilo/i18n";
 import {
   Badge,
   Button,
@@ -63,7 +63,7 @@ import {
   Trash2,
   UserRoundPlus,
   X,
-} from "@openbot/ui";
+} from "@whilo/ui";
 import type { JSX } from "@solidjs/web";
 import { createEffect, createMemo, createSignal, createStore, For, onCleanup, Show } from "solid-js";
 import { ProviderAccountRenameField } from "../../components/ProviderAccountList";
@@ -798,7 +798,7 @@ const ACCOUNT_STATE_TEXT = {
   error: "provider.account.failed",
 } as const satisfies Record<ProviderAccountState, AppTextKey>;
 
-/** The Version line names the CLI that runs: the one the user installed, or OpenBot's download. */
+/** The Version line names the CLI that runs: the one the user installed, or Whilo's download. */
 const VERSION_SOURCE = {
   system: "provider.settings.versionInstalledByUser",
   managed: "provider.settings.versionDownloaded",
@@ -1033,7 +1033,7 @@ function SignInSection(props: SectionProps & { keyShown: boolean }) {
   const { t, format, sourceText, errorMessage } = useText();
   const row = () => props.row;
   /**
-   * A saved OpenBot key keeps the provider connected; the key dialog removes it. Muse offers
+   * A saved Whilo key keeps the provider connected; the key dialog removes it. Muse offers
    * Disconnect only where its key status is known, on this computer.
    */
   const disconnectOffered = () =>
@@ -1290,7 +1290,7 @@ function RuntimeSection(props: SectionProps) {
     if (row().updatable() && installed) {
       return t("provider.settings.versionAvailable", { installed, available: props.option.availableVersion ?? "" });
     }
-    // Names the CLI that runs, so a failure of the user's own install does not read as OpenBot's (#4375).
+    // Names the CLI that runs, so a failure of the user's own install does not read as Whilo's (#4375).
     const source = props.option.cliSource;
     return installed && source ? t(VERSION_SOURCE[source], { version: installed }) : installed;
   };

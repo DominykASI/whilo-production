@@ -4,11 +4,11 @@ import {
   fileReferenceName,
   fileReferenceTone,
   isFileReference,
-} from "@openbot/brand/file-reference";
-import { chatMathStart } from "@openbot/contracts/chat-math";
-import { chatPreviewKind } from "@openbot/contracts/chat-preview";
-import { chatTagReferences } from "@openbot/contracts/chat-tag-references";
-import type { MobileTranslate } from "@openbot/i18n/mobile";
+} from "@whilo/brand/file-reference";
+import { chatMathStart } from "@whilo/contracts/chat-math";
+import { chatPreviewKind } from "@whilo/contracts/chat-preview";
+import { chatTagReferences } from "@whilo/contracts/chat-tag-references";
+import type { MobileTranslate } from "@whilo/i18n/mobile";
 import * as Linking from "expo-linking";
 import { useThemeColor } from "heroui-native/hooks";
 import Blocks from "lucide-react-native/icons/blocks";
@@ -177,14 +177,14 @@ function sourceEntries<T>(values: T[], source: (value: T) => string) {
 
 /** The colour family of each file tone, as the desktop `data-file-tone` rules use them. */
 const FILE_TONE_COLORS: Record<FileReferenceTone, [string, string]> = {
-  source: ["--openbot-file-blue", "--openbot-file-blue-soft"],
-  script: ["--openbot-file-yellow", "--openbot-file-yellow-soft"],
-  markup: ["--openbot-file-orange", "--openbot-file-orange-soft"],
-  style: ["--openbot-file-teal", "--openbot-file-teal-soft"],
-  data: ["--openbot-file-green", "--openbot-file-green-soft"],
-  document: ["--openbot-file-red", "--openbot-file-red-soft"],
-  media: ["--openbot-file-pink", "--openbot-file-pink-soft"],
-  default: ["--openbot-file-default", "--openbot-file-default-soft"],
+  source: ["--whilo-file-blue", "--whilo-file-blue-soft"],
+  script: ["--whilo-file-yellow", "--whilo-file-yellow-soft"],
+  markup: ["--whilo-file-orange", "--whilo-file-orange-soft"],
+  style: ["--whilo-file-teal", "--whilo-file-teal-soft"],
+  data: ["--whilo-file-green", "--whilo-file-green-soft"],
+  document: ["--whilo-file-red", "--whilo-file-red-soft"],
+  media: ["--whilo-file-pink", "--whilo-file-pink-soft"],
+  default: ["--whilo-file-default", "--whilo-file-default-soft"],
 };
 
 /**

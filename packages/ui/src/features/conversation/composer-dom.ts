@@ -1,6 +1,6 @@
-import { serializeAttachmentReference } from "@openbot/contracts/attachment-references";
-import { serializeChatTagReference } from "@openbot/contracts/chat-tag-references";
-import { markdownListLineBreak } from "@openbot/contracts/markdown-lists";
+import { serializeAttachmentReference } from "@whilo/contracts/attachment-references";
+import { serializeChatTagReference } from "@whilo/contracts/chat-tag-references";
+import { markdownListLineBreak } from "@whilo/contracts/markdown-lists";
 
 export function serializeEditor(editor: HTMLDivElement): string {
   return Array.from(editor.childNodes).map(serializeNode).join("");

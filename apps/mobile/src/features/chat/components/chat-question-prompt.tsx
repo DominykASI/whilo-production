@@ -1,6 +1,6 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import type { ConversationQuestionPrompt } from "@openbot/contracts/ipc";
-import type { ConversationUiBlock, UiConfirmBlock, UiConfirmValueField } from "@openbot/contracts/ui-blocks";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import type { ConversationQuestionPrompt } from "@whilo/contracts/ipc";
+import type { ConversationUiBlock, UiConfirmBlock, UiConfirmValueField } from "@whilo/contracts/ui-blocks";
 import { Button, Typography } from "heroui-native";
 import { useThemeColor } from "heroui-native/hooks";
 import Check from "lucide-react-native/icons/check";

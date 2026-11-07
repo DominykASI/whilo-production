@@ -1,9 +1,9 @@
-import { isPromptCacheTtl } from "@openbot/contracts/ipc";
+import { isPromptCacheTtl } from "@whilo/contracts/ipc";
 import {
   PROMPT_CACHE_TTL_CAPABILITY,
   PROMPT_CACHE_TTL_ROUTES,
-} from "@openbot/contracts/team-protocol/prompt-cache-ttl-v1";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/team-protocol/prompt-cache-ttl-v1";
+import { sourceText } from "@whilo/i18n/source";
 import { runCauseEffect } from "../../backend/effect-boundary";
 import type { TeamApiAdmin } from "./dependencies";
 import { HttpError } from "./http-error";

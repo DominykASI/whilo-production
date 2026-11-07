@@ -1,4 +1,4 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import {
   createMcpServerId,
   isMcpKeyValue,
@@ -8,13 +8,13 @@ import {
   type McpServerConfig,
   mcpConfigErrors,
   normalizeMcpConfig,
-} from "@openbot/contracts/ipc";
-import { type DynamicRecord, isString } from "@openbot/contracts/runtime-values";
-import { sourceText } from "@openbot/i18n/source";
-import { createOpenBotLogger, type Logger } from "@openbot/logging";
+} from "@whilo/contracts/ipc";
+import { type DynamicRecord, isString } from "@whilo/contracts/runtime-values";
+import { sourceText } from "@whilo/i18n/source";
+import { createWhiloLogger, type Logger } from "@whilo/logging";
 import { databaseRow, databaseRows, requiredNumberColumn, requiredStringColumn } from "./database/database-rows";
 import { registerMcpSecretValues } from "./mcp-redaction";
-import type { OpenBotDatabase } from "./openbot-database";
+import type { WhiloDatabase } from "./whilo-database";
 
 /**
  * The MCP server configurations this machine holds.
@@ -64,8 +64,8 @@ export class McpServerStore {
   private readonly reported = new Set<string>();
 
   constructor(
-    private readonly database: OpenBotDatabase,
-    private readonly logger: Pick<Logger, "warn"> = createOpenBotLogger("mcp-server-store"),
+    private readonly database: WhiloDatabase,
+    private readonly logger: Pick<Logger, "warn"> = createWhiloLogger("mcp-server-store"),
   ) {}
 
   list(): McpServerConfig[] {

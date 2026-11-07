@@ -69,12 +69,12 @@ import {
   IPC_ENDPOINTS,
   type IpcEndpointGroup,
   LOCAL_SERVER_ID,
-  type OpenBotDesktopApi,
+  type WhiloDesktopApi,
   type RequestEndpoint,
   type ServerScope,
   type ServerSummary,
   type Untyped,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   decodeEventActivity,
   decodeEventRoutineRuns,
@@ -83,7 +83,7 @@ import {
   decodeSaveEventRoutineResult,
   decodeWebhookSecret,
   decodeWebhookTestResult,
-} from "@openbot/contracts/ipc-events";
+} from "@whilo/contracts/ipc-events";
 import { contextBridge, ipcRenderer, webUtils } from "electron";
 import {
   decodeAccountUsageFromMain,
@@ -130,6 +130,7 @@ import {
   decodeAppAppearancePreference,
   decodeAppBehaviorPreference,
   decodeAppInfo,
+  decodeAppInterfaceLookPreference,
   decodeAppInterfaceSizePreference,
   decodeAppLanguagePreference,
   decodeAppLogoColorPreference,
@@ -501,7 +502,7 @@ window.addEventListener("paste", (event) => {
 });
 window.addEventListener("change", (event) => {
   const input = event.target;
-  if (!(input instanceof HTMLInputElement) || input.dataset.openbotAttachmentPicker !== "true") return;
+  if (!(input instanceof HTMLInputElement) || input.dataset.whiloAttachmentPicker !== "true") return;
   void importFiles([...(input.files ?? [])]);
 });
 
@@ -636,7 +637,7 @@ function selectJoinedServer(server: ServerSummary): ServerSummary {
   return server;
 }
 
-const openbotApi: OpenBotDesktopApi = {
+const whiloApi: WhiloDesktopApi = {
   ...bridgeGroup(IPC_ENDPOINTS.app, {
     getAppInfo: decodeAppInfo,
     getSetupState: decodeAppSetupState,
@@ -672,6 +673,9 @@ const openbotApi: OpenBotDesktopApi = {
     getAppInterfaceSizePreference: decodeAppInterfaceSizePreference,
     setAppInterfaceSizePreference: decodeAppInterfaceSizePreference,
     appInterfaceSizePreference: decodeAppInterfaceSizePreference,
+    getAppInterfaceLookPreference: decodeAppInterfaceLookPreference,
+    setAppInterfaceLookPreference: decodeAppInterfaceLookPreference,
+    appInterfaceLookPreference: decodeAppInterfaceLookPreference,
     openSettings: decodeVoid,
     openUpdateSettings: decodeVoid,
     openExternal: decodeVoid,
@@ -859,6 +863,8 @@ const openbotApi: OpenBotDesktopApi = {
     submit: decodeSubmission,
     listInstalled: decodeInstalledSkillsFromMain,
     install: decodeInstalledSkill,
+    installBundled: decodeVoid,
+    uninstallBundled: decodeVoid,
     uninstall: decodeVoid,
     setEnabled: decodeInstalledSkill,
   }),
@@ -1393,4 +1399,4 @@ const openbotApi: OpenBotDesktopApi = {
   }),
 };
 
-contextBridge.exposeInMainWorld("openbot", openbotApi);
+contextBridge.exposeInMainWorld("whilo", whiloApi);

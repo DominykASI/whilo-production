@@ -1,6 +1,6 @@
-import { AGENT_PROVIDERS, AGENT_REASONING_EFFORTS, isAgentModel } from "@openbot/contracts/ipc";
-import { type DynamicRecord, isBoolean, isNumber, isString } from "@openbot/contracts/runtime-values";
-import { isCauseCode } from "@openbot/telemetry";
+import { AGENT_PROVIDERS, AGENT_REASONING_EFFORTS, isAgentModel } from "@whilo/contracts/ipc";
+import { type DynamicRecord, isBoolean, isNumber, isString } from "@whilo/contracts/runtime-values";
+import { isCauseCode } from "@whilo/telemetry";
 
 const result = ["succeeded", "failed", "cancelled"] as const;
 const count = (value: unknown) => isNumber(value) && Number.isSafeInteger(value) && value >= 0 && value <= 1_000_000;

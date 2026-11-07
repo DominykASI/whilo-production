@@ -4,10 +4,10 @@ import {
   type ServerSummary,
   STORAGE_CAPABILITY,
   type StorageUsage,
-} from "@openbot/contracts/ipc";
-import { classifyFailure } from "@openbot/telemetry";
-import type { StoredFileAction, StoredFileRow } from "@openbot/ui/features/files/files-view";
-import { currentText } from "@openbot/ui/text";
+} from "@whilo/contracts/ipc";
+import { classifyFailure } from "@whilo/telemetry";
+import type { StoredFileAction, StoredFileRow } from "@whilo/ui/features/files/files-view";
+import { currentText } from "@whilo/ui/text";
 import { createEffect, createStore, untrack } from "solid-js";
 import { actionToast } from "../../action-toast";
 import { serverRoleCanAdminister, serverSupportsCapability } from "../servers/server-capabilities";

@@ -5,8 +5,8 @@ import {
   type CustomAgentSummary,
   type CustomProviderRestart,
   type SaveCustomAgentInput,
-} from "@openbot/contracts/ipc";
-import type { AppTextKey } from "@openbot/i18n";
+} from "@whilo/contracts/ipc";
+import type { AppTextKey } from "@whilo/i18n";
 import {
   Button,
   ConfirmDialog,
@@ -24,7 +24,7 @@ import {
   Text,
   Trash2,
   X,
-} from "@openbot/ui";
+} from "@whilo/ui";
 import { createSignal, For, Show } from "solid-js";
 import { useText } from "../../text";
 import { CustomAcpAgentDialog } from "./CustomAcpAgentDialog";
@@ -60,7 +60,7 @@ export interface CustomAgentSettingsApi {
 }
 
 /**
- * The custom agents run in one process group that OpenBot restarts after a change, but not through a
+ * The custom agents run in one process group that Whilo restarts after a change, but not through a
  * turn in progress. The write is durable either way, so none of these is an error.
  */
 const RESTART_NOTE = {

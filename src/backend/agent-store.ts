@@ -16,9 +16,9 @@ import {
   writeFile,
 } from "node:fs/promises";
 import { basename, dirname, isAbsolute, join, relative, resolve } from "node:path";
-import { avatarFileExtension, isAvatarMimeType, isValidAvatarImage } from "@openbot/contracts/avatar-images";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import type { AgentProfileDraft } from "@openbot/contracts/ipc";
+import { avatarFileExtension, isAvatarMimeType, isValidAvatarImage } from "@whilo/contracts/avatar-images";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import type { AgentProfileDraft } from "@whilo/contracts/ipc";
 import {
   AGENT_FOLDER_LIMIT,
   AGENT_PROVIDERS,
@@ -63,17 +63,17 @@ import {
   type SaveAgentProfileResult,
   type SidebarLayoutSnapshot,
   type UpdateAgentInput,
-} from "@openbot/contracts/ipc";
-import { type DynamicRecord, isBoolean, isNumber, isOneOf, isString } from "@openbot/contracts/runtime-values";
-import { isGeneratedAgentId, isUuidV4, legacyAgentId } from "@openbot/contracts/validation";
-import { sourceText } from "@openbot/i18n/source";
-import { createOpenBotLogger, toLogValue } from "@openbot/logging";
+} from "@whilo/contracts/ipc";
+import { type DynamicRecord, isBoolean, isNumber, isOneOf, isString } from "@whilo/contracts/runtime-values";
+import { isGeneratedAgentId, isUuidV4, legacyAgentId } from "@whilo/contracts/validation";
+import { sourceText } from "@whilo/i18n/source";
+import { createWhiloLogger, toLogValue } from "@whilo/logging";
 import { Effect, Result, Semaphore, Stream } from "effect";
 import { ProfileCreationRecovery } from "./agent/profile-creation-recovery";
 import { isEmptyStoredFile, parseStoredJson, writeFileAtomically } from "./atomic-json-file";
 import { automationRoot } from "./automation-command";
 import type { AgentModelChange } from "./database/agent-roster";
-import { OpenBotDatabase, type ProviderSession, stableThreadId } from "./openbot-database";
+import { WhiloDatabase, type ProviderSession, stableThreadId } from "./whilo-database";
 import { isPathInside } from "./path-containment";
 import { isRecord } from "./protocol";
 import { StoredStateFailure, storedIO, storedSync } from "./stored-state-effects";
@@ -99,7 +99,7 @@ type PersistedStoredAgent = Omit<StoredAgent, "avatarUrl" | "provider" | "access
   // Absent on every agent stored before the setting existed, which keeps its tabs in the shared browser session.
   ownBrowserSession?: boolean;
   // Absent on every agent stored before named browser profiles existed. Stored with
-  // `ownBrowserSession: true`, so an older OpenBot opens the agent's own session instead.
+  // `ownBrowserSession: true`, so an older Whilo opens the agent's own session instead.
   browserProfileId?: string;
   // Absent on every agent stored before the setting existed, which leaves the service tier to Codex.
   fastMode?: boolean;
@@ -172,7 +172,7 @@ const LEGACY_AGENTS_STATE_FILE = "bots.json";
 const LEGACY_AGENTS_STATE_KEY = "bots";
 const LEGACY_AGENTS_IMPORT_COMMAND_ID = "legacy-import:bots:v1";
 
-const logger = createOpenBotLogger("agent-store");
+const logger = createWhiloLogger("agent-store");
 
 // Windows answers `EBUSY` or `EPERM` while a file in the tree is still open: a provider process that
 // is exiting after its session closed, an antivirus scan or the search indexer. Node retries these
@@ -191,7 +191,7 @@ export class AgentStore {
   readonly #duplicationsRoot: string;
   readonly #automationRoot: string;
   readonly #profileCreationRecovery: ProfileCreationRecovery;
-  readonly #database: OpenBotDatabase;
+  readonly #database: WhiloDatabase;
   #state: StoredState = { version: 2, examplesInitialized: false, agents: [] };
   readonly #avatarUpdateQueue = Semaphore.makeUnsafe(1);
   readonly #creationQueue = Semaphore.makeUnsafe(1);
@@ -201,16 +201,16 @@ export class AgentStore {
   constructor(
     userDataPath: string,
     homePath: string,
-    database = new OpenBotDatabase(userDataPath),
+    database = new WhiloDatabase(userDataPath),
     agentDefaults: () => AgentDefaults = () => DEFAULT_AGENT_DEFAULTS,
     /** The folder of the agents, shared files and downloads. A local server has its own. */
-    openbotRoot = join(homePath, "OpenBot"),
+    whiloRoot = join(homePath, "Whilo"),
   ) {
     this.#statePath = join(userDataPath, LEGACY_AGENTS_STATE_FILE);
-    this.#agentsRoot = join(openbotRoot, "Agents");
-    this.#legacyAgentsRoot = join(openbotRoot, "Bots");
-    this.#sharedRoot = join(openbotRoot, "Shared");
-    this.#downloadsRoot = join(openbotRoot, "Downloads");
+    this.#agentsRoot = join(whiloRoot, "Agents");
+    this.#legacyAgentsRoot = join(whiloRoot, "Bots");
+    this.#sharedRoot = join(whiloRoot, "Shared");
+    this.#downloadsRoot = join(whiloRoot, "Downloads");
     this.#avatarsRoot = join(userDataPath, "avatars", "agents");
     this.#duplicationsRoot = join(userDataPath, "agent-duplications");
     this.#automationRoot = automationRoot(userDataPath);
@@ -227,7 +227,7 @@ export class AgentStore {
     return this.#agentDefaults();
   }
 
-  get database(): OpenBotDatabase {
+  get database(): WhiloDatabase {
     return this.#database;
   }
 
@@ -425,9 +425,9 @@ export class AgentStore {
       record.avatarSeed = source.avatarSeed;
       record.avatarHue = source.avatarHue;
 
-      const stagedWorkspace = `${record.workspacePath}.openbot-stage`;
+      const stagedWorkspace = `${record.workspacePath}.whilo-stage`;
       const avatarDirectory = join(this.#avatarsRoot, record.id);
-      const stagedAvatarDirectory = `${avatarDirectory}.openbot-stage`;
+      const stagedAvatarDirectory = `${avatarDirectory}.whilo-stage`;
       const duplicationMarker = this.#duplicationMarkerPath(record.id);
       let stagedAvatarPath: string | null = null;
       {
@@ -994,9 +994,9 @@ export class AgentStore {
       const agent = this.#state.agents.find((candidate) => candidate.id === id);
       for (const path of [
         join(this.#avatarsRoot, id),
-        `${join(this.#avatarsRoot, id)}.openbot-stage`,
+        `${join(this.#avatarsRoot, id)}.whilo-stage`,
         join(this.#agentsRoot, id),
-        `${join(this.#agentsRoot, id)}.openbot-stage`,
+        `${join(this.#agentsRoot, id)}.whilo-stage`,
       ]) {
         yield* storedIO(() => rm(path, AGENT_FILES_REMOVAL));
       }
@@ -1008,7 +1008,7 @@ export class AgentStore {
       //
       // The agent's own id is always safe to clear under the old root: nobody else can be stored under it.
       // Migration v13 leaves a `bot-` id alone unless the application minted it, and a legacy `bots.json`
-      // import runs afterwards and keeps both the id and the `~/OpenBot/Bots/<id>` workspace it read, so an
+      // import runs afterwards and keeps both the id and the `~/Whilo/Bots/<id>` workspace it read, so an
       // agent whose workspace is only ever there is a state the user can reach.
       const legacyPaths = [join(this.#legacyAgentsRoot, id)];
       const legacyId = this.#unclaimedLegacyId(id);
@@ -1084,7 +1084,7 @@ export class AgentStore {
   }, Effect.uninterruptible);
 
   /**
-   * The file half of migration v13: `~/OpenBot/Bots/bot-<uuid>` becomes `~/OpenBot/Agents/agent-<uuid>`,
+   * The file half of migration v13: `~/Whilo/Bots/bot-<uuid>` becomes `~/Whilo/Agents/agent-<uuid>`,
    * and the uploaded avatar directory follows the id the same way. It cannot run inside that migration,
    * because `runMigration` rolls its transaction back on a throw and a directory that has already moved
    * cannot be rolled back.
@@ -1122,7 +1122,7 @@ export class AgentStore {
    *
    * An id the application never minted -- `chief`, or one the user chose -- keeps its spelling, and that is
    * not the same as having nothing to do: the *root* moved as well, so its workspace is still sitting in
-   * `OpenBot/Bots` under exactly this name. Nobody else can hold it, because ids are unique.
+   * `Whilo/Bots` under exactly this name. Nobody else can hold it, because ids are unique.
    */
   #unclaimedLegacyId(id: string): string | null {
     const legacyId = legacyAgentId(id);
@@ -1134,7 +1134,7 @@ export class AgentStore {
    * Answers whether the agent's stored workspace path had to change, which is what has to be persisted.
    *
    * The destination is derived from the root and the id, never read from the stored path. An agent the
-   * user named themselves came out of the upgrade still recorded under `OpenBot/Bots/<id>`, because
+   * user named themselves came out of the upgrade still recorded under `Whilo/Bots/<id>`, because
    * migration v13 rewrites id values and that id did not change -- so trusting the stored path would find
    * the workspace already "at" its destination and leave it in the old root forever.
    */
@@ -1182,7 +1182,7 @@ export class AgentStore {
         if (Result.isFailure(attempt2)) {
           const error = attempt2.failure.cause;
           // Only the move failed; the workspace itself is still there and still readable. `EXDEV` means
-          // `~/OpenBot/Bots` is a link onto another volume, so the move would be a copy, and a copy of a
+          // `~/Whilo/Bots` is a link onto another volume, so the move would be a copy, and a copy of a
           // workspace interrupted halfway is lost data. A permission error, a Windows lock or an open handle
           // leave exactly the same situation, so they get the same answer: the files stay where they are and
           // the stored path is pointed back at them. An out-of-date directory name is cosmetic.
@@ -1294,7 +1294,7 @@ export class AgentStore {
     }
     const entries = listing.success;
     yield* Effect.forEach(
-      entries.filter((entry) => entry.endsWith(".openbot-stage")),
+      entries.filter((entry) => entry.endsWith(".whilo-stage")),
       (entry) =>
         storedIO(() => rm(join(this.#legacyAgentsRoot, entry), { recursive: true, force: true })).pipe(
           Effect.catch(({ cause }) =>
@@ -1305,7 +1305,7 @@ export class AgentStore {
         ),
       { concurrency: "unbounded", discard: true },
     );
-    if (!entries.every((entry) => entry.endsWith(".openbot-stage"))) return;
+    if (!entries.every((entry) => entry.endsWith(".whilo-stage"))) return;
     yield* storedIO(() => rmdir(this.#legacyAgentsRoot)).pipe(
       Effect.catch(({ cause }) =>
         Effect.sync(() => logger.warn("Could not remove the legacy workspace root.", toLogValue(cause))),
@@ -1354,7 +1354,7 @@ export class AgentStore {
             ...roots.flatMap((root) =>
               names.flatMap((name) => [
                 storedIO(() => rm(join(root, name), { recursive: true, force: true })),
-                storedIO(() => rm(`${join(root, name)}.openbot-stage`, { recursive: true, force: true })),
+                storedIO(() => rm(`${join(root, name)}.whilo-stage`, { recursive: true, force: true })),
               ]),
             ),
             storedIO(() => rm(join(this.#duplicationsRoot, entry.name), { force: true })),
@@ -1517,7 +1517,7 @@ export class AgentStore {
 
   bindProviderSession(id: string, provider: AgentProviderId, externalSessionId: string): ProviderSession {
     const agent = this.#requireAgent(id);
-    if (!agent.threadId) throw new Error(`Agent ${id} does not have an OpenBot thread.`);
+    if (!agent.threadId) throw new Error(`Agent ${id} does not have an Whilo thread.`);
     return this.#database.bindProviderSession({
       threadId: agent.threadId,
       provider,
@@ -1912,7 +1912,7 @@ interface UnreadableStoredAgent {
  * A stored profile, with every field this build cannot read put back to a value it can.
  *
  * The three fields it refuses on instead are the ones no default can stand in for. `id` names the
- * avatar directory, the workspace under `~/OpenBot/Agents` and the agent every thread and receipt
+ * avatar directory, the workspace under `~/Whilo/Agents` and the agent every thread and receipt
  * points at; `workspacePath` is the directory the agent reads and writes, and a guessed one is either
  * another agent's files or an empty new directory beside the real one; `threadId` is the whole
  * conversation, and reading a broken one as `null` reports an empty history and mints a second thread
@@ -2181,7 +2181,7 @@ function stringList(value: unknown): string[] {
 }
 
 function agentAvatarUrl(agentId: string, version: string, mimeType: string): string {
-  const url = new URL(`openbot-avatar://agent/${encodeURIComponent(agentId)}`);
+  const url = new URL(`whilo-avatar://agent/${encodeURIComponent(agentId)}`);
   url.searchParams.set("v", version);
   url.searchParams.set("type", mimeType);
   return url.toString();
@@ -2197,7 +2197,7 @@ function parseAgentAvatarUrl(
     const version = url.searchParams.get("v") ?? "";
     const mimeType = url.searchParams.get("type") ?? "";
     if (
-      url.protocol !== "openbot-avatar:" ||
+      url.protocol !== "whilo-avatar:" ||
       url.hostname !== "agent" ||
       agentId !== expectedAgentId ||
       !isUuidV4(version) ||

@@ -1,8 +1,8 @@
-import { type AgentEvent, latestTurnAnswer, type SpeechLanguage } from "@openbot/contracts/ipc";
-import { speechLanguageOf } from "@openbot/contracts/speech-language";
-import { speechTextFromMarkdown } from "@openbot/contracts/speech-text";
-import { toast } from "@openbot/ui";
-import { currentText } from "@openbot/ui/text";
+import { type AgentEvent, latestTurnAnswer, type SpeechLanguage } from "@whilo/contracts/ipc";
+import { speechLanguageOf } from "@whilo/contracts/speech-language";
+import { speechTextFromMarkdown } from "@whilo/contracts/speech-text";
+import { toast } from "@whilo/ui";
+import { currentText } from "@whilo/ui/text";
 import { desktopAnalytics } from "../../analytics";
 import {
   loadRecording,

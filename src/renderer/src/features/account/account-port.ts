@@ -1,13 +1,13 @@
-import type { OpenBotDesktopApi } from "@openbot/contracts/ipc";
+import type { WhiloDesktopApi } from "@whilo/contracts/ipc";
 
 /**
- * What the account context reaches in main: the OpenBot account session, its devices, and the
+ * What the account context reaches in main: the Whilo account session, its devices, and the
  * usage the page rail and the Usage page show.
  */
 export interface AccountPort {
-  agent: Pick<OpenBotDesktopApi["agent"], "getUsage">;
+  agent: Pick<WhiloDesktopApi["agent"], "getUsage">;
   auth: Pick<
-    OpenBotDesktopApi["auth"],
+    WhiloDesktopApi["auth"],
     | "cancelMobileConnect"
     | "createMobileConnect"
     | "createMobileConnectLink"
@@ -28,7 +28,7 @@ export interface AccountPort {
   >;
 }
 
-/** Read on each call: tests and stories replace `window.openbot` per case. */
+/** Read on each call: tests and stories replace `window.whilo` per case. */
 export function accountPort(): AccountPort {
-  return window.openbot;
+  return window.whilo;
 }

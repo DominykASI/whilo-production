@@ -12,12 +12,12 @@ import {
   type UpdateCheckOutcome,
 } from "./update-service";
 
-/** The path unit that starts `openbot-hosted-update request`. Without it, no request is acted on. */
-export const HOSTED_UPDATE_TRIGGER = "/etc/systemd/system/openbot-update-request.path";
+/** The path unit that starts `whilo-hosted-update request`. Without it, no request is acted on. */
+export const HOSTED_UPDATE_TRIGGER = "/etc/systemd/system/whilo-update-request.path";
 
-/** The paths that scripts/hosting/openbot-hosted-update and openbot-update-request.path use. */
+/** The paths that scripts/hosting/whilo-hosted-update and whilo-update-request.path use. */
 export interface HostedUpdatePaths {
-  /** The runtime directory of openbot.service, which the service user owns. */
+  /** The runtime directory of whilo.service, which the service user owns. */
   readonly requests: string;
   /** Root writes the step of a request here while it runs. */
   readonly state: string;
@@ -26,23 +26,23 @@ export interface HostedUpdatePaths {
 }
 
 const HOSTED_UPDATE_PATHS: HostedUpdatePaths = {
-  requests: "/run/openbot",
-  state: "/run/openbot-update.state",
-  stagedReady: "/opt/OpenBot/staged.ready",
+  requests: "/run/whilo",
+  state: "/run/whilo-update.state",
+  stagedReady: "/opt/Whilo/staged.ready",
 };
 
 /**
- * The folders that docker/instances/compose.yaml mounts in a container. OpenBot writes requests, and
- * `openbot-instance update-request` on the host pulls the image and makes the container again.
+ * The folders that docker/instances/compose.yaml mounts in a container. Whilo writes requests, and
+ * `whilo-instance update-request` on the host pulls the image and makes the container again.
  */
 export const CONTAINER_UPDATE_PATHS: HostedUpdatePaths = {
-  requests: "/var/lib/openbot-update/requests",
-  state: "/var/lib/openbot-update/status/state",
-  stagedReady: "/var/lib/openbot-update/status/staged.ready",
+  requests: "/var/lib/whilo-update/requests",
+  state: "/var/lib/whilo-update/status/state",
+  stagedReady: "/var/lib/whilo-update/status/staged.ready",
 };
 
 /** The host writes this file when its path unit acts on the requests of the container. */
-export const CONTAINER_UPDATE_TRIGGER = "/var/lib/openbot-update/status/enabled";
+export const CONTAINER_UPDATE_TRIGGER = "/var/lib/whilo-update/status/enabled";
 
 interface HostedUpdateOptions {
   currentVersion: string;
@@ -68,16 +68,16 @@ class RequestCancellation implements UpdateCancellationToken {
 }
 
 /**
- * The updater of a hosted or self-installed Linux server. OpenBot runs as the service user from a
+ * The updater of a hosted or self-installed Linux server. Whilo runs as the service user from a
  * release that root owns, so it cannot replace itself. It asks root instead: an empty file in its
- * runtime directory starts `openbot-hosted-update request` through a path unit. That stages the
- * newest release, or stops OpenBot, moves the staged release into place and starts OpenBot again.
+ * runtime directory starts `whilo-hosted-update request` through a path unit. That stages the
+ * newest release, or stops Whilo, moves the staged release into place and starts Whilo again.
  *
  * UpdateService drives this as it drives electron-updater, so its deadlines apply. While root works,
  * the time of the state file changes, and each change is a progress event. When root stops without
  * a staged release, or never takes the request, the download fails. An install request has no
- * answer: shutdown preparation exits OpenBot after its deadline, and when root did not take the
- * request, systemd starts the same release again. Each start of openbot.service starts the path
+ * answer: shutdown preparation exits Whilo after its deadline, and when root did not take the
+ * request, systemd starts the same release again. Each start of whilo.service starts the path
  * unit, so this happens only when an administrator stopped it.
  */
 export class HostedUpdateAdapter implements UpdateAdapter {
@@ -112,7 +112,7 @@ export class HostedUpdateAdapter implements UpdateAdapter {
   /**
    * Root answers also when the timer staged the release already: it answers after boat restored the
    * disk, which can take minutes after a wake. An install during the restore would wait for it with
-   * OpenBot stopped.
+   * Whilo stopped.
    */
   async downloadUpdate(cancellationToken?: UpdateCancellationToken): Promise<void> {
     const request = join(this.#paths.requests, "update-stage");

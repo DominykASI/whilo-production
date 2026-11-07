@@ -1,10 +1,12 @@
-import { Button, ChevronRight, ErrorReference, IconButton, X } from "@openbot/ui";
-import { createScrollFades } from "@openbot/ui/components/createScrollFades";
-import { useText } from "@openbot/ui/text";
+import { Button, ChevronRight, ErrorReference, IconButton, X } from "@whilo/ui";
+import { createScrollFades } from "@whilo/ui/components/createScrollFades";
+import { useText } from "@whilo/ui/text";
 import { createEffect, For, Match, onCleanup, onSettled, Show, Switch } from "solid-js";
 import { MarketplaceAgentPage } from "./MarketplaceAgentPage";
 import { AgentGroupPage } from "./MarketplaceAgents";
 import { MarketplaceAppPage } from "./MarketplaceAppPage";
+import { PluginPage } from "./MarketplacePlugins";
+import { bundledPlugin, listPlugins } from "./plugins-catalog";
 import { createBrowseLists, MarketplaceBrowse } from "./MarketplaceBrowse";
 import { MarketplaceNav } from "./MarketplaceNav";
 import { MarketplaceLocalSkillPage, MarketplaceSkillPage } from "./MarketplaceSkillPage";
@@ -41,6 +43,8 @@ function viewTitle(scope: MarketplaceScope, view: MarketplaceView, fallback: str
       return t(CATEGORY_LABELS[view.category]);
     case "app":
       return scope.model.apps().find((app) => app.id === view.id)?.name ?? fallback;
+    case "plugin":
+      return bundledPlugin(view.id)?.name ?? fallback;
     case "skillGroup":
       return view.group === "yours" ? t("marketplace.skills.yours") : t(CATEGORY_LABELS[view.group]);
     case "localSkill":
@@ -116,6 +120,12 @@ function MarketplaceWindow(props: MarketplaceProps) {
       // The Skills tab shows each category, and a group page has its own listing.
       category: () => null,
       verified: () => sourceVerified(nav.state.skillSource),
+    }),
+    // The bundled plugins ship inside the app; the listing answers from memory.
+    plugins: createMarketplaceListing({
+      list: (query) => listPlugins(query),
+      query: () => nav.state.query,
+      category: () => null,
     }),
   };
   const lists = createBrowseLists(scope);
@@ -211,6 +221,9 @@ function MarketplaceWindow(props: MarketplaceProps) {
                 </Match>
                 <Match when={view.kind === "app" && view.id} keyed>
                   {(id) => <MarketplaceAppPage scope={scope} id={id} />}
+                </Match>
+                <Match when={view.kind === "plugin" && view.id} keyed>
+                  {(id) => <PluginPage scope={scope} pluginId={id} />}
                 </Match>
                 <Match when={view.kind === "skillGroup" && view.group} keyed>
                   {(group) => <SkillGroupPage scope={scope} group={group} />}

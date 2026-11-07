@@ -1,4 +1,4 @@
-import type { DeleteSharedTableInput, OpenBotDesktopApi, SharedTable } from "@openbot/contracts/ipc";
+import type { DeleteSharedTableInput, WhiloDesktopApi, SharedTable } from "@whilo/contracts/ipc";
 
 /**
  * What the conversation domain reaches in main: agent and direct message pages, sends, reads,
@@ -6,7 +6,7 @@ import type { DeleteSharedTableInput, OpenBotDesktopApi, SharedTable } from "@op
  */
 export interface ConversationPort {
   agent: Pick<
-    OpenBotDesktopApi["agent"],
+    WhiloDesktopApi["agent"],
     | "readAgentSessionSettings"
     | "listAgentNotificationLevels"
     | "askSideQuestion"
@@ -25,7 +25,7 @@ export interface ConversationPort {
     | "sendMessage"
   >;
   browser: Pick<
-    OpenBotDesktopApi["browser"],
+    WhiloDesktopApi["browser"],
     | "capturePreview"
     | "finishLocalSignIn"
     | "onLiveViewEvent"
@@ -35,7 +35,7 @@ export interface ConversationPort {
     | "stopLiveView"
   >;
   servers: Pick<
-    OpenBotDesktopApi["servers"],
+    WhiloDesktopApi["servers"],
     | "listDirectThreads"
     | "markDirectRead"
     | "onDirectMessage"
@@ -44,13 +44,13 @@ export interface ConversationPort {
     | "sendDirectMessage"
     | "setDirectTyping"
   >;
-  storage: Pick<OpenBotDesktopApi["storage"], "openLocation">;
-  browserDock: Pick<OpenBotDesktopApi["browserDock"], "publishPresentation" | "onAction" | "onShown">;
+  storage: Pick<WhiloDesktopApi["storage"], "openLocation">;
+  browserDock: Pick<WhiloDesktopApi["browserDock"], "publishPresentation" | "onAction" | "onShown">;
 }
 
-/** Read on each call: tests and stories replace `window.openbot` per case. */
+/** Read on each call: tests and stories replace `window.whilo` per case. */
 export function conversationPort(): ConversationPort {
-  return window.openbot;
+  return window.whilo;
 }
 
 /** Cleanup can run after IPC shuts down; process shutdown also frees these in-memory pages. */

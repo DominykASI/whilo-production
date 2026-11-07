@@ -4,12 +4,12 @@
 // The days of a run are the days of its own date, as cron checks them.
 //
 // Run: bun scripts/routine-overnight-window-e2e.ts
-// Writes .openbot-build/routine-overnight-window-e2e/report.json and exits non-zero on a failure.
+// Writes .whilo-build/routine-overnight-window-e2e/report.json and exits non-zero on a failure.
 import assert from "node:assert/strict";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { nextRoutineOccurrence } from "@openbot/team-client/routine-schedule";
+import { nextRoutineOccurrence } from "@whilo/team-client/routine-schedule";
 import {
   ROUTINE_EVERY_DAY,
   ROUTINE_WORKDAYS,
@@ -18,10 +18,10 @@ import {
   routineRunsPerDay,
   routineScheduleFromDraft,
   routineScheduleToDraft,
-} from "@openbot/team-client/routine-schedule-draft";
+} from "@whilo/team-client/routine-schedule-draft";
 import { Effect } from "effect";
 import { AgentRoutineStore } from "../src/backend/agent-routine-store";
-import { OpenBotDatabase } from "../src/backend/openbot-database";
+import { WhiloDatabase } from "../src/backend/whilo-database";
 
 type HourlyDraft = Extract<RoutineScheduleDraft, { kind: "hourly" }>;
 
@@ -34,7 +34,7 @@ interface WindowCase {
   readBack: HourlyDraft;
 }
 
-const OUT = resolve(import.meta.dirname, "../.openbot-build/routine-overnight-window-e2e");
+const OUT = resolve(import.meta.dirname, "../.whilo-build/routine-overnight-window-e2e");
 // A Monday, so a Monday-to-Friday window has a Saturday and a Sunday in the 7 days checked.
 const START = new Date("2035-01-01T00:00:00.000Z");
 const DAYS_CHECKED = 7;
@@ -143,8 +143,8 @@ interface CaseReport {
 }
 
 const reports: CaseReport[] = [];
-const root = await mkdtemp(join(tmpdir(), "openbot-routine-overnight-"));
-const database = new OpenBotDatabase(root);
+const root = await mkdtemp(join(tmpdir(), "whilo-routine-overnight-"));
+const database = new WhiloDatabase(root);
 let fatal: string | undefined;
 
 try {

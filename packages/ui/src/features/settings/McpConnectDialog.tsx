@@ -6,8 +6,8 @@
  * once. A key cannot: the dialog waits for it.
  */
 
-import type { McpServerConfig, McpTestResult } from "@openbot/contracts/ipc";
-import type { McpConnectFlow } from "@openbot/contracts/mcp-connect-flows";
+import type { McpServerConfig, McpTestResult } from "@whilo/contracts/ipc";
+import type { McpConnectFlow } from "@whilo/contracts/mcp-connect-flows";
 import type { JSX } from "@solidjs/web";
 import { Match, Switch } from "solid-js";
 import type { McpConnectSubject } from "./McpConnectShell";

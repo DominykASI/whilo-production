@@ -1,7 +1,7 @@
-import type { AppLogoVariant } from "@openbot/brand";
-import type { AgentModelId, AgentProviderId, AppSetupState, DesktopPlatform } from "@openbot/contracts/ipc";
-import { Button, ErrorReference } from "@openbot/ui";
-import { useText } from "@openbot/ui/text";
+import type { AppLogoVariant } from "@whilo/brand";
+import type { AgentModelId, AgentProviderId, AppSetupState, DesktopPlatform } from "@whilo/contracts/ipc";
+import { Button, ErrorReference } from "@whilo/ui";
+import { useText } from "@whilo/ui/text";
 import { createEffect, createSignal, createStore, createUniqueId, For, Match, Show, Switch, untrack } from "solid-js";
 import { desktopAnalytics } from "../../analytics";
 import { ComputerUseSetup } from "../computer-use/ComputerUseSetup";
@@ -49,7 +49,7 @@ interface FirstRunState {
   step: FirstRunStep;
   path: FirstRunPath;
   saving: boolean;
-  /** The user asked to open OpenBot before the provider was ready, so setup ends when it is. */
+  /** The user asked to open Whilo before the provider was ready, so setup ends when it is. */
   finishWhenReady: boolean;
   /** The user left the plan step with "Start free instead". */
   skipped: boolean;

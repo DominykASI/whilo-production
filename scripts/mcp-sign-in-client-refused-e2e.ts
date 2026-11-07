@@ -4,21 +4,21 @@
 // endpoint refuses every request that carries that secret. A public client (`none`) is accepted.
 // A server that lists `none` must get a public registration and a working sign-in. A server that
 // does not list it gets a secret client, and the refusal must say that the server did not accept
-// OpenBot, not the SDK's "Existing OAuth client information is required" text.
+// Whilo, not the SDK's "Existing OAuth client information is required" text.
 // Make lists only `client_secret_post` and refuses a registration that names no method it lists.
 import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import { resolve } from "node:path";
-import type { McpServerConfig } from "@openbot/contracts/ipc";
-import { sourceText } from "@openbot/i18n/source";
+import type { McpServerConfig } from "@whilo/contracts/ipc";
+import { sourceText } from "@whilo/i18n/source";
 import { Effect } from "effect";
 import { z } from "zod";
 import { runCauseEffect } from "../src/backend/effect-boundary";
 import { McpOAuth, type McpOAuthRecord } from "../src/backend/mcp-oauth-provider";
 import { testMcpServer } from "../src/backend/mcp-probe";
 
-const out = resolve(import.meta.dirname, "../.openbot-build/mcp-sign-in-client-refused-e2e");
+const out = resolve(import.meta.dirname, "../.whilo-build/mcp-sign-in-client-refused-e2e");
 const ACCESS_TOKEN = "e2e-access-token";
 const CLIENT_SECRET = "e2e-client-secret";
 
@@ -245,7 +245,7 @@ function check(entry: Case, condition: boolean, text: string): void {
 async function main(): Promise<void> {
   await mkdir(out, { recursive: true });
   try {
-    // Railway's metadata lists `none`: OpenBot registers a public client and the sign-in works.
+    // Railway's metadata lists `none`: Whilo registers a public client and the sign-in works.
     const listed = await runCase("public-client-when-listed", ["client_secret_basic", "client_secret_post", "none"], 1);
     const [first] = listed.attempts;
     check(listed, first?.error === null, `the sign-in failed: ${first?.error}`);
@@ -279,7 +279,7 @@ async function main(): Promise<void> {
     report.cases.push(unlisted);
 
     // Make lists only `client_secret_post`. A registration that names no method asks for
-    // `client_secret_basic`, and Make answers 400, so OpenBot must ask for `client_secret_post`.
+    // `client_secret_basic`, and Make answers 400, so Whilo must ask for `client_secret_post`.
     const make = await runCase("secret-post-only", ["client_secret_post"], 1, { secretAccepted: true });
     check(make, make.attempts[0]?.error === null, `the sign-in failed: ${make.attempts[0]?.error}`);
     check(make, make.attempts[0]?.toolCount === 1, "the tools were not listed after the sign-in");

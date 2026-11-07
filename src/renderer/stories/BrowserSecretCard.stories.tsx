@@ -1,5 +1,5 @@
-import type { BrowserTakeoverRequest } from "@openbot/contracts/ipc";
-import { BrowserSecretCard } from "@openbot/ui/features/conversation/BrowserSecretCard";
+import type { BrowserTakeoverRequest } from "@whilo/contracts/ipc";
+import { BrowserSecretCard } from "@whilo/ui/features/conversation/BrowserSecretCard";
 import type { Meta, StoryObj } from "storybook-solidjs-vite";
 import browserTakeoverPreviewUrl from "./assets/browser-takeover-preview.svg";
 

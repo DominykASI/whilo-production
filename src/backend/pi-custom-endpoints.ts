@@ -6,7 +6,7 @@ import { type CustomProviderConfig, customModelOutputLimit } from "./opencode-co
 import type { PiMcpExtension } from "./pi-mcp";
 import { providerCall } from "./provider-client-effects";
 
-const VARIABLE = "OPENBOT_PI_CUSTOM_ENDPOINTS";
+const VARIABLE = "WHILO_PI_CUSTOM_ENDPOINTS";
 
 /** Pi's default for a model with no context window (Pi 1.4.0 `models-configuration.md`). */
 const DEFAULT_CONTEXT_WINDOW = 128_000;
@@ -28,7 +28,7 @@ interface EndpointPayload {
 // escaped to stay literal. Pi lists a model only when its provider has a key, so a keyless endpoint
 // gets a placeholder key, as Pi's own Ollama example does; a local server ignores it.
 const SOURCE = `export default function (pi) {
-  const slot = Symbol.for("openbot.pi.customEndpoints");
+  const slot = Symbol.for("whilo.pi.customEndpoints");
   globalThis[slot] ??= process.env.${VARIABLE};
   delete process.env.${VARIABLE};
   const payload = globalThis[slot];
@@ -39,7 +39,7 @@ const SOURCE = `export default function (pi) {
       name: endpoint.name,
       baseUrl: endpoint.baseUrl,
       api: "openai-completions",
-      apiKey: endpoint.apiKey ? literal(endpoint.apiKey) : "openbot",
+      apiKey: endpoint.apiKey ? literal(endpoint.apiKey) : "whilo",
       headers: Object.fromEntries(Object.entries(endpoint.headers).map(([name, value]) => [name, literal(value)])),
       models: endpoint.models.map((model) => ({
         type: "chat",
@@ -85,7 +85,7 @@ export const createPiCustomEndpointExtension = Effect.fn("PiCustomEndpoints.crea
   if (usable.length === 0) return null;
   const root = directory ?? tmpdir();
   yield* providerCall(() => mkdir(root, { recursive: true, mode: 0o700 }));
-  const folder = yield* providerCall(() => mkdtemp(join(root, "openbot-pi-")));
+  const folder = yield* providerCall(() => mkdtemp(join(root, "whilo-pi-")));
   const path = join(folder, "custom-endpoints.mjs");
   yield* providerCall(() => writeFile(path, SOURCE, { mode: 0o600 })).pipe(
     Effect.onError(() => providerCall(() => rm(folder, { recursive: true, force: true })).pipe(Effect.orDie)),

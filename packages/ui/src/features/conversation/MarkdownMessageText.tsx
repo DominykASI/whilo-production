@@ -1,8 +1,8 @@
-import { fileReferenceName, isFileReference } from "@openbot/brand/file-reference";
-import { blockChatMath, chatMathBlockStart, chatMathStart, inlineChatMath } from "@openbot/contracts/chat-math";
-import { chatPreviewKind } from "@openbot/contracts/chat-preview";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import { Button, Checkbox } from "@openbot/ui";
+import { fileReferenceName, isFileReference } from "@whilo/brand/file-reference";
+import { blockChatMath, chatMathBlockStart, chatMathStart, inlineChatMath } from "@whilo/contracts/chat-math";
+import { chatPreviewKind } from "@whilo/contracts/chat-preview";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import { Button, Checkbox } from "@whilo/ui";
 import { Dynamic } from "@solidjs/web";
 import { Marked, type Token, type Tokens, type TokensList } from "marked";
 import { createMemo, For, Show } from "solid-js";
@@ -1023,9 +1023,9 @@ function sharedFileTarget(value: string): string | null {
   const path = value.trim();
   if (!path || /[\0\r\n]/u.test(path)) return null;
   const normalized = path.replaceAll("\\", "/");
-  return normalized.startsWith("~/OpenBot/Shared/") ||
-    normalized.startsWith("OpenBot/Shared/") ||
-    normalized.includes("/OpenBot/Shared/")
+  return normalized.startsWith("~/Whilo/Shared/") ||
+    normalized.startsWith("Whilo/Shared/") ||
+    normalized.includes("/Whilo/Shared/")
     ? path
     : null;
 }

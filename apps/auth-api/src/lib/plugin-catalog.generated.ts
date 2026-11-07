@@ -82,13 +82,13 @@ export const PLUGIN_CATALOG_INDEX: PluginCatalogIndex = {
       slug: "paper",
       version: "1.0.1",
       featured: false,
-      detailSha256: "d15a140eec6ab0a0a6e79e354ccaba88d035435112bdb7a044528b2a4c7a1548",
+      detailSha256: "24615b65e3cb34a97edc9fb234fd948acd657a64b3f1866ac294d9eab8d68a73",
     },
     {
       slug: "apple-apps",
       version: "1.1.0",
       featured: false,
-      detailSha256: "ee3aa4ba4d11b38bea38f703959868cfb6bb5cf4ac5d3ef7a998e4a40a345984",
+      detailSha256: "e123a91482bbbfa3f88a3ad96d8b28e6ff7b757a7a9916830b9f606d3d13b4eb",
     },
     {
       slug: "sentry",
@@ -203,6 +203,18 @@ export const PLUGIN_CATALOG_INDEX: PluginCatalogIndex = {
       version: "1.0.0",
       featured: false,
       detailSha256: "5014d267e7627c50d84ea1823d04e4d6c6f18e7096319f3e1351972e656c4449",
+    },
+    {
+      slug: "computer-use",
+      version: "1.0.0",
+      featured: false,
+      detailSha256: "d90caa309c1794de4fa55b545c9846598e92c3cb3eefaa3be959efd624b816f2",
+    },
+    {
+      slug: "world-legal-desk",
+      version: "1.0.0",
+      featured: false,
+      detailSha256: "b40f4796b6ca7ec90b25fe963d0bda58a23cb5195191d4dc195f6156de256b44",
     },
   ],
 };
@@ -622,7 +634,7 @@ export const PLUGIN_CATALOG_DETAILS: Record<string, PluginCatalogDetail> = {
     name: "Paper",
     tagline: "Design canvas built on HTML and CSS",
     description:
-      "Paper lets agents read and write the design file that is open in Paper Desktop: inspect artboards, selections, computed styles, JSX and tokens, and create or change frames, text and styles. Install Paper Desktop, open it once, and open a file before you start. OpenBot starts the Paper CLI that Paper Desktop installs. Paper needs no key. Write tools change the open file, so review each write before you approve it.",
+      "Paper lets agents read and write the design file that is open in Paper Desktop: inspect artboards, selections, computed styles, JSX and tokens, and create or change frames, text and styles. Install Paper Desktop, open it once, and open a file before you start. Whilo starts the Paper CLI that Paper Desktop installs. Paper needs no key. Write tools change the open file, so review each write before you approve it.",
     category: "design",
     creatorName: "Paper",
     iconUrl: "https://paper.design/apple-touch-icon.png",
@@ -655,7 +667,7 @@ export const PLUGIN_CATALOG_DETAILS: Record<string, PluginCatalogDetail> = {
     name: "Apple apps",
     tagline: "Mail, Calendar and more on your Mac",
     description:
-      "Apple apps lets agents use Mail, Calendar, Contacts, Reminders, Notes, Messages and Safari on this Mac. It works on macOS only. OpenBot starts mcp-icloud, a community server that is not made by Apple or OpenBot. The server controls the apps through AppleScript, on this computer, and needs no account and no key. When you install it, OpenBot can ask macOS for access to all of these apps at once, with one prompt for each app. If you do not, macOS asks the first time an agent uses an app. To change this later, open System Settings › Privacy & Security › Automation. Agents can send email and iMessages, and change or delete events, contacts and reminders, so review each write before you approve it. What the tools read, such as email text, goes to the model provider of the agent.",
+      "Apple apps lets agents use Mail, Calendar, Contacts, Reminders, Notes, Messages and Safari on this Mac. It works on macOS only. Whilo starts mcp-icloud, a community server that is not made by Apple or Whilo. The server controls the apps through AppleScript, on this computer, and needs no account and no key. When you install it, Whilo can ask macOS for access to all of these apps at once, with one prompt for each app. If you do not, macOS asks the first time an agent uses an app. To change this later, open System Settings › Privacy & Security › Automation. Agents can send email and iMessages, and change or delete events, contacts and reminders, so review each write before you approve it. What the tools read, such as email text, goes to the model provider of the agent.",
     category: "productivity",
     creatorName: "MrGo2",
     iconUrl: "https://www.apple.com/favicon.ico",
@@ -1445,6 +1457,88 @@ export const PLUGIN_CATALOG_DETAILS: Record<string, PluginCatalogDetail> = {
     websiteUrl: "https://clickup.com",
     privacyPolicyUrl: "https://clickup.com/terms/privacy",
     termsUrl: "https://clickup.com/terms",
+    skills: [],
+  },
+  "computer-use": {
+    slug: "computer-use",
+    name: "Computer Use",
+    tagline: "Browser, desktop and Chrome control in one install",
+    description:
+      "Computer Use gathers the three ways Whilo drives a computer. Browser automation runs the tabs Whilo manages: open and close tabs, read a page snapshot, click, type, press keys, fill 1 to 16 ordinary main-frame fields from one fresh snapshot, and run many steps in a single scripted call. Each action passes the tab queue, so a person who takes a tab stops the agent until it is released, and a password, one-time code, CAPTCHA or payment goes through secure input or a takeover. Computer use reaches the rest of the desktop through cua-driver, the MIT driver Whilo packages and pins: it reads the screen and the accessibility tree and posts input, and because Whilo spawns it directly, macOS grants Screen Recording and Accessibility to Whilo rather than to a helper. Both of those run inside Whilo already. This listing adds the third: Chrome over the DevTools Protocol, through the ChromeDevTools server, which drives a Chrome window of its own with navigate, snapshot, click, type, network and performance reads, and screenshots.",
+    category: "automation",
+    creatorName: "Whilo",
+    iconUrl: "https://github.com/ChromeDevTools.png",
+    version: "1.0.0",
+    prompts: [
+      {
+        id: "prompt-browse",
+        text: "Open the pricing page, read what each plan includes, and tell me which one fits a team of two.",
+      },
+      {
+        id: "prompt-script",
+        text: "Run one script that searches the docs site for rate limits and returns the table it finds.",
+      },
+      { id: "prompt-desktop", text: "Look at my screen, find the invoice window, and read the total that is due." },
+    ],
+    apps: [
+      {
+        id: "app-computer-use-chrome",
+        name: "Chrome DevTools",
+        description:
+          "A Chrome window of its own, driven over the DevTools Protocol: navigate, snapshot the page, click, type, read network and performance, and take screenshots.",
+        iconUrl: "https://github.com/ChromeDevTools.png",
+        server: {
+          name: "chrome-devtools",
+          transport: "stdio",
+          command: "npx",
+          args: ["-y", "chrome-devtools-mcp@1.12.0"],
+        },
+      },
+    ],
+    websiteUrl: "https://github.com/trycua/cua",
+    privacyPolicyUrl: null,
+    termsUrl: null,
+    skills: [],
+  },
+  "world-legal-desk": {
+    slug: "world-legal-desk",
+    name: "World Legal Desk",
+    tagline: "The laws of many countries, as Markdown",
+    description:
+      "World Legal Desk is a library of statutes as Markdown, one folder per country, from the public corpora that legalize-dev publishes. Agents search a country's folder, quote an article with its citation, and compare how two jurisdictions word the same rule. The library is a copy you keep on this computer: the app reads the folder with a filesystem server and downloads nothing. Point it at the folder whose country folders it should serve, and keep the folder in place while agents use it.",
+    category: "research",
+    creatorName: "legalize-dev",
+    iconUrl: "https://github.com/legalize-dev.png",
+    version: "1.0.0",
+    prompts: [
+      {
+        id: "prompt-article",
+        text: "Quote article 1 of the German Basic Law from my legal library, with its citation.",
+      },
+      { id: "prompt-compare", text: "Compare how France and Japan define a legal person in their civil codes." },
+      {
+        id: "prompt-list-countries",
+        text: "Which countries does my legal library cover, and how many files does each one hold?",
+      },
+    ],
+    apps: [
+      {
+        id: "app-world-legal-desk-files",
+        name: "Legal library",
+        description:
+          "Read and search the country folders of your legal library, over a filesystem server limited to that one folder.",
+        iconUrl: "https://github.com/legalize-dev.png",
+        server: {
+          name: "world-legal-desk",
+          transport: "stdio",
+          command: "npx",
+          args: ["-y", "@modelcontextprotocol/server-filesystem@2.1.0", "~/Documents/world-legal-desk/laws"],
+        },
+      },
+    ],
+    websiteUrl: "https://github.com/legalize-dev",
+    privacyPolicyUrl: null,
+    termsUrl: null,
     skills: [],
   },
 };

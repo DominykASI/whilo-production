@@ -124,7 +124,7 @@ export type AgentEvent =
        */
       quiet?: true;
       /**
-       * The turn ended with open plan steps, and OpenBot continues the request with one more turn.
+       * The turn ended with open plan steps, and Whilo continues the request with one more turn.
        * The request is not done, so this completion shows no notification, plays no sound, and is
        * not read aloud. Only local listeners receive it; the Team API adapters leave it out.
        */

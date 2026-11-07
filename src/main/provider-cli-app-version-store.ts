@@ -1,4 +1,4 @@
-import { isDynamicRecord, isString } from "@openbot/contracts/runtime-values";
+import { isDynamicRecord, isString } from "@whilo/contracts/runtime-values";
 import { PreferenceStore } from "./preference-file";
 
 /**

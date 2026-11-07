@@ -6,19 +6,19 @@
 // `nothingToReset`, spends none, and ends a hold that a refused turn left; a credential change, as when a
 // key is saved, ends a hold; a message from the user tries one turn before the reset, which a spent
 // plan refuses again with no second notice, and which runs the held messages after the account changed
-// outside OpenBot; another provider is refused.
-// `bun scripts/codex-usage-reset-e2e.ts`. Writes .openbot-build/codex-usage-reset-e2e/report.json.
+// outside Whilo; another provider is refused.
+// `bun scripts/codex-usage-reset-e2e.ts`. Writes .whilo-build/codex-usage-reset-e2e/report.json.
 import assert from "node:assert/strict";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { AGENT_PROVIDERS, type AgentEvent, DEFAULT_PROVIDER_ACCOUNT_ID } from "@openbot/contracts/ipc";
+import { AGENT_PROVIDERS, type AgentEvent, DEFAULT_PROVIDER_ACCOUNT_ID } from "@whilo/contracts/ipc";
 import { Effect } from "effect";
 import type { AgentBrowserHost } from "../src/backend/agent/turn-lifecycle";
 
-const OUT = resolve(import.meta.dirname, "../.openbot-build/codex-usage-reset-e2e");
-const root = await mkdtemp(join(tmpdir(), "openbot-usage-reset-"));
+const OUT = resolve(import.meta.dirname, "../.whilo-build/codex-usage-reset-e2e");
+const root = await mkdtemp(join(tmpdir(), "whilo-usage-reset-"));
 const userData = join(root, "user-data");
 const home = join(root, "home");
 const fakeCodex = join(root, "codex");
@@ -31,14 +31,14 @@ const switchedFlag = join(root, "switched");
 // Before the service modules load: the Codex process and the stores read the home folder.
 process.env.HOME = home;
 process.env.CODEX_HOME = join(home, ".codex");
-process.env.OPENBOT_CODEX_PATH = fakeCodex;
+process.env.WHILO_CODEX_PATH = fakeCodex;
 mkdirSync(home, { recursive: true });
 
 const { AgentService } = await import("../src/backend/agent-service");
 const { AgentStore } = await import("../src/backend/agent-store");
 const { runCauseEffect } = await import("../src/backend/effect-boundary");
 const { MailboxStore } = await import("../src/backend/mailbox-store");
-const { OpenBotDatabase } = await import("../src/backend/openbot-database");
+const { WhiloDatabase } = await import("../src/backend/whilo-database");
 
 /**
  * A Codex app-server with the methods that the service calls. A turn whose text has "limit" spends the
@@ -199,7 +199,7 @@ function consumed(): { idempotencyKey: unknown; outcome: string }[] {
 }
 
 await writeFile(fakeCodex, FAKE_CODEX, { mode: 0o755 });
-const database = new OpenBotDatabase(userData);
+const database = new WhiloDatabase(userData);
 const store = new AgentStore(userData, home, database);
 const mailbox = new MailboxStore(userData, store.sharedRoot, store.database);
 const agents = new AgentService({
@@ -328,7 +328,7 @@ try {
   });
   assert.equal(notices.length, 1, "A refused try does not announce the limit again.");
   assert.equal(turnInputs().length, turnsBefore + 1, "One message from the user tries one turn.");
-  // The user signs Codex in to another account outside OpenBot. Nothing tells the gate, so only a
+  // The user signs Codex in to another account outside Whilo. Nothing tells the gate, so only a
   // new message tries again, long before the old account's reset.
   writeFileSync(switchedFlag, "");
   await runCauseEffect(agents.sendMessage({ agentId: agent.id, text: "After the account switch." }));

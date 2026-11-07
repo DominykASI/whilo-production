@@ -1,8 +1,8 @@
-import { agentProviderDescriptor, isKnownAgentProvider } from "@openbot/contracts/agent-providers";
-import { DEFAULT_AGENT_ACCESS } from "@openbot/contracts/ipc";
-import { AgentFolderDropOverlay, createAgentFolders } from "@openbot/ui/features/conversation/AgentFolders";
-import { MessageSelectionActions } from "@openbot/ui/features/conversation/SelectionActions";
-import { useText } from "@openbot/ui/text";
+import { agentProviderDescriptor, isKnownAgentProvider } from "@whilo/contracts/agent-providers";
+import { DEFAULT_AGENT_ACCESS } from "@whilo/contracts/ipc";
+import { AgentFolderDropOverlay, createAgentFolders } from "@whilo/ui/features/conversation/AgentFolders";
+import { MessageSelectionActions } from "@whilo/ui/features/conversation/SelectionActions";
+import { useText } from "@whilo/ui/text";
 import { createEffect, Show } from "solid-js";
 import { currentDevicePlatform } from "../../send-shortcut-preference";
 import { agentFolderCalls } from "./agent-folders-port";

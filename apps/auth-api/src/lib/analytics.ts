@@ -6,8 +6,8 @@ import {
   type FirstTouchSourcePlatform,
   firstTouchDay,
   rememberFirstTouch,
-} from "@openbot/contracts/first-touch";
-import { isBoolean, isOneOf } from "@openbot/contracts/runtime-values";
+} from "@whilo/contracts/first-touch";
+import { isBoolean, isOneOf } from "@whilo/contracts/runtime-values";
 import { OpenPanel, OpenPanelBase, type OpenPanelOptions, type TrackProperties } from "@openpanel/web";
 import { BRAND_ROUTE } from "./brand-page";
 import { COMMERCIAL_LICENSE_ROUTE } from "./commercial-license";
@@ -17,10 +17,10 @@ import { type CollectionId, type ContentCollection, findArticle } from "./conten
 import { DOWNLOAD_PLATFORM_ORDER, type DownloadPlatform } from "./download-platforms";
 import { DPA_ROUTE } from "./dpa";
 import {
-  OPENBOT_ALTERNATE_DOWNLOAD_LINKS,
-  OPENBOT_DOWNLOAD_LINKS,
-  OPENBOT_DOWNLOAD_PAGE_LINKS,
-  OPENBOT_LINKS,
+  WHILO_ALTERNATE_DOWNLOAD_LINKS,
+  WHILO_DOWNLOAD_LINKS,
+  WHILO_DOWNLOAD_PAGE_LINKS,
+  WHILO_LINKS,
 } from "./landing-links";
 import { MARKETPLACE_TAB_ROUTES } from "./marketplace-routes";
 import { MOBILE_APPS } from "./mobile-apps";
@@ -29,7 +29,7 @@ import { PRIVACY_POLICY_ROUTE } from "./privacy-policy";
 import { TEAMS_ROUTE } from "./teams-page";
 import { TERMS_ROUTE } from "./terms";
 
-const OPENPANEL_API_URL = "https://analytics.openbot.run/api";
+const OPENPANEL_API_URL = "https://analytics.whilo.onerall.com/api";
 const OPENPANEL_CLIENT_ID = "6c989975-87ef-4f0c-857e-ab449a65b5c2";
 /** Generation 10 adds `billing_return_viewed` and `contact_form_submitted`. */
 const ANALYTICS_SCHEMA_VERSION = 10;
@@ -123,7 +123,7 @@ type LandingDestination =
   | "claude";
 
 type CollectionIndexRoute = ContentCollection["indexRoute"];
-type DownloadPagePath = (typeof OPENBOT_DOWNLOAD_PAGE_LINKS)[keyof typeof OPENBOT_DOWNLOAD_PAGE_LINKS];
+type DownloadPagePath = (typeof WHILO_DOWNLOAD_PAGE_LINKS)[keyof typeof WHILO_DOWNLOAD_PAGE_LINKS];
 type MarketplaceTabPath = (typeof MARKETPLACE_TAB_ROUTES)[keyof typeof MARKETPLACE_TAB_ROUTES];
 /**
  * The screens a report may name. Article paths carry the slug so one article can be told from
@@ -157,7 +157,7 @@ const FIXED_SCREEN_PATHS = [
   TERMS_ROUTE,
   COMMERCIAL_LICENSE_ROUTE,
   DPA_ROUTE,
-  ...Object.values(OPENBOT_DOWNLOAD_PAGE_LINKS),
+  ...Object.values(WHILO_DOWNLOAD_PAGE_LINKS),
   ...Object.values(MARKETPLACE_TAB_ROUTES),
   "/news",
   "/guides",
@@ -219,38 +219,38 @@ function createOpenPanelClient(options: OpenPanelOptions): OpenPanelClient {
 
 /** The download routes of each platform, reversed so a click can name the platform it asked for. */
 const DOWNLOAD_PLATFORMS_BY_HREF = new Map<string, LandingDownloadPlatform>([
-  [OPENBOT_DOWNLOAD_LINKS.macos, "macos"],
-  [OPENBOT_DOWNLOAD_LINKS.windows, "windows"],
-  [OPENBOT_DOWNLOAD_LINKS.linux, "linux"],
-  [OPENBOT_ALTERNATE_DOWNLOAD_LINKS.macos, "macos"],
-  [OPENBOT_ALTERNATE_DOWNLOAD_LINKS.linux, "linux"],
+  [WHILO_DOWNLOAD_LINKS.macos, "macos"],
+  [WHILO_DOWNLOAD_LINKS.windows, "windows"],
+  [WHILO_DOWNLOAD_LINKS.linux, "linux"],
+  [WHILO_ALTERNATE_DOWNLOAD_LINKS.macos, "macos"],
+  [WHILO_ALTERNATE_DOWNLOAD_LINKS.linux, "linux"],
   [MOBILE_APPS.ios.href, "ios"],
   [MOBILE_APPS.android.href, "android"],
 ]);
 
 const LINK_DESTINATIONS = new Map<string, LandingDestination>([
-  [OPENBOT_LINKS.download, "download_section"],
-  ...Object.values(OPENBOT_DOWNLOAD_PAGE_LINKS).map((path) => [path, "download_page"] as const),
-  [OPENBOT_LINKS.news, "news"],
-  [OPENBOT_LINKS.guides, "guides"],
-  [OPENBOT_LINKS.contact, "contact"],
+  [WHILO_LINKS.download, "download_section"],
+  ...Object.values(WHILO_DOWNLOAD_PAGE_LINKS).map((path) => [path, "download_page"] as const),
+  [WHILO_LINKS.news, "news"],
+  [WHILO_LINKS.guides, "guides"],
+  [WHILO_LINKS.contact, "contact"],
   [TEAMS_ROUTE, "teams"],
   [PRICING_ROUTE, "pricing"],
-  [OPENBOT_LINKS.x, "x"],
-  [OPENBOT_LINKS.discord, "discord"],
-  [OPENBOT_LINKS.repository, "repository"],
-  [OPENBOT_LINKS.releases, "releases"],
+  [WHILO_LINKS.x, "x"],
+  [WHILO_LINKS.discord, "discord"],
+  [WHILO_LINKS.repository, "repository"],
+  [WHILO_LINKS.releases, "releases"],
   // The same destination on this site: the release notes, reported under the name they had.
-  [OPENBOT_LINKS.changelog, "releases"],
-  [OPENBOT_LINKS.license, "license"],
-  [OPENBOT_LINKS.privacy, "privacy"],
+  [WHILO_LINKS.changelog, "releases"],
+  [WHILO_LINKS.license, "license"],
+  [WHILO_LINKS.privacy, "privacy"],
   [PRIVACY_POLICY_ROUTE, "privacy"],
-  [OPENBOT_LINKS.documentation, "documentation"],
-  [OPENBOT_LINKS.troubleshooting, "troubleshooting"],
-  [OPENBOT_LINKS.architecture, "architecture"],
-  [OPENBOT_LINKS.contributing, "contributing"],
-  [OPENBOT_LINKS.codex, "codex"],
-  [OPENBOT_LINKS.claude, "claude"],
+  [WHILO_LINKS.documentation, "documentation"],
+  [WHILO_LINKS.troubleshooting, "troubleshooting"],
+  [WHILO_LINKS.architecture, "architecture"],
+  [WHILO_LINKS.contributing, "contributing"],
+  [WHILO_LINKS.codex, "codex"],
+  [WHILO_LINKS.claude, "claude"],
 ]);
 
 const EVENT_PROPERTY_ALLOWLIST = {
@@ -275,7 +275,7 @@ const EVENT_PROPERTY_ALLOWLIST = {
 const PENDING_EVENT_LIMIT = 4;
 
 function shouldEnableLandingAnalytics(hostname: string, productionBuild: boolean): boolean {
-  return productionBuild && hostname === "openbot.run";
+  return productionBuild && hostname === "whilo.onerall.com";
 }
 
 class LandingAnalytics {
@@ -342,12 +342,12 @@ class LandingAnalytics {
     const handleClick = (event: MouseEvent) => {
       const target = event.target;
       const link = target instanceof Element ? target.closest<HTMLAnchorElement>("a[href]") : null;
-      if (link?.getAttribute("href")?.startsWith("openbot://")) {
+      if (link?.getAttribute("href")?.startsWith("whilo://")) {
         this.#track("join_page_action", { action: "open_app" });
         return;
       }
       const href = link?.getAttribute("href");
-      const platform = DOWNLOAD_PLATFORM_ORDER.find((id) => OPENBOT_DOWNLOAD_LINKS[id] === href);
+      const platform = DOWNLOAD_PLATFORM_ORDER.find((id) => WHILO_DOWNLOAD_LINKS[id] === href);
       if (platform) this.#track("join_page_action", { action: "download", platform });
     };
     return this.#replaceClickListener(document, handleClick, "/join");

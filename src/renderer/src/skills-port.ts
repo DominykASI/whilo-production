@@ -1,10 +1,10 @@
 import type {
   InstalledSkill,
   InstallSkillInput,
-  OpenBotDesktopApi,
+  WhiloDesktopApi,
   SetEnabledSkillInput,
   UninstallSkillInput,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 
 /**
  * What the skill screens reach in main: the marketplace, the agent skills dialog and the local
@@ -13,7 +13,7 @@ import type {
  */
 export interface SkillsPort {
   agent: Pick<
-    OpenBotDesktopApi["agent"],
+    WhiloDesktopApi["agent"],
     | "addMarketplaceAgent"
     | "cancelMcpSignIn"
     | "completeMcpSignInRelay"
@@ -32,13 +32,14 @@ export interface SkillsPort {
     | "testMcpServer"
     | "uninstallAgentSkill"
   >;
-  marketplaceAgents: Pick<OpenBotDesktopApi["marketplaceAgents"], "get" | "getListing" | "install" | "list">;
-  macAutomation: Pick<OpenBotDesktopApi["macAutomation"], "request">;
+  marketplaceAgents: Pick<WhiloDesktopApi["marketplaceAgents"], "get" | "getListing" | "install" | "list">;
+  macAutomation: Pick<WhiloDesktopApi["macAutomation"], "request">;
   skills: Pick<
-    OpenBotDesktopApi["skills"],
+    WhiloDesktopApi["skills"],
     | "get"
     | "getBySlug"
     | "install"
+    | "installBundled"
     | "list"
     | "listInstalled"
     | "localGet"
@@ -46,12 +47,13 @@ export interface SkillsPort {
     | "localList"
     | "setEnabled"
     | "uninstall"
+    | "uninstallBundled"
   >;
 }
 
-/** Read on each call: tests and stories replace `window.openbot` per case. */
+/** Read on each call: tests and stories replace `window.whilo` per case. */
 export function skillsPort(): SkillsPort {
-  return window.openbot;
+  return window.whilo;
 }
 
 /** The marketplace reads the agent skills dialog uses for descriptions and details. */

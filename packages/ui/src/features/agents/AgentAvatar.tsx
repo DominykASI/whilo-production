@@ -1,8 +1,8 @@
 import { type ExpressionId, POSES } from "@norbert_bodziony/bloub";
 import { PlushBot, type PlushState, type PlushTransition } from "@norbert_bodziony/bloub/plush";
-import type { AvatarMood } from "@openbot/brand/bloub-avatar-motion";
-import type { AvatarHue } from "@openbot/contracts/ipc";
-import { prefersReducedMotion } from "@openbot/ui/utils";
+import type { AvatarMood } from "@whilo/brand/bloub-avatar-motion";
+import type { AvatarHue } from "@whilo/contracts/ipc";
+import { prefersReducedMotion } from "@whilo/ui/utils";
 import { createEffect, createMemo, createSignal, onSettled, Show } from "solid-js";
 import { type AvatarMotion, bloubAvatarProfile, type SupportedAvatarSilhouetteId } from "../../bloub-avatar";
 import type { AgentProfile } from "../../data";

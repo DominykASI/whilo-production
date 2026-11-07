@@ -10,10 +10,10 @@ import {
   COMPUTER_USE_MCP_SERVER_ID,
   type McpServerConfig,
   workspaceAccessEnforced,
-} from "@openbot/contracts/ipc";
-import { type DynamicRecord, isDynamicRecord } from "@openbot/contracts/runtime-values";
-import { sourceText } from "@openbot/i18n/source";
-import { createOpenBotLogger } from "@openbot/logging";
+} from "@whilo/contracts/ipc";
+import { type DynamicRecord, isDynamicRecord } from "@whilo/contracts/runtime-values";
+import { sourceText } from "@whilo/i18n/source";
+import { createWhiloLogger } from "@whilo/logging";
 import { Effect, Result, Schema } from "effect";
 import type { AgentClient, AgentProvider } from "../agent-client";
 import type { AgentStore } from "../agent-store";
@@ -81,7 +81,7 @@ import {
   workspaceWritableRoots,
 } from "./workspace-sandbox";
 
-const logger = createOpenBotLogger("thread-lifecycle");
+const logger = createWhiloLogger("thread-lifecycle");
 
 /**
  * What the Codex adapter sends, versioned. Codex ignores MCP configuration on resume, so a
@@ -131,7 +131,7 @@ const CODEX_TOOLS_CONFIG = { update_plan: { enabled: true } } as const;
 /**
  * Codex declares `create_goal`, `get_goal` and `update_goal` in each request, about 3.5k characters.
  * A goal continues the turn by itself until the agent marks it done, and only the user can pause or
- * resume it. OpenBot has no control for a goal, so it turns the feature off.
+ * resume it. Whilo has no control for a goal, so it turns the feature off.
  */
 export const CODEX_FEATURES_CONFIG = { "features.goals": false } as const;
 
@@ -192,7 +192,7 @@ export interface ThreadLifecycleOptions {
   passwordVaultConnected?: () => boolean;
   /** What the Vault holds, read at each start and resume of a session. */
   vaultItems?: () => VaultContents;
-  /** OpenBot runs on a server. The prompt then names the sign-in on the user's computer. */
+  /** Whilo runs on a server. The prompt then names the sign-in on the user's computer. */
   serverHost?: boolean;
   /** The other agents in an agent's sidebar section, read at each start and resume of a session. */
   sectionTeammates?: (agentId: string) => SectionTeammates | null;
@@ -635,7 +635,7 @@ export class ThreadLifecycle {
         mcpServers,
         instructionsFile,
       ),
-      serviceName: "openbot",
+      serviceName: "whilo",
       dynamicTools: VISIBLE_DYNAMIC_TOOLS,
     };
     return { agent, mcpServers, toolRuntimes, own, environment, section, proxy, instructionsFile, params };
@@ -796,7 +796,7 @@ export class ThreadLifecycle {
    * `codexMcpServers`. Every other provider gets nothing here.
    *
    * The user's own `~/.codex/config.toml` entries are turned off in the same record, so the MCP
-   * panel is the only door to an agent's tools. OpenBot's entries are spread last: a name in both
+   * panel is the only door to an agent's tools. Whilo's entries are spread last: a name in both
    * places resolves to the one the panel shows.
    *
    * The agent environment goes in as one dotted key for each variable. Codex applies a dotted key
@@ -908,7 +908,7 @@ export class ThreadLifecycle {
    * secret values to a digest first, so the file this string is written to holds none of them.
    *
    * The names swept out of `~/.codex/config.toml` are folded in as well, and they are the reason
-   * this is not OpenBot's set alone: a user who edits that file changes what the agent is given
+   * this is not Whilo's set alone: a user who edits that file changes what the agent is given
    * while the stored set is untouched, and a loaded session would keep the old tools with the
    * panel saying otherwise.
    *
@@ -1057,8 +1057,8 @@ export class ThreadLifecycle {
    * The agent, for Claude and the ACP clients, which read the servers themselves. Codex gets its
    * servers from `codexConfigEffect` and takes the params as they are, so it is told nothing.
    */
-  #mcpAgentParam(agent: AgentSummary, client: AgentClient): { openbotAgentId?: string } {
-    return client.provider === "codex" ? {} : { openbotAgentId: agent.id };
+  #mcpAgentParam(agent: AgentSummary, client: AgentClient): { whiloAgentId?: string } {
+    return client.provider === "codex" ? {} : { whiloAgentId: agent.id };
   }
 
   private readonly hasCurrentToolsEffect = Effect.fn("ThreadLifecycle.hasCurrentTools")(function* (
@@ -1269,7 +1269,7 @@ export class ThreadLifecycle {
 
   /**
    * Closes one provider session that the provider refuses, and keeps the public thread. The next
-   * turn opens a new session, and `startProviderThread` gives it the OpenBot transcript.
+   * turn opens a new session, and `startProviderThread` gives it the Whilo transcript.
    */
   readonly dropRefusedProviderSession = Effect.fn("ThreadLifecycle.dropRefusedProviderSession")(function* (
     this: ThreadLifecycle,

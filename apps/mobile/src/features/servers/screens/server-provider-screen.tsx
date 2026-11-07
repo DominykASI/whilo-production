@@ -4,7 +4,7 @@ import {
   isKeyOnlyProvider,
   type ProviderAccountStatus,
   relayCallbackQuery,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import * as Clipboard from "expo-clipboard";
 import { router, Stack, useLocalSearchParams } from "expo-router";
@@ -529,7 +529,7 @@ function SignInSection({
   onCancel: () => void;
 }) {
   const { t } = useText();
-  const accent = String(useCSSVariable("--openbot-accent"));
+  const accent = String(useCSSVariable("--whilo-accent"));
   // The host needs a moment to start the sign-in and to get the page. The row says what it waits for.
   const waiting =
     signIn.kind === "starting"

@@ -1,4 +1,4 @@
-import type { AvatarHue } from "@openbot/contracts/ipc";
+import type { AvatarHue } from "@whilo/contracts/ipc";
 import { Spinner, Typography } from "heroui-native";
 import { useThemeColor } from "heroui-native/hooks";
 import Mic from "lucide-react-native/icons/mic";

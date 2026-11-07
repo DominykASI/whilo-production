@@ -1,9 +1,9 @@
-import type { HostReleaseStatus, HostUpdateStatus } from "@openbot/contracts/ipc";
+import type { HostReleaseStatus, HostUpdateStatus } from "@whilo/contracts/ipc";
 import { onSettled, snapshot } from "solid-js";
 import { fn } from "storybook/test";
 import { ServerSettingsModal, type ServerSettingsModalProps } from "../src/features/servers/ServerSettingsModal";
 import { STORY_HOST_STATUS, STORY_INVITES, STORY_PRESENCE, STORY_SERVERS } from "../src/preview/fixtures";
-import { createMockOpenBot } from "./mock-openbot";
+import { createMockWhilo } from "./mock-whilo";
 import { SettingsPageStory } from "./settings-page-story";
 
 function storyServer(kind: (typeof STORY_SERVERS)[number]["kind"]) {
@@ -46,24 +46,24 @@ export const serverSettingsArgs = () =>
     onRecheckScreenRecording: fn(async () => undefined),
   }) satisfies Omit<ServerSettingsModalProps, "page">;
 
-/** The real Server settings page, with a preview `window.openbot` for the panels that read it. */
+/** The real Server settings page, with a preview `window.whilo` for the panels that read it. */
 export function ServerSettingsStory(props: {
   settings: Omit<ServerSettingsModalProps, "page">;
   hostUpdate?: HostUpdateStatus;
   hostRelease?: HostReleaseStatus;
 }) {
-  const previous = window.openbot;
+  const previous = window.whilo;
   // Storybook passes the args as a store, and the mock copies its options with `structuredClone`.
   const hostStatus = props.settings.hostStatus;
-  const mock = createMockOpenBot({
+  const mock = createMockWhilo({
     ...(hostStatus ? { hostStatus: snapshot(hostStatus) } : {}),
     ...(props.hostUpdate ? { hostUpdate: props.hostUpdate } : {}),
     ...(props.hostRelease ? { hostRelease: props.hostRelease } : {}),
   });
-  window.openbot = mock.api;
+  window.whilo = mock.api;
   onSettled(() => () => {
     mock.dispose();
-    window.openbot = previous;
+    window.whilo = previous;
   });
   return (
     <SettingsPageStory title="Server settings">

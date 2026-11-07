@@ -1,7 +1,7 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import { mcpFlowFields } from "@openbot/contracts/mcp-connect-flows";
-import { pluginLinkText } from "@openbot/contracts/plugin-links";
-import type { AppTextKey } from "@openbot/i18n";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import { mcpFlowFields } from "@whilo/contracts/mcp-connect-flows";
+import { pluginLinkText } from "@whilo/contracts/plugin-links";
+import type { AppTextKey } from "@whilo/i18n";
 import {
   Alert,
   AlertContent,
@@ -31,8 +31,8 @@ import {
   Text,
   Trash2,
   TriangleAlert,
-} from "@openbot/ui";
-import { useText } from "@openbot/ui/text";
+} from "@whilo/ui";
+import { useText } from "@whilo/ui/text";
 import { createSignal, For, Match, Show, Switch } from "solid-js";
 import { ProviderAccountRenameField } from "../../components/ProviderAccountList";
 import { type ConnectorDetail, ConnectorDetailPanel, connectorDescription } from "../connectors/ConnectorDetailPanel";

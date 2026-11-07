@@ -22,7 +22,7 @@ The flow is: signed request → route → routine → run.
 | Route ID → host and owner account, link time, revoke time | Account service D1 | `webhook_routes` |
 | Route ID → ingress socket | Signal memory | `SignalService` |
 
-Schema v30 (`src/backend/openbot-database-schema.ts`) only adds these tables. Existing routines and
+Schema v30 (`src/backend/whilo-database-schema.ts`) only adds these tables. Existing routines and
 runs do not change.
 
 - `RoutineStore` (`src/backend/routine-store.ts`) writes the trigger row with the routine, in the
@@ -130,7 +130,7 @@ data, is the trigger's output. Workflow triggers have no test event.
 
 ### Workflow GitHub triggers
 
-A GitHub trigger has no secret or route of its own. The OpenBot GitHub App sends every event to
+A GitHub trigger has no secret or route of its own. The Whilo GitHub App sends every event to
 Signal (`/v1/github/events`, see `remote/README.md`). `GitHubRelay` (`src/main/github-relay.ts`)
 asks the account service for a GitHub route ticket that names the repositories of the saved GitHub
 triggers, and the `ingress` socket sends it to Signal. The account service checks the repositories
@@ -145,7 +145,7 @@ reason:
 - `filter`: the event or a filter of the trigger does not match.
 - `self`: the event is the echo of a change that a run of this workflow made, by the GitHub object
   ID in `workflow_github_actions`.
-- `chain`: OpenBot's bot caused 3 runs on the item in 10 minutes.
+- `chain`: Whilo's bot caused 3 runs on the item in 10 minutes.
 - `refused`: the run could not start.
 - `offline`: the host lost its GitHub route. Signal does not keep events for a host that is offline,
   and GitHub does not send them again, so the history shows the gap. Gaps closer than 2 minutes are
@@ -157,7 +157,7 @@ item starts. The event, marked as data, is the trigger's output.
 ### Workflow Discord triggers
 
 A Discord trigger uses the Discord connection of the host's messaging. It has no route, secret or
-table of its own. Signal passes on the messages that mention OpenBot or OpenBot's own role in the
+table of its own. Signal passes on the messages that mention Whilo or Whilo's own role in the
 server (the role match needs a Signal deploy). A trigger limited to a channel does not start for a
 mention in a thread of that channel: the Signal message names the thread, not its parent.
 `MessagingService` gives each mention in a server channel (not a direct message, not a
@@ -166,7 +166,7 @@ trigger matches the connection, the channel (empty: any), the author's roles (em
 text filter (`discord-matching.ts`). A matched mention starts one run for each trigger, with source
 `discord` (schema v50) and the idempotency key `discord:<node>:<message>`, and does not start an
 agent conversation. A workflow with an open run skips the mention; when all matched triggers skip
-it, OpenBot adds the failed reaction to the message.
+it, Whilo adds the failed reaction to the message.
 
 The run payload is the mention, marked as data. A Discord output reads the channel and message ID
 from it: a reply and a reaction act on that message; a post goes to a chosen channel. Each post or
@@ -219,8 +219,8 @@ Controls:
 - A removed trigger revokes its route in the same transaction, and the relay revocation retries
   until it succeeds.
 - Only the events surface, which needs a host administrator, can change, test, or delete a webhook
-  routine. An agent can create one with `openbot.create_webhook_routine`, and change its events,
-  name, instruction or active state with `openbot.update_webhook_routine`, but only in a turn that a
+  routine. An agent can create one with `whilo.create_webhook_routine`, and change its events,
+  name, instruction or active state with `whilo.update_webhook_routine`, but only in a turn that a
   person's message started: a routine run can carry a webhook body, which is untrusted. The tool saves through
   `HostEventsService`, so the route limit, the encryption and the relay sync are the same. The tool
   drops the first secret: the result goes to the model provider. The chat card makes a new secret

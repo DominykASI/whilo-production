@@ -1,14 +1,15 @@
-import type { AvatarMood } from "@openbot/brand/bloub-avatar-motion";
-import type { AgentTask } from "@openbot/contracts/ipc";
-import type { AppTextKey } from "@openbot/i18n";
-import { taskTone } from "@openbot/team-client/agent-tasks";
-import { buttonVariants } from "@openbot/ui";
-import { SwapLabel } from "@openbot/ui/components/SwapLabel";
-import type { AgentProfile } from "@openbot/ui/data";
-import { AgentAvatar } from "@openbot/ui/features/agents/AgentAvatar";
-import { AgentTaskMark, agentTaskStatus } from "@openbot/ui/features/conversation/AgentTasks";
-import { useText } from "@openbot/ui/text";
-import { prefersReducedMotion } from "@openbot/ui/utils";
+import { OrcaPet } from "@whilo/brand";
+import type { AvatarMood } from "@whilo/brand/bloub-avatar-motion";
+import type { AgentTask } from "@whilo/contracts/ipc";
+import type { AppTextKey } from "@whilo/i18n";
+import { taskTone } from "@whilo/team-client/agent-tasks";
+import { buttonVariants } from "@whilo/ui";
+import { SwapLabel } from "@whilo/ui/components/SwapLabel";
+import type { AgentProfile } from "@whilo/ui/data";
+import { AgentAvatar } from "@whilo/ui/features/agents/AgentAvatar";
+import { AgentTaskMark, agentTaskStatus } from "@whilo/ui/features/conversation/AgentTasks";
+import { useText } from "@whilo/ui/text";
+import { prefersReducedMotion } from "@whilo/ui/utils";
 import { createMemo, createSignal, For, onSettled } from "solid-js";
 
 /** One sample task: its title, and what its agent does while it runs. */
@@ -77,6 +78,11 @@ export function TasksEmptyPitch() {
   };
   return (
     <div class="tasks-page-empty-pitch">
+      {/* The pet keeps the top of the page company: nothing is running yet, so it only idles. A
+          click plays its greeting, which is the one thing on this page that is not a task. */}
+      <span class="tasks-page-empty-pet">
+        <OrcaPet mood="idle" interactive />
+      </span>
       <h3 class="tasks-page-empty-title">
         <span class="tasks-page-empty-lead">{t("conversation.tasks.empty.lead")}</span>
         <span>

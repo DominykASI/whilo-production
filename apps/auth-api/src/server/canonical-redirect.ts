@@ -1,10 +1,10 @@
-import { OPENBOT_SITE_URL } from "../lib/site-metadata";
+import { WHILO_SITE_URL } from "../lib/site-metadata";
 
-const SITE_ORIGIN = new URL(OPENBOT_SITE_URL).origin;
-const SITE_HOST = new URL(OPENBOT_SITE_URL).hostname;
+const SITE_ORIGIN = new URL(WHILO_SITE_URL).origin;
+const SITE_HOST = new URL(WHILO_SITE_URL).hostname;
 
 /**
- * Sends `http://openbot.run` and `www.openbot.run` to `https://openbot.run`, so
+ * Sends `http://whilo.onerall.com` and `www.whilo.onerall.com` to `https://whilo.onerall.com`, so
  * search engines index one address. The zone route sends plain HTTP here too, and
  * the `www` route exists only for this redirect: `www` has no origin of its own.
  * 308 keeps the method and the body, and search engines read it as permanent.
@@ -34,8 +34,8 @@ export function permanentTrailingSlashRedirect(request: Request, response: Respo
 }
 
 /**
- * The page that a Slack or Discord install returns to. The callback runs on `api.openbot.run`, and the
- * page opens on `openbot.run`, where the browser client runs, so the client tab that started the
+ * The page that a Slack or Discord install returns to. The callback runs on `api.whilo.onerall.com`, and the
+ * page opens on `whilo.onerall.com`, where the browser client runs, so the client tab that started the
  * install can take its grant. Another origin, such as a development one, keeps its own.
  */
 export function installReturnPage(path: string, callbackUrl: URL): URL {

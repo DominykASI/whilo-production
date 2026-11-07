@@ -56,8 +56,8 @@ import type {
   SidebarPinsSnapshot,
   TeamPresenceSnapshot,
   UpdateHostIdentityInput,
-} from "@openbot/contracts/ipc";
-import type { Logger } from "@openbot/logging";
+} from "@whilo/contracts/ipc";
+import type { Logger } from "@whilo/logging";
 import type { AgentService } from "../../backend/agent-service";
 import type { BrowserHost } from "../../backend/browser-host";
 import type { MailboxStore } from "../../backend/mailbox-store";
@@ -608,7 +608,7 @@ export interface TeamApiOptions {
   onDirectTyping?: ((event: DirectTypingRealtimeEvent) => void) | undefined;
   createInvite?: OmitThisParameter<HostService["createInvite"]> | undefined;
   /**
-   * Changes and removes members as the desktop app does. With an OpenBot account, the account
+   * Changes and removes members as the desktop app does. With an Whilo account, the account
    * directory holds the membership; a change only in the team file has no effect there.
    */
   updateMember?: OmitThisParameter<HostService["updateMember"]> | undefined;

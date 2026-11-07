@@ -3,9 +3,9 @@ import { EventEmitter } from "node:events";
 import { createReadStream, existsSync } from "node:fs";
 import { mkdir, open, rename, rm, stat } from "node:fs/promises";
 import { join } from "node:path";
-import type { LocalVoiceModelId, SpeechModelId, VoiceModelStatus } from "@openbot/contracts/ipc";
-import { PARAKEET_MODEL_FILES, SUPERTONIC_MODEL_FILES } from "@openbot/contracts/speech-models";
-import { sourceText } from "@openbot/i18n/source";
+import type { LocalVoiceModelId, SpeechModelId, VoiceModelStatus } from "@whilo/contracts/ipc";
+import { PARAKEET_MODEL_FILES, SUPERTONIC_MODEL_FILES } from "@whilo/contracts/speech-models";
+import { sourceText } from "@whilo/i18n/source";
 import { Effect, Exit, Fiber, Result, Schema, Scope, Stream } from "effect";
 import { causeHelpers } from "../backend/effect-boundary";
 
@@ -87,7 +87,7 @@ const WHISPER_TURBO_MODEL_FILES: readonly VoiceModelFile[] = [
   },
 ];
 
-/** A model that OpenBot downloads: a dictation model or the speech model. */
+/** A model that Whilo downloads: a dictation model or the speech model. */
 type DownloadedModelId = LocalVoiceModelId | SpeechModelId;
 
 /** The directory name of Supertonic 3 in `<userData>/runtimes`. The phone uses the same name. */
@@ -95,7 +95,7 @@ export {
   PARAKEET_MODEL_DIRECTORY,
   PARAKEET_MODEL_FILES,
   SUPERTONIC_MODEL_DIRECTORY,
-} from "@openbot/contracts/speech-models";
+} from "@whilo/contracts/speech-models";
 
 /** The files of each model. */
 const VOICE_MODEL_FILES: Record<DownloadedModelId, readonly VoiceModelFile[]> = {

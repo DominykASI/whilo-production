@@ -15,7 +15,7 @@ import type {
   ServerNotificationLevel,
   ServerSummary,
   UpdateStatus,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   Alert,
   AlertActions,
@@ -26,20 +26,20 @@ import {
   ChevronRight,
   Tabs,
   TriangleAlert,
-} from "@openbot/ui";
-import { BillingPanel } from "@openbot/ui/features/billing/BillingPanel";
-import { createBillingStore } from "@openbot/ui/features/billing/billing-store";
-import { LicenseSection } from "@openbot/ui/features/billing/LicenseSection";
-import { createLicenseStore } from "@openbot/ui/features/billing/license-store";
-import type { GeneralSettingsValue } from "@openbot/ui/features/settings/app-settings";
-import { SettingsDialogShell, type SettingsPagePlacement } from "@openbot/ui/features/settings/SettingsDialogShell";
-import { SettingsMobileConnectTab } from "@openbot/ui/features/settings/SettingsMobileConnectTab";
-import { SettingsProfileTab } from "@openbot/ui/features/settings/SettingsProfileTab";
-import { SettingsUpdatesTab } from "@openbot/ui/features/settings/SettingsUpdatesTab";
-import { createSettingsHostedServersStore } from "@openbot/ui/features/settings/stores/hosted-servers-store";
-import { createSettingsMobileConnectStore } from "@openbot/ui/features/settings/stores/mobile-connect-store";
-import { createSettingsProfileStore } from "@openbot/ui/features/settings/stores/profile-store";
-import { createSettingsUpdatesStore } from "@openbot/ui/features/settings/stores/updates-store";
+} from "@whilo/ui";
+import { BillingPanel } from "@whilo/ui/features/billing/BillingPanel";
+import { createBillingStore } from "@whilo/ui/features/billing/billing-store";
+import { LicenseSection } from "@whilo/ui/features/billing/LicenseSection";
+import { createLicenseStore } from "@whilo/ui/features/billing/license-store";
+import type { GeneralSettingsValue } from "@whilo/ui/features/settings/app-settings";
+import { SettingsDialogShell, type SettingsPagePlacement } from "@whilo/ui/features/settings/SettingsDialogShell";
+import { SettingsMobileConnectTab } from "@whilo/ui/features/settings/SettingsMobileConnectTab";
+import { SettingsProfileTab } from "@whilo/ui/features/settings/SettingsProfileTab";
+import { SettingsUpdatesTab } from "@whilo/ui/features/settings/SettingsUpdatesTab";
+import { createSettingsHostedServersStore } from "@whilo/ui/features/settings/stores/hosted-servers-store";
+import { createSettingsMobileConnectStore } from "@whilo/ui/features/settings/stores/mobile-connect-store";
+import { createSettingsProfileStore } from "@whilo/ui/features/settings/stores/profile-store";
+import { createSettingsUpdatesStore } from "@whilo/ui/features/settings/stores/updates-store";
 import { createEffect, createSignal, Show, untrack } from "solid-js";
 import { useI18n } from "../../i18n-context";
 import { ComputerUseSetup } from "../computer-use/ComputerUseSetup";

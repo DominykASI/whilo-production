@@ -1,6 +1,6 @@
 import { env, waitUntil } from "cloudflare:workers";
-import { HOSTING_DEVELOPER_KEY_HEADER } from "@openbot/contracts/hosted-servers";
-import { isDynamicRecord, isString } from "@openbot/contracts/runtime-values";
+import { HOSTING_DEVELOPER_KEY_HEADER } from "@whilo/contracts/hosted-servers";
+import { isDynamicRecord, isString } from "@whilo/contracts/runtime-values";
 import { Effect } from "effect";
 import { type AccountAnalytics, createAccountAnalytics } from "./account-analytics";
 import { AccountAttribution } from "./account-attribution";
@@ -16,6 +16,8 @@ import { DiscordAppError, DiscordAppService } from "./discord-app";
 import { runApiEffect } from "./effect-runtime";
 import { createContactMessageDelivery, createEmailCodeDelivery, createTeamInviteEmailDelivery } from "./email-delivery";
 import { GitHubInstallationTokens, GitHubInstallationTokensError } from "./github-installation-tokens";
+import { GitHubOAuthError, GitHubOAuthService } from "./github-oauth";
+import { GoogleOAuthError, GoogleOAuthService } from "./google-oauth";
 import { createHostedBilling } from "./hosted-billing";
 import { type HostedServerService, HostedServerServiceError } from "./hosted-server-service";
 import { HostedSiteInputError } from "./hosted-site-contract";
@@ -39,6 +41,7 @@ import {
 } from "./remote-control-plane";
 import { SkillMarketplace, SkillMarketplaceError } from "./skill-marketplace";
 import { SlackAppError, SlackAppService } from "./slack-app";
+import { storageBucket } from "./storage-bucket";
 import { requireWorkerBindings, type TeamInviteEmailDelivery, type WorkerBindings } from "./types";
 
 function accountAnalytics(bindings: WorkerBindings): AccountAnalytics {
@@ -73,21 +76,22 @@ export function requestAuthService(): AuthService {
 }
 
 export function requestAvatarBucket(): R2Bucket {
-  const bindings = requireWorkerBindings(env);
-  return bindings.AVATARS;
+  return storageBucket(requireWorkerBindings(env).AVATARS, "AVATARS");
 }
 
 export function requestSkillMarketplace(): SkillMarketplace {
   const bindings = requireWorkerBindings(env);
-  return new SkillMarketplace(bindings);
+  return new SkillMarketplace({ ...bindings, SKILLS: storageBucket(bindings.SKILLS, "SKILLS") });
 }
 
 export function requestAgentMarketplace(): AgentMarketplace {
-  return new AgentMarketplace(requireWorkerBindings(env));
+  const bindings = requireWorkerBindings(env);
+  return new AgentMarketplace({ DB: bindings.DB, SKILLS: storageBucket(bindings.SKILLS, "SKILLS") });
 }
 
 export function requestAgentTemplates(): AgentTemplates {
-  return new AgentTemplates(requireWorkerBindings(env));
+  const bindings = requireWorkerBindings(env);
+  return new AgentTemplates({ DB: bindings.DB, SKILLS: storageBucket(bindings.SKILLS, "SKILLS") });
 }
 
 /** The sites that a signed-in `/v1/sites` request can see and change. See `resolveHostedSiteScope`. */
@@ -104,7 +108,7 @@ export function requestHostedSiteService(): HostedSiteService {
   const bindings = requireWorkerBindings(env);
   return new HostedSiteService(
     bindings.DB,
-    bindings.SITES,
+    storageBucket(bindings.SITES, "SITES"),
     Date.now,
     bindings.SITE_REPORT_HASH_SECRET,
     bindings.SITE_LOCAL_ORIGIN,
@@ -151,7 +155,7 @@ export function requestGitHubInstallationTokens(): GitHubInstallationTokens {
   const clientId = bindings.GITHUB_APP_CLIENT_ID?.trim();
   const privateKey = bindings.GITHUB_APP_PRIVATE_KEY?.trim();
   if (!clientId || !privateKey) {
-    throw new GitHubInstallationTokensError(503, "github_app_unavailable", "The OpenBot GitHub App is not configured.");
+    throw new GitHubInstallationTokensError(503, "github_app_unavailable", "The Whilo GitHub App is not configured.");
   }
   const key = `${clientId}\u0000${privateKey}`;
   if (githubInstallationTokens?.key !== key) {
@@ -167,7 +171,7 @@ export const enforceGitHubTokenRateLimit = Effect.fn("GitHub.enforceTokenRateLim
   const result = yield* Effect.tryPromise({
     try: () => requireWorkerBindings(env).GITHUB_TOKEN_RATE_LIMITER.limit({ key: `ip:${sourceIp}` }),
     catch: () =>
-      new GitHubInstallationTokensError(503, "github_app_unavailable", "The OpenBot GitHub App is unavailable."),
+      new GitHubInstallationTokensError(503, "github_app_unavailable", "The Whilo GitHub App is unavailable."),
   });
   if (!result.success) {
     return yield* new GitHubInstallationTokensError(
@@ -185,6 +189,55 @@ export function githubInstallationTokensErrorResponse(error: unknown): Response 
     return response;
   }
   return authErrorResponse(error);
+}
+
+/**
+ * The Google sign-in of the browser client. A deployment without the client id and the secret keeps
+ * answering: `/start` is 503 `oauth_not_configured` and `/v1/auth/oauth/status` says
+ * `{"google":false}`, which is what keeps the Google disc's honest note instead of a redirect that
+ * ends nowhere.
+ */
+export function requestGoogleOAuth(): GoogleOAuthService {
+  const bindings = requireWorkerBindings(env);
+  return new GoogleOAuthService(bindings, {
+    repository: new D1AuthRepository(bindings.DB),
+    analytics: accountAnalytics(bindings),
+  });
+}
+
+export function googleOAuthErrorResponse(error: unknown): Response {
+  if (error instanceof GoogleOAuthError) return apiError(error.status, error.code, error.message);
+  return authErrorResponse(error);
+}
+
+/** The GitHub sign-in of the browser client, with the same answers as the Google one. */
+export function requestGitHubOAuth(): GitHubOAuthService {
+  const bindings = requireWorkerBindings(env);
+  return new GitHubOAuthService(bindings, {
+    repository: new D1AuthRepository(bindings.DB),
+    analytics: accountAnalytics(bindings),
+  });
+}
+
+export function githubOAuthErrorResponse(error: unknown): Response {
+  if (error instanceof GitHubOAuthError) return apiError(error.status, error.code, error.message);
+  return authErrorResponse(error);
+}
+
+/**
+ * Which browser sign-ins this deployment can finish. The client id is public and the secret is a
+ * Worker secret, and a provider with only one of them answers 503 at `/start`, so the pair decides.
+ */
+export function requestOAuthProviderStatus(): { google: boolean; github: boolean } {
+  const bindings = requireWorkerBindings(env);
+  return {
+    google: hasClientPair(bindings.GOOGLE_OAUTH_CLIENT_ID, bindings.GOOGLE_OAUTH_CLIENT_SECRET),
+    github: hasClientPair(bindings.GITHUB_OAUTH_CLIENT_ID, bindings.GITHUB_OAUTH_CLIENT_SECRET),
+  };
+}
+
+function hasClientPair(clientId: string | undefined, clientSecret: string | undefined): boolean {
+  return Boolean(clientId?.trim() && clientSecret?.trim());
 }
 
 /**
@@ -338,8 +391,8 @@ export function verifyRemoteServiceRequest(request: Request, body: string) {
   return verifyRemoteServiceSignature(
     secret,
     body,
-    request.headers.get("OpenBot-Timestamp") ?? "",
-    request.headers.get("OpenBot-Signature") ?? "",
+    request.headers.get("Whilo-Timestamp") ?? "",
+    request.headers.get("Whilo-Signature") ?? "",
   );
 }
 

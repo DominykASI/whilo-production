@@ -46,6 +46,13 @@ const LOCAL_RUNTIME_KEYS = [
   "BOAT_WEBHOOK_SECRET",
   "GITHUB_APP_CLIENT_ID",
   "GITHUB_APP_PRIVATE_KEY",
+  // A local development Google client. Without both, `/v1/auth/oauth/google/start` answers 503 and
+  // the web disc keeps its "not configured" note, which is the same as the deployed default.
+  "GOOGLE_OAUTH_CLIENT_ID",
+  "GOOGLE_OAUTH_CLIENT_SECRET",
+  // The GitHub counterpart of the two above, for `/v1/auth/oauth/github/start`.
+  "GITHUB_OAUTH_CLIENT_ID",
+  "GITHUB_OAUTH_CLIENT_SECRET",
   "APNS_PRIVATE_KEY",
   "APNS_KEY_ID",
   "APNS_TEAM_ID",

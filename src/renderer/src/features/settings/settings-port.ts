@@ -1,4 +1,4 @@
-import type { OpenBotDesktopApi } from "@openbot/contracts/ipc";
+import type { WhiloDesktopApi } from "@whilo/contracts/ipc";
 
 /**
  * What the settings context reaches in main: the app-wide preferences, the switches for updates,
@@ -7,44 +7,44 @@ import type { OpenBotDesktopApi } from "@openbot/contracts/ipc";
  * Notifications tab.
  */
 export interface SettingsPort {
-  getAgentDefaults: OpenBotDesktopApi["getAgentDefaults"];
-  getAgentMemoryLimitPreference: OpenBotDesktopApi["getAgentMemoryLimitPreference"];
-  getAnalyticsPreference: OpenBotDesktopApi["getAnalyticsPreference"];
-  getAppBehaviorPreference: OpenBotDesktopApi["getAppBehaviorPreference"];
-  getApprovalAutomation: OpenBotDesktopApi["getApprovalAutomation"];
-  getBusyMessageModePreference: OpenBotDesktopApi["getBusyMessageModePreference"];
-  getExternalLinkPreference: OpenBotDesktopApi["getExternalLinkPreference"];
-  listExternalLinkBrowsers: OpenBotDesktopApi["listExternalLinkBrowsers"];
-  chooseExternalLinkApp: OpenBotDesktopApi["chooseExternalLinkApp"];
-  onExternalLinkFallback: OpenBotDesktopApi["onExternalLinkFallback"];
-  getRemoteNetworkRoute: OpenBotDesktopApi["getRemoteNetworkRoute"];
-  getRemoteSessionReusePreference: OpenBotDesktopApi["getRemoteSessionReusePreference"];
-  onAgentMemoryLimitPreference: OpenBotDesktopApi["onAgentMemoryLimitPreference"];
-  onAnalyticsPreference: OpenBotDesktopApi["onAnalyticsPreference"];
-  onApprovalAutomation: OpenBotDesktopApi["onApprovalAutomation"];
-  onOpenSettings: OpenBotDesktopApi["onOpenSettings"];
-  onOpenUpdateSettings: OpenBotDesktopApi["onOpenUpdateSettings"];
-  setAgentDefaults: OpenBotDesktopApi["setAgentDefaults"];
-  setAnalyticsPreference: OpenBotDesktopApi["setAnalyticsPreference"];
-  setAppBehaviorPreference: OpenBotDesktopApi["setAppBehaviorPreference"];
-  setBusyMessageModePreference: OpenBotDesktopApi["setBusyMessageModePreference"];
-  setExternalLinkPreference: OpenBotDesktopApi["setExternalLinkPreference"];
-  setRemoteNetworkRoute: OpenBotDesktopApi["setRemoteNetworkRoute"];
-  setRemoteSessionReusePreference: OpenBotDesktopApi["setRemoteSessionReusePreference"];
+  getAgentDefaults: WhiloDesktopApi["getAgentDefaults"];
+  getAgentMemoryLimitPreference: WhiloDesktopApi["getAgentMemoryLimitPreference"];
+  getAnalyticsPreference: WhiloDesktopApi["getAnalyticsPreference"];
+  getAppBehaviorPreference: WhiloDesktopApi["getAppBehaviorPreference"];
+  getApprovalAutomation: WhiloDesktopApi["getApprovalAutomation"];
+  getBusyMessageModePreference: WhiloDesktopApi["getBusyMessageModePreference"];
+  getExternalLinkPreference: WhiloDesktopApi["getExternalLinkPreference"];
+  listExternalLinkBrowsers: WhiloDesktopApi["listExternalLinkBrowsers"];
+  chooseExternalLinkApp: WhiloDesktopApi["chooseExternalLinkApp"];
+  onExternalLinkFallback: WhiloDesktopApi["onExternalLinkFallback"];
+  getRemoteNetworkRoute: WhiloDesktopApi["getRemoteNetworkRoute"];
+  getRemoteSessionReusePreference: WhiloDesktopApi["getRemoteSessionReusePreference"];
+  onAgentMemoryLimitPreference: WhiloDesktopApi["onAgentMemoryLimitPreference"];
+  onAnalyticsPreference: WhiloDesktopApi["onAnalyticsPreference"];
+  onApprovalAutomation: WhiloDesktopApi["onApprovalAutomation"];
+  onOpenSettings: WhiloDesktopApi["onOpenSettings"];
+  onOpenUpdateSettings: WhiloDesktopApi["onOpenUpdateSettings"];
+  setAgentDefaults: WhiloDesktopApi["setAgentDefaults"];
+  setAnalyticsPreference: WhiloDesktopApi["setAnalyticsPreference"];
+  setAppBehaviorPreference: WhiloDesktopApi["setAppBehaviorPreference"];
+  setBusyMessageModePreference: WhiloDesktopApi["setBusyMessageModePreference"];
+  setExternalLinkPreference: WhiloDesktopApi["setExternalLinkPreference"];
+  setRemoteNetworkRoute: WhiloDesktopApi["setRemoteNetworkRoute"];
+  setRemoteSessionReusePreference: WhiloDesktopApi["setRemoteSessionReusePreference"];
   agent: Pick<
-    OpenBotDesktopApi["agent"],
+    WhiloDesktopApi["agent"],
     "listAgents" | "updateAgent" | "listAgentNotificationLevels" | "setAgentNotificationLevel" | "onScopedEvent"
   >;
-  backgroundProcesses: OpenBotDesktopApi["backgroundProcesses"];
+  backgroundProcesses: WhiloDesktopApi["backgroundProcesses"];
   dynamicIsland: Pick<
-    OpenBotDesktopApi["dynamicIsland"],
+    WhiloDesktopApi["dynamicIsland"],
     "getBuiltInDisplayGeometry" | "getPreference" | "setPreference"
   >;
-  notifications: Pick<OpenBotDesktopApi["notifications"], "getPreference" | "openSettings" | "setPreference" | "test">;
-  update: Pick<OpenBotDesktopApi["update"], "getPreference" | "onPreference" | "setPreference">;
+  notifications: Pick<WhiloDesktopApi["notifications"], "getPreference" | "openSettings" | "setPreference" | "test">;
+  update: Pick<WhiloDesktopApi["update"], "getPreference" | "onPreference" | "setPreference">;
 }
 
-/** Read on each call: tests and stories replace `window.openbot` per case. */
+/** Read on each call: tests and stories replace `window.whilo` per case. */
 export function settingsPort(): SettingsPort {
-  return window.openbot;
+  return window.whilo;
 }

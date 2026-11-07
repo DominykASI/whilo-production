@@ -1,8 +1,8 @@
 // The instruction file at the root of an agent's workspace on this computer. The desktop page and the
 // `agent-instructions-v1` host route use it, so a remote admin reads and saves the same file.
 
-import type { AgentInstructionsFile, SaveAgentInstructionsInput } from "@openbot/contracts/ipc";
-import { sourceText } from "@openbot/i18n/source";
+import type { AgentInstructionsFile, SaveAgentInstructionsInput } from "@whilo/contracts/ipc";
+import { sourceText } from "@whilo/i18n/source";
 import { Effect, Result } from "effect";
 import {
   type AgentInstructionsFileFailed,

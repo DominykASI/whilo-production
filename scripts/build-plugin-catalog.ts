@@ -10,11 +10,11 @@ import {
   mcpConfigErrors,
   normalizeMcpConfig,
   type SkillCategory,
-} from "@openbot/contracts/ipc";
-import { type DynamicRecord, isDynamicRecord, isOneOf, isString } from "@openbot/contracts/runtime-values";
-import { createOpenBotLogger, toLogValue } from "@openbot/logging";
+} from "@whilo/contracts/ipc";
+import { type DynamicRecord, isDynamicRecord, isOneOf, isString } from "@whilo/contracts/runtime-values";
+import { createWhiloLogger, toLogValue } from "@whilo/logging";
 
-const logger = createOpenBotLogger("build-plugin-catalog");
+const logger = createWhiloLogger("build-plugin-catalog");
 
 const scriptRoot = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(scriptRoot, "..");
@@ -361,7 +361,7 @@ function parseFlow(slug: string, value: unknown, transport: unknown): PluginAuth
     throw new Error(`Plugin ${slug} has an invalid auth flow.`);
   }
   if (value.kind === "link") {
-    // OpenBot holds the OAuth client itself and adds the header at hand-off, which it can only do
+    // Whilo holds the OAuth client itself and adds the header at hand-off, which it can only do
     // for an http server. A stdio listing asking for a sign-in would be asking for a bridge program.
     if (transport !== "http") throw new Error(`Plugin ${slug} sign-in needs an http server.`);
     return { id: value.id, kind: "link", label: value.label };
@@ -629,8 +629,8 @@ function renderRendererModule(plugins: PluginDetail[]): string {
  * bun run marketplace:build:plugins -- --check to verify.
  */
 
-import type { McpServerConfig } from "@openbot/contracts/ipc";
-import type { MarketplacePluginApp, MarketplacePluginDetail } from "@openbot/ui/features/settings/marketplace-plugins";
+import type { McpServerConfig } from "@whilo/contracts/ipc";
+import type { MarketplacePluginApp, MarketplacePluginDetail } from "@whilo/ui/features/settings/marketplace-plugins";
 
 /**
  * The configuration an app installs as. The catalog states the name and how the server is reached -
@@ -669,7 +669,7 @@ export const MARKETPLACE_PLUGINS: MarketplacePluginDetail[] = [
 }
 
 /**
- * The phone's copy. Mobile cannot import the renderer's types from `@openbot/ui`, so the module states
+ * The phone's copy. Mobile cannot import the renderer's types from `@whilo/ui`, so the module states
  * its own. The vendor icon addresses are left out: the phone loads each icon from the account
  * service's `/plugins/icon/<slug>?app=<id>`, so opening the Marketplace sends no request to a vendor.
  * The Apple apps a server drives are left out too: only the Mac that runs the server can ask for them.
@@ -690,7 +690,7 @@ function renderMobileModule(plugins: PluginDetail[]): string {
  * bun run marketplace:build:plugins -- --check to verify.
  */
 
-import type { SkillCategory } from "@openbot/contracts/ipc";
+import type { SkillCategory } from "@whilo/contracts/ipc";
 
 /** One credential the user types. It goes into a \`header\` (http) or an \`env\` value (stdio). */
 export interface MobilePluginAuthField {

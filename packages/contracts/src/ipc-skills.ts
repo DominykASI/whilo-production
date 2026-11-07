@@ -40,7 +40,7 @@ export interface MarketplaceSkillSummary {
   version: number;
   installs: number;
   featured: boolean;
-  /** OpenBot checked the skill beyond the listing review. Absent from a Worker that has no such flag. */
+  /** Whilo checked the skill beyond the listing review. Absent from a Worker that has no such flag. */
   verified?: boolean;
   iconUrl: string | null;
   updatedAt: string;
@@ -109,7 +109,7 @@ export interface SubmitSkillInput {
 
 /**
  * `workspace` is a skill folder in `.agents/skills`, `.claude/skills` or `.opencode/skills` of the
- * agent workspace that OpenBot did not install. OpenBot lists it read-only and never writes to it.
+ * agent workspace that Whilo did not install. Whilo lists it read-only and never writes to it.
  */
 export const INSTALLED_SKILL_ORIGINS = ["marketplace", "managed", "local", "workspace"] as const;
 
@@ -162,14 +162,14 @@ export interface InstalledSkill {
  * apply the same rules, so the count and the cap of one agent are the same in both.
  */
 
-/** A skill that OpenBot puts on the agent. The user does not remove it. */
+/** A skill that Whilo puts on the agent. The user does not remove it. */
 export function isBuiltInSkill(skill: InstalledSkill): boolean {
   return (
-    skill.origin === "managed" || skill.slug === "openbot-site-hosting" || skill.skillId === "openbot-site-hosting"
+    skill.origin === "managed" || skill.slug === "whilo-site-hosting" || skill.skillId === "whilo-site-hosting"
   );
 }
 
-/** A skill in a skill folder that OpenBot lists but does not manage. */
+/** A skill in a skill folder that Whilo lists but does not manage. */
 export function isFolderSkill(skill: InstalledSkill): boolean {
   return skill.origin === "workspace";
 }
@@ -178,7 +178,7 @@ export function isSkillEnabled(skill: InstalledSkill): boolean {
   return skill.enabled !== false;
 }
 
-/** A skill that OpenBot can remove from the agent: not built in, not in a folder, not a home skill. */
+/** A skill that Whilo can remove from the agent: not built in, not in a folder, not a home skill. */
 export function isRemovableSkill(skill: InstalledSkill): boolean {
   return !isBuiltInSkill(skill) && !isFolderSkill(skill) && !isHomeSkillId(skill.skillId);
 }
@@ -193,7 +193,7 @@ export function userAssignedSkills(skills: readonly InstalledSkill[]): Installed
   return skills.filter(isUserAssignedSkill).sort((left, right) => left.name.localeCompare(right.name));
 }
 
-/** A skill in a folder OpenBot did not write is not an assignment, so it does not count toward the cap. */
+/** A skill in a folder Whilo did not write is not an assignment, so it does not count toward the cap. */
 export function assignedSkillCount(skills: readonly InstalledSkill[]): number {
   return skills.filter((skill) => !isBuiltInSkill(skill) && !isFolderSkill(skill)).length;
 }
@@ -222,6 +222,15 @@ export interface SetEnabledSkillInput {
   skillId: string;
   enabled: boolean;
 }
+
+/** Installs the skills of a bundled plugin that ships with the app (`resources/plugins/<pluginId>`). */
+export interface InstallBundledInput {
+  pluginId: string;
+  agentId: string;
+}
+
+/** Removes the plugin's skills that Whilo installed. Folders with no Whilo marker are left alone. */
+export type UninstallBundledInput = InstallBundledInput;
 
 export function isSkillCategory(value: unknown): value is SkillCategory {
   return isOneOf(SKILL_CATEGORIES, value);

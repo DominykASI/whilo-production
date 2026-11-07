@@ -1,5 +1,5 @@
-import { AccountUpdateIsland } from "@openbot/ui/features/account/AccountUpdateIsland";
-import { useText } from "@openbot/ui/text";
+import { AccountUpdateIsland } from "@whilo/ui/features/account/AccountUpdateIsland";
+import { useText } from "@whilo/ui/text";
 import { createEffect, createSignal } from "solid-js";
 import { useUpdates } from "./updates-context";
 

@@ -1,8 +1,8 @@
-// The hand-off of the OpenBot Slack app's bot token from the account Worker to one desktop host.
+// The hand-off of the Whilo Slack app's bot token from the account Worker to one desktop host.
 //
-// The OpenBot Slack app's client secret lives only on the Worker (`apps/auth-api`), so the Worker
+// The Whilo Slack app's client secret lives only on the Worker (`apps/auth-api`), so the Worker
 // exchanges the OAuth code. It must not keep the token, and the browser that carries the
-// result back to `openbot://` must not be able to read it, so the Worker seals it to the host
+// result back to `whilo://` must not be able to read it, so the Worker seals it to the host
 // (`./host-grant.ts`).
 
 import { createHostGrantKeyPair, type HostGrantKind, openHostGrant, sealHostGrant } from "./host-grant";
@@ -12,9 +12,9 @@ export { isRawP256PublicKey } from "./host-grant";
 
 export const SLACK_WORKSPACE_GRANT_VERSION = 2;
 
-const KIND: HostGrantKind = { version: SLACK_WORKSPACE_GRANT_VERSION, info: "openbot-slack-workspace-grant-v2" };
+const KIND: HostGrantKind = { version: SLACK_WORKSPACE_GRANT_VERSION, info: "whilo-slack-workspace-grant-v2" };
 
-/** What the OpenBot app's OAuth install gives the host: the bot token for one workspace. */
+/** What the Whilo app's OAuth install gives the host: the bot token for one workspace. */
 export interface SlackWorkspaceGrant {
   botToken: string;
   botUserId: string;

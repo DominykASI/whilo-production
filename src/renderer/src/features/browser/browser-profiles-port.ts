@@ -7,7 +7,7 @@ import {
   LOCAL_SERVER_ID,
   type UpdateAgentBrowserProfileInput,
   type UpdateBrowserProfileInput,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 
 /**
  * The browser profiles of one server, and the profile of each of its agents. Desktop reaches them
@@ -30,9 +30,9 @@ export interface BrowserProfileCalls {
   onChanged?(listener: () => void): () => void;
 }
 
-/** The desktop calls for one server. Reads `window.openbot` on each call: stories replace it per case. */
+/** The desktop calls for one server. Reads `window.whilo` on each call: stories replace it per case. */
 export function desktopBrowserProfileCalls(serverId?: string): BrowserProfileCalls {
-  const agent = () => window.openbot.agent;
+  const agent = () => window.whilo.agent;
   const eventServerId = serverId ?? LOCAL_SERVER_ID;
   return {
     list: () => agent().listBrowserProfiles(serverId),

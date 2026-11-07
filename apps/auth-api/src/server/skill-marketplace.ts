@@ -5,8 +5,8 @@ import {
   type MarketplaceSkillSort,
   SKILL_DESCRIPTION_MAX_LENGTH,
   type SkillCategory,
-} from "@openbot/contracts/ipc";
-import { isDynamicRecord, isString } from "@openbot/contracts/runtime-values";
+} from "@whilo/contracts/ipc";
+import { isDynamicRecord, isString } from "@whilo/contracts/runtime-values";
 import { Effect, Result, Schema } from "effect";
 import { unzipSync } from "fflate";
 import { parse as parseYaml } from "yaml";
@@ -20,7 +20,8 @@ import {
   normalizeMarketplaceQuery,
 } from "./marketplace-pagination";
 import { MarketplaceStorage } from "./marketplace-storage";
-import type { AuthUser, WorkerBindings } from "./types";
+import type { MarketplaceBindings } from "./storage-bucket";
+import type { AuthUser } from "./types";
 
 const MAX_ARCHIVE_BYTES = 10 * 1024 * 1024;
 const MAX_FILES = 200;
@@ -78,7 +79,7 @@ interface SkillArchivePreview {
 }
 
 export class SkillMarketplace {
-  constructor(private readonly bindings: Pick<WorkerBindings, "DB" | "SKILLS">) {}
+  constructor(private readonly bindings: MarketplaceBindings) {}
 
   list(input: {
     query?: string | undefined;

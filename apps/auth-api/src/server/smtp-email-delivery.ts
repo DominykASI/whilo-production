@@ -1,6 +1,6 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import { isCanonicalInviteUrl } from "@openbot/contracts/invite-links";
-import { isValidHostname as isSharedValidHostname } from "@openbot/contracts/validation";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import { isCanonicalInviteUrl } from "@whilo/contracts/invite-links";
+import { isValidHostname as isSharedValidHostname } from "@whilo/contracts/validation";
 import { Effect, Fiber, Result, Schema } from "effect";
 import {
   type ContactMessageEmailInput,
@@ -357,7 +357,7 @@ const runSmtpSession = Effect.fn("SmtpEmail.session")(function* (
     );
 
   yield* expect([220], "greeting");
-  yield* writeCommand(writer, "EHLO openbot.run");
+  yield* writeCommand(writer, "EHLO onerall.com");
   const extensions = yield* expect([250], "ehlo");
   if (extensions.some((line) => /^AUTH\b.*\bPLAIN\b/iu.test(line))) {
     yield* writeCommand(writer, `AUTH PLAIN ${encodeBase64(`\0${config.username}\0${config.password}`)}`);
@@ -443,15 +443,15 @@ class SmtpResponseReader {
 // the relay supports. `Auto-Submitted` (RFC 3834) and `X-Auto-Response-Suppress` (Exchange and
 // Outlook) stop vacation and out-of-office replies to the sending mailbox.
 function createMimeMessage(from: string, message: PreparedEmailMessage): string {
-  const boundary = `openbot-${crypto.randomUUID()}`;
+  const boundary = `whilo-${crypto.randomUUID()}`;
   return dotStuff(
     [
-      `From: OpenBot <${from}>`,
+      `From: Whilo <${from}>`,
       `To: <${message.email}>`,
       ...(message.replyTo ? [`Reply-To: <${message.replyTo}>`] : []),
       `Subject: ${encodeHeaderValue(message.content.subject)}`,
       `Date: ${new Date().toUTCString()}`,
-      `Message-ID: <${crypto.randomUUID()}@openbot.run>`,
+      `Message-ID: <${crypto.randomUUID()}@onerall.com>`,
       "Auto-Submitted: auto-generated",
       "X-Auto-Response-Suppress: All",
       "MIME-Version: 1.0",
@@ -538,7 +538,7 @@ const writeCommand = Effect.fn("SmtpEmail.writeCommand")(
 function validateConfig(config: SmtpEmailConfig): void {
   if (!isValidHostname(config.host)) throw new Error("smtp_invalid_host");
   if (config.port !== 465) throw new Error("smtp_port_must_be_465");
-  validateEmail(config.username, "username");
+  if (!config.username || hasHeaderBreak(config.username)) throw new Error("smtp_invalid_username");
   validateEmail(config.from, "sender");
   if (!config.password || hasHeaderBreak(config.password)) throw new Error("smtp_invalid_password");
 }

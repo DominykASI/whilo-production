@@ -5,9 +5,9 @@
 import {
   WORKFLOWS_GITHUB_CAPABILITY,
   WORKFLOWS_GITHUB_ROUTES,
-} from "@openbot/contracts/team-protocol/workflows-github-v1";
-import { WORKFLOWS_CAPABILITY, WORKFLOWS_ROUTES } from "@openbot/contracts/team-protocol/workflows-v1";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/team-protocol/workflows-github-v1";
+import { WORKFLOWS_CAPABILITY, WORKFLOWS_ROUTES } from "@whilo/contracts/team-protocol/workflows-v1";
+import { sourceText } from "@whilo/i18n/source";
 import {
   decodeRemoteWorkflowDetail,
   decodeRemoteWorkflowGitHubCatalog,
@@ -22,7 +22,7 @@ import {
   decodeRemoteWorkflowSummary,
   decodeRemoteWorkflowVersionGraph,
   decodeRemoteWorkflowVersions,
-} from "@openbot/team-client/workflow-decoding";
+} from "@whilo/team-client/workflow-decoding";
 import type { Effect } from "effect";
 import { runCauseEffect } from "../../backend/effect-boundary";
 import type { WorkflowsHandle } from "../../backend/workflows/workflows";

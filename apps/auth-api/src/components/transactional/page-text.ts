@@ -1,5 +1,5 @@
-import type { WebMessagingInstallPlatform } from "@openbot/contracts/web-messaging-install";
-import type { AppTranslate } from "@openbot/i18n";
+import type { WebMessagingInstallPlatform } from "@whilo/contracts/web-messaging-install";
+import type { AppTranslate } from "@whilo/i18n";
 import { DOWNLOAD_PLATFORMS, type DownloadPlatform } from "../../lib/download-platforms";
 import type { FailureKind } from "./MessagingConnectPage";
 
@@ -115,6 +115,12 @@ export function billingReturnText(t: AppTranslate) {
     updatedBody: t("sitePage.billing.updatedBody"),
     cancelledTitle: t("sitePage.billing.cancelledTitle"),
     cancelledBody: t("sitePage.billing.cancelledBody"),
+    /** While the Stripe webhook has not confirmed the payment yet. The page never claims success before that. */
+    pendingTitle: t("sitePage.billing.pendingTitle"),
+    pendingBody: t("sitePage.billing.pendingBody"),
+    /** While the deployment has no Stripe key, so no confirmation can arrive. */
+    unavailableTitle: t("sitePage.billing.unavailableTitle"),
+    unavailableBody: t("sitePage.billing.unavailableBody"),
   };
 }
 

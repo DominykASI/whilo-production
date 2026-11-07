@@ -1,30 +1,28 @@
-import { type AvatarMimeType, isValidAvatarImage } from "@openbot/contracts/avatar-images";
-import { AVATAR_IMAGE_LIMITS } from "@openbot/contracts/input-limits";
-import { OPENBOT_CONTROL_PLANE_ORIGIN } from "@openbot/contracts/invite-links";
-import type { CentralAuthUser } from "@openbot/contracts/ipc";
+import { type AvatarMimeType, isValidAvatarImage } from "@whilo/contracts/avatar-images";
+import { AVATAR_IMAGE_LIMITS } from "@whilo/contracts/input-limits";
+import { WHILO_CONTROL_PLANE_ORIGIN } from "@whilo/contracts/invite-links";
+import type { CentralAuthUser } from "@whilo/contracts/ipc";
 import {
   isMobileConnectDevelopmentHost,
   isMobileConnectHostBinding,
   type MobileConnectHostBinding,
   parseMobileConnectUrl,
   validateMobileConnectHostBinding,
-} from "@openbot/contracts/mobile-connect";
-import { type DynamicRecord, isBoolean, isDynamicRecord, isString } from "@openbot/contracts/runtime-values";
-import { normalizeEmailAddress, normalizeOneTimeCode, validateProfileName } from "@openbot/contracts/validation";
-import type { MobileTextKey } from "@openbot/i18n/mobile";
-import * as Crypto from "expo-crypto";
-import * as Device from "expo-device";
-import * as SecureStore from "expo-secure-store";
+} from "@whilo/contracts/mobile-connect";
+import { type DynamicRecord, isBoolean, isDynamicRecord, isString } from "@whilo/contracts/runtime-values";
+import { normalizeEmailAddress, normalizeOneTimeCode, validateProfileName } from "@whilo/contracts/validation";
+import type { MobileTextKey } from "@whilo/i18n/mobile";
 import { z } from "zod";
 import { isAndroid, isIOS } from "@/shared/lib/platform";
 import { currentText } from "@/shared/lib/text";
 import * as LockedKeychain from "../../../shared/lib/locked-keychain";
 // Relative: the Node test project resolves no `@/` path that the test does not mock.
 import { fetch } from "../../support/model/logged-fetch";
+import { emailSendHeaders } from "./email-send-headers";
+import { readMobileDevice } from "./mobile-device";
 
-const MOBILE_SESSION_KEY = "openbot.mobile.session.v1";
-const MOBILE_REVOCATIONS_KEY = "openbot.mobile.pending-revocations.v1";
-const MOBILE_DEVICE_ID_KEY = "openbot.mobile.device-id.v1";
+const MOBILE_SESSION_KEY = "whilo.mobile.session.v1";
+const MOBILE_REVOCATIONS_KEY = "whilo.mobile.pending-revocations.v1";
 const MOBILE_AUTH_REQUEST_TIMEOUT_MS = 10_000;
 // The account server can try to send a code for up to 25 s. Desktop waits 35 s too.
 const MOBILE_EMAIL_CODE_REQUEST_TIMEOUT_MS = 35_000;
@@ -118,8 +116,44 @@ async function redeemMobileConnectSession(value: string): Promise<MobileSession>
 
 /** The account service for email sign-in. A development build can name a local one. */
 function mobileAccountApiUrl(): string {
-  const override = process.env.EXPO_PUBLIC_OPENBOT_API_URL;
-  return (override && __DEV__ && normalizeAccountApiUrl(override)) || OPENBOT_CONTROL_PLANE_ORIGIN;
+  const override = process.env.EXPO_PUBLIC_WHILO_API_URL;
+  return (override && __DEV__ && normalizeAccountApiUrl(override)) || WHILO_CONTROL_PLANE_ORIGIN;
+}
+
+/** The browser sign-ins that the sign-in screen can offer. */
+export type OAuthProvider = "google" | "github";
+
+export interface OAuthProviderStatus {
+  google: boolean;
+  github: boolean;
+}
+
+/**
+ * Which provider sign-ins this account service can finish. Null when the service cannot answer: the
+ * discs then stay disabled instead of sending the person to a page that ends nowhere.
+ */
+export async function readOAuthProviderStatus(): Promise<OAuthProviderStatus | null> {
+  try {
+    return await withMobileAuthRequestTimeout(async (signal) => {
+      const response = await fetch(new URL("/v1/auth/oauth/status", mobileAccountApiUrl()).toString(), {
+        headers: { Accept: "application/json" },
+        signal,
+      });
+      const body = await readResponseBody(response, signal);
+      if (!response.ok || !body) return null;
+      return { google: body.google === true, github: body.github === true };
+    });
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The address that the browser opens to start a provider sign-in. The account service answers it
+ * with a redirect to the provider, and the session comes back to the web app in the URL fragment.
+ */
+export function oauthSignInUrl(provider: OAuthProvider): string {
+  return new URL(`/v1/auth/oauth/${provider}/start`, mobileAccountApiUrl()).toString();
 }
 
 export interface MobileEmailChallenge {
@@ -149,7 +183,7 @@ export async function startMobileEmailSignIn(email: string, requestId: string): 
   const { response, body } = await mobileEmailRequest(
     "/v1/auth/email/start",
     { email: address },
-    { "Idempotency-Key": requestId },
+    emailSendHeaders(requestId),
     MOBILE_EMAIL_CODE_REQUEST_TIMEOUT_MS,
   );
   if (!response.ok) throw mobileEmailError(response, body, "mobile.auth.email.error.sendFailed");
@@ -689,19 +723,17 @@ function serializeMobileSessionStorage<T>(operation: () => Promise<T>): Promise<
   return result;
 }
 
+/**
+ * This device as the account service lists it. The ID and the platform's own name come from
+ * `mobile-device.ts`, which has a browser answer: the web build has no Keychain and no `expo-device`.
+ */
 async function mobileDeviceIdentity(): Promise<{
   id: string;
   name: string;
   platform: "ios" | "android" | "unknown";
 }> {
-  let id = await SecureStore.getItemAsync(MOBILE_DEVICE_ID_KEY);
-  if (!id) {
-    id = Crypto.randomUUID();
-    await SecureStore.setItemAsync(MOBILE_DEVICE_ID_KEY, id, {
-      keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
-    });
-  }
-  const rawName = Device.deviceName?.trim() || Device.modelName?.trim() || "Mobile device";
+  const { id, name: deviceName } = await readMobileDevice();
+  const rawName = deviceName?.trim() || "Mobile device";
   const name = rawName.normalize("NFC").replace(/\p{C}/gu, "").replace(/\s+/gu, " ").slice(0, 80).trim();
   const platform = isIOS ? "ios" : isAndroid ? "android" : "unknown";
   return { id, name: name || "Mobile device", platform };
@@ -744,8 +776,8 @@ function decodeStoredMobileCredential(value: unknown): MobileCredential {
 /** The Mobile Connect rule for an account service origin: HTTPS, or HTTP on a private network. */
 function normalizeAccountApiUrl(value: string): string | null {
   return (
-    parseMobileConnectUrl(`openbot://mobile-connect?api=${encodeURIComponent(value)}&ticket=${"x".repeat(32)}`)
-      ?.apiUrl ?? null
+    parseMobileConnectUrl(`whilo://mobile-connect?api=${encodeURIComponent(value)}&ticket=${"x".repeat(32)}`)?.apiUrl ??
+    null
   );
 }
 

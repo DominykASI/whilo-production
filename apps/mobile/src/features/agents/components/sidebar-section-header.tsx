@@ -1,4 +1,4 @@
-import { type SidebarLayoutAction, sidebarFolderParents } from "@openbot/contracts/ipc";
+import { type SidebarLayoutAction, sidebarFolderParents } from "@whilo/contracts/ipc";
 import { router } from "expo-router";
 import { Typography } from "heroui-native";
 import { useThemeColor } from "heroui-native/hooks";

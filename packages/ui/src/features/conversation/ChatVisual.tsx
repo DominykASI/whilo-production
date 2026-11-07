@@ -10,9 +10,9 @@ import {
   chatVisualReplyMessage,
   chatVisualThemeMessage,
   parseChatVisualMessage,
-} from "@openbot/contracts/chat-visual";
-import type { AttachmentSummary } from "@openbot/contracts/ipc";
-import { Button, Maximize2 } from "@openbot/ui";
+} from "@whilo/contracts/chat-visual";
+import type { AttachmentSummary } from "@whilo/contracts/ipc";
+import { Button, Maximize2 } from "@whilo/ui";
 import { createEffect, createSignal, onSettled, Show, untrack } from "solid-js";
 import { documentColorScheme } from "../../document-color-scheme";
 import { useText } from "../../text";
@@ -22,25 +22,25 @@ import { safeBrowserUrl } from "./RichMessageText";
 
 /** The page variables and the app tokens that give their values. */
 const THEME_TOKENS: ReadonlyArray<readonly [`--${string}`, string]> = [
-  ["--foreground", "--openbot-text-primary"],
-  ["--muted-foreground", "--openbot-text-muted"],
-  ["--muted", "--openbot-bg-surface"],
-  ["--card", "--openbot-bg-surface"],
-  ["--card-foreground", "--openbot-text-primary"],
-  ["--border", "--openbot-border-strong"],
-  ["--accent", "--openbot-accent-text"],
-  ["--destructive", "--openbot-danger-text"],
-  ["--success", "--openbot-success-text"],
+  ["--foreground", "--whilo-text-primary"],
+  ["--muted-foreground", "--whilo-text-muted"],
+  ["--muted", "--whilo-bg-surface"],
+  ["--card", "--whilo-bg-surface"],
+  ["--card-foreground", "--whilo-text-primary"],
+  ["--border", "--whilo-border-strong"],
+  ["--accent", "--whilo-accent-text"],
+  ["--destructive", "--whilo-danger-text"],
+  ["--success", "--whilo-success-text"],
   // The storage hues were checked together for colour-vision separation; the two series hues follow.
-  ["--chart-1", "--openbot-chart-storage-workspaces"],
-  ["--chart-2", "--openbot-chart-storage-files"],
-  ["--chart-3", "--openbot-chart-storage-chats"],
-  ["--chart-4", "--openbot-chart-storage-downloads"],
-  ["--chart-5", "--openbot-chart-series-codex"],
-  ["--chart-6", "--openbot-chart-series-grok"],
-  ["--radius", "--openbot-radius-lg"],
-  ["--font-sans", "--openbot-font-sans"],
-  ["--font-mono", "--openbot-font-mono"],
+  ["--chart-1", "--whilo-chart-storage-workspaces"],
+  ["--chart-2", "--whilo-chart-storage-files"],
+  ["--chart-3", "--whilo-chart-storage-chats"],
+  ["--chart-4", "--whilo-chart-storage-downloads"],
+  ["--chart-5", "--whilo-chart-series-codex"],
+  ["--chart-6", "--whilo-chart-series-grok"],
+  ["--radius", "--whilo-radius-lg"],
+  ["--font-sans", "--whilo-font-sans"],
+  ["--font-mono", "--whilo-font-mono"],
 ];
 
 /** The theme at the place of an element. The page shows the chat through its transparent canvas. */

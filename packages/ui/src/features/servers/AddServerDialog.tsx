@@ -3,8 +3,8 @@ import {
   LICENSE_MAX_USERS,
   type LicenseOrder,
   licenseOrderFor,
-} from "@openbot/contracts/license";
-import type { AppTextKey } from "@openbot/i18n";
+} from "@whilo/contracts/license";
+import type { AppTextKey } from "@whilo/i18n";
 import {
   Alert,
   AlertActions,
@@ -27,9 +27,9 @@ import {
   Text,
   TriangleAlert,
   X,
-} from "@openbot/ui";
-import { motionDuration, prefersReducedMotion } from "@openbot/ui/utils";
-import type { UserErrorDetails } from "@openbot/user-errors";
+} from "@whilo/ui";
+import { motionDuration, prefersReducedMotion } from "@whilo/ui/utils";
+import type { UserErrorDetails } from "@whilo/user-errors";
 import { createEffect, createSignal, For, Match, onCleanup, onSettled, Show, Switch, untrack } from "solid-js";
 import { useText } from "../../text";
 import {

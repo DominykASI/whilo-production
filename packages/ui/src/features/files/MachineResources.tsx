@@ -9,8 +9,8 @@ import {
   machineAlertLevel,
   machineMetricRatio,
   type TeamMemberSummary,
-} from "@openbot/contracts/ipc";
-import type { AppTextKey } from "@openbot/i18n";
+} from "@whilo/contracts/ipc";
+import type { AppTextKey } from "@whilo/i18n";
 import {
   Cpu,
   HardDrive,
@@ -23,8 +23,8 @@ import {
   SelectValue,
   SliderField,
   TriangleAlert,
-} from "@openbot/ui";
-import { useText } from "@openbot/ui/text";
+} from "@whilo/ui";
+import { useText } from "@whilo/ui/text";
 import type { JSX } from "@solidjs/web";
 import { createMemo, createSignal, createUniqueId, For, Show } from "solid-js";
 

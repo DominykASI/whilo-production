@@ -4,8 +4,8 @@ import {
   type SidebarPin,
   type SidebarPinsSnapshot,
   sidebarPinKey,
-} from "@openbot/contracts/ipc";
-import { isDynamicRecord, isString } from "@openbot/contracts/runtime-values";
+} from "@whilo/contracts/ipc";
+import { isDynamicRecord, isString } from "@whilo/contracts/runtime-values";
 import { Effect, Result, Semaphore } from "effect";
 import { isMissingFileError } from "../backend/file-errors";
 import { type PreferenceFileFailure, readPreferenceFile, writePreferenceFile } from "./preference-file";

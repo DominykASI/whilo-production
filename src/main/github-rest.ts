@@ -1,4 +1,4 @@
-// The GitHub REST calls of workflows: the changes of GitHub outputs, made as the OpenBot GitHub App's
+// The GitHub REST calls of workflows: the changes of GitHub outputs, made as the Whilo GitHub App's
 // bot, the labels and people that an output can choose, and the newest events of a repository for
 // "Run with last event". The backend keeps the rules; this adapter keeps the tokens and the HTTP.
 
@@ -8,11 +8,11 @@ import type {
   WorkflowGitHubEvent,
   WorkflowGitHubLabel,
   WorkflowGitHubRepositoryOptions,
-} from "@openbot/contracts/ipc";
-import { WORKFLOW_GITHUB_OPTION_LIMIT } from "@openbot/contracts/ipc";
-import { type DynamicRecord, isDynamicRecord } from "@openbot/contracts/runtime-values";
-import { sourceText } from "@openbot/i18n/source";
-import { redactText } from "@openbot/logging";
+} from "@whilo/contracts/ipc";
+import { WORKFLOW_GITHUB_OPTION_LIMIT } from "@whilo/contracts/ipc";
+import { type DynamicRecord, isDynamicRecord } from "@whilo/contracts/runtime-values";
+import { sourceText } from "@whilo/i18n/source";
+import { redactText } from "@whilo/logging";
 import { Effect } from "effect";
 import { z } from "zod";
 import type {
@@ -111,7 +111,7 @@ export function createGitHubRest(options: GitHubRestOptions): WorkflowGitHubApi 
         headers: {
           Accept: "application/vnd.github+json",
           Authorization: `Bearer ${token}`,
-          "User-Agent": "OpenBot",
+          "User-Agent": "Whilo",
           "X-GitHub-Api-Version": "2022-11-28",
           ...(body ? { "Content-Type": "application/json" } : {}),
         },

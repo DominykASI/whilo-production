@@ -1,6 +1,6 @@
-import { AppLogo } from "@openbot/brand";
-import { AGENT_TEMPLATE_CARD, type AgentTemplatePreview } from "@openbot/contracts/ipc";
-import { avatarHeadColor, createStaticAvatarSvg } from "@openbot/ui/bloub-avatar";
+import { AppLogo } from "@whilo/brand";
+import { AGENT_TEMPLATE_CARD, type AgentTemplatePreview } from "@whilo/contracts/ipc";
+import { avatarHeadColor, createStaticAvatarSvg } from "@whilo/ui/bloub-avatar";
 import { render } from "@solidjs/web";
 import { flush } from "solid-js";
 import { loadImage, loadSvg, withAlpha } from "../../avatar-canvas";
@@ -12,8 +12,8 @@ import { loadImage, loadSvg, withAlpha } from "../../avatar-canvas";
  * or the photo the owner uploaded. The Worker only checks its size and stores it.
  *
  * Layout, on the app's dark canvas: a hero square on the left in the avatar's own colour with the
- * avatar in it, and on the right the OpenBot mark, the name, the role, the instructions, and the
- * "Add to OpenBot" pill the page carries.
+ * avatar in it, and on the right the Whilo mark, the name, the role, the instructions, and the
+ * "Add to Whilo" pill the page carries.
  */
 
 const { width: WIDTH, height: HEIGHT } = AGENT_TEMPLATE_CARD;
@@ -60,12 +60,12 @@ function themeColors(): ThemeColors {
     return value;
   };
   return {
-    canvas: token("--openbot-bg-native-canvas"),
-    primary: token("--openbot-text-primary"),
-    secondary: token("--openbot-text-secondary"),
-    muted: token("--openbot-text-muted"),
-    logo: token("--openbot-logo-production"),
-    logoEye: token("--openbot-logo-production-eye"),
+    canvas: token("--whilo-bg-native-canvas"),
+    primary: token("--whilo-text-primary"),
+    secondary: token("--whilo-text-secondary"),
+    muted: token("--whilo-text-muted"),
+    logo: token("--whilo-logo-production"),
+    logoEye: token("--whilo-logo-production-eye"),
   };
 }
 
@@ -128,7 +128,7 @@ async function drawColumn(
   await drawLogo(context, x, 92, 44, colors);
   context.fillStyle = colors.primary;
   context.font = `600 28px ${FONT}`;
-  context.fillText("OpenBot", x + 58, 124);
+  context.fillText("Whilo", x + 58, 124);
 
   // `y` is always the baseline of the last line drawn.
   let y = 154;
@@ -157,7 +157,7 @@ async function drawColumn(
     y += lineHeight;
   }
 
-  const label = "Add to OpenBot";
+  const label = "Add to Whilo";
   context.font = `600 24px ${FONT}`;
   const pillWidth = context.measureText(label).width + 64;
   context.fillStyle = colors.primary;
@@ -171,7 +171,7 @@ async function drawColumn(
   context.fillText("openbot.run", x + pillWidth + 24, pillTop + 38);
 }
 
-/** The app mark from `@openbot/brand`, with its CSS colours written onto the shapes. */
+/** The app mark from `@whilo/brand`, with its CSS colours written onto the shapes. */
 export async function drawLogo(
   context: CanvasRenderingContext2D,
   x: number,

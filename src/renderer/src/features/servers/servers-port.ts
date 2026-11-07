@@ -1,4 +1,4 @@
-import type { OpenBotDesktopApi, ServerSummary } from "@openbot/contracts/ipc";
+import type { WhiloDesktopApi, ServerSummary } from "@whilo/contracts/ipc";
 
 /**
  * What the servers domain reaches in main: the server list and selection, the account changes, the local host, the
@@ -7,7 +7,7 @@ import type { OpenBotDesktopApi, ServerSummary } from "@openbot/contracts/ipc";
  */
 export interface ServersPort {
   agent: Pick<
-    OpenBotDesktopApi["agent"],
+    WhiloDesktopApi["agent"],
     | "getStatus"
     | "listAgents"
     | "listConversationReads"
@@ -30,17 +30,17 @@ export interface ServersPort {
     | "saveMcpSignInApp"
     | "removeMcpSignInApp"
   >;
-  events: OpenBotDesktopApi["events"];
-  auth: Pick<OpenBotDesktopApi["auth"], "onEvent">;
-  browser: Pick<OpenBotDesktopApi["browser"], "setVisible">;
+  events: WhiloDesktopApi["events"];
+  auth: Pick<WhiloDesktopApi["auth"], "onEvent">;
+  browser: Pick<WhiloDesktopApi["browser"], "setVisible">;
   hostAdmin: Pick<
-    OpenBotDesktopApi["hostAdmin"],
+    WhiloDesktopApi["hostAdmin"],
     "cancelUpdate" | "getUpdateStatus" | "startUpdate" | "updateIdentity"
   >;
-  hostedServers: Pick<OpenBotDesktopApi["hostedServers"], "list" | "restart" | "wake">;
-  localServers: OpenBotDesktopApi["localServers"];
+  hostedServers: Pick<WhiloDesktopApi["hostedServers"], "list" | "restart" | "wake">;
+  localServers: WhiloDesktopApi["localServers"];
   host: Pick<
-    OpenBotDesktopApi["host"],
+    WhiloDesktopApi["host"],
     | "configure"
     | "getStatus"
     | "onEvent"
@@ -50,13 +50,13 @@ export interface ServersPort {
     | "stop"
     | "updateIdentity"
   >;
-  notifications: Pick<OpenBotDesktopApi["notifications"], "onOpened">;
+  notifications: Pick<WhiloDesktopApi["notifications"], "onOpened">;
   remoteDesktop: Pick<
-    OpenBotDesktopApi["remoteDesktop"],
+    WhiloDesktopApi["remoteDesktop"],
     "checkSetup" | "connect" | "disconnect" | "list" | "openSetup" | "test"
   >;
   servers: Pick<
-    OpenBotDesktopApi["servers"],
+    WhiloDesktopApi["servers"],
     | "getPresenceFor"
     | "join"
     | "list"
@@ -72,9 +72,9 @@ export interface ServersPort {
   >;
 }
 
-/** Read on each call: tests and stories replace `window.openbot` per case. */
+/** Read on each call: tests and stories replace `window.whilo` per case. */
 export function serversPort(): ServersPort {
-  return window.openbot;
+  return window.whilo;
 }
 
 /**
@@ -82,26 +82,26 @@ export function serversPort(): ServersPort {
  * through `host`; a remote server answers them through `servers`, addressed by its id.
  */
 export type ServerAdminPort = Pick<
-  OpenBotDesktopApi["host"],
+  WhiloDesktopApi["host"],
   "getPresence" | "listMembers" | "listInvites" | "createInvite" | "updateMember" | "removeMember" | "revokeInvite"
 >;
 
 export function serverAdminPort(server: Pick<ServerSummary, "id" | "kind">): ServerAdminPort {
-  if (server.kind === "local") return window.openbot.host;
+  if (server.kind === "local") return window.whilo.host;
   const serverId = server.id;
   return {
-    getPresence: () => window.openbot.servers.getPresenceFor(serverId),
-    listMembers: () => window.openbot.servers.listMembers(serverId),
-    listInvites: () => window.openbot.servers.listInvites(serverId),
-    createInvite: (input) => window.openbot.servers.createInvite(input, serverId),
-    updateMember: (input) => window.openbot.servers.updateMember(input, serverId),
-    removeMember: (memberId) => window.openbot.servers.removeMember(memberId, serverId),
-    revokeInvite: (inviteId) => window.openbot.servers.revokeInvite(inviteId, serverId),
+    getPresence: () => window.whilo.servers.getPresenceFor(serverId),
+    listMembers: () => window.whilo.servers.listMembers(serverId),
+    listInvites: () => window.whilo.servers.listInvites(serverId),
+    createInvite: (input) => window.whilo.servers.createInvite(input, serverId),
+    updateMember: (input) => window.whilo.servers.updateMember(input, serverId),
+    removeMember: (memberId) => window.whilo.servers.removeMember(memberId, serverId),
+    revokeInvite: (inviteId) => window.whilo.servers.revokeInvite(inviteId, serverId),
   };
 }
 
 /** The server main marks active. A test teardown can remove the bridge while a join is pending. */
 export async function activeServerId(): Promise<string> {
-  if (!window.openbot) return "local";
-  return (await window.openbot.servers.list()).find((item) => item.active)?.id ?? "local";
+  if (!window.whilo) return "local";
+  return (await window.whilo.servers.list()).find((item) => item.active)?.id ?? "local";
 }

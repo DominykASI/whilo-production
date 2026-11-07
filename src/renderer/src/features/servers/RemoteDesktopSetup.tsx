@@ -7,8 +7,8 @@ import {
   type RemoteDesktopSetupStatus,
   type RemoteDesktopTestStatus,
   type ServerSummary,
-} from "@openbot/contracts/ipc";
-import type { AppTextKey } from "@openbot/i18n";
+} from "@whilo/contracts/ipc";
+import type { AppTextKey } from "@whilo/i18n";
 import {
   Alert,
   AlertContent,
@@ -22,9 +22,9 @@ import {
   ItemGroup,
   ItemTitle,
   Text,
-} from "@openbot/ui";
-import { RemoteDesktopWorkspace } from "@openbot/ui/features/remote-desktop/RemoteDesktopWorkspace";
-import { useText } from "@openbot/ui/text";
+} from "@whilo/ui";
+import { RemoteDesktopWorkspace } from "@whilo/ui/features/remote-desktop/RemoteDesktopWorkspace";
+import { useText } from "@whilo/ui/text";
 import { createStore, For, onSettled, Show } from "solid-js";
 import { serverSupportsCapability } from "./server-capabilities";
 import { serversPort } from "./servers-port";

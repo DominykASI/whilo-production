@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { isDynamicRecord } from "@openbot/contracts/runtime-values";
-import { currentAnalyticsInstallId, newAnalyticsInstallId } from "@openbot/telemetry";
+import { isDynamicRecord } from "@whilo/contracts/runtime-values";
+import { currentAnalyticsInstallId, newAnalyticsInstallId } from "@whilo/telemetry";
 import { Effect } from "effect";
 import { readPreferenceFile, writePreferenceFile } from "./preference-file";
 

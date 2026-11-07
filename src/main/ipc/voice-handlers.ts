@@ -13,8 +13,8 @@ import type {
   VoiceSettings,
   VoiceStream,
   VoiceTranscriptionResult,
-} from "@openbot/contracts/ipc";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/ipc";
+import { sourceText } from "@whilo/i18n/source";
 import type { AgentService } from "../../backend/agent-service";
 import { runCauseEffect } from "../../backend/effect-boundary";
 import type { VoiceServerService } from "../voice-server-service";

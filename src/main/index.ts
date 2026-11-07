@@ -1,16 +1,16 @@
 import { join, resolve } from "node:path";
-import { parseInviteUrl, selfHostedApiOrigin } from "@openbot/contracts/invite-links";
+import { parseInviteUrl, selfHostedApiOrigin } from "@whilo/contracts/invite-links";
 import {
   type AgentEvent,
   type AppLogoColor,
   type CentralAuthState,
   type HostStatus,
   IPC_ENDPOINTS,
-} from "@openbot/contracts/ipc";
-import { createFormat, resolveLocale, translateFor } from "@openbot/i18n";
-import { localizeSourceText } from "@openbot/i18n/source";
-import { createOpenBotLogger, toLogValue } from "@openbot/logging";
-import { createRemoteDirectoryRefresh } from "@openbot/team-client/remote-directory";
+} from "@whilo/contracts/ipc";
+import { createFormat, resolveLocale, translateFor } from "@whilo/i18n";
+import { localizeSourceText } from "@whilo/i18n/source";
+import { createWhiloLogger, toLogValue } from "@whilo/logging";
+import { createRemoteDirectoryRefresh } from "@whilo/team-client/remote-directory";
 import { Effect, Semaphore } from "effect";
 import {
   app,
@@ -38,12 +38,14 @@ import { requestNotificationPermission, showRetainedNotification } from "./deskt
 import { guardDevelopmentOutput } from "./development-output";
 import {
   developmentUserDataName,
+  legacyDevelopmentUserDataName,
   readAnalyticsCaptureUrl,
   readDevelopmentInstanceId,
   readDevelopmentProfile,
   readDevelopmentRemoteDebuggingPort,
   shouldAutoStartHost,
 } from "./development-profile";
+import { migrateUserDataDirectory } from "./user-data-migration";
 import { stopStuckExitAfterLimit } from "./exit-watchdog";
 import { filePreviewPages } from "./file-preview-pages";
 import { hostAllowsTenantLaunch } from "./host-update-coordinator";
@@ -138,7 +140,7 @@ import { setIpcCallObserver } from "./trusted-ipc";
 import { UPDATE_INSTALL_TIMEOUT_MS } from "./update-service";
 import { setWindowAppearance } from "./window-appearance";
 
-const logger = createOpenBotLogger("main");
+const logger = createWhiloLogger("main");
 
 // Electron keeps running after both events: an unhandled rejection only prints a warning, and a
 // monitor leaves the default exception handling in place, except after `hideExceptionErrorBox`. These
@@ -172,7 +174,7 @@ type ExitReason = "main_window_closed" | "signal" | "session_end" | "menu" | "sh
 let exitRecorded = false;
 
 /**
- * Records once why OpenBot quits, in the main log and in the trace, before the teardown closes the
+ * Records once why Whilo quits, in the main log and in the trace, before the teardown closes the
  * trace. The first reason wins: closing the window then also quits. A process that ends with no such
  * line and no crash dump stopped from outside with a signal that cannot be caught, such as SIGKILL or
  * Task Manager.
@@ -206,14 +208,14 @@ try {
 }
 
 const commandLineUserDataDirectory = app.commandLine.getSwitchValue("user-data-dir").trim();
-const developmentProfile = !app.isPackaged ? readDevelopmentProfile(process.env.OPENBOT_DEV_PROFILE) : null;
+const developmentProfile = !app.isPackaged ? readDevelopmentProfile(process.env.WHILO_DEV_PROFILE) : null;
 const developmentRemoteRole =
   !app.isPackaged &&
-  (process.env.OPENBOT_DEV_REMOTE_ROLE === "host" || process.env.OPENBOT_DEV_REMOTE_ROLE === "client")
-    ? process.env.OPENBOT_DEV_REMOTE_ROLE
+  (process.env.WHILO_DEV_REMOTE_ROLE === "host" || process.env.WHILO_DEV_REMOTE_ROLE === "client")
+    ? process.env.WHILO_DEV_REMOTE_ROLE
     : null;
-const developmentTestClientEnabled = !app.isPackaged && process.env.OPENBOT_DEV_TEST_CLIENT_ENABLED === "1";
-// Before any child process starts: agents must not run as part of a Claude Code session that started OpenBot.
+const developmentTestClientEnabled = !app.isPackaged && process.env.WHILO_DEV_TEST_CLIENT_ENABLED === "1";
+// Before any child process starts: agents must not run as part of a Claude Code session that started Whilo.
 removeClaudeCodeSessionEnvironment(process.env);
 // Before any child process starts: this removes the single-use claim from the environment they inherit.
 const hostedServer = takeHostedServerEnvironment(process.env, app.isPackaged, process.platform);
@@ -228,12 +230,12 @@ if (serverMode || hostedServer) keepWindowsHidden();
 if (localServerChild && process.platform === "darwin") app.dock?.hide();
 const inviteLinkOptions = {
   allowLocalDevelopmentApiUrl: developmentRemoteRole !== null,
-  selfHostedApiOrigin: selfHostedApiOrigin(process.env.OPENBOT_AUTH_API_URL),
+  selfHostedApiOrigin: selfHostedApiOrigin(process.env.WHILO_AUTH_API_URL),
 };
 const developmentRemoteDebuggingPort = !app.isPackaged
-  ? readDevelopmentRemoteDebuggingPort(process.env.OPENBOT_DEV_REMOTE_DEBUGGING_PORT)
+  ? readDevelopmentRemoteDebuggingPort(process.env.WHILO_DEV_REMOTE_DEBUGGING_PORT)
   : null;
-const analyticsCaptureUrl = !app.isPackaged ? readAnalyticsCaptureUrl(process.env.OPENBOT_ANALYTICS_CAPTURE_URL) : null;
+const analyticsCaptureUrl = !app.isPackaged ? readAnalyticsCaptureUrl(process.env.WHILO_ANALYTICS_CAPTURE_URL) : null;
 // Electron exposes FedCM without an account chooser, so every request fails with a NetworkError.
 // Sites such as Google Sign-In use FedCM when it exists and fall back to their popup when it does not.
 app.commandLine.appendSwitch("disable-features", "FedCm");
@@ -247,20 +249,23 @@ if (configureLinuxPasswordStore())
 if (commandLineUserDataDirectory) {
   app.setPath("userData", resolve(commandLineUserDataDirectory));
 } else if (!app.isPackaged) {
-  app.setPath(
-    "userData",
-    join(
-      app.getPath("appData"),
-      developmentUserDataName(
-        developmentProfile ?? "app",
-        readDevelopmentInstanceId(process.env.OPENBOT_DEV_INSTANCE_ID),
-      ),
-    ),
-  );
+  const developmentInstanceId = readDevelopmentInstanceId(process.env.WHILO_DEV_INSTANCE_ID);
+  const profile = developmentProfile ?? "app";
+  // Before the window resolves the directory, move the one the profile used under the old product
+  // name, so agents and conversations saved before the rename are still there.
+  migrateUserDataDirectory({
+    appData: app.getPath("appData"),
+    names: {
+      current: developmentUserDataName(profile, developmentInstanceId),
+      legacy: legacyDevelopmentUserDataName(profile, developmentInstanceId),
+    },
+    onError: (error) => logger.warn(`Could not move the previous Whilo data directory: ${String(error)}`),
+  });
+  app.setPath("userData", join(app.getPath("appData"), developmentUserDataName(profile, developmentInstanceId)));
 }
-app.setName("OpenBot");
+app.setName("Whilo");
 app.enableSandbox();
-if (process.platform === "win32") app.setAppUserModelId("app.openbot.desktop");
+if (process.platform === "win32") app.setAppUserModelId("app.whilo.desktop");
 const hasSingleInstanceLock = app.requestSingleInstanceLock();
 // A second launch exits at once and must not write into the files of the instance that runs.
 if (hasSingleInstanceLock) {
@@ -279,7 +284,7 @@ configureLinuxGpu({
   ownsInstance: hasSingleInstanceLock,
   server: hostedServer !== null || serverMode !== null,
 });
-const appVariant = readAppVariant(process.env.OPENBOT_APP_VARIANT, app.isPackaged);
+const appVariant = readAppVariant(process.env.WHILO_APP_VARIANT, app.isPackaged);
 if (!app.isPackaged) guardDevelopmentOutput([process.stdout, process.stderr], () => app.quit());
 const appIconPath = resolveAppIconPath({
   variant: appVariant,
@@ -290,42 +295,42 @@ const appIconPath = resolveAppIconPath({
 });
 protocol.registerSchemesAsPrivileged([
   {
-    scheme: "openbot-app",
+    scheme: "whilo-app",
     privileges: { standard: true, secure: true, supportFetchAPI: true },
   },
   // `stream` lets an <audio> or <video> element play a file from the scheme: without it the
   // element cannot make the range requests that playback needs.
   {
-    scheme: "openbot-attachment",
+    scheme: "whilo-attachment",
     privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true, stream: true },
   },
   {
-    scheme: "openbot-remote-attachment",
+    scheme: "whilo-remote-attachment",
     privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true, stream: true },
   },
   // A visual reply page. It needs no fetch or CORS support: only a frame loads it.
   {
-    scheme: "openbot-visual",
+    scheme: "whilo-visual",
     privileges: { standard: true, secure: true },
   },
   {
-    scheme: "openbot-remote-visual",
+    scheme: "whilo-remote-visual",
     privileges: { standard: true, secure: true },
   },
   {
-    scheme: "openbot-avatar",
+    scheme: "whilo-avatar",
     privileges: { standard: true, secure: true, supportFetchAPI: true },
   },
   {
-    scheme: "openbot-remote-avatar",
+    scheme: "whilo-remote-avatar",
     privileges: { standard: true, secure: true, supportFetchAPI: true },
   },
   {
-    scheme: "openbot-server-logo",
+    scheme: "whilo-server-logo",
     privileges: { standard: true, secure: true, supportFetchAPI: true },
   },
   {
-    scheme: "openbot-remote-server-logo",
+    scheme: "whilo-remote-server-logo",
     privileges: { standard: true, secure: true, supportFetchAPI: true },
   },
 ]);
@@ -349,7 +354,7 @@ let systemSessionEndFlushStarted = false;
 let relaunchRequested = false;
 /**
  * Set by a quit signal, by `before-quit` and by a Windows `session-end`, and never cleared. Not
- * `isQuitting`: a Windows session end that another app cancels also sets that, and then OpenBot
+ * `isQuitting`: a Windows session end that another app cancels also sets that, and then Whilo
  * keeps running.
  */
 let quitStarted = false;
@@ -368,11 +373,11 @@ type RendererDeepLink = Exclude<DeepLink, { kind: "mcp-auth" | "slack-workspace"
 let pendingDeepLink: RendererDeepLink | null = takeRendererDeepLink(findDeepLink(process.argv, inviteLinkOptions));
 let deepLinkReceiverReady = false;
 
-const MAIN_WINDOW_STATE_FILE = "openbot-main-window-state-v1.json";
+const MAIN_WINDOW_STATE_FILE = "whilo-main-window-state-v1.json";
 
 // A server is stopped with SIGTERM (systemd, Docker). Without a handler, Electron ends at once and its
 // services do not stop. A hosted server's boat pre-stop hook stops it this way before the disk save
-// (`scripts/hosting/openbot-boat-pre-stop`). The desktop app quits the same way, so a `kill` from a
+// (`scripts/hosting/whilo-boat-pre-stop`). The desktop app quits the same way, so a `kill` from a
 // terminal or another app also stops its services and leaves a "Quitting: signal." line (#4149).
 {
   const quitAfterSignal = () => {
@@ -520,19 +525,19 @@ function syncMacDock(menuBar: boolean): void {
 }
 
 /**
- * Outside macOS, closing the main window ends OpenBot, unless the user chose to keep it running in
+ * Outside macOS, closing the main window ends Whilo, unless the user chose to keep it running in
  * the background. The window is then hidden, not closed, so this event does not come.
  *
  * `window-all-closed` cannot carry that on its own any more. The Computer Use overlays are hidden
  * between actions and closed only after a minute of idle, and a hidden window is still a window,
- * so the event may never arrive: the user would close the last window they can see and leave OpenBot
+ * so the event may never arrive: the user would close the last window they can see and leave Whilo
  * and the driver running with no way back to them.
  */
 function attachQuitOnMainWindowClose(window: BrowserWindow): void {
   if (process.platform === "darwin") return;
   window.on("closed", () => {
     recordExit("main_window_closed");
-    // `quit`, not a teardown of its own: `before-quit` below is what OpenBot shuts down through,
+    // `quit`, not a teardown of its own: `before-quit` below is what Whilo shuts down through,
     // and it already ignores a second request while the first one runs.
     app.quit();
   });
@@ -545,9 +550,9 @@ function attachQuitOnMainWindowClose(window: BrowserWindow): void {
  * registered when the first window is built, long before any service exists, which is why every
  * read below goes through `services?.`.
  *
- * Another app can cancel a session end after the query, and OpenBot then keeps running. Provider
+ * Another app can cancel a session end after the query, and Whilo then keeps running. Provider
  * runtimes stop only on `session-end`: a stopped manager does not start again, so stopping it on the
- * query left every later Download failing with "OpenBot is closing." (#2518).
+ * query left every later Download failing with "Whilo is closing." (#2518).
  */
 function attachWindowsSessionEndHandlers(window: BrowserWindow): void {
   if (process.platform !== "win32") return;
@@ -617,6 +622,7 @@ function registerIpcHandlers({
   logoColor,
   appearance,
   interfaceSize,
+  interfaceLook,
   notificationPreference,
   busyMessageMode,
   agentDefaults,
@@ -712,6 +718,7 @@ function registerIpcHandlers({
       logoColor,
       appearance,
       interfaceSize,
+      interfaceLook,
       initializeAgent: () => runCauseEffect(agentInitialization.start()),
       appVariant,
       analyticsCaptureUrl,
@@ -909,14 +916,14 @@ function requestDesktopNotificationPermission(
       preference,
       showWelcome: () => {
         if (!Notification.isSupported()) return;
-        showRetainedNotification(new Notification({ title: "OpenBot", body: translate("notification.welcome") }));
+        showRetainedNotification(new Notification({ title: "Whilo", body: translate("notification.welcome") }));
       },
     }),
   );
 }
 
 /** `null` for every state but a signed-in one, matching what the two principal trackers store. */
-/** The Dock tile, the Linux desktop entry and the `openbot://` scheme. A local server has none of them. */
+/** The Dock tile, the Linux desktop entry and the `whilo://` scheme. A local server has none of them. */
 async function presentApplication(): Promise<void> {
   await ensureMacApplicationPresence(
     process.platform,
@@ -928,8 +935,8 @@ async function presentApplication(): Promise<void> {
   // (`build/installer.nsh`), and each start writes it again for installs from before that script.
   // A Windows development build does not register: the handler would be bare `electron.exe`.
   // A macOS development build does not register either: macOS ignores the path and arguments and
-  // names the `com.github.Electron` bundle, so the link took `openbot://` from an installed
-  // OpenBot and opened some worktree's bare Electron.app. `bun run dev:slack` has a loopback return.
+  // names the `com.github.Electron` bundle, so the link took `whilo://` from an installed
+  // Whilo and opened some worktree's bare Electron.app. `bun run dev:slack` has a loopback return.
   await Effect.runPromise(
     installLinuxDesktopEntry({ platform: process.platform, environment: process.env, iconPath: appIconPath }),
   );
@@ -937,8 +944,8 @@ async function presentApplication(): Promise<void> {
     process.platform === "linux" ||
     ((process.platform === "darwin" || process.platform === "win32") && app.isPackaged)
   ) {
-    if (!app.setAsDefaultProtocolClient("openbot")) {
-      logger.warn("Unable to register the openbot:// scheme. Invitation links will not open OpenBot.");
+    if (!app.setAsDefaultProtocolClient("whilo")) {
+      logger.warn("Unable to register the whilo:// scheme. Invitation links will not open Whilo.");
     }
   }
 }
@@ -1204,7 +1211,7 @@ if (!hasSingleInstanceLock) {
     .whenReady()
     .then(async () => {
       // Startup marks for `dev:bench`, which reads them over the inspector. They change nothing.
-      performance.mark("openbot:when-ready");
+      performance.mark("whilo:when-ready");
       // Set the Dock icon before `dock.show()` below. A development build runs the stock Electron.app,
       // so until this call its Dock tile shows the Electron logo.
       if (process.platform === "darwin" && !localServerChild) setDockIcon(appIconPath);
@@ -1245,7 +1252,7 @@ if (!hasSingleInstanceLock) {
         quitting: () => quitStarted,
       });
       services = built;
-      performance.mark("openbot:services-built");
+      performance.mark("whilo:services-built");
       // `forwardCentralAuth` reaches the host, the remote servers and analytics only through
       // `services`, so every account change announced during construction was dropped.
       // `createApplicationServices` bound the local host to the one state it read and attributed the
@@ -1277,6 +1284,7 @@ if (!hasSingleInstanceLock) {
         logoColor,
         appearance,
         interfaceSize,
+        interfaceLook,
         trace,
         appBehavior,
       } = built;
@@ -1392,7 +1400,7 @@ if (!hasSingleInstanceLock) {
       // the process still holds the single-instance lock. Exit now, not at the install deadline.
       updater.on("status", (status) => {
         if (!shutdownStarted || status.errorCode !== "install_failed") return;
-        logger.error("OpenBot update install failed after shutdown preparation and will exit now.");
+        logger.error("Whilo update install failed after shutdown preparation and will exit now.");
         app.exit(0);
       });
       built.requestedUpdate.on("preference", forwardUpdatePreference);
@@ -1499,6 +1507,12 @@ if (!hasSingleInstanceLock) {
           sendToRenderer(window, IPC_ENDPOINTS.app.appInterfaceSizePreference, preference);
         }
       });
+      // The renderer paints the accent and the corners, so main only tells each window the choice.
+      interfaceLook.subscribe((preference) => {
+        for (const window of BrowserWindow.getAllWindows()) {
+          sendToRenderer(window, IPC_ENDPOINTS.app.appInterfaceLookPreference, preference);
+        }
+      });
       await runCauseEffect(dynamicIsland.initialize()).catch((error) =>
         logger.error("Unable to initialize Dynamic Island:", toLogValue(error)),
       );
@@ -1509,7 +1523,7 @@ if (!hasSingleInstanceLock) {
       // The island pages load beside the main window, not before it.
       reconcileDynamicIsland();
       await windows.loadRenderer(mainWindow);
-      performance.mark("openbot:renderer-loaded");
+      performance.mark("whilo:renderer-loaded");
       // `sendToRenderer` dropped the server changes made while the window loaded: the host list and
       // the connection of the selected server. The renderer can have read the list before them.
       forwardServers(remoteServers.list());
@@ -1560,7 +1574,7 @@ if (!hasSingleInstanceLock) {
         })
       ) {
         void runCauseEffect(built.centralAuthInitialization.pipe(Effect.flatMap(() => host.start()))).catch((error) =>
-          logger.error("Unable to republish this OpenBot:", toLogValue(error)),
+          logger.error("Unable to republish this Whilo:", toLogValue(error)),
         );
       }
       void runCauseEffect(built.agentInitialization.start()).catch((error) => {
@@ -1633,7 +1647,7 @@ if (!hasSingleInstanceLock) {
       }
       // The Windows error box ends the text at a NUL character, so control characters are replaced.
       const message = (error instanceof Error ? error.message : String(error)).replace(/[^\P{Cc}\n\t]/gu, "�");
-      logger.error("OpenBot failed to start:", toLogValue(error));
+      logger.error("Whilo failed to start:", toLogValue(error));
       // A server has nobody at its virtual display to close the box, and the box blocks the quit. A
       // server on this computer has no window: the app that started it reports the failed start.
       if (!serverMode && !hostedServer && !localServerChild) {
@@ -1704,7 +1718,7 @@ const SHUTDOWN_DEADLINE_MS = 30_000;
 
 function forceExitAfterShutdownDeadline(deadlineMs: number): void {
   setTimeout(() => {
-    logger.error(`OpenBot did not quit within ${deadlineMs} ms and will exit now.`);
+    logger.error(`Whilo did not quit within ${deadlineMs} ms and will exit now.`);
     app.exit(0);
   }, deadlineMs);
 }

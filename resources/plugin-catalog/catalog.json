@@ -66,13 +66,13 @@
       "slug": "paper",
       "version": "1.0.1",
       "featured": false,
-      "detailSha256": "d15a140eec6ab0a0a6e79e354ccaba88d035435112bdb7a044528b2a4c7a1548"
+      "detailSha256": "24615b65e3cb34a97edc9fb234fd948acd657a64b3f1866ac294d9eab8d68a73"
     },
     {
       "slug": "apple-apps",
       "version": "1.1.0",
       "featured": false,
-      "detailSha256": "ee3aa4ba4d11b38bea38f703959868cfb6bb5cf4ac5d3ef7a998e4a40a345984"
+      "detailSha256": "e123a91482bbbfa3f88a3ad96d8b28e6ff7b757a7a9916830b9f606d3d13b4eb"
     },
     {
       "slug": "sentry",
@@ -187,6 +187,18 @@
       "version": "1.0.0",
       "featured": false,
       "detailSha256": "5014d267e7627c50d84ea1823d04e4d6c6f18e7096319f3e1351972e656c4449"
+    },
+    {
+      "slug": "computer-use",
+      "version": "1.0.0",
+      "featured": false,
+      "detailSha256": "d90caa309c1794de4fa55b545c9846598e92c3cb3eefaa3be959efd624b816f2"
+    },
+    {
+      "slug": "world-legal-desk",
+      "version": "1.0.0",
+      "featured": false,
+      "detailSha256": "b40f4796b6ca7ec90b25fe963d0bda58a23cb5195191d4dc195f6156de256b44"
     }
   ]
 }

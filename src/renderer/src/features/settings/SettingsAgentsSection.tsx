@@ -3,17 +3,17 @@ import {
   type ClientAgentSummary,
   LOCAL_SERVER_ID,
   type UpdateAgentInput,
-} from "@openbot/contracts/ipc";
-import type { GeneralSettingsValue } from "@openbot/ui/features/settings/app-settings";
-import { BackgroundProcessesSection } from "@openbot/ui/features/settings/BackgroundProcessesSection";
+} from "@whilo/contracts/ipc";
+import type { GeneralSettingsValue } from "@whilo/ui/features/settings/app-settings";
+import { BackgroundProcessesSection } from "@whilo/ui/features/settings/BackgroundProcessesSection";
 import {
   type AgentDefaultChoice,
   type AgentDefaultSetting,
   type AgentDefaultsAgent,
   agentDefaultSettingTitle,
   SettingsAgentsTab,
-} from "@openbot/ui/features/settings/SettingsAgentsTab";
-import { currentText, useText } from "@openbot/ui/text";
+} from "@whilo/ui/features/settings/SettingsAgentsTab";
+import { currentText, useText } from "@whilo/ui/text";
 import type { JSX } from "@solidjs/web";
 import { createEffect, createStore, Show } from "solid-js";
 import { actionToast } from "../../action-toast";

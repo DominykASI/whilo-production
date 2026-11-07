@@ -136,9 +136,9 @@ const CodeBlockBody = memo(function CodeBlockBody({
 export function useCodeTokenColors() {
   const [foreground, muted, keyword] = useThemeColor(["foreground", "muted", "link"]);
   const [string, number, error] = useCSSVariable([
-    "--openbot-success-text",
-    "--openbot-warning-text",
-    "--openbot-danger-text",
+    "--whilo-success-text",
+    "--whilo-warning-text",
+    "--whilo-danger-text",
   ]).map(String);
   const colors: Partial<Record<ShjToken, ColorValue>> = {
     kwd: keyword,

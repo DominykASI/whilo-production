@@ -1,14 +1,14 @@
-import type { AgentEvent, TeamRealtimeEvent } from "@openbot/contracts/ipc";
-import { TEAM_API_ROUTES } from "@openbot/contracts/team-api-routes";
+import type { AgentEvent, TeamRealtimeEvent } from "@whilo/contracts/ipc";
+import { TEAM_API_ROUTES } from "@whilo/contracts/team-api-routes";
 import {
   INSTANCE_TRANSFER_REMOTE_BYTES,
   INSTANCE_TRANSFER_ROUTES,
-} from "@openbot/contracts/team-protocol/instance-transfer-v1";
-import { isQueueEditRoute, QueueEditRejectedError } from "@openbot/contracts/team-protocol/queue-edit-v1";
-import type { TeamProtocolV2Json } from "@openbot/contracts/team-protocol/v2";
-import { sourceText } from "@openbot/i18n/source";
-import type { RemoteTeamDirectoryClient } from "@openbot/team-client";
-import { runTeamEffect } from "@openbot/team-client";
+} from "@whilo/contracts/team-protocol/instance-transfer-v1";
+import { isQueueEditRoute, QueueEditRejectedError } from "@whilo/contracts/team-protocol/queue-edit-v1";
+import type { TeamProtocolV2Json } from "@whilo/contracts/team-protocol/v2";
+import { sourceText } from "@whilo/i18n/source";
+import type { RemoteTeamDirectoryClient } from "@whilo/team-client";
+import { runTeamEffect } from "@whilo/team-client";
 import {
   createRemoteCommandMailbox,
   type RemoteFileUpload,
@@ -17,8 +17,8 @@ import {
   type RemoteTeamConnectionUpdate,
   type RemoteTeamDiagnostic,
   type RemoteUploadProgress,
-} from "@openbot/team-client/remote-peer";
-import { referenceFrom } from "@openbot/user-errors";
+} from "@whilo/team-client/remote-peer";
+import { referenceFrom } from "@whilo/user-errors";
 import type { DOMProps } from "expo/dom";
 import * as Crypto from "expo-crypto";
 import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";

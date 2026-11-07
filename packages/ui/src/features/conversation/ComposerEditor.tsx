@@ -1,10 +1,10 @@
-import { rankAgentMentions } from "@openbot/contracts/agent-mention-rank";
-import { attachmentReferenceIds } from "@openbot/contracts/attachment-references";
-import { EVERYONE_MENTION, serializeChatTagReference } from "@openbot/contracts/chat-tag-references";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import type { DraftAttachment } from "@openbot/contracts/ipc";
-import { Badge, Blocks, Listbox, Puzzle, UsersRound } from "@openbot/ui";
-import { usesTouchLayout } from "@openbot/ui/utils";
+import { rankAgentMentions } from "@whilo/contracts/agent-mention-rank";
+import { attachmentReferenceIds } from "@whilo/contracts/attachment-references";
+import { EVERYONE_MENTION, serializeChatTagReference } from "@whilo/contracts/chat-tag-references";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import type { DraftAttachment } from "@whilo/contracts/ipc";
+import { Badge, Blocks, Listbox, Puzzle, UsersRound } from "@whilo/ui";
+import { usesTouchLayout } from "@whilo/ui/utils";
 import { Dynamic, Portal } from "@solidjs/web";
 import {
   createEffect,

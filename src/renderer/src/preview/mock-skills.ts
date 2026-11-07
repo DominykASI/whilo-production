@@ -4,9 +4,10 @@ import type {
   MarketplaceSkillPage,
   MarketplaceSkillQuery,
   MarketplaceSkillSummary,
-  OpenBotDesktopApi,
+  WhiloDesktopApi,
   SkillSubmission,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
+import { BUNDLED_PLUGINS } from "@whilo/contracts/ipc";
 import {
   STORY_INSTALLED_SKILLS,
   STORY_MARKETPLACE_SKILL_DETAILS,
@@ -90,7 +91,7 @@ export function createMockSkills(options: MockSkillsOptions, onChanged: (agentId
     onChanged(agentId);
   }
 
-  const skills: OpenBotDesktopApi["skills"] = {
+  const skills: WhiloDesktopApi["skills"] = {
     localList: async () => clone(localSkills),
     localGet: async ({ skillId, revision }) => {
       const skill = revision
@@ -217,7 +218,7 @@ export function createMockSkills(options: MockSkillsOptions, onChanged: (agentId
     },
     uninstall: async ({ agentId, skillId }) => {
       const skill = readInstalledSkills(agentId).find((item) => item.skillId === skillId);
-      if (skill?.origin === "managed") throw new Error("This skill is managed by OpenBot.");
+      if (skill?.origin === "managed") throw new Error("This skill is managed by Whilo.");
       writeInstalled(
         agentId,
         readInstalledSkills(agentId).filter((item) => item.skillId !== skillId),
@@ -227,13 +228,42 @@ export function createMockSkills(options: MockSkillsOptions, onChanged: (agentId
       const current = readInstalledSkills(agentId);
       const skill = current.find((item) => item.skillId === skillId);
       if (!skill) throw new Error("Skill not found.");
-      if (skill.origin === "managed") throw new Error("This skill is managed by OpenBot.");
+      if (skill.origin === "managed") throw new Error("This skill is managed by Whilo.");
       const next: InstalledSkill = { ...skill, enabled };
       writeInstalled(
         agentId,
         current.map((item) => (item.skillId === skillId ? next : item)),
       );
       return clone(next);
+    },
+    installBundled: async ({ agentId, pluginId }) => {
+      const plugin = BUNDLED_PLUGINS.find((entry) => entry.id === pluginId);
+      if (!plugin) throw new Error(`Unknown bundled plugin: ${pluginId}`);
+      const installed = readInstalledSkills(agentId);
+      const ids = new Set(installed.map((item) => item.skillId));
+      const next = [...installed];
+      for (const skill of plugin.skills) {
+        const skillId = `bundled:${plugin.id}:${skill.slug}`;
+        if (ids.has(skillId)) continue;
+        next.push({
+          skillId,
+          slug: skill.slug,
+          name: skill.name,
+          installedVersion: 1,
+          availableVersion: 1,
+          state: "installed" as const,
+          origin: "workspace" as const,
+          description: skill.description,
+        });
+      }
+      writeInstalled(agentId, next);
+    },
+    uninstallBundled: async ({ agentId, pluginId }) => {
+      const prefix = `bundled:${pluginId}:`;
+      writeInstalled(
+        agentId,
+        readInstalledSkills(agentId).filter((item) => !item.skillId.startsWith(prefix)),
+      );
     },
   };
 

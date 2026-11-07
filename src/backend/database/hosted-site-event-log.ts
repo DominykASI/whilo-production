@@ -3,9 +3,9 @@ import type {
   HostedSiteConversationEventAction,
   HostedSiteConversationEventDetails,
   HostedSiteConversationEventStatus,
-} from "@openbot/contracts/ipc";
-import { hostedSiteConversationEvent } from "@openbot/contracts/ipc";
-import { isDynamicRecord, isString } from "@openbot/contracts/runtime-values";
+} from "@whilo/contracts/ipc";
+import { hostedSiteConversationEvent } from "@whilo/contracts/ipc";
+import { isDynamicRecord, isString } from "@whilo/contracts/runtime-values";
 import type { DatabaseCore } from "./database-core";
 import { databaseRows, requiredStringColumn } from "./database-rows";
 

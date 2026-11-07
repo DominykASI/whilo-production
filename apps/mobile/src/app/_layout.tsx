@@ -188,7 +188,7 @@ export default function RootLayout() {
   const { theme: colorScheme } = useUniwind();
   const animations = useMotionPreferences((state) => state.allAnimations);
   const heroConfig = useMemo(() => (animations ? {} : { animation: "disable-all" as const }), [animations]);
-  const canvas = String(useCSSVariable("--openbot-bg-native-canvas"));
+  const canvas = String(useCSSVariable("--whilo-bg-native-canvas"));
   // React Navigation paints its near-black dark background behind screens during transitions.
   const darkTheme = useMemo(
     () => ({ ...DarkTheme, colors: { ...DarkTheme.colors, background: canvas }, fonts: navigationFonts }),

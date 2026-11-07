@@ -1,4 +1,4 @@
-import type { AvatarHue } from "@openbot/contracts/ipc";
+import type { AvatarHue } from "@whilo/contracts/ipc";
 import { router } from "expo-router";
 import { useMemo } from "react";
 import { getBloubAvatarColor } from "@/features/agents/model/bloub-activity";

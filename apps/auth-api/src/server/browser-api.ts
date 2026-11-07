@@ -1,15 +1,15 @@
-import { isAvatarMimeType } from "@openbot/contracts/avatar-images";
-import { parseBillingPortalRequest } from "@openbot/contracts/billing";
-import { parseHostedServerLifecycleInput } from "@openbot/contracts/hosted-servers";
+import { isAvatarMimeType } from "@whilo/contracts/avatar-images";
+import { parseBillingPortalRequest } from "@whilo/contracts/billing";
+import { parseHostedServerLifecycleInput } from "@whilo/contracts/hosted-servers";
 import {
   LICENSE_UNAVAILABLE_STATE,
   parseLicenseCheckoutRequest,
   parseLicensePlanRequest,
   parseLicenseRenewalRequest,
   parseLicenseUsersRequest,
-} from "@openbot/contracts/license";
-import { type DynamicRecord, isBoolean, isNumber, isString } from "@openbot/contracts/runtime-values";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/license";
+import { type DynamicRecord, isBoolean, isNumber, isString } from "@whilo/contracts/runtime-values";
+import { sourceText } from "@whilo/i18n/source";
 import { Cause, Effect } from "effect";
 import { type AccountAttribution, requestFirstTouch } from "./account-attribution";
 import { type AuthService, AuthServiceError, readAnalyticsAnswer } from "./auth-service";
@@ -26,7 +26,7 @@ import { type RemoteControlPlane, RemoteControlPlaneError } from "./remote-contr
 import { sendTeamInviteEmail } from "./team-invite-email";
 import type { AuthUser, TeamInviteEmailDelivery } from "./types";
 
-const COOKIE = "__Host-openbot-web";
+const COOKIE = "__Host-whilo-web";
 const PREFIX = "/api/browser/";
 const COOKIE_ATTRIBUTES = "Path=/; Secure; HttpOnly; SameSite=Lax";
 
@@ -130,7 +130,7 @@ const AVATAR_PATH = "v1/me/avatar";
 
 /**
  * Every write sends JSON, except an avatar upload, which sends the image bytes as the bearer route
- * does. The `X-OpenBot-Browser` header and the same-origin check still apply to it: a cross-site
+ * does. The `X-Whilo-Browser` header and the same-origin check still apply to it: a cross-site
  * page cannot send that header without a CORS preflight, which this API never answers.
  */
 function browserWriteContentTypeAllowed(request: Request, path: string): boolean {
@@ -153,7 +153,7 @@ export function handleBrowserApi(request: Request, services: BrowserApiServices)
   if (
     request.method !== "GET" &&
     (request.headers.get("Origin") !== new URL(request.url).origin ||
-      request.headers.get("X-OpenBot-Browser") !== "1" ||
+      request.headers.get("X-Whilo-Browser") !== "1" ||
       !browserWriteContentTypeAllowed(request, path))
   )
     return Promise.resolve(failure(403, "browser_request_refused", "The browser request was refused."));

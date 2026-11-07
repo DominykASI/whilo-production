@@ -21,17 +21,17 @@ import {
   type VoiceServerRoutes,
   type VoiceServerSettings,
   type VoiceTranscriptionResult,
-} from "@openbot/contracts/ipc";
-import { isDynamicRecord, isString } from "@openbot/contracts/runtime-values";
-import { sourceText } from "@openbot/i18n/source";
-import { createOpenBotLogger, registerSecretValue } from "@openbot/logging";
+} from "@whilo/contracts/ipc";
+import { isDynamicRecord, isString } from "@whilo/contracts/runtime-values";
+import { sourceText } from "@whilo/i18n/source";
+import { createWhiloLogger, registerSecretValue } from "@whilo/logging";
 import { Effect, Schema } from "effect";
 import { readLimitedBody } from "../backend/limited-body";
 import { PreferenceStore } from "./preference-file";
 import type { VoiceApiKeyStore } from "./voice-api-key-store";
 import { VoiceOperationError } from "./voice-model-service";
 
-const logger = createOpenBotLogger("voice-server-service");
+const logger = createWhiloLogger("voice-server-service");
 
 /** The user waits for the list in the dialog, and a remote server can be slow. */
 const PROBE_TIMEOUT_MS = 8_000;

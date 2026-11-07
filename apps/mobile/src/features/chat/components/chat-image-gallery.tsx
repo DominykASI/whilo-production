@@ -1,4 +1,4 @@
-import type { AttachmentSummary } from "@openbot/contracts/ipc";
+import type { AttachmentSummary } from "@whilo/contracts/ipc";
 import { Image } from "expo-image";
 import { Skeleton } from "heroui-native";
 import { useThemeColor } from "heroui-native/hooks";

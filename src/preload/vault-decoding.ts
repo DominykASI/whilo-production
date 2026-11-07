@@ -8,7 +8,7 @@ import type {
   VaultItemSummary,
   VaultState,
   VaultStatus,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   decodeList,
   decodeRecord,
@@ -17,8 +17,8 @@ import {
   requiredBoolean,
   requiredNumber,
   requiredString,
-} from "@openbot/contracts/ipc-decoding";
-import { type DynamicRecord, isOneOf, isString } from "@openbot/contracts/runtime-values";
+} from "@whilo/contracts/ipc-decoding";
+import { type DynamicRecord, isOneOf, isString } from "@whilo/contracts/runtime-values";
 
 const STATUSES: readonly VaultStatus[] = ["ready", "unavailable", "unreadable"];
 const BRANDS: readonly VaultCardBrand[] = ["visa", "mastercard", "amex", "discover"];

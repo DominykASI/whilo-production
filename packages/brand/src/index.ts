@@ -1,4 +1,5 @@
 export { AppLogo, type AppLogoAnimation, type AppLogoProps, type AppLogoVariant } from "./AppLogo";
+export { OrcaPet, type OrcaPetMood, type OrcaPetProps } from "./orca-pet";
 export {
   type MobilePlatformLogoVariant,
   PlatformLogo,

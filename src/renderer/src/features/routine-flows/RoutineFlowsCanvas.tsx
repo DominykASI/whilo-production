@@ -13,14 +13,14 @@ import {
   type RoutineFlowLink,
   type RoutineFlowRoutineInfo,
   routineFlowAgentKey,
-} from "@openbot/contracts/ipc";
-import type { EventFilter } from "@openbot/contracts/ipc-events";
-import { toast } from "@openbot/ui";
-import type { AgentProfile } from "@openbot/ui/data";
-import type { DiagramModelChoice, DiagramNewAgentDraft } from "@openbot/ui/features/diagrams/DiagramNewAgentCard";
-import { DiagramView } from "@openbot/ui/features/diagrams/DiagramView";
-import type { DiagramPoint } from "@openbot/ui/features/diagrams/diagram-model";
-import { useText } from "@openbot/ui/text";
+} from "@whilo/contracts/ipc";
+import type { EventFilter } from "@whilo/contracts/ipc-events";
+import { toast } from "@whilo/ui";
+import type { AgentProfile } from "@whilo/ui/data";
+import type { DiagramModelChoice, DiagramNewAgentDraft } from "@whilo/ui/features/diagrams/DiagramNewAgentCard";
+import { DiagramView } from "@whilo/ui/features/diagrams/DiagramView";
+import type { DiagramPoint } from "@whilo/ui/features/diagrams/diagram-model";
+import { useText } from "@whilo/ui/text";
 import { createEffect, createMemo, createStore, onSettled, Show } from "solid-js";
 import { createRoutineFlowAssistant } from "./routine-flow-assistant";
 import { agentIdOfNode, isRoutineStartEdge, routineFlowDiagram, routineIdOfNode } from "./routine-flow-diagram";

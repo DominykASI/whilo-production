@@ -1,0 +1,178 @@
+/* The orca pet: the old scribbled-eyes mark, redrawn as a blue killer whale. */
+
+.orca-pet {
+  /* The pet is blue in both themes. It reads `--whilo-file-blue`, the palette's blue, so the light
+     theme keeps its darker blue instead of the washed-out one the dark palette needs. Not
+     `--app-logo-eye`: that variable is set inside a logo, and the pet sits beside the logo. */
+  --orca-pet-skin: var(--whilo-file-blue, #74b9ff);
+  --orca-pet-belly: #ffffff;
+  --orca-pet-line: #0b1b3f;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.orca-pet[data-interactive="true"] {
+  pointer-events: auto;
+}
+
+/* An interactive pet is a button: it shows the same focus ring a control does. */
+.orca-pet[data-interactive="true"]:focus {
+  outline: none;
+}
+
+.orca-pet[data-interactive="true"]:focus-visible {
+  outline: 2px solid var(--whilo-text-primary);
+  outline-offset: 4px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .orca-pet[data-interactive="true"] {
+    cursor: pointer;
+  }
+}
+
+.orca-pet-body {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: orca-pet-bob 3.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+.orca-pet-tail {
+  fill: var(--orca-pet-skin);
+  transform-box: fill-box;
+  transform-origin: top center;
+  animation: orca-pet-tail-sway 2.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+.orca-pet-torso,
+.orca-pet-dorsal,
+.orca-pet-flipper {
+  fill: var(--orca-pet-skin);
+}
+
+.orca-pet-belly,
+.orca-pet-eye-patch {
+  fill: var(--orca-pet-belly);
+}
+
+.orca-pet-eye {
+  fill: var(--orca-pet-line);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: orca-pet-blink 3.8s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+}
+
+.orca-pet-pupil {
+  fill: var(--orca-pet-belly);
+}
+
+.orca-pet-smile {
+  fill: none;
+  stroke: var(--orca-pet-line);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.orca-pet-shadow {
+  fill: var(--orca-pet-line);
+  opacity: 0.12;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: orca-pet-shadow 3.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+.orca-pet[data-mood="curious"] .orca-pet-body {
+  animation-duration: 2.2s;
+}
+
+.orca-pet[data-mood="sleepy"] .orca-pet-body {
+  animation-duration: 6s;
+}
+
+.orca-pet[data-mood="sleepy"] .orca-pet-eye {
+  animation: orca-pet-sleep 6s ease-in-out infinite;
+}
+
+.orca-pet[data-greeting="true"] .orca-pet-body {
+  animation: orca-pet-greet 900ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+@keyframes orca-pet-bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-2.5%) rotate(-1.2deg);
+  }
+}
+
+@keyframes orca-pet-tail-sway {
+  0%,
+  100% {
+    transform: rotate(-7deg);
+  }
+  50% {
+    transform: rotate(7deg);
+  }
+}
+
+@keyframes orca-pet-blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.12);
+  }
+}
+
+@keyframes orca-pet-sleep {
+  0%,
+  100% {
+    transform: scaleY(0.12);
+  }
+  50% {
+    transform: scaleY(0.16);
+  }
+}
+
+@keyframes orca-pet-shadow {
+  0%,
+  100% {
+    transform: scaleX(1);
+    opacity: 0.12;
+  }
+  50% {
+    transform: scaleX(0.88);
+    opacity: 0.08;
+  }
+}
+
+@keyframes orca-pet-greet {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  35% {
+    transform: translateY(-8%) rotate(-5deg);
+  }
+  65% {
+    transform: translateY(-4%) rotate(3deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orca-pet-body,
+  .orca-pet-tail,
+  .orca-pet-eye,
+  .orca-pet-shadow {
+    animation: none;
+    transform: none;
+  }
+}

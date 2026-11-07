@@ -2,10 +2,10 @@ import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createOpenBotLogger, toLogValue } from "@openbot/logging";
+import { createWhiloLogger, toLogValue } from "@whilo/logging";
 import { readFcmServiceAccount } from "../apps/auth-api/src/server/android-notification-relay";
 
-const logger = createOpenBotLogger("deploy-auth-api");
+const logger = createWhiloLogger("deploy-auth-api");
 
 const scriptsRoot = dirname(fileURLToPath(import.meta.url));
 const projectRoot = join(scriptsRoot, "..");
@@ -36,7 +36,7 @@ async function main(): Promise<void> {
   await putOptionalSecretSet("BOAT_API_KEY", "BOAT_WEBHOOK_SECRET");
   // Production releases own the template. Test deployments keep their separate setting.
   if (cloudflareEnvironment === "test") await putOptionalSecret("HOSTED_SERVER_TEMPLATE");
-  // Without the key, agents act on GitHub as the signed-in user and not as the OpenBot GitHub App.
+  // Without the key, agents act on GitHub as the signed-in user and not as the Whilo GitHub App.
   await putOptionalSecret("GITHUB_APP_PRIVATE_KEY");
   // Without the token, no one can make a server claim.
   await putOptionalSecret("SERVER_CLAIMS_ADMIN_TOKEN");
@@ -47,6 +47,12 @@ async function main(): Promise<void> {
   // Discord is optional too: without these, the Discord routes answer 503 discord_not_configured.
   await putOptionalSecretSet("DISCORD_CLIENT_ID", "DISCORD_CLIENT_SECRET", "DISCORD_STATE_SECRET");
   await putOptionalSecretSet("DISCORD_ROUTE_PRIVATE_JWK", "DISCORD_ROUTE_KEY_ID");
+  // Google sign-in is optional too: without the secret, `/v1/auth/oauth/google/start` answers 503
+  // oauth_not_configured and the web disc keeps its note. The client ID is a var in wrangler.jsonc.
+  // `wrangler secret put GOOGLE_OAUTH_CLIENT_SECRET` sets it without a deploy.
+  await putOptionalSecret("GOOGLE_OAUTH_CLIENT_SECRET");
+  // The GitHub sign-in works the same way: its client ID is a var, this is the secret behind it.
+  await putOptionalSecret("GITHUB_OAUTH_CLIENT_SECRET");
   // Telegram too: without these, the Telegram routes answer 503. Neither is the bot token, which only
   // Signal has; the route ticket uses the SLACK_ROUTE_* key.
   await putOptionalSecretSet("TELEGRAM_BOT_ID", "TELEGRAM_BOT_USERNAME");

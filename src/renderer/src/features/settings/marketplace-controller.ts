@@ -1,4 +1,4 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import type {
   AddedAgent,
   ClientAgentSummary,
@@ -14,17 +14,17 @@ import type {
   McpServerConfig,
   McpSignInRelayPage,
   McpSignInState,
-} from "@openbot/contracts/ipc";
-import { assignedSkillCount, isRemovableSkill, isSkillEnabled, mcpConfigErrors } from "@openbot/contracts/ipc";
-import { createMarketplaceShareUrl, type MarketplaceListingLink } from "@openbot/contracts/marketplace-links";
-import { mcpAccountFragment, mcpAccountUrl } from "@openbot/contracts/mcp-accounts";
-import { type McpConnectFlow, mcpFlowFields } from "@openbot/contracts/mcp-connect-flows";
-import { createPluginShareUrl } from "@openbot/contracts/plugin-links";
-import { TOAST_DURATION, toast } from "@openbot/ui";
-import { connectorSummary } from "@openbot/ui/features/connectors/ConnectorDetailPanel";
-import { CONNECTOR_LISTINGS } from "@openbot/ui/features/connectors/connector-catalog";
-import { isConnectorId } from "@openbot/ui/features/connectors/connectors";
-import { safeBrowserUrl } from "@openbot/ui/features/conversation/RichMessageText";
+} from "@whilo/contracts/ipc";
+import { assignedSkillCount, BUNDLED_PLUGINS, isRemovableSkill, isSkillEnabled, mcpConfigErrors } from "@whilo/contracts/ipc";
+import { createMarketplaceShareUrl, type MarketplaceListingLink } from "@whilo/contracts/marketplace-links";
+import { mcpAccountFragment, mcpAccountUrl } from "@whilo/contracts/mcp-accounts";
+import { type McpConnectFlow, mcpFlowFields } from "@whilo/contracts/mcp-connect-flows";
+import { createPluginShareUrl } from "@whilo/contracts/plugin-links";
+import { TOAST_DURATION, toast } from "@whilo/ui";
+import { connectorSummary } from "@whilo/ui/features/connectors/ConnectorDetailPanel";
+import { CONNECTOR_LISTINGS } from "@whilo/ui/features/connectors/connector-catalog";
+import { isConnectorId } from "@whilo/ui/features/connectors/connectors";
+import { safeBrowserUrl } from "@whilo/ui/features/conversation/RichMessageText";
 import type {
   AgentListingState,
   MarketplaceApp,
@@ -35,18 +35,18 @@ import type {
   MarketplaceSkillChange,
   MarketplaceSkillRef,
   SkillRead,
-} from "@openbot/ui/features/marketplace/marketplace-model";
-import { serverAddress } from "@openbot/ui/features/marketplace/marketplace-view";
-import type { McpConnectSubject } from "@openbot/ui/features/settings/McpConnectShell";
+} from "@whilo/ui/features/marketplace/marketplace-model";
+import { serverAddress } from "@whilo/ui/features/marketplace/marketplace-view";
+import type { McpConnectSubject } from "@whilo/ui/features/settings/McpConnectShell";
 import {
   isPluginAppConfig,
   type MarketplacePluginApp,
   type MarketplacePluginDetail,
   type MarketplacePluginPrompt,
-} from "@openbot/ui/features/settings/marketplace-plugins";
-import type { PluginUninstallPlan } from "@openbot/ui/features/settings/PluginUninstallDialog";
-import { currentText, useText } from "@openbot/ui/text";
-import { errorReference } from "@openbot/user-errors";
+} from "@whilo/ui/features/settings/marketplace-plugins";
+import type { PluginUninstallPlan } from "@whilo/ui/features/settings/PluginUninstallDialog";
+import { currentText, useText } from "@whilo/ui/text";
+import { errorReference } from "@whilo/user-errors";
 import { createEffect, createMemo, createSignal, createStore, onCleanup, untrack } from "solid-js";
 import { actionToast } from "../../action-toast";
 import { desktopAnalytics } from "../../analytics";
@@ -326,8 +326,14 @@ export function createMarketplaceController(props: MarketplaceControllerProps) {
   /** What the host listed last, a remove that waits for its Undo toast included. */
   const storedSkill = (agentId: string, skillId: string) =>
     skills.installed[agentId]?.find((skill) => skill.skillId === skillId);
-  const installedSkill = (agentId: string, skillId: string) =>
-    removalHeld(hostServerId(), agentId, skillId) ? undefined : storedSkill(agentId, skillId);
+  const installedSkill = (agentId: string, skillId: string) => {
+    if (removalHeld(hostServerId(), agentId, skillId)) return undefined;
+    if (skillId.startsWith("plugin:")) {
+      const pluginId = skillId.slice("plugin:".length);
+      return skills.installed[agentId]?.find((skill) => skill.skillId.startsWith(`bundled:${pluginId}:`));
+    }
+    return storedSkill(agentId, skillId);
+  };
   const installedSkills = (agentId: string): readonly InstalledSkill[] =>
     (skills.installed[agentId] ?? []).filter((skill) => !removalHeld(hostServerId(), agentId, skill.skillId));
   const agentName = (agentId: string) =>
@@ -452,13 +458,84 @@ export function createMarketplaceController(props: MarketplaceControllerProps) {
   }
 
   /**
+   * Installs and removes the whole bundle of a bundled plugin, one agent at a time. The plugin's
+   * skills land in the workspace lock exactly like a marketplace skill would, so the agent's $ mentions
+   * and the installed list see them; the dialog reads them back as one unit.
+   */
+  async function changePluginBundle(skill: MarketplaceSkillRef, change: MarketplaceSkillChange) {
+    const { t: text } = currentText();
+    const key = `skill:${skill.id}`;
+    if (skillBusy(skill.id)) return;
+    const port = calls().skills;
+    if (!port.installBundled || !port.uninstallBundled) {
+      setError(text("marketplace.error.pluginsLocalOnly"));
+      return;
+    }
+    if (untrack(() => props.hostServerId)) {
+      setError(text("marketplace.error.pluginsLocalOnly"));
+      return;
+    }
+    const pluginId = skill.id.slice("plugin:".length);
+    const plugin = BUNDLED_PLUGINS.find((entry) => entry.id === pluginId);
+    if (!plugin) return;
+    const names = new Map(agents().map((agent) => [agent.id, agent.name]));
+    const nameOf = (agentId: string) => names.get(agentId) ?? text("marketplace.thisAgent");
+    const installs = [...new Set(change.add)].filter((agentId) => names.has(agentId));
+    const removes = [...new Set(change.remove)].filter((agentId) => names.has(agentId));
+    mark(key, true);
+    setError(null);
+    const failed: string[] = [];
+    const reasons = new Set<string>();
+    let lastCause: unknown;
+    const pendingInstalls = installs.filter((agentId) => !installedSkill(agentId, skill.id));
+    const pendingRemoves = removes.filter((agentId) => installedSkill(agentId, skill.id));
+    const installBundle = port.installBundled;
+    const uninstallBundle = port.uninstallBundled;
+    for (const agentId of pendingInstalls) {
+      try {
+        await installBundle({ pluginId, agentId });
+      } catch (cause) {
+        failed.push(nameOf(agentId));
+        reasons.add(marketplaceErrorMessage(cause));
+        lastCause = cause;
+      }
+    }
+    for (const agentId of pendingRemoves) {
+      try {
+        await uninstallBundle({ pluginId, agentId });
+      } catch (cause) {
+        failed.push(nameOf(agentId));
+        reasons.add(marketplaceErrorMessage(cause));
+        lastCause = cause;
+      }
+    }
+    if (alive) for (const agentId of [...pendingInstalls, ...pendingRemoves]) await readInstalled(agentId);
+    mark(key, false);
+    const made = pendingInstalls.length + pendingRemoves.length - failed.length;
+    if (made > 0) {
+      const added = pendingInstalls.length >= pendingRemoves.length;
+      setNotice(
+        added
+          ? text("marketplace.notice.pluginInstalled", { name: plugin.name, count: pendingInstalls.length })
+          : text("marketplace.notice.pluginRemoved", { name: plugin.name, count: pendingRemoves.length }),
+      );
+    }
+    if (failed.length > 0)
+      setError(skillFailure(plugin.name, failed, reasons, pendingInstalls.length + pendingRemoves.length), lastCause);
+  }
+
+  /**
    * One change of the agents dialog. Adds install at once. A remove waits for the Undo toast: the
    * window shows the skill as removed, and the host removes it when the toast closes, also after the
    * window closed. Undo takes back the waiting removes and removes what this change installed. An
    * agent that refuses is named in one partial error: at its skill limit, or with a skill that
-   * OpenBot cannot remove.
+   * Whilo cannot remove.
    */
   async function changeSkill(skill: MarketplaceSkillRef, change: MarketplaceSkillChange) {
+    if (skill.id.startsWith("plugin:")) {
+      await changePluginBundle(skill, change);
+      return;
+    }
     const key = `skill:${skill.id}`;
     if (skillBusy(skill.id)) return;
     const host = untrack(() => props.hostServerId);

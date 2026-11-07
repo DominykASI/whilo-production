@@ -1,8 +1,8 @@
 import { spawn } from "node:child_process";
 import { createInterface } from "node:readline";
-import { type DynamicRecord, isDynamicRecord } from "@openbot/contracts/runtime-values";
-import { sourceText } from "@openbot/i18n/source";
-import { redactText, registerSecretValue } from "@openbot/logging";
+import { type DynamicRecord, isDynamicRecord } from "@whilo/contracts/runtime-values";
+import { sourceText } from "@whilo/i18n/source";
+import { redactText, registerSecretValue } from "@whilo/logging";
 import { Effect, Fiber } from "effect";
 import { cliSpawnTarget } from "./cli";
 import { type ProviderClientOperationError, ProviderSignInError, providerFailure } from "./provider-client-effects";
@@ -53,7 +53,7 @@ export const startAcpAuthentication = Effect.fnUntraced(function* (options: {
   /** Called when the server answered `logout`: what it kept is gone, whether the sign-in ends or not. */
   onLoggedOut?: () => void;
   /**
-   * Gemini prints its Google page instead of opening it, and OpenBot opens it, so a launch that fails
+   * Gemini prints its Google page instead of opening it, and Whilo opens it, so a launch that fails
    * shows an error. When the server opened it itself, a failure showed nothing (#3520).
    */
   openGoogleSignIn?: (url: string) => Promise<void>;
@@ -187,7 +187,7 @@ export const startAcpAuthentication = Effect.fnUntraced(function* (options: {
         params: {
           protocolVersion: 1,
           clientCapabilities: { fs: { readTextFile: false, writeTextFile: false }, terminal: false },
-          clientInfo: { name: "openbot", title: "OpenBot", version: "0.1.0" },
+          clientInfo: { name: "whilo", title: "Whilo", version: "0.1.0" },
         },
       });
       return Effect.sync(() => {

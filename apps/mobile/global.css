@@ -3,31 +3,31 @@
 
 @import "heroui-native/styles";
 
-@import "@openbot/brand/tokens.css";
-@import "@openbot/brand/tokens-native.css";
+@import "@whilo/brand/tokens.css";
+@import "@whilo/brand/tokens-native.css";
 
 @theme inline {
-  --color-sheet: var(--openbot-bg-sheet);
-  --color-grouped: var(--openbot-bg-grouped);
-  --color-grouped-secondary: var(--openbot-text-grouped-secondary);
-  --color-grouped-border: var(--openbot-border-grouped);
-  --radius-grouped: var(--openbot-radius-grouped);
-  --color-canvas: var(--openbot-bg-native-canvas);
-  --color-sidebar: var(--openbot-bg-native-sidebar);
-  --color-control: var(--openbot-bg-control);
-  --color-control-active: var(--openbot-bg-control-active);
-  --color-raised: var(--openbot-bg-surface-raised);
-  --color-text-secondary: var(--openbot-text-secondary);
-  --color-text-dim: var(--openbot-text-dim);
-  --color-accent-text: var(--openbot-accent-text);
-  --color-success-text: var(--openbot-success-text);
-  --color-warning-text: var(--openbot-warning-text);
-  --color-danger-text: var(--openbot-danger-text);
-  --color-brand-logo: var(--openbot-logo-production);
-  --color-action: var(--openbot-action);
-  --color-action-foreground: var(--openbot-action-foreground);
-  --color-drawer-scrim: var(--openbot-drawer-scrim);
-  --color-scroll-edge-overlay: var(--openbot-scroll-edge-overlay);
+  --color-sheet: var(--whilo-bg-sheet);
+  --color-grouped: var(--whilo-bg-grouped);
+  --color-grouped-secondary: var(--whilo-text-grouped-secondary);
+  --color-grouped-border: var(--whilo-border-grouped);
+  --radius-grouped: var(--whilo-radius-grouped);
+  --color-canvas: var(--whilo-bg-native-canvas);
+  --color-sidebar: var(--whilo-bg-native-sidebar);
+  --color-control: var(--whilo-bg-control);
+  --color-control-active: var(--whilo-bg-control-active);
+  --color-raised: var(--whilo-bg-surface-raised);
+  --color-text-secondary: var(--whilo-text-secondary);
+  --color-text-dim: var(--whilo-text-dim);
+  --color-accent-text: var(--whilo-accent-text);
+  --color-success-text: var(--whilo-success-text);
+  --color-warning-text: var(--whilo-warning-text);
+  --color-danger-text: var(--whilo-danger-text);
+  --color-brand-logo: var(--whilo-logo-production);
+  --color-action: var(--whilo-action);
+  --color-action-foreground: var(--whilo-action-foreground);
+  --color-drawer-scrim: var(--whilo-drawer-scrim);
+  --color-scroll-edge-overlay: var(--whilo-scroll-edge-overlay);
 
   --text-display: 2rem;
   --text-display--line-height: 2.375rem;
@@ -42,8 +42,8 @@
   --text-caption: 0.75rem;
   --text-caption--line-height: 1rem;
 
-  --tracking-openbot-tight: var(--openbot-tracking-tight);
-  --tracking-openbot-wide: var(--openbot-tracking-wide);
+  --tracking-whilo-tight: var(--whilo-tracking-tight);
+  --tracking-whilo-wide: var(--whilo-tracking-wide);
 }
 
 @layer theme {
@@ -53,46 +53,46 @@
     /* uniwind reads theme values only from @variant blocks, so a plain :root alias
      * loses to HeroUI's own near-black dark --background. */
     @variant dark {
-      --background: var(--openbot-bg-native-canvas);
+      --background: var(--whilo-bg-native-canvas);
       /* Only the Android menu draws on --overlay. HeroUI's light value is already #ffffff. */
-      --overlay: var(--openbot-bg-surface-raised);
+      --overlay: var(--whilo-bg-surface-raised);
     }
 
-    /* HeroUI consumes these aliases; OpenBot tokens remain the source of truth. */
-    --foreground: var(--openbot-text-primary);
-    --surface: var(--openbot-bg-surface);
-    --surface-foreground: var(--openbot-text-primary);
-    --surface-secondary: var(--openbot-bg-control);
-    --surface-secondary-foreground: var(--openbot-text-primary);
-    --surface-tertiary: var(--openbot-bg-surface-raised);
-    --surface-tertiary-foreground: var(--openbot-text-primary);
-    --overlay-foreground: var(--openbot-text-primary);
-    --backdrop: var(--openbot-bg-overlay);
-    --muted: var(--openbot-text-muted);
-    --default: var(--openbot-bg-control);
-    --default-foreground: var(--openbot-text-primary);
-    --accent: var(--openbot-accent);
-    --accent-foreground: var(--openbot-text-on-accent);
-    --success: var(--openbot-success);
-    --success-foreground: var(--openbot-text-on-status);
-    --warning: var(--openbot-warning);
-    --warning-foreground: var(--openbot-text-on-status);
-    --danger: var(--openbot-danger);
-    --danger-foreground: var(--openbot-text-on-accent);
-    --border: var(--openbot-border);
-    --separator: var(--openbot-border-strong);
-    --focus: var(--openbot-accent);
-    --link: var(--openbot-accent-text);
-    --field-background: var(--openbot-bg-control);
-    --field-foreground: var(--openbot-text-primary);
-    --field-placeholder: var(--openbot-text-muted);
-    --field-border: var(--openbot-border-strong);
+    /* HeroUI consumes these aliases; Whilo tokens remain the source of truth. */
+    --foreground: var(--whilo-text-primary);
+    --surface: var(--whilo-bg-surface);
+    --surface-foreground: var(--whilo-text-primary);
+    --surface-secondary: var(--whilo-bg-control);
+    --surface-secondary-foreground: var(--whilo-text-primary);
+    --surface-tertiary: var(--whilo-bg-surface-raised);
+    --surface-tertiary-foreground: var(--whilo-text-primary);
+    --overlay-foreground: var(--whilo-text-primary);
+    --backdrop: var(--whilo-bg-overlay);
+    --muted: var(--whilo-text-muted);
+    --default: var(--whilo-bg-control);
+    --default-foreground: var(--whilo-text-primary);
+    --accent: var(--whilo-accent);
+    --accent-foreground: var(--whilo-text-on-accent);
+    --success: var(--whilo-success);
+    --success-foreground: var(--whilo-text-on-status);
+    --warning: var(--whilo-warning);
+    --warning-foreground: var(--whilo-text-on-status);
+    --danger: var(--whilo-danger);
+    --danger-foreground: var(--whilo-text-on-accent);
+    --border: var(--whilo-border);
+    --separator: var(--whilo-border-strong);
+    --focus: var(--whilo-accent);
+    --link: var(--whilo-accent-text);
+    --field-background: var(--whilo-bg-control);
+    --field-foreground: var(--whilo-text-primary);
+    --field-placeholder: var(--whilo-text-muted);
+    --field-border: var(--whilo-border-strong);
 
     /* A 4 pt base produces the 8 / 12 / 16 px radius family used on desktop. */
     --radius: 0.25rem;
     --field-radius: 0.75rem;
-    --surface-shadow: var(--openbot-shadow-card);
-    --overlay-shadow: var(--openbot-shadow-overlay);
+    --surface-shadow: var(--whilo-shadow-card);
+    --overlay-shadow: var(--whilo-shadow-overlay);
     --field-shadow: 0 0 0 0 transparent inset;
   }
 }

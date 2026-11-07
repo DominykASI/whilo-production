@@ -14,15 +14,15 @@ import {
   parseApplyInstanceTransferInput,
   parseExportInstanceInput,
   resolveRemoteInstanceTransferResult,
-} from "@openbot/contracts/ipc";
-import { TEAM_API_ROUTES } from "@openbot/contracts/team-api-routes";
+} from "@whilo/contracts/ipc";
+import { TEAM_API_ROUTES } from "@whilo/contracts/team-api-routes";
 import {
   INSTANCE_TRANSFER_CAPABILITY,
   INSTANCE_TRANSFER_REMOTE_BYTES,
   INSTANCE_TRANSFER_ROUTES,
-} from "@openbot/contracts/team-protocol/instance-transfer-v1";
-import type { AppTranslate } from "@openbot/i18n";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/team-protocol/instance-transfer-v1";
+import type { AppTranslate } from "@whilo/i18n";
+import { sourceText } from "@whilo/i18n/source";
 import { Effect } from "effect";
 import { app, type BrowserWindow, dialog, type OpenDialogOptions, type SaveDialogOptions, shell } from "electron";
 import { runCauseEffect } from "../../backend/effect-boundary";
@@ -58,7 +58,7 @@ export function instanceTransferIpcHandlers({
     const date = new Date().toISOString().slice(0, 10);
     const options: SaveDialogOptions = {
       title: translate("dialog.saveTransfer"),
-      defaultPath: join(app.getPath("downloads"), `openbot-transfer-${date}.zip`),
+      defaultPath: join(app.getPath("downloads"), `whilo-transfer-${date}.zip`),
       filters,
       showsTagField: false,
     };

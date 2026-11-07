@@ -1,8 +1,8 @@
-import { customAgentIdOfModel } from "@openbot/contracts/agent-providers";
-import { developmentStartingModel } from "@openbot/contracts/development-defaults";
-import type { AgentModelId, AgentModelOption, AgentProviderStatus, CreateAgentInput } from "@openbot/contracts/ipc";
-import { defaultProviderModel, PICKER_PROVIDERS } from "@openbot/contracts/ipc";
-import { sourceText } from "@openbot/i18n/source";
+import { customAgentIdOfModel } from "@whilo/contracts/agent-providers";
+import { developmentStartingModel } from "@whilo/contracts/development-defaults";
+import type { AgentModelId, AgentModelOption, AgentProviderStatus, CreateAgentInput } from "@whilo/contracts/ipc";
+import { defaultProviderModel, PICKER_PROVIDERS } from "@whilo/contracts/ipc";
+import { sourceText } from "@whilo/i18n/source";
 import type { AgentProvider } from "../agent-client";
 import { DEFAULT_AGENT_PROVIDER } from "../agent-store";
 import { providerLabel } from "./thread-items";

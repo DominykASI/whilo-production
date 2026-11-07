@@ -2,21 +2,21 @@
 // only while its `auth.json` holds a credential. Then writes that file in two steps, an empty object
 // and then a credential, and checks that the Pi row is checked after each write and becomes
 // available with no restart and no user action (#2895).
-// `bun scripts/pi-sign-in-watch-e2e.ts`. Writes .openbot-build/pi-sign-in-watch-e2e/report.json.
+// `bun scripts/pi-sign-in-watch-e2e.ts`. Writes .whilo-build/pi-sign-in-watch-e2e/report.json.
 import assert from "node:assert/strict";
 import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import type { AgentProviderState } from "@openbot/contracts/ipc";
+import type { AgentProviderState } from "@whilo/contracts/ipc";
 import { Effect } from "effect";
 import { ConversationRuntime } from "../src/backend/agent/conversation-runtime";
 import { ProviderRuntime } from "../src/backend/agent/provider-runtime";
 import { AgentStore } from "../src/backend/agent-store";
 import { runCauseEffect } from "../src/backend/effect-boundary";
-import { OpenBotDatabase } from "../src/backend/openbot-database";
+import { WhiloDatabase } from "../src/backend/whilo-database";
 import { BUILT_IN_PROVIDER_DRIVERS, NO_PROVIDER_CREDENTIALS } from "../src/backend/provider-drivers";
 
-const OUT = resolve(import.meta.dirname, "../.openbot-build/pi-sign-in-watch-e2e");
+const OUT = resolve(import.meta.dirname, "../.whilo-build/pi-sign-in-watch-e2e");
 const WAIT_MS = 15_000;
 
 const FAKE_PI = `#!/usr/bin/env node
@@ -56,17 +56,17 @@ interface Report {
   error?: string;
 }
 
-const root = await mkdtemp(join(tmpdir(), "openbot-pi-sign-in-watch-e2e-"));
+const root = await mkdtemp(join(tmpdir(), "whilo-pi-sign-in-watch-e2e-"));
 const agentDirectory = join(root, "pi-agent");
 const log = join(root, "pi.jsonl");
 const executable = join(root, "bin", "pi");
 const report: Report = { passed: false };
 const saved = {
-  OPENBOT_PI_PATH: process.env.OPENBOT_PI_PATH,
+  WHILO_PI_PATH: process.env.WHILO_PI_PATH,
   PI_CODING_AGENT_DIR: process.env.PI_CODING_AGENT_DIR,
   FAKE_PI_LOG: process.env.FAKE_PI_LOG,
 };
-process.env.OPENBOT_PI_PATH = executable;
+process.env.WHILO_PI_PATH = executable;
 process.env.PI_CODING_AGENT_DIR = agentDirectory;
 process.env.FAKE_PI_LOG = log;
 
@@ -75,7 +75,7 @@ async function spawns(): Promise<number> {
   return text.split("\n").filter(Boolean).length;
 }
 
-const store = new AgentStore(join(root, "profile"), join(root, "home"), new OpenBotDatabase(join(root, "profile")));
+const store = new AgentStore(join(root, "profile"), join(root, "home"), new WhiloDatabase(join(root, "profile")));
 /** The Pi row state of each status event that changed it, in order. */
 const piStates: (AgentProviderState | undefined)[] = [];
 let onStatus = () => {};

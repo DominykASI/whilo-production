@@ -4,11 +4,11 @@ import {
   SPEECH_VOICES,
   type SpeechLanguage,
   type SpeechVoice,
-} from "@openbot/contracts/ipc";
-import { speechLanguageOf } from "@openbot/contracts/speech-language";
-import { SUPERTONIC_DENOISING_STEPS } from "@openbot/contracts/speech-models";
-import { speechTextFromMarkdown } from "@openbot/contracts/speech-text";
-import type { MobileTextKey } from "@openbot/i18n/mobile";
+} from "@whilo/contracts/ipc";
+import { speechLanguageOf } from "@whilo/contracts/speech-language";
+import { SUPERTONIC_DENOISING_STEPS } from "@whilo/contracts/speech-models";
+import { speechTextFromMarkdown } from "@whilo/contracts/speech-text";
+import type { MobileTextKey } from "@whilo/i18n/mobile";
 import { liveSpeechParts } from "@/features/chat/model/live-conversation";
 import { AUTOMATIC_DICTATION_LANGUAGE, useDictationLanguage } from "@/features/settings/model/dictation-language";
 import { phoneLanguages } from "@/shared/lib/phone-languages";

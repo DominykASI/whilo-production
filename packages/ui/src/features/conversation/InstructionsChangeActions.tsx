@@ -4,8 +4,8 @@
  * agent's text: the save sends that text, so main refuses it after a later change.
  */
 
-import type { AgentInstructionsChange } from "@openbot/contracts/ipc";
-import { Button, FileText, MarkerIcon, Undo2 } from "@openbot/ui";
+import type { AgentInstructionsChange } from "@whilo/contracts/ipc";
+import { Button, FileText, MarkerIcon, Undo2 } from "@whilo/ui";
 import type { JSX } from "@solidjs/web";
 import { createSignal, onSettled, Show } from "solid-js";
 import { useText } from "../../text";

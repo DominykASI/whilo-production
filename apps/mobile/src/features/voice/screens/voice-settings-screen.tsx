@@ -1,5 +1,5 @@
-import type { SpeechVoice } from "@openbot/contracts/ipc";
-import type { MobileTranslate } from "@openbot/i18n/mobile";
+import type { SpeechVoice } from "@whilo/contracts/ipc";
+import type { MobileTranslate } from "@whilo/i18n/mobile";
 import { router } from "expo-router";
 import { Button, Typography } from "heroui-native";
 import Check from "lucide-react-native/icons/check";
@@ -67,7 +67,7 @@ function useSupertonicStatus(): string {
 
 /** The check mark of the chosen row, in the accent colour, as in the other settings lists. */
 function useCheckMark() {
-  const accent = String(useCSSVariable("--openbot-accent"));
+  const accent = String(useCSSVariable("--whilo-accent"));
   return (checked: boolean) => (checked ? <Check size={18} color={accent} strokeWidth={2} /> : null);
 }
 

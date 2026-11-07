@@ -5,15 +5,15 @@ import type {
   ConversationMessageSender,
   SaveAgentProfileInput,
   SidebarLayoutSnapshot,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   agentAutomationAllowed,
   agentComputerUseEnabled,
   agentQuickAcknowledgementEnabled,
   decodeSaveAgentProfileResult,
   workspaceAccessEnforced,
-} from "@openbot/contracts/ipc";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/ipc";
+import { sourceText } from "@whilo/i18n/source";
 import { Effect, Exit, Schema, Semaphore } from "effect";
 import type { AgentStore } from "../agent-store";
 import { causeHelpers } from "../effect-boundary";

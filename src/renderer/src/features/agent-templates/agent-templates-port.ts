@@ -1,4 +1,4 @@
-import type { OpenBotDesktopApi } from "@openbot/contracts/ipc";
+import type { WhiloDesktopApi } from "@whilo/contracts/ipc";
 
 /**
  * What the publish and install dialogs reach in main: the agent templates of this computer, and
@@ -6,10 +6,10 @@ import type { OpenBotDesktopApi } from "@openbot/contracts/ipc";
  */
 export interface AgentTemplatesPort {
   agent: Pick<
-    OpenBotDesktopApi["agent"],
+    WhiloDesktopApi["agent"],
     "addTemplateAgent" | "previewAgentTemplate" | "publishAgentTemplate" | "unpublishAgentTemplate"
   >;
-  agentTemplates: Pick<OpenBotDesktopApi["agentTemplates"], "get" | "install" | "preview" | "publish" | "unpublish">;
+  agentTemplates: Pick<WhiloDesktopApi["agentTemplates"], "get" | "install" | "preview" | "publish" | "unpublish">;
 }
 
 /** What the publish dialog reaches. The web client passes the host's. */
@@ -21,7 +21,7 @@ export interface AgentTemplateInstallCalls {
   agentTemplates: Pick<AgentTemplatesPort["agentTemplates"], "get" | "install">;
 }
 
-/** Read on each call: tests and stories replace `window.openbot` per case. */
+/** Read on each call: tests and stories replace `window.whilo` per case. */
 export function agentTemplatesPort(): AgentTemplatesPort {
-  return window.openbot;
+  return window.whilo;
 }

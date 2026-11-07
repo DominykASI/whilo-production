@@ -1,0 +1,8 @@
+# Rotates the container logs of the Whilo instances. whilo-logrotate.timer starts it.
+# `whilo-instance setup` installs it. See docs/docker.md#logs.
+[Unit]
+Description=Rotate the container logs of the Whilo instances
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/logrotate --state /var/lib/logrotate/whilo-docker.status /etc/whilo-docker/logrotate.conf

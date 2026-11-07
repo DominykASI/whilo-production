@@ -7,19 +7,19 @@
 // The other member answers, and then a typed "continue" to the stopped one resumes the same request.
 // The follow-up becomes the request of that task, so this is the hard case. It checks that the
 // stop left no empty reply row, and that the packet of the resumed member does not carry the reply
-// of the member that answered first. OpenBot does not store the packet, so the script reads it from
+// of the member that answered first. Whilo does not store the packet, so the script reads it from
 // the Claude session transcript of the resumed member. It finds that session in the dev database, in
 // read-only mode. It makes its own channel and deletes it. Writes
-// .openbot-build/channel-reply-quality-e2e/report.json.
+// .whilo-build/channel-reply-quality-e2e/report.json.
 
 import { Database } from "bun:sqlite";
 import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { agentProviderDescriptor } from "@openbot/contracts/agent-providers";
-import type { ChannelPage, ChannelTask } from "@openbot/contracts/ipc";
-import { isDynamicRecord } from "@openbot/contracts/runtime-values";
+import { agentProviderDescriptor } from "@whilo/contracts/agent-providers";
+import type { ChannelPage, ChannelTask } from "@whilo/contracts/ipc";
+import { isDynamicRecord } from "@whilo/contracts/runtime-values";
 import { ChannelClient, connectChannelE2e, waitFor, writeReport } from "./channel-e2e-support";
 import { resolveDevelopmentAppDataRoot } from "./development-state-paths";
 

@@ -4,7 +4,7 @@ import { pricingPageText } from "../components/pricing/pricing-page-text";
 import { loadPageText } from "../lib/page-text";
 import { readPricingOffer } from "../lib/pricing-offer";
 import { PRICING_ROUTE } from "../lib/pricing-page";
-import { OPENBOT_SOCIAL_IMAGE_ALT, OPENBOT_SOCIAL_IMAGE_URL, OPENBOT_X_HANDLE } from "../lib/site-metadata";
+import { WHILO_SOCIAL_IMAGE_ALT, WHILO_SOCIAL_IMAGE_URL, WHILO_X_HANDLE } from "../lib/site-metadata";
 
 export const Route = createFileRoute("/pricing")({
   loader: async ({ context }) => {
@@ -22,19 +22,19 @@ export const Route = createFileRoute("/pricing")({
         { title: text.title },
         { name: "description", content: text.description },
         { property: "og:type", content: "website" },
-        { property: "og:site_name", content: "OpenBot" },
+        { property: "og:site_name", content: "Whilo" },
         { property: "og:locale", content: "en_US" },
         { property: "og:url", content: url },
         { property: "og:title", content: text.title },
         { property: "og:description", content: text.description },
-        { property: "og:image", content: OPENBOT_SOCIAL_IMAGE_URL },
-        { property: "og:image:alt", content: OPENBOT_SOCIAL_IMAGE_ALT },
+        { property: "og:image", content: WHILO_SOCIAL_IMAGE_URL },
+        { property: "og:image:alt", content: WHILO_SOCIAL_IMAGE_ALT },
         { name: "twitter:card", content: "summary_large_image" },
-        { name: "twitter:site", content: OPENBOT_X_HANDLE },
+        { name: "twitter:site", content: WHILO_X_HANDLE },
         { name: "twitter:title", content: text.title },
         { name: "twitter:description", content: text.description },
-        { name: "twitter:image", content: OPENBOT_SOCIAL_IMAGE_URL },
-        { name: "twitter:image:alt", content: OPENBOT_SOCIAL_IMAGE_ALT },
+        { name: "twitter:image", content: WHILO_SOCIAL_IMAGE_URL },
+        { name: "twitter:image:alt", content: WHILO_SOCIAL_IMAGE_ALT },
       ],
       links: [{ rel: "canonical", href: url }],
     };

@@ -12,15 +12,15 @@ import {
   parseApplyAgentImportInput,
   parseApplyHermesImportInput,
   resolveRemoteAgentImportResult,
-} from "@openbot/contracts/ipc";
-import { TEAM_API_ROUTES } from "@openbot/contracts/team-api-routes";
+} from "@whilo/contracts/ipc";
+import { TEAM_API_ROUTES } from "@whilo/contracts/team-api-routes";
 import {
   AGENT_IMPORT_CAPABILITY,
   AGENT_IMPORT_ROUTES,
   AGENT_IMPORT_UPLOAD_BYTES,
-} from "@openbot/contracts/team-protocol/agent-import-v1";
-import type { AppTranslate } from "@openbot/i18n";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/team-protocol/agent-import-v1";
+import type { AppTranslate } from "@whilo/i18n";
+import { sourceText } from "@whilo/i18n/source";
 import { app, type BrowserWindow, dialog, type OpenDialogOptions, type SaveDialogOptions } from "electron";
 import { runCauseEffect } from "../../backend/effect-boundary";
 import type { AgentImportService } from "../agent-import-service";

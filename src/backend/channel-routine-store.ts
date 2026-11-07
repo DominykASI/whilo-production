@@ -4,8 +4,8 @@ import type {
   ChannelRoutineRunStatus,
   CreateChannelRoutineInput,
   UpdateChannelRoutineInput,
-} from "@openbot/contracts/ipc";
-import type { OpenBotDatabase } from "./openbot-database";
+} from "@whilo/contracts/ipc";
+import type { WhiloDatabase } from "./whilo-database";
 import {
   type DueRoutine,
   type OwnedRoutine,
@@ -30,7 +30,7 @@ export interface DueChannelRoutine {
  * joins a run to the tasks it produced.
  */
 export class ChannelRoutineStore extends RoutineStore {
-  constructor(database: OpenBotDatabase) {
+  constructor(database: WhiloDatabase) {
     super(database, ROUTINE_TABLES.channel);
   }
 

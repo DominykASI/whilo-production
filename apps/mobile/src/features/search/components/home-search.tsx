@@ -1,4 +1,4 @@
-import { isAgentTaskOpen, taskNeedsYou } from "@openbot/team-client/agent-tasks";
+import { isAgentTaskOpen, taskNeedsYou } from "@whilo/team-client/agent-tasks";
 import * as Crypto from "expo-crypto";
 import { type Href, router, useFocusEffect } from "expo-router";
 import type { NativeStackNavigationProp } from "expo-router/native-stack";
@@ -644,7 +644,7 @@ export function HomeSearchBar({
     "default",
     "background",
   ]);
-  const danger = String(useCSSVariable("--openbot-danger-text"));
+  const danger = String(useCSSVariable("--whilo-danger-text"));
   // The last result stays in the field while it fades out, so its text and color do not change then.
   const [shownResult, setShownResult] = useState(search.result);
   if (search.result && search.result !== shownResult) setShownResult(search.result);

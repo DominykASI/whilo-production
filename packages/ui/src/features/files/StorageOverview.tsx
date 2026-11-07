@@ -1,7 +1,7 @@
-import { agentProviderDescriptor, type ManagedProviderId } from "@openbot/contracts/agent-providers";
-import { CLEARABLE_STORAGE_CATEGORIES, type ClearableStorageCategory } from "@openbot/contracts/ipc";
-import { isOneOf } from "@openbot/contracts/runtime-values";
-import type { AppFormat, AppTextKey, AppTranslate } from "@openbot/i18n";
+import { agentProviderDescriptor, type ManagedProviderId } from "@whilo/contracts/agent-providers";
+import { CLEARABLE_STORAGE_CATEGORIES, type ClearableStorageCategory } from "@whilo/contracts/ipc";
+import { isOneOf } from "@whilo/contracts/runtime-values";
+import type { AppFormat, AppTextKey, AppTranslate } from "@whilo/i18n";
 import {
   Button,
   ChevronRight,
@@ -11,10 +11,10 @@ import {
   RefreshCw,
   Skeleton,
   TriangleAlert,
-} from "@openbot/ui";
-import { SettingsBackIcon } from "@openbot/ui/components/SettingsPanel";
-import type { AgentProfile } from "@openbot/ui/data";
-import { useText } from "@openbot/ui/text";
+} from "@whilo/ui";
+import { SettingsBackIcon } from "@whilo/ui/components/SettingsPanel";
+import type { AgentProfile } from "@whilo/ui/data";
+import { useText } from "@whilo/ui/text";
 import type { JSX } from "@solidjs/web";
 import { createMemo, createSignal, createUniqueId, For, Show } from "solid-js";
 import { AgentAvatar } from "../agents/AgentAvatar";
@@ -47,7 +47,7 @@ export interface StorageOverviewProps {
   /** ISO time of the last completed scan. */
   scannedAt?: string | null;
   breakdown: readonly StorageBreakdown[];
-  /** Free space on the disk that holds the OpenBot folder. */
+  /** Free space on the disk that holds the Whilo folder. */
   freeBytes?: number | null;
   agents: readonly AgentProfile[];
   agentUsage: readonly AgentStorageRow[];
@@ -70,14 +70,14 @@ export interface StorageOverviewProps {
   onRemoveRuntimes?: () => void | Promise<void>;
   onPreviewFile: (file: StoredFileRow) => void;
   onFileAction: (file: StoredFileRow, action: StoredFileAction) => void | Promise<void>;
-  /** Shown above the OpenBot folder: the use of the whole machine, when the viewer can see it. */
+  /** Shown above the Whilo folder: the use of the whole machine, when the viewer can see it. */
   machine?: JSX.Element;
 }
 
 const LARGEST_CHATS = 5;
 
 /**
- * The Storage page: how much space OpenBot takes on one computer, which agents and chats take it,
+ * The Storage page: how much space Whilo takes on one computer, which agents and chats take it,
  * every file in one list, and what can go without losing work. Chats and workspaces are never
  * cleared from here; the user deletes them where they live.
  */
@@ -150,7 +150,7 @@ export function StorageOverview(props: StorageOverviewProps) {
           <div class="storage-summary-heading">
             <div>
               <h3 id={`${headingId}-summary`} class="storage-summary-label">
-                {t("files.storage.openBotOn", { host: props.hostName })}
+                {t("files.storage.whiloOn", { host: props.hostName })}
               </h3>
               <Show
                 when={props.state !== "scanning" || total() > 0}

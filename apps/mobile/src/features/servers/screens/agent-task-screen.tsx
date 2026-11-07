@@ -1,5 +1,5 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import type { AgentTask, AgentTasksSnapshot, RespondToPromptInput } from "@openbot/contracts/ipc";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import type { AgentTask, AgentTasksSnapshot, RespondToPromptInput } from "@whilo/contracts/ipc";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import * as Crypto from "expo-crypto";
 import { isLiquidGlassAvailable } from "expo-glass-effect";

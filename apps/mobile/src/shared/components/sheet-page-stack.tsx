@@ -21,7 +21,7 @@ export function SheetPageStack({
   opaqueHeader?: boolean;
   clearHeader?: boolean;
 }) {
-  const background = String(useCSSVariable("--openbot-bg-sheet"));
+  const background = String(useCSSVariable("--whilo-bg-sheet"));
   const transparentHeader = clearHeader || (isIOS && !opaqueHeader);
   return (
     <Stack

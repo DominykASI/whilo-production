@@ -1,9 +1,9 @@
-import type { ServerSummary } from "@openbot/contracts/ipc";
-import { CONNECTORS, type ConnectorId } from "@openbot/ui/features/connectors/connectors";
+import type { ServerSummary } from "@whilo/contracts/ipc";
+import { CONNECTORS, type ConnectorId } from "@whilo/ui/features/connectors/connectors";
 import { remoteAdminServer } from "../servers/server-capabilities";
 
 /**
- * Where a server can use a connector. `local-only`: only the computer that runs OpenBot can connect
+ * Where a server can use a connector. `local-only`: only the computer that runs Whilo can connect
  * it, because its app or its browser runs there. `hidden`: this account does not manage the
  * server's connectors, or the host does not serve them.
  */

@@ -3,7 +3,7 @@ import ExpoModulesCore
 import SherpaOnnxC
 import UIKit
 
-/// The files of the Supertonic 3 export, as `@openbot/contracts/speech-models` downloads them.
+/// The files of the Supertonic 3 export, as `@whilo/contracts/speech-models` downloads them.
 private let supertonicFiles = (
   durationPredictor: "duration_predictor.int8.onnx",
   textEncoder: "text_encoder.int8.onnx",
@@ -82,7 +82,7 @@ private enum SpeechError: Error {
   case modelLoadFailed
 }
 
-/// The files of the Parakeet TDT 0.6B v3 export, as `@openbot/contracts/speech-models` downloads them.
+/// The files of the Parakeet TDT 0.6B v3 export, as `@whilo/contracts/speech-models` downloads them.
 private let parakeetFiles = (
   encoder: "encoder.int8.onnx",
   decoder: "decoder.int8.onnx",
@@ -178,7 +178,7 @@ private let interimFrames = 10
 /// The microphone, converted to 16 kHz mono. In `transcribe` mode it cuts the speech into segments
 /// at the user's pauses and recognizes each one with Parakeet; in `stream` mode it sends the audio.
 private final class SpeechCapture {
-  let queue = DispatchQueue(label: "run.openbot.speech.capture", qos: .userInitiated)
+  let queue = DispatchQueue(label: "run.whilo.speech.capture", qos: .userInitiated)
   /// Its own engine: the playback engine changes its configuration when a reply starts.
   let engine = AVAudioEngine()
   private let target = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: captureSampleRate, channels: 1, interleaved: false)!
@@ -415,7 +415,7 @@ private final class SpeechPlayer {
   private var scheduled: [String] = []
   private let onStart: (String) -> Void
   private let onDone: (String) -> Void
-  let queue = DispatchQueue(label: "run.openbot.speech.playback")
+  let queue = DispatchQueue(label: "run.whilo.speech.playback")
 
   init(onStart: @escaping (String) -> Void, onDone: @escaping (String) -> Void) {
     self.onStart = onStart
@@ -479,11 +479,11 @@ private final class SpeechPlayer {
 }
 
 public class SpeechModule: Module {
-  private let synthesis = DispatchQueue(label: "run.openbot.speech.synthesis", qos: .userInitiated)
+  private let synthesis = DispatchQueue(label: "run.whilo.speech.synthesis", qos: .userInitiated)
   private var voice: SupertonicVoice?
   /// Only `recognitionQueue` reads and writes it.
   private var recognizer: ParakeetRecognizer?
-  private let recognitionQueue = DispatchQueue(label: "run.openbot.speech.recognition", qos: .userInitiated)
+  private let recognitionQueue = DispatchQueue(label: "run.whilo.speech.recognition", qos: .userInitiated)
   private var observers: [NSObjectProtocol] = []
   private lazy var capture = SpeechCapture(
     recognition: recognitionQueue,
@@ -517,7 +517,7 @@ public class SpeechModule: Module {
   }
 
   public func definition() -> ModuleDefinition {
-    Name("OpenBotSpeech")
+    Name("WhiloSpeech")
 
     Events("onSpeechStart", "onSpeechDone", "onSpeechError", "onCaptureLevel", "onCaptureAudio", "onCaptureText", "onCaptureEnd")
 

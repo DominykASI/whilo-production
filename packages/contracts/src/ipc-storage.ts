@@ -144,8 +144,8 @@ export interface OpenStoredFileInput {
 }
 
 /**
- * The provider CLI downloads on this computer that OpenBot can remove now: the versions that no
- * OpenBot app uses any more, and the whole download of each provider in `providers`.
+ * The provider CLI downloads on this computer that Whilo can remove now: the versions that no
+ * Whilo app uses any more, and the whole download of each provider in `providers`.
  */
 export interface RemovableRuntimes {
   bytes: number;
@@ -153,7 +153,7 @@ export interface RemovableRuntimes {
   providers: ManagedProviderId[];
 }
 
-/** The downloaded versions of one provider CLI that OpenBot can remove now. */
+/** The downloaded versions of one provider CLI that Whilo can remove now. */
 export interface ProviderRuntimeDownload {
   bytes: number;
   /** How many versions of the CLI those bytes hold. */

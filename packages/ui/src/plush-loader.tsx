@@ -19,7 +19,7 @@ export const PLUSH_MASCOT_BODY = { cy: 0.511, w: 0.992, h: 0.967 } as const;
 const BALLS = [ballLilac, ballMint, ballPink];
 
 /**
- * The lilac OpenBot plush. Each layer moves on its own: the body breathes, the eye pair looks
+ * The lilac Whilo plush. Each layer moves on its own: the body breathes, the eye pair looks
  * around, and each eye blinks. The eye layers cover the whole body, so they line up without offsets.
  * The parent sets the width with `--ui-plush-size`.
  */

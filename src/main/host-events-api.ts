@@ -11,8 +11,8 @@ import type {
   SaveEventRoutineResult,
   WebhookSecret,
   WebhookTestResult,
-} from "@openbot/contracts/ipc-events";
-import { matchingSourceKeys } from "@openbot/i18n/source";
+} from "@whilo/contracts/ipc-events";
+import { matchingSourceKeys } from "@whilo/i18n/source";
 import { type Effect, Schema } from "effect";
 
 /** The safe error boundary shared by local and Team API event management. */

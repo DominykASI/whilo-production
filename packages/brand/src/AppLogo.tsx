@@ -1,5 +1,18 @@
-import { createEffect, createSignal, flush, onCleanup } from "solid-js";
-import { APP_LOGO_CORNER, APP_LOGO_EYE_POINTS, APP_LOGO_SIZE } from "./app-logo-shape";
+import { createEffect, createSignal, For, flush, onCleanup } from "solid-js";
+import { APP_LOGO_CORNER, APP_LOGO_SIZE, APP_LOGO_SPARKLES, APP_LOGO_W_PATH } from "./app-logo-shape";
+
+/** A four-point star: each arm is a curve that pinches at the center, so the points stay sharp. */
+function sparklePath(cx: number, cy: number, arm: number): string {
+  const waist = arm * 0.16;
+  return [
+    `M${cx} ${cy - arm}`,
+    `Q${cx + waist} ${cy - waist} ${cx + arm} ${cy}`,
+    `Q${cx + waist} ${cy + waist} ${cx} ${cy + arm}`,
+    `Q${cx - waist} ${cy + waist} ${cx - arm} ${cy}`,
+    `Q${cx - waist} ${cy - waist} ${cx} ${cy - arm}`,
+    "Z",
+  ].join(" ");
+}
 
 export type AppLogoAnimation = "none" | "blink" | "look-around" | "surprised";
 export type AppLogoVariant = "production" | "dev" | "preview";
@@ -142,7 +155,7 @@ export function AppLogo(props: AppLogoProps) {
       data-variant={props.variant}
       viewBox={`0 0 ${APP_LOGO_SIZE} ${APP_LOGO_SIZE}`}
       aria-hidden={props.interactive ? undefined : "true"}
-      aria-label={props.interactive ? "Animate OpenBot logo" : undefined}
+      aria-label={props.interactive ? "Animate Whilo logo" : undefined}
       role={props.interactive ? "button" : undefined}
       tabindex={props.interactive ? 0 : undefined}
       onClick={handleClick}
@@ -157,12 +170,17 @@ export function AppLogo(props: AppLogoProps) {
         rx={APP_LOGO_CORNER}
         ry={APP_LOGO_CORNER}
       />
-      <g class="app-logo-eye-motion">
-        <polyline class="app-logo-eye app-logo-eye-left" points={APP_LOGO_EYE_POINTS.left} />
+      <g class="app-logo-mark-motion">
+        <path class="app-logo-mark" d={APP_LOGO_W_PATH} />
       </g>
-      <g class="app-logo-eye-motion">
-        <polyline class="app-logo-eye app-logo-eye-right" points={APP_LOGO_EYE_POINTS.right} />
-      </g>
+      <For each={APP_LOGO_SPARKLES}>
+        {(sparkle, index) => (
+          <path
+            class={index() === 0 ? "app-logo-sparkle app-logo-sparkle-near" : "app-logo-sparkle"}
+            d={sparklePath(sparkle.cx, sparkle.cy, sparkle.arm)}
+          />
+        )}
+      </For>
     </svg>
   );
 }

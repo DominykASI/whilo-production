@@ -8,7 +8,7 @@
 // blank cap on a 128K window (the corrected repro) must get the 16,384 guess rather than OpenCode's
 // 32,000, and a small window must get half the window.
 // `OPENCODE_CLI=<opencode> bun run test:opencode-custom-model`.
-// Writes .openbot-build/opencode-custom-model/report.json.
+// Writes .whilo-build/opencode-custom-model/report.json.
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
@@ -17,7 +17,7 @@ import { createServer as createTcpServer } from "node:net";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { promisify } from "node:util";
-import { sourceText } from "@openbot/i18n/source";
+import { sourceText } from "@whilo/i18n/source";
 import type { AgentClient } from "../src/backend/agent-client";
 import { resolveOpencodeCli } from "../src/backend/cli";
 import { runCauseEffect } from "../src/backend/effect-boundary";
@@ -26,7 +26,7 @@ import { getArray, getString, isRecord } from "../src/backend/protocol";
 import { requireProviderDriver } from "../src/backend/provider-drivers";
 import { runTurn, startThread, stopClients } from "./provider-fakes/host";
 
-const OUT = resolve(import.meta.dirname, "../.openbot-build/opencode-custom-model");
+const OUT = resolve(import.meta.dirname, "../.whilo-build/opencode-custom-model");
 const ENDPOINT = "spark";
 const DEFAULT_MODEL = "default-model";
 const AGENT_MODEL = "agent-model";
@@ -60,7 +60,7 @@ interface Report {
 }
 
 const report: Report = { passed: false, requests: [], turns: [] };
-const root = await mkdtemp(join(tmpdir(), "openbot-opencode-model-e2e-"));
+const root = await mkdtemp(join(tmpdir(), "whilo-opencode-model-e2e-"));
 const clients: AgentClient[] = [];
 const run = promisify(execFile);
 
@@ -126,7 +126,7 @@ const server = createServer((request: IncomingMessage, response: ServerResponse)
   });
 });
 
-/** A free TCP port for OpenCode's managed service, so the test does not meet a running OpenBot's. */
+/** A free TCP port for OpenCode's managed service, so the test does not meet a running Whilo's. */
 async function freePort(): Promise<number> {
   const probe = createTcpServer();
   await new Promise<void>((listening) => probe.listen(0, "127.0.0.1", listening));
@@ -156,7 +156,7 @@ try {
     await mkdir(join(root, folder), { recursive: true });
   }
   // The user's own OpenCode config names a default and a small model of the same server, as a
-  // llama-swap user's can. OpenCode asks the small model for a title unless OpenBot turns titles off.
+  // llama-swap user's can. OpenCode asks the small model for a title unless Whilo turns titles off.
   await mkdir(join(root, "config", "opencode"), { recursive: true });
   await writeFile(
     join(root, "config", "opencode", "opencode.json"),
@@ -233,7 +233,7 @@ try {
   const others = report.requests.filter(
     (request) => request.auth === undefined && request.model !== null && !known.has(request.model),
   );
-  assert.deepEqual(others, [], "Each request must name a model OpenBot configured.");
+  assert.deepEqual(others, [], "Each request must name a model Whilo configured.");
   for (const [model, budget] of budgets) {
     const seen = report.requests.filter((request) => request.model === model);
     assert.ok(seen.length > 0, `The endpoint got no request for ${model}.`);
@@ -241,7 +241,7 @@ try {
       assert.equal(
         request.maxCompletionTokens,
         budget,
-        `${model} must ask for the ${budget}-token budget OpenBot wrote, not ${request.maxCompletionTokens}.`,
+        `${model} must ask for the ${budget}-token budget Whilo wrote, not ${request.maxCompletionTokens}.`,
       );
     }
   }

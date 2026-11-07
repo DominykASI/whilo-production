@@ -2,12 +2,12 @@
  * Whether a provider diagnostic is about an MCP server rather than about the agent's work.
  *
  * A CLI writes its MCP subsystem's failures to the same stderr as its own. OpenCode reads the user's
- * MCP list from their own files, so OpenBot neither owns those servers nor can act on them, and a
+ * MCP list from their own files, so Whilo neither owns those servers nor can act on them, and a
  * server that does not start leaves the turn running with fewer tools. Two of them arrive on every
- * restart, because a server spawns per session and OpenBot opens a short session to read the model
+ * restart, because a server spawns per session and Whilo opens a short session to read the model
  * list. That belongs in the log, not in an error the user is asked to read.
  *
- * OpenBot's own bridge servers carry its name, and stay visible: a failure there is a failure of
+ * Whilo's own bridge servers carry its name, and stay visible: a failure there is a failure of
  * this app. So does a server this app configured - the user asked for it here, and the reason it
  * does not start is something only they can fix. `configuredNames` is what separates the two: a
  * server the user configured in their own provider files is still nobody's failure but theirs.
@@ -20,7 +20,7 @@
  * provider writes it.
  */
 export function isMcpSubsystemDiagnostic(message: string, configuredNames: readonly string[] = []): boolean {
-  if (/openbot/i.test(message)) return false;
+  if (/whilo/i.test(message)) return false;
   if (configuredNames.some((name) => name && message.includes(name))) return false;
   return /\b(mcp|rmcp)\b|\bworker quit with (?:fatal|join error|reason):/i.test(message);
 }
@@ -36,17 +36,17 @@ export function isMcpSubsystemDiagnostic(message: string, configuredNames: reado
  * nothing to do about it. No turn, model switch, or sign-in reads that export, so it belongs in the
  * log.
  *
- * Only the exporter's own subsystem names count. A message that names OpenBot, or a network failure
+ * Only the exporter's own subsystem names count. A message that names Whilo, or a network failure
  * that does not name telemetry, is the provider's work and stays visible.
  */
 export function isTelemetryExportDiagnostic(message: string): boolean {
-  if (/openbot/i.test(message)) return false;
+  if (/whilo/i.test(message)) return false;
   return /\b(?:batch(?:span|log|logrecord)processor|(?:span|log|logrecord|metric)exporter|opentelemetry|otlp|otel)\b/i.test(
     message,
   );
 }
 
-/** What OpenBot keeps of one echo: the method and the error text, never the request body. */
+/** What Whilo keeps of one echo: the method and the error text, never the request body. */
 export interface AcpRequestEcho {
   method: string | null;
   error: string | null;
@@ -57,11 +57,11 @@ export interface AcpRequestEcho {
  *
  * An agent built on the TypeScript ACP SDK, such as Cline's CLI, writes `Error handling request`
  * with the request and its error to stderr each time it answers a request with an error. The same
- * error reaches OpenBot as the reply, and the call that waits for it reports it. A signed-out Cline
+ * error reaches Whilo as the reply, and the call that waits for it reports it. A signed-out Cline
  * answers the model-list session with "Authentication required", and the user met the copy as a
  * "Provider error" toast just after the download. It belongs in the log.
  *
- * The SDK prints both objects over several lines, which reach OpenBot as one record each, so the
+ * The SDK prints both objects over several lines, which reach Whilo as one record each, so the
  * reader follows the brackets to the end of the error object. Call it with every record, before any
  * other filter: a line inside the echo, such as `message: "Internal error",`, reads as an error of
  * its own. It returns the echo when its last line arrives, `null` while one is still open, and
@@ -141,7 +141,7 @@ export function isToolCallDiagnostic(message: string): boolean {
 /**
  * Whether a provider diagnostic is Grok's own record of a failed usage reading.
  *
- * OpenBot reads Grok's usage with `_x.ai/billing`, and the CLI fetches it from Grok's billing
+ * Whilo reads Grok's usage with `_x.ai/billing`, and the CLI fetches it from Grok's billing
  * service. When that fetch fails, the CLI answers the request with the error and also logs
  * `ERROR billing: upstream request failed …` on stderr. The answer already shows the usage as
  * unavailable. The user met the stderr copy as a "Provider error" toast on each usage refresh, with
@@ -159,7 +159,7 @@ export function isUsageReadDiagnostic(message: string): boolean {
  *
  * The TypeScript ACP SDK that a Node agent is built on writes `Error handling request`, the whole
  * request and the error to stderr each time a handler fails, and then sends the same error as the
- * JSON-RPC answer. OpenBot reports that answer where the request was made: a failed prompt in the
+ * JSON-RPC answer. Whilo reports that answer where the request was made: a failed prompt in the
  * chat. The stderr copy reached the user as an `Error handling request {` toast, with nothing to act
  * on and the request's own fields in it (#1193). Newer SDKs write `Error handling notification` for a
  * notification, which has no answer and no action for the user either.

@@ -14,8 +14,8 @@ import {
   agentTemplateShareOrigin,
   createAgentTemplateShareUrl,
   isAgentTemplateId,
-} from "@openbot/contracts/agent-template-links";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+} from "@whilo/contracts/agent-template-links";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import {
   AGENT_TEMPLATE_LIMITS,
   type AgentSummary,
@@ -36,10 +36,10 @@ import {
   type PublishAgentTemplateInput,
   type RoutineSchedule,
   toAgentTemplateSnapshot,
-} from "@openbot/contracts/ipc";
-import { isDynamicRecord, isString } from "@openbot/contracts/runtime-values";
-import { sourceText } from "@openbot/i18n/source";
-import { redactText } from "@openbot/logging";
+} from "@whilo/contracts/ipc";
+import { isDynamicRecord, isString } from "@whilo/contracts/runtime-values";
+import { sourceText } from "@whilo/i18n/source";
+import { redactText } from "@whilo/logging";
 import { Effect, Result, Schema } from "effect";
 import { causeHelpers } from "../backend/effect-boundary";
 import { imageMimeType, localSchedule, toArrayBuffer, validTimezone } from "./agent-marketplace-service";
@@ -79,7 +79,7 @@ function snapshotProblemText(problem: AgentTemplateSnapshotProblem): string {
 }
 
 /** Embedded skills are written here in the new agent's workspace, added to the library, and removed. */
-const SKILL_STAGING = ".openbot/template-skills";
+const SKILL_STAGING = ".whilo/template-skills";
 
 interface AgentTemplateAuth {
   requestAuthorized<T>(
@@ -236,7 +236,7 @@ export class AgentTemplateService {
       return {
         ...detail,
         // A template published before its owner's copy of a managed skill was recognized carries that
-        // copy. The new agent gets OpenBot's own, and installing the copy would fail on its folder.
+        // copy. The new agent gets Whilo's own, and installing the copy would fail on its folder.
         skills: detail.skills.filter((skill) => skill.kind !== "embedded" || !MANAGED_SKILL_SLUGS.has(skill.slug)),
         avatarUrl: detail.avatarUrl ? this.auth.resolveApiUrl(detail.avatarUrl) : null,
       };

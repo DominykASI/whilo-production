@@ -3,8 +3,8 @@ import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { PassThrough } from "node:stream";
-import type { ServerSummary } from "@openbot/contracts/ipc";
-import { createOpenBotLogger, toLogValue } from "@openbot/logging";
+import type { ServerSummary } from "@whilo/contracts/ipc";
+import { createWhiloLogger, toLogValue } from "@whilo/logging";
 import { Effect } from "effect";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { formatLocalServerReady, LOCAL_SERVER_ENVIRONMENT } from "../local-server-child";
@@ -64,7 +64,7 @@ function summary(input: LocalServerAttachInput): ServerSummary {
 let root: string;
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), "openbot-local-servers-"));
+  root = await mkdtemp(join(tmpdir(), "whilo-local-servers-"));
 });
 
 afterEach(async () => {
@@ -76,11 +76,11 @@ function servers(
   onLine: (line: string) => void,
   spawned: Spawned[],
 ): LocalServers {
-  const logger = createOpenBotLogger("local-servers", onLine);
+  const logger = createWhiloLogger("local-servers", onLine);
   const options: LocalServersOptions = {
     registryPath: join(root, LOCAL_SERVERS_FILE),
     userDataRoot: join(root, "local-servers"),
-    agentRoot: join(root, "OpenBot", "Servers"),
+    agentRoot: join(root, "Whilo", "Servers"),
     runtimeRoot: join(root, "provider-runtimes"),
     cipher: {
       encrypt: (value) => Buffer.from(`sealed:${value}`).reverse(),
@@ -91,7 +91,7 @@ function servers(
       attachLocalServer: attach,
       detachLocalServer: () => Effect.void,
     },
-    command: { executable: "/Applications/OpenBot.app/Contents/MacOS/OpenBot", args: [] },
+    command: { executable: "/Applications/Whilo.app/Contents/MacOS/Whilo", args: [] },
     trash: () => Promise.resolve(),
     log: {
       info: (message) => logger.info(message),

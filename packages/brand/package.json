@@ -1,5 +1,5 @@
 {
-  "name": "@openbot/brand",
+  "name": "@whilo/brand",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -8,6 +8,7 @@
     "./bloub-avatar": "./src/bloub-avatar.ts",
     "./bloub-avatar-motion": "./src/bloub-avatar-motion.ts",
     "./logo.css": "./src/logo.css",
+    "./orca-pet.css": "./src/orca-pet.css",
     "./tokens.css": "./src/tokens.css",
     "./tokens-light.css": "./src/tokens-light.css",
     "./tokens-native.css": "./src/tokens-native.css",
@@ -23,7 +24,7 @@
   },
   "dependencies": {
     "@norbert_bodziony/bloub": "catalog:",
-    "@openbot/contracts": "workspace:*"
+    "@whilo/contracts": "workspace:*"
   },
   "peerDependencies": {
     "@solidjs/web": "catalog:",

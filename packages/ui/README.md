@@ -1,17 +1,17 @@
-# @openbot/ui
+# @whilo/ui
 
-Internal SolidJS component library for OpenBot desktop, public web, and Storybook.
+Internal SolidJS component library for Whilo desktop, public web, and Storybook.
 The source files are moved from the desktop renderer; there is one implementation.
 
 ```tsx
-import { Button, Input } from "@openbot/ui";
-import { cx } from "@openbot/ui/utils";
-import { Sidebar } from "@openbot/ui/features/sidebar/Sidebar";
-import { AccountLogin } from "@openbot/ui/features/account/AccountLogin";
-import { ComposerEditor } from "@openbot/ui/features/conversation/ComposerEditor";
+import { Button, Input } from "@whilo/ui";
+import { cx } from "@whilo/ui/utils";
+import { Sidebar } from "@whilo/ui/features/sidebar/Sidebar";
+import { AccountLogin } from "@whilo/ui/features/account/AccountLogin";
+import { ComposerEditor } from "@whilo/ui/features/conversation/ComposerEditor";
 ```
 
-Load `@openbot/brand/tokens.css` and `@openbot/ui/styles.css` in the consumer stylesheet.
+Load `@whilo/brand/tokens.css` and `@whilo/ui/styles.css` in the consumer stylesheet.
 Tailwind consumers must scan `packages/ui/src`. Application styles still supply feature
 layouts and theme aliases. Use the repository's pinned Solid 2 runtime and patched Kobalte.
 

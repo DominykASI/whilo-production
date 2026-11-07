@@ -1,4 +1,4 @@
-// The servers on this computer: each one is OpenBot itself, started as a child process with its own
+// The servers on this computer: each one is Whilo itself, started as a child process with its own
 // user data directory and agent root (`local-server-child.ts`). The desktop app reaches each one
 // over the loopback Team API, as it reaches a joined server, and logs in as its owner at each start.
 //
@@ -14,9 +14,9 @@ import { randomBytes, randomUUID } from "node:crypto";
 import { mkdir, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { createInterface } from "node:readline";
-import { LOCAL_SERVER_LIMIT, type ServerSummary } from "@openbot/contracts/ipc";
-import { sourceText } from "@openbot/i18n/source";
-import { registerSecretValue } from "@openbot/logging";
+import { LOCAL_SERVER_LIMIT, type ServerSummary } from "@whilo/contracts/ipc";
+import { sourceText } from "@whilo/i18n/source";
+import { registerSecretValue } from "@whilo/logging";
 import { Deferred, Duration, Effect, Exit, Schema, Scope } from "effect";
 import { causeHelpers } from "../../backend/effect-boundary";
 import {
@@ -61,7 +61,7 @@ function childEnvironment(
 ): NodeJS.ProcessEnv {
   const environment: NodeJS.ProcessEnv = {};
   for (const [name, value] of Object.entries(process.env)) {
-    if (name === "ELECTRON_RUN_AS_NODE" || name.startsWith("OPENBOT_DEV_")) continue;
+    if (name === "ELECTRON_RUN_AS_NODE" || name.startsWith("WHILO_DEV_")) continue;
     environment[name] = value;
   }
   environment[LOCAL_SERVER_ENVIRONMENT.child] = "1";
@@ -106,7 +106,7 @@ export interface LocalServersOptions {
   registryPath: string;
   /** One user data directory for each server, named by its id. */
   userDataRoot: string;
-  /** One agent root for each server, named by its id: `~/OpenBot/Servers`. */
+  /** One agent root for each server, named by its id: `~/Whilo/Servers`. */
   agentRoot: string;
   /** The provider CLI store of this app. A child has its own user data, but not its own copy of each CLI. */
   runtimeRoot: string;
@@ -281,7 +281,7 @@ export class LocalServers {
         [...this.#options.command.args, `--user-data-dir=${paths.userData}`],
         {
           env: childEnvironment(entry, paths.agentRoot, this.#options.runtimeRoot, secret),
-          // Nothing is written to standard input. It stays open only so that it closes when OpenBot ends.
+          // Nothing is written to standard input. It stays open only so that it closes when Whilo ends.
           stdio: ["pipe", "pipe", "pipe"],
           windowsHide: true,
         },

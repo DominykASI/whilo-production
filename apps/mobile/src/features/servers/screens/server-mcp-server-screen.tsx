@@ -1,6 +1,6 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import type { McpServerConfig, McpTestResult, McpTransport } from "@openbot/contracts/ipc";
-import { matchingSourceKeys } from "@openbot/i18n/source";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import type { McpServerConfig, McpTestResult, McpTransport } from "@whilo/contracts/ipc";
+import { matchingSourceKeys } from "@whilo/i18n/source";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { usePreventRemove } from "expo-router/react-navigation";
 import { Typography } from "heroui-native";

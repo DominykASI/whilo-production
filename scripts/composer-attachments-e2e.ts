@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { createOpenBotLogger } from "@openbot/logging";
+import { createWhiloLogger } from "@whilo/logging";
 import type { Locator } from "playwright-core";
 import { assertMutationAllowed, connectToDevApp } from "./dev-automation/cdp-client";
 import { readDevInstanceRecords } from "./dev-automation/instance-registry";
@@ -19,11 +19,11 @@ assertMutationAllowed({
   instanceNamed: true,
   target: instance.instanceId,
 });
-const session = await connectToDevApp(instance.remoteDebuggingPort, createOpenBotLogger("composer-attachments-e2e"), {
+const session = await connectToDevApp(instance.remoteDebuggingPort, createWhiloLogger("composer-attachments-e2e"), {
   expectedRendererPort: instance.rendererPort,
   ownerPid: instance.pid,
 });
-const out = resolve(".openbot-build/composer-attachments-e2e");
+const out = resolve(".whilo-build/composer-attachments-e2e");
 mkdirSync(out, { recursive: true });
 const results: string[] = [];
 let passed = false;
@@ -159,7 +159,7 @@ try {
   const textCopy = await copy(source);
   assert.equal(textCopy["text/plain"], "Before  after");
   assert.ok(textCopy["text/html"]?.includes("Before"));
-  assert.ok(!/style=|class=|data-openbot-composer-fragment/u.test(textCopy["text/html"] ?? ""));
+  assert.ok(!/style=|class=|data-whilo-composer-fragment/u.test(textCopy["text/html"] ?? ""));
   results.push("A selection without attachments copies its text without the app styles.");
   await source.evaluate((element) => {
     element.focus();
@@ -196,7 +196,7 @@ try {
   );
   assert.equal(await layout(source), "Before [image.png]x after[image.png]");
   assert.equal(payload["text/plain"], "Before image.pngx afterimage.png");
-  assert.ok(payload["text/html"]?.includes("data-openbot-composer-fragment"));
+  assert.ok(payload["text/html"]?.includes("data-whilo-composer-fragment"));
   results.push("Distinct images with the same filename keep their order, IDs and original bytes.");
   await page.screenshot({ path: resolve(out, "source.png") });
 
@@ -230,12 +230,12 @@ try {
 
   const beforeInvalid = (await copy(destination))["text/plain"] ?? "";
   const refusal = await page.evaluate(
-    `window.openbot.agent.importAttachmentData({ paths: ["/etc/passwd"], data: [] }, "local").then(() => null, error => error.message)`,
+    `window.whilo.agent.importAttachmentData({ paths: ["/etc/passwd"], data: [] }, "local").then(() => null, error => error.message)`,
   );
   assert.ok(typeof refusal === "string" && refusal.includes("Invalid attachment data."));
   // A list in the right shape, with a path in place of the bytes.
   const pathItem = await page.evaluate(
-    `window.openbot.agent.importAttachmentData([{ name: "passwd", mimeType: "text/plain", path: "/etc/passwd" }], "local").then(() => null, error => error.message)`,
+    `window.whilo.agent.importAttachmentData([{ name: "passwd", mimeType: "text/plain", path: "/etc/passwd" }], "local").then(() => null, error => error.message)`,
   );
   assert.ok(typeof pathItem === "string", "An item without bytes must be refused.");
   assert.equal((await copy(destination))["text/plain"], beforeInvalid);
@@ -249,7 +249,7 @@ try {
   await openAgent("Chief");
   await clearTestDraft(source);
   await source.fill("See the file");
-  await page.locator("input[data-openbot-attachment-picker]").setInputFiles(pickedPath);
+  await page.locator("input[data-whilo-attachment-picker]").setInputFiles(pickedPath);
   const removePicked = page.getByRole("button", { name: "Remove picked.png", exact: true });
   await removePicked.waitFor();
   const pickedCopy = await copy(source);

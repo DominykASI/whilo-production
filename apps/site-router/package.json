@@ -1,10 +1,10 @@
 {
-  "name": "@openbot/site-router",
+  "name": "@whilo/site-router",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "dependencies": {
-    "@openbot/contracts": "workspace:*",
+    "@whilo/contracts": "workspace:*",
     "effect": "catalog:"
   },
   "scripts": {

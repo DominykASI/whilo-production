@@ -13,8 +13,8 @@ class FixtureProcessTimeout extends Error {}
 const DIALOG_CASES = 24;
 
 const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)));
-const buildRoot = await mkdtemp(join(tmpdir(), "openbot-dialogs-"));
-const reportPath = join(projectRoot, ".openbot-build/browser-dialogs-e2e/report.json");
+const buildRoot = await mkdtemp(join(tmpdir(), "whilo-dialogs-"));
+const reportPath = join(projectRoot, ".whilo-build/browser-dialogs-e2e/report.json");
 const runId = randomUUID();
 let sourceSha: string | undefined;
 try {

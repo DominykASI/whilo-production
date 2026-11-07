@@ -1,4 +1,4 @@
-import type { AttachmentSupport } from "@openbot/contracts/attachment-files";
+import type { AttachmentSupport } from "@whilo/contracts/attachment-files";
 import type {
   AddAgentFolderInput,
   AddedAgent,
@@ -135,7 +135,7 @@ import type {
   WorkflowSummary,
   WorkflowTriggerInput,
   WorkflowWebhookSecret,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import type {
   EventActivity,
   EventRoutine,
@@ -145,12 +145,12 @@ import type {
   SaveEventRoutineInput,
   SaveEventRoutineResult,
   WebhookSecret,
-} from "@openbot/contracts/ipc-events";
-import type { QueueEditRequest } from "@openbot/contracts/team-protocol/queue-edit-v1";
-import type { RemoteConnectionFailure, RemoteRecoveryStatus, RemoteTeamDirectoryClient } from "@openbot/team-client";
-import type { PlanLimits } from "@openbot/team-client/plan-limits";
-import type { RemoteFileUpload } from "@openbot/team-client/remote-peer";
-import type { MessagingConnectorPage } from "@openbot/team-client/team-admin-requests";
+} from "@whilo/contracts/ipc-events";
+import type { QueueEditRequest } from "@whilo/contracts/team-protocol/queue-edit-v1";
+import type { RemoteConnectionFailure, RemoteRecoveryStatus, RemoteTeamDirectoryClient } from "@whilo/team-client";
+import type { PlanLimits } from "@whilo/team-client/plan-limits";
+import type { RemoteFileUpload } from "@whilo/team-client/remote-peer";
+import type { MessagingConnectorPage } from "@whilo/team-client/team-admin-requests";
 import type { MobileBrowserTab } from "@/features/browser/model/browser-tabs";
 import type { BrowserViewBridgeEvent, RemoteBrowserViewSession } from "@/features/browser/model/browser-view-bridge";
 import type { MobileChannelStore } from "@/features/channels/model/channel-store";
@@ -159,7 +159,7 @@ import type { MobileConversationStore } from "./conversation-store";
 import type { LiveWorkspaceStore } from "./live-workspace-store";
 
 type MobileServerKind = "local" | "remote";
-/** The route set that reaches a host's OpenBot update: the admin set or the member set. */
+/** The route set that reaches a host's Whilo update: the admin set or the member set. */
 export type ServerUpdateAccess = "admin" | "member";
 
 export type MobileServerState = "unknown" | "connecting" | "online" | "offline" | "error";
@@ -418,7 +418,7 @@ export interface MobileWorkspaceContextValue {
   /** True on an online host that takes a Grok Bot or Hermes export from any member (`agent-import-v1`). */
   canImportAgents: (serverId: string) => boolean;
   /**
-   * True for an owner or admin of an online host that moves its agents to or from an OpenBot
+   * True for an owner or admin of an online host that moves its agents to or from an Whilo
    * transfer file (`instance-transfer-v1`).
    */
   canTransferServer: (serverId: string) => boolean;
@@ -503,7 +503,7 @@ export interface MobileWorkspaceContextValue {
     serverId: string,
   ) => Promise<AddMessagingOrchestratorResult>;
   /**
-   * How this user reaches the OpenBot update of an online host: an owner or admin through
+   * How this user reaches the Whilo update of an online host: an owner or admin through
    * `host-update-v1`, any member through `host-member-update-v1`. Null when neither applies.
    */
   serverUpdateAccess: (serverId: string) => ServerUpdateAccess | null;

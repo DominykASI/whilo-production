@@ -1,6 +1,6 @@
-import type { AddedAgent, McpServerConfig, ServerSummary } from "@openbot/contracts/ipc";
-import { MCP_SERVERS_CAPABILITY } from "@openbot/contracts/ipc";
-import type { MarketplaceListingLink } from "@openbot/contracts/marketplace-links";
+import type { AddedAgent, McpServerConfig, ServerSummary } from "@whilo/contracts/ipc";
+import { MCP_SERVERS_CAPABILITY } from "@whilo/contracts/ipc";
+import type { MarketplaceListingLink } from "@whilo/contracts/marketplace-links";
 import type { ComponentProps } from "@solidjs/web";
 import { createMemo, Loading, omit, Show } from "solid-js";
 import type { AgentTemplateInstallCalls } from "./features/agent-templates/agent-templates-port";

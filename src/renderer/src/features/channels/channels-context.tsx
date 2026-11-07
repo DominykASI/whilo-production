@@ -1,4 +1,4 @@
-import { CHANNEL_CHATS_CAPABILITY, CHANNEL_TASK_CANCEL_CAPABILITY } from "@openbot/contracts/ipc";
+import { CHANNEL_CHATS_CAPABILITY, CHANNEL_TASK_CANCEL_CAPABILITY } from "@whilo/contracts/ipc";
 import { createContext, type ParentProps, untrack, useContext } from "solid-js";
 import { useAuth } from "../account/account-context";
 import { useAgents } from "../agents/agents-context";

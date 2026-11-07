@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from "node:crypto";
-import { agentProviderDescriptor } from "@openbot/contracts/agent-providers";
-import { expandAttachmentReferences } from "@openbot/contracts/attachment-references";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { agentProviderDescriptor } from "@whilo/contracts/agent-providers";
+import { expandAttachmentReferences } from "@whilo/contracts/attachment-references";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import {
   AGENT_TASK_QUEUED_PREVIEW,
   type AgentEvent,
@@ -15,14 +15,14 @@ import {
   type BranchAgentTaskInput,
   type ConversationMessage,
   type ConversationSnapshot,
-} from "@openbot/contracts/ipc";
-import { sourceText } from "@openbot/i18n/source";
-import { createOpenBotLogger } from "@openbot/logging";
+} from "@whilo/contracts/ipc";
+import { sourceText } from "@whilo/i18n/source";
+import { createWhiloLogger } from "@whilo/logging";
 import { Deferred, Effect, Schema, Semaphore } from "effect";
 import { z } from "zod";
 import type { ConversationRuntime } from "../agent/conversation-runtime";
 import type { TaskLanes } from "../agent/drain-scheduler";
-import { type OpenBotToolResponse, openBotToolFailure, openBotToolResult } from "../agent/routine-tools";
+import { type WhiloToolResponse, whiloToolFailure, whiloToolResult } from "../agent/routine-tools";
 import {
   type AgentThreadOrigin,
   type AgentThreadRecord,
@@ -33,7 +33,7 @@ import type { MailboxStore } from "../mailbox-store";
 import type { DynamicToolCallParams } from "../protocol";
 import { storedSync } from "../stored-state-effects";
 
-const logger = createOpenBotLogger("agent-tasks");
+const logger = createWhiloLogger("agent-tasks");
 
 /** The most open tasks that an agent can have when it starts one more itself. The user can have up to `INPUT_LIMITS.agentTasks`. */
 const AGENT_STARTED_OPEN_TASKS = 8;
@@ -213,7 +213,7 @@ export class AgentTasks implements TaskLanes {
         ? taskTitle(messages.findLast((message) => message.author === "user")?.text ?? "") ||
           sourceText("status.agent.branchTitle")
         : branchTitle(source.title, this.#store.titles(input.agentId));
-    const threadId = `openbot-thread-${randomUUID()}`;
+    const threadId = `whilo-thread-${randomUUID()}`;
     const staged: string[] = [];
     const record = yield* Effect.gen({ self: this }, function* () {
       const files = new Map<string, AttachmentSummary>();
@@ -434,11 +434,11 @@ export class AgentTasks implements TaskLanes {
     this: AgentTasks,
     params: DynamicToolCallParams,
     caller: AgentTaskCaller,
-  ): Effect.fn.Return<OpenBotToolResponse | null> {
+  ): Effect.fn.Return<WhiloToolResponse | null> {
     if (params.tool !== START_TASK_TOOL) return null;
     const parsed = startTaskToolSchema.safeParse(params.arguments);
-    if (!parsed.success) return openBotToolFailure(sourceText("error.backend.taskToolInvalid"));
-    if (caller.inExecutionThread) return openBotToolFailure(sourceText("error.backend.taskOwnChatOnly"));
+    if (!parsed.success) return whiloToolFailure(sourceText("error.backend.taskToolInvalid"));
+    if (caller.inExecutionThread) return whiloToolFailure(sourceText("error.backend.taskOwnChatOnly"));
     const idempotencyKey = `start-task:${createHash("sha256")
       .update(JSON.stringify([caller.agentId, params.turnId, params.callId]))
       .digest("hex")}`;
@@ -448,7 +448,7 @@ export class AgentTasks implements TaskLanes {
     if (startedTask) return startedTaskResult(startedTask);
     const open = this.#store.openTaskIds(caller.agentId).length;
     if (open >= AGENT_STARTED_OPEN_TASKS)
-      return openBotToolFailure(sourceText("error.backend.taskOpenLimit", { count: AGENT_STARTED_OPEN_TASKS }));
+      return whiloToolFailure(sourceText("error.backend.taskOpenLimit", { count: AGENT_STARTED_OPEN_TASKS }));
     const task = this.create(caller.agentId, parsed.data.title, "agent");
     const queued = yield* this.#mailbox
       .enqueue({
@@ -470,7 +470,7 @@ export class AgentTasks implements TaskLanes {
       );
     if (!queued) {
       this.discard(task);
-      return openBotToolFailure(sourceText("error.backend.taskStartFailed"));
+      return whiloToolFailure(sourceText("error.backend.taskStartFailed"));
     }
     this.changed(caller.agentId);
     this.#hooks.queued(caller.agentId);
@@ -623,8 +623,8 @@ function branchTitle(sourceTitle: string, titles: readonly string[]): string {
   return `${prefix}${last + 1}`;
 }
 
-function startedTaskResult(task: AgentThreadRecord): OpenBotToolResponse {
-  return openBotToolResult({
+function startedTaskResult(task: AgentThreadRecord): WhiloToolResponse {
+  return whiloToolResult({
     taskId: task.taskId,
     title: task.title,
     note: "The task runs in its own conversation beside this chat, and the user follows it in the task list. Its result stays in the task: you do not receive it here. Tell the user in one sentence that the task started, and continue with other work or end your turn.",

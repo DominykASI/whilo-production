@@ -1,5 +1,5 @@
-import { isDynamicRecord, isString } from "@openbot/contracts/runtime-values";
-import { remoteHostFingerprint } from "@openbot/team-client";
+import { isDynamicRecord, isString } from "@whilo/contracts/runtime-values";
+import { remoteHostFingerprint } from "@whilo/team-client";
 import * as SecureStore from "expo-secure-store";
 
 /** The agent that got the last share, which the next share selects first. */
@@ -9,7 +9,7 @@ export interface ShareTarget {
 }
 
 function lastShareTargetKey(apiUrl: string, userId: string): string {
-  return `openbot.share-target.v1.${remoteHostFingerprint(JSON.stringify([new URL(apiUrl).origin, userId]))}`;
+  return `whilo.share-target.v1.${remoteHostFingerprint(JSON.stringify([new URL(apiUrl).origin, userId]))}`;
 }
 
 /** Null when nothing is saved, or the value cannot be read. */

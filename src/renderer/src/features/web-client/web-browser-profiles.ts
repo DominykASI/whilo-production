@@ -5,9 +5,9 @@ import {
   decodeBrowserProfileSummary,
   decodeHostBrowserTabProfiles,
   type TeamRealtimeEvent,
-} from "@openbot/contracts/ipc";
-import { BROWSER_PROFILES_ROUTES } from "@openbot/contracts/team-protocol/browser-profiles-v1";
-import type { TeamApiRequest } from "@openbot/team-client/team-api-requests";
+} from "@whilo/contracts/ipc";
+import { BROWSER_PROFILES_ROUTES } from "@whilo/contracts/team-protocol/browser-profiles-v1";
+import type { TeamApiRequest } from "@whilo/team-client/team-api-requests";
 import type { BrowserProfileCalls } from "../browser/browser-profiles-port";
 
 const ignoreResponse = (): void => {};

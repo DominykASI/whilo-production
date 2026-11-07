@@ -1,4 +1,4 @@
-import { agentNotificationLevelMap } from "@openbot/contracts/ipc";
+import { agentNotificationLevelMap } from "@whilo/contracts/ipc";
 import { router } from "expo-router";
 import { Typography } from "heroui-native";
 import { useState } from "react";

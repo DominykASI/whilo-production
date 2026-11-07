@@ -1,4 +1,4 @@
-import { ONE_TIME_CODE_LENGTH } from "@openbot/contracts/validation";
+import { ONE_TIME_CODE_LENGTH } from "@whilo/contracts/validation";
 import { Button, Spinner, Typography } from "heroui-native";
 import type { LucideIcon } from "lucide-react-native";
 import ChevronDown from "lucide-react-native/icons/chevron-down";
@@ -27,6 +27,7 @@ import {
   signInMotion,
 } from "@/features/auth/components/sign-in-motion";
 import { type EmailSignIn, formatTimer } from "@/features/auth/model/use-email-sign-in";
+import { type SocialSignInState, SocialSignInRow } from "@/features/auth/components/social-sign-in";
 import { BLOUB_MOVE_MS } from "@/shared/components/bloub-stage/bloub-look";
 import { haptics } from "@/shared/lib/haptics";
 import { SPLASH_EASE_IN_OUT } from "@/shared/lib/splash-motion";
@@ -285,6 +286,7 @@ export function OptionsPane({
   onToggleHelp,
   onScan,
   onEmail,
+  social,
   onLayout,
   onHelpLayout,
   reduced,
@@ -297,6 +299,8 @@ export function OptionsPane({
   onToggleHelp: () => void;
   onScan: () => void;
   onEmail: () => void;
+  /** The two browser sign-ins, their configuration, and the note under the discs. */
+  social: SocialSignInState;
   onLayout?: (height: number) => void;
   onHelpLayout?: (height: number) => void;
   reduced: boolean;
@@ -311,7 +315,7 @@ export function OptionsPane({
         </PaneItem>
       ) : null}
       <PaneItem index={0} motion={motion}>
-        <Typography.Heading type="h1" accessibilityRole="header" className="tracking-openbot-tight">
+        <Typography.Heading type="h1" accessibilityRole="header" className="tracking-whilo-tight">
           {t("mobile.auth.signIn.title")}
         </Typography.Heading>
       </PaneItem>
@@ -324,6 +328,9 @@ export function OptionsPane({
       </PaneItem>
       <PaneItem index={3} motion={motion}>
         <HelpToggle open={helpOpen} onToggle={onToggleHelp} onBodyLayout={onHelpLayout} reduced={reduced} />
+      </PaneItem>
+      <PaneItem index={4} motion={motion} className="mt-5">
+        <SocialSignInRow social={social} reduced={reduced} />
       </PaneItem>
     </Animated.View>
   );
@@ -364,7 +371,7 @@ export function EmailPane({
   return (
     <View onLayout={({ nativeEvent: { layout } }) => onLayout(layout.height)}>
       <PaneItem index={0} motion={motion}>
-        <Typography.Heading type="h2" accessibilityRole="header" className="tracking-openbot-tight">
+        <Typography.Heading type="h2" accessibilityRole="header" className="tracking-whilo-tight">
           {t("mobile.auth.email.title")}
         </Typography.Heading>
       </PaneItem>
@@ -470,7 +477,7 @@ export function CodePane({
   return (
     <View onLayout={({ nativeEvent: { layout } }) => onLayout(layout.height)}>
       <PaneItem index={0} motion={motion}>
-        <Typography.Heading type="h2" accessibilityRole="header" className="tracking-openbot-tight">
+        <Typography.Heading type="h2" accessibilityRole="header" className="tracking-whilo-tight">
           {t("mobile.auth.email.codeTitle")}
         </Typography.Heading>
       </PaneItem>

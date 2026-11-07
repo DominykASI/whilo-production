@@ -1,8 +1,9 @@
-import { isAvatarMimeType, isValidAvatarImage } from "@openbot/contracts/avatar-images";
-import { AVATAR_IMAGE_LIMITS } from "@openbot/contracts/input-limits";
-import { isUuidV4 } from "@openbot/contracts/validation";
+import { isAvatarMimeType, isValidAvatarImage } from "@whilo/contracts/avatar-images";
+import { AVATAR_IMAGE_LIMITS } from "@whilo/contracts/input-limits";
+import { isUuidV4 } from "@whilo/contracts/validation";
 import { Effect, Result, Schema } from "effect";
 import { AuthOperationError, type AuthService, AuthServiceError } from "./auth-service";
+import { WHILO_SITE_URL } from "../lib/site-metadata";
 import type { AuthUser } from "./types";
 
 export interface StoredAvatarUpload {
@@ -127,7 +128,7 @@ export function avatarObjectKey(userId: string, version: string): string {
 function avatarVersion(avatarUrl: string | null, expectedUserId: string): string | null {
   if (!avatarUrl) return null;
   try {
-    const url = new URL(avatarUrl, "https://api.openbot.run");
+    const url = new URL(avatarUrl, `https://api.${new URL(WHILO_SITE_URL).hostname}`);
     const match = url.pathname.match(/^\/v1\/avatars\/([^/]+)$/u);
     const userId = decodeURIComponent(match?.[1] ?? "");
     const version = url.searchParams.get("v") ?? "";

@@ -8,13 +8,13 @@ import {
   parseAgentAccessChange,
   type ServerAuditName,
   type TeamMemberSummary,
-} from "@openbot/contracts/ipc";
-import { isDynamicRecord, isNumber } from "@openbot/contracts/runtime-values";
+} from "@whilo/contracts/ipc";
+import { isDynamicRecord, isNumber } from "@whilo/contracts/runtime-values";
 import { Effect, Result, Schema, Semaphore } from "effect";
 import { isMissingFileError } from "../backend/file-errors";
 import { type PreferenceFileFailure, readPreferenceFile, writePreferenceFile } from "./preference-file";
 
-export const AGENT_ACCESS_FILE = "openbot-agent-access-v1.json";
+export const AGENT_ACCESS_FILE = "whilo-agent-access-v1.json";
 
 /** The roles of one server, as the host stores them. */
 export interface AgentAccessState {

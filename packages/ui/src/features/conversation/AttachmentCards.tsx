@@ -1,6 +1,6 @@
-import { attachmentMimeTypeForName, playableMediaKind } from "@openbot/contracts/attachment-files";
-import { type AttachmentSummary, canPreviewAttachment } from "@openbot/contracts/ipc";
-import { AudioLines, Button, Download, ExternalLink, Film, LabelTooltip, LabelTooltipTrigger, Play } from "@openbot/ui";
+import { attachmentMimeTypeForName, playableMediaKind } from "@whilo/contracts/attachment-files";
+import { type AttachmentSummary, canPreviewAttachment } from "@whilo/contracts/ipc";
+import { AudioLines, Button, Download, ExternalLink, Film, LabelTooltip, LabelTooltipTrigger, Play } from "@whilo/ui";
 import { createSignal, For, Show } from "solid-js";
 import { useText } from "../../text";
 import { attachmentReferenceTone } from "./AttachmentReference";

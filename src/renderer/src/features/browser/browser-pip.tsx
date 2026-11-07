@@ -1,6 +1,6 @@
-import type { BrowserDisplayState } from "@openbot/contracts/ipc";
-import BrowserLiveView from "@openbot/ui/features/browser/BrowserLiveView";
-import { useText } from "@openbot/ui/text";
+import type { BrowserDisplayState } from "@whilo/contracts/ipc";
+import BrowserLiveView from "@whilo/ui/features/browser/BrowserLiveView";
+import { useText } from "@whilo/ui/text";
 import { render } from "@solidjs/web";
 import { createSignal, onCleanup, onSettled, Show } from "solid-js";
 import "../../styles.css";

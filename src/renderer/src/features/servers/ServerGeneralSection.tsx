@@ -1,5 +1,5 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import type { AvatarImageInput } from "@openbot/contracts/ipc";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import type { AvatarImageInput } from "@whilo/contracts/ipc";
 import {
   Button,
   ConfirmDialog,
@@ -14,11 +14,11 @@ import {
   ItemTitle,
   SettingsSection,
   Text,
-} from "@openbot/ui";
-import { avatarImageDataUrl, normalizeAvatarFile } from "@openbot/ui/avatar-image";
-import { LeaveServerDialog } from "@openbot/ui/features/servers/LeaveServerDialog";
-import { ServerLogo } from "@openbot/ui/features/servers/ServerLogo";
-import { useText } from "@openbot/ui/text";
+} from "@whilo/ui";
+import { avatarImageDataUrl, normalizeAvatarFile } from "@whilo/ui/avatar-image";
+import { LeaveServerDialog } from "@whilo/ui/features/servers/LeaveServerDialog";
+import { ServerLogo } from "@whilo/ui/features/servers/ServerLogo";
+import { useText } from "@whilo/ui/text";
 import type { JSX } from "@solidjs/web";
 import { type Accessor, createStore, Show, snapshot } from "solid-js";
 import { actionToast } from "../../action-toast";

@@ -1,9 +1,9 @@
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { set } from "@dotenvx/dotenvx";
-import { createOpenBotLogger, toLogValue } from "@openbot/logging";
+import { createWhiloLogger, toLogValue } from "@whilo/logging";
 
-const logger = createOpenBotLogger("set-auth-smtp-secret");
+const logger = createWhiloLogger("set-auth-smtp-secret");
 
 const scriptsRoot = dirname(fileURLToPath(import.meta.url));
 const projectRoot = join(scriptsRoot, "..");

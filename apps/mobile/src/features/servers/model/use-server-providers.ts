@@ -3,7 +3,7 @@ import type {
   CustomAgentSummary,
   CustomProviderSummary,
   ProviderRuntimeSnapshot,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import { skipToken, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo, useRef } from "react";
 import { useQueryScope } from "@/features/auth/context/mobile-session-context";

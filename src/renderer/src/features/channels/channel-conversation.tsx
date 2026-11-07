@@ -4,11 +4,11 @@
  * host from its own contexts.
  */
 
-import { leadingAddress } from "@openbot/contracts/chat-tag-references";
-import type { AgentApproval, AgentEvent, BrowserTakeoverRequest } from "@openbot/contracts/ipc";
-import type { AgentMessage } from "@openbot/ui/data";
-import { unloadedHistory } from "@openbot/ui/features/conversation/ChatScrollRail";
-import { useText } from "@openbot/ui/text";
+import { leadingAddress } from "@whilo/contracts/chat-tag-references";
+import type { AgentApproval, AgentEvent, BrowserTakeoverRequest } from "@whilo/contracts/ipc";
+import type { AgentMessage } from "@whilo/ui/data";
+import { unloadedHistory } from "@whilo/ui/features/conversation/ChatScrollRail";
+import { useText } from "@whilo/ui/text";
 import { createEffect, createMemo } from "solid-js";
 import { agentMessagesEqual } from "../../app-message-projection";
 import { channelAwaitingReplies } from "../../awaiting-replies";

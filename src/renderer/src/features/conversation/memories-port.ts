@@ -3,13 +3,13 @@
 // Everything the page renders is owner-agnostic; only the five calls, the event filter and three
 // words of copy are not. They live here, so `AgentMemoriesSettings` names no owner at all.
 
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import type {
   AgentMemorySelectionState,
   MemoryEntry,
-  OpenBotDesktopApi,
+  WhiloDesktopApi,
   SetAgentMemoryInclusionInput,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 
 export interface MemoriesPort {
   ownerId: string;
@@ -34,7 +34,7 @@ export interface MemoriesPort {
 
 /** The host calls an agent's memories make. The desktop sends them through preload. */
 export type AgentMemoriesApi = Pick<
-  OpenBotDesktopApi["agent"],
+  WhiloDesktopApi["agent"],
   | "listMemories"
   | "getMemorySelection"
   | "setMemoryInclusion"
@@ -49,7 +49,7 @@ export function agentMemoriesPort(
   agentId: string,
   agentName: string,
   limit: number | null,
-  api: AgentMemoriesApi = window.openbot.agent,
+  api: AgentMemoriesApi = window.whilo.agent,
 ): MemoriesPort {
   return {
     ownerId: agentId,
@@ -78,7 +78,7 @@ export function agentMemoriesPort(
 
 /** The host calls a channel's memories make. The desktop sends them through preload. */
 export type ChannelMemoriesApi = Pick<
-  OpenBotDesktopApi["agent"],
+  WhiloDesktopApi["agent"],
   | "listChannelMemories"
   | "createChannelMemory"
   | "updateChannelMemory"
@@ -90,7 +90,7 @@ export type ChannelMemoriesApi = Pick<
 export function channelMemoriesPort(
   channelId: string,
   channelName: string,
-  api: ChannelMemoriesApi = window.openbot.agent,
+  api: ChannelMemoriesApi = window.whilo.agent,
 ): MemoriesPort {
   return {
     ownerId: channelId,

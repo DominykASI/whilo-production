@@ -1,5 +1,5 @@
-import type { HostUpdateStatus, UpdateRestartMode } from "@openbot/contracts/ipc";
-import { toast } from "@openbot/ui";
+import type { HostUpdateStatus, UpdateRestartMode } from "@whilo/contracts/ipc";
+import { toast } from "@whilo/ui";
 import {
   type ServerUpdateBusy,
   ServerUpdateDialog,
@@ -7,15 +7,15 @@ import {
   type ServerUpdateFailure,
   type ServerUpdateStage,
   type ServerUpdateView,
-} from "@openbot/ui/features/servers/ServerUpdateDialog";
-import { restartReasonKey } from "@openbot/ui/features/updates/restart-reasons";
-import { currentText } from "@openbot/ui/text";
+} from "@whilo/ui/features/servers/ServerUpdateDialog";
+import { restartReasonKey } from "@whilo/ui/features/updates/restart-reasons";
+import { currentText } from "@whilo/ui/text";
 import { createEffect, createRoot, createSignal, createStore, onSettled, untrack } from "solid-js";
 import type { HostRestartView } from "../updates/host-restart-toast";
 import type { HostUpdateCalls } from "./ServerUpdatePanel";
 
 /**
- * The OpenBot update of a joined server (`host-update-v1`), from the offer to the server back online.
+ * The Whilo update of a joined server (`host-update-v1`), from the offer to the server back online.
  * The host sends no progress event, so the status is read again while the update runs. The update
  * outlives Server Settings and the dialog: a hidden update keeps a notice that opens it again.
  */

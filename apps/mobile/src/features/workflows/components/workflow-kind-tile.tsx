@@ -1,4 +1,4 @@
-import type { WorkflowNodeKind, WorkflowTriggerType } from "@openbot/contracts/ipc";
+import type { WorkflowNodeKind, WorkflowTriggerType } from "@whilo/contracts/ipc";
 import type { LucideIcon } from "lucide-react-native";
 import AtSign from "lucide-react-native/icons/at-sign";
 import Bot from "lucide-react-native/icons/bot";
@@ -70,7 +70,7 @@ export function WorkflowKindTile({
   size?: number;
 }) {
   const tint = KIND_TINT[kind];
-  const [color, background] = useCSSVariable([`--openbot-file-${tint}`, `--openbot-file-${tint}-soft`]);
+  const [color, background] = useCSSVariable([`--whilo-file-${tint}`, `--whilo-file-${tint}-soft`]);
   const Icon = kind === "trigger" && trigger ? TRIGGER_ICON[trigger] : KIND_ICON[kind];
   return (
     <View

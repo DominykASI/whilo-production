@@ -2,8 +2,8 @@ import { Effect } from "effect";
 // App identity, first-run setup, the analytics preference, external links and the data and
 // diagnostics exports.
 
-import { HOSTED_SERVER_CONTACT_URL } from "@openbot/contracts/hosted-servers";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { HOSTED_SERVER_CONTACT_URL } from "@whilo/contracts/hosted-servers";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import {
   type AnalyticsPreference,
   type AppInfo,
@@ -14,8 +14,8 @@ import {
   type ExternalLinkBrowser,
   externalLinkAppName,
   GROK_BOT_EXPORT_URL,
-} from "@openbot/contracts/ipc";
-import { analyticsOnByDefault } from "@openbot/telemetry";
+} from "@whilo/contracts/ipc";
+import { analyticsOnByDefault } from "@whilo/telemetry";
 import { app, type BrowserWindow, dialog, type OpenDialogOptions } from "electron";
 import { version as developmentVersion } from "../../../package.json";
 import type { AgentService } from "../../backend/agent-service";
@@ -30,10 +30,11 @@ import type { ApprovalAutomation } from "../approval-automation-store";
 import type { BusyMessageModePreferenceStore } from "../busy-message-mode-preference-store";
 import type { ExternalLinkOpener, ExternalLinkPreferenceStore } from "../external-link-opener";
 import type { InterfaceSizeService } from "../interface-size-service";
+import type { InterfaceLookService } from "../interface-look-service";
 import type { LanguageService } from "../language-service";
 import type { LogoColorService } from "../logo-color-service";
 import { MAC_PERMISSION_URLS } from "../mac-permission-urls";
-import { exportDiagnostics, exportOpenBotData } from "../maintenance-service";
+import { exportDiagnostics, exportWhiloData } from "../maintenance-service";
 import { isTailscaleConnected } from "../private-network-detection";
 import type { RemoteNetworkRoutePreferenceStore } from "../remote-network-route-preference-store";
 import type { RemoteSessionCache } from "../remote-session-cache";
@@ -45,6 +46,7 @@ import {
   parseAnalyticsPreference,
   parseAppAppearancePreference,
   parseAppBehaviorPreferenceChange,
+  parseAppInterfaceLookPreference,
   parseAppInterfaceSizePreference,
   parseAppLanguagePreference,
   parseAppLogoColorPreference,
@@ -75,14 +77,14 @@ const EXTERNAL_DESTINATIONS: Record<ExternalDestination, string> = {
   "opencode-auth": "https://opencode.ai/auth",
   "claude-install": "https://code.claude.com/docs",
   "hermes-install": "https://hermes-agent.nousresearch.com/docs/getting-started/installation",
-  feedback: "https://x.com/intent/post?text=Feedback%20for%20OpenBot%20%40norbertbodziony%3A%20",
+  feedback: "https://x.com/intent/post?text=Feedback%20for%20Whilo%20%40norbertbodziony%3A%20",
   message: "https://x.com/norbertbodziony",
   changelog: "https://openbot.run/changelog",
   guides: "https://openbot.run/guides",
   // A Redirect Rule in the openbot.run Cloudflare zone sends this to the current Discord invite.
   discord: "https://discord.openbot.run",
   github: "https://github.com/nightly-labs/openbot",
-  x: "https://x.com/OpenBot_",
+  x: "https://x.com/Whilo_",
   "grok-bot-export": GROK_BOT_EXPORT_URL,
   "hosted-server-contact": HOSTED_SERVER_CONTACT_URL,
   "mac-screen-recording": MAC_PERMISSION_URLS["screen-recording"],
@@ -119,6 +121,7 @@ export interface AppIpcDependencies {
   logoColor: LogoColorService;
   appearance: AppearanceService;
   interfaceSize: InterfaceSizeService;
+  interfaceLook: InterfaceLookService;
   initializeAgent: () => Promise<void>;
   appVariant: AppVariant;
   analyticsCaptureUrl: string | null;
@@ -153,6 +156,7 @@ export function appIpcHandlers({
   logoColor,
   appearance,
   interfaceSize,
+  interfaceLook,
   initializeAgent,
   appVariant,
   analyticsCaptureUrl,
@@ -254,6 +258,10 @@ export function appIpcHandlers({
       setAppInterfaceSizePreference: payloadHandler(parseAppInterfaceSizePreference, (parsed) =>
         runCauseEffect(interfaceSize.set(parsed)),
       ),
+      getAppInterfaceLookPreference: handler(() => interfaceLook.preference),
+      setAppInterfaceLookPreference: payloadHandler(parseAppInterfaceLookPreference, (parsed) =>
+        runCauseEffect(interfaceLook.set(parsed)),
+      ),
       saveSetup: payloadHandler(parseSetup, async (input): Promise<AppSetupState> => {
         // Before the setup file: once setup is complete, a missing choice reads as an older user's "on".
         const before = await runCauseEffect(readSetupState(setupFile));
@@ -295,7 +303,7 @@ export function appIpcHandlers({
     maintenance: {
       exportData: handler(() =>
         runCauseEffect(
-          exportOpenBotData({ service, mailbox, parentWindow: getMainWindow(), translate: language.translate }),
+          exportWhiloData({ service, mailbox, parentWindow: getMainWindow(), translate: language.translate }),
         ),
       ),
       exportDiagnostics: handler(() =>

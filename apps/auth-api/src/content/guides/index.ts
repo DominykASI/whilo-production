@@ -7,23 +7,23 @@ import { AIAgentsExamples } from "./ai-agents-examples";
 import { AIAgentsVsAgenticAI } from "./ai-agents-vs-agentic-ai";
 import { ImportGrokBotAgents } from "./import-grok-bot-agents";
 import { ImportHermesAgents } from "./import-hermes-agents";
-import { InstallOpenBotVPS } from "./install-openbot-vps";
-import { OpenBot101 } from "./openbot-101";
-import { OpenBotHostedServers } from "./openbot-hosted-servers";
-import { OpenBotMarketplace } from "./openbot-marketplace";
+import { InstallWhiloVPS } from "./install-whilo-vps";
+import { Whilo101 } from "./whilo-101";
+import { WhiloHostedServers } from "./whilo-hosted-servers";
+import { WhiloMarketplace } from "./whilo-marketplace";
 import { WhatAreAIAgents } from "./what-are-ai-agents";
-import { WtfIsOpenBot } from "./wtf-is-openbot";
+import { WtfIsWhilo } from "./wtf-is-whilo";
 
 export const GUIDE_BODIES: Readonly<Record<string, ArticleBody>> = {
-  "install-openbot-vps": InstallOpenBotVPS,
+  "install-whilo-vps": InstallWhiloVPS,
   "import-hermes-agents": ImportHermesAgents,
   "import-grok-bot-agents": ImportGrokBotAgents,
   "ai-agents-examples": AIAgentsExamples,
   "ai-agents-vs-agentic-ai": AIAgentsVsAgenticAI,
   "agentic-ai-definition": AgenticAIDefinition,
   "what-are-ai-agents": WhatAreAIAgents,
-  "openbot-101": OpenBot101,
-  "openbot-hosted-servers": OpenBotHostedServers,
-  "openbot-marketplace": OpenBotMarketplace,
-  "wtf-is-openbot": WtfIsOpenBot,
+  "whilo-101": Whilo101,
+  "whilo-hosted-servers": WhiloHostedServers,
+  "whilo-marketplace": WhiloMarketplace,
+  "wtf-is-whilo": WtfIsWhilo,
 };

@@ -1,5 +1,5 @@
-import type { AppTextKey } from "@openbot/i18n";
-import { Input, Popover, RadioGroup } from "@openbot/ui";
+import type { AppTextKey } from "@whilo/i18n";
+import { Input, Popover, RadioGroup } from "@whilo/ui";
 import { createSignal, For, Show } from "solid-js";
 import { useText } from "../../text";
 import { createStableChipAnchor } from "./routine-popover-anchor";

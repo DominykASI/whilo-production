@@ -1,15 +1,15 @@
-import { NOTIFICATION_SOUNDS, type NotificationSound } from "@openbot/contracts/notification-relay";
-import type { MobileTextKey } from "@openbot/i18n/mobile";
+import { NOTIFICATION_SOUNDS, type NotificationSound } from "@whilo/contracts/notification-relay";
+import type { MobileTextKey } from "@whilo/i18n/mobile";
 import * as Notifications from "expo-notifications";
 import { currentText } from "@/shared/lib/text";
 
 /**
  * Android 8 and later play the sound of the notification channel, and a channel keeps its sound.
- * So each sound has a channel, and `OpenBotMessagingService.kt` shows a notification in the channel
+ * So each sound has a channel, and `WhiloMessagingService.kt` shows a notification in the channel
  * of the sound that the host sent. Both use these ids.
  */
 export function androidChannelId(sound: NotificationSound | null): string {
-  return `openbot.sound.${sound ?? "none"}`;
+  return `whilo.sound.${sound ?? "none"}`;
 }
 
 /**
@@ -17,15 +17,15 @@ export function androidChannelId(sound: NotificationSound | null): string {
  * the Android resources, which do not accept `-`.
  */
 const SOUND_FILES: Readonly<Record<Exclude<NotificationSound, "default">, string>> = {
-  openbot: "openbot_task.wav",
-  warm: "openbot_warm.wav",
-  mech: "openbot_mech.wav",
-  bubble: "openbot_bubble.wav",
-  press: "openbot_press.wav",
+  whilo: "whilo_task.wav",
+  warm: "whilo_warm.wav",
+  mech: "whilo_mech.wav",
+  bubble: "whilo_bubble.wav",
+  press: "whilo_press.wav",
 };
 
 const SOUND_LABELS = {
-  openbot: "mobile.settings.notifications.sound.openbot",
+  whilo: "mobile.settings.notifications.sound.whilo",
   warm: "mobile.settings.notifications.sound.warm",
   mech: "mobile.settings.notifications.sound.mech",
   bubble: "mobile.settings.notifications.sound.bubble",

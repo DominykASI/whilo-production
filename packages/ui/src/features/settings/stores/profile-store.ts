@@ -1,7 +1,7 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import type { AccountSession, AvatarImageInput, CentralAuthUser } from "@openbot/contracts/ipc";
-import { normalizeAccountName, validateProfileName } from "@openbot/contracts/validation";
-import { errorReference, type UserErrorDetails } from "@openbot/user-errors";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import type { AccountSession, AvatarImageInput, CentralAuthUser } from "@whilo/contracts/ipc";
+import { normalizeAccountName, validateProfileName } from "@whilo/contracts/validation";
+import { errorReference, type UserErrorDetails } from "@whilo/user-errors";
 import { createEffect, createMemo, createStore, untrack } from "solid-js";
 import { normalizeAvatarFile } from "../../../avatar-image";
 import { currentText } from "../../../text";

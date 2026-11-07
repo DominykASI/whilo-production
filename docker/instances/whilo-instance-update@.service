@@ -1,0 +1,10 @@
+# Pulls the image of instance %i, and for an install makes the container again. `setup` replaces
+# /opt/whilo-docker/instances/ with the folder of whilo-instance.
+[Unit]
+Description=Update Whilo instance %i
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/whilo-docker/instances/whilo-instance update-request %i
+TimeoutStartSec=45min

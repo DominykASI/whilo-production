@@ -7,10 +7,10 @@ import {
   type SpawnedMspConnection,
   spawnMspConnection,
 } from "@muse-code/sdk";
-import { attachmentMimeTypeForName } from "@openbot/contracts/attachment-files";
-import { isString } from "@openbot/contracts/runtime-values";
-import { sourceText } from "@openbot/i18n/source";
-import { redactText } from "@openbot/logging";
+import { attachmentMimeTypeForName } from "@whilo/contracts/attachment-files";
+import { isString } from "@whilo/contracts/runtime-values";
+import { sourceText } from "@whilo/i18n/source";
+import { redactText } from "@whilo/logging";
 import { Effect, Exit, Fiber, Option, Schema, Scope } from "effect";
 import { secretElicitationField } from "./agent/prompts";
 import { type AgentClient, type AgentProvider, type DiagnosticOrigin, RequestTimeoutError } from "./agent-client";
@@ -111,7 +111,7 @@ interface MuseThread {
   replayed: Set<string>;
 }
 
-/** Owns one native MSP process, session MCP bridges, and the live view-to-OpenBot event adapter. */
+/** Owns one native MSP process, session MCP bridges, and the live view-to-Whilo event adapter. */
 export class MuseAgentClient extends EventEmitter<ClientEvents> implements AgentClient {
   readonly contextCompaction = "events";
   readonly provider: AgentProvider = "muse";
@@ -392,7 +392,7 @@ export class MuseAgentClient extends EventEmitter<ClientEvents> implements Agent
   ): Effect.fn.Return<SpawnedMspConnection, ProviderClientOperationError> {
     const host = yield* providerCall(() =>
       handshake.initialize({
-        clientInfo: { name: "openbot", version: "1" },
+        clientInfo: { name: "whilo", version: "1" },
         capabilities: { requestedCapabilities: ["sessionMcp"] },
       }),
     ).pipe(
@@ -865,7 +865,7 @@ export class MuseAgentClient extends EventEmitter<ClientEvents> implements Agent
     }
     if (method === "session/tokenUsage") {
       const usage = yield* this.#decode(MuseUsage, params);
-      this.#emit("openbot/usage", {
+      this.#emit("whilo/usage", {
         threadId: thread.id,
         turnId: usage.turnId,
         usage: {

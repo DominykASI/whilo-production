@@ -4,8 +4,8 @@ import {
   type BillingCurrency,
   type BillingInterval,
   type BillingPlanId,
-} from "@openbot/contracts/billing";
-import type { HostedServerCatalogPlan } from "@openbot/contracts/hosted-servers";
+} from "@whilo/contracts/billing";
+import type { HostedServerCatalogPlan } from "@whilo/contracts/hosted-servers";
 import {
   LICENSE_BUNDLE_DISCOUNT_PERCENT,
   LICENSE_INCLUDED_USERS,
@@ -18,10 +18,10 @@ import {
   licenseMonthlyPrice,
   licenseOrderMonthly,
   type PricingOrder,
-} from "@openbot/contracts/license";
-import type { AppTextKey } from "@openbot/i18n";
-import { Button } from "@openbot/ui/button";
-import { RadioGroup } from "@openbot/ui/complex";
+} from "@whilo/contracts/license";
+import type { AppTextKey } from "@whilo/i18n";
+import { Button } from "@whilo/ui/button";
+import { RadioGroup } from "@whilo/ui/complex";
 import type { JSX } from "@solidjs/web";
 import { type Accessor, createEffect, createMemo, createSignal, createUniqueId, For, Show, untrack } from "solid-js";
 import { RollingPrice } from "../../rolling-price";
@@ -51,6 +51,10 @@ export interface OrderFormProps {
   inEu?: boolean | undefined;
   /** A license bought now is free until this time, in milliseconds since the epoch. */
   licenseTrialEnd?: number | undefined;
+  /** Payments are not configured yet: the buy action is disabled instead of opening a dead checkout. */
+  checkoutConfigured?: boolean | undefined;
+  /** The note shown beside the disabled action when payments are not configured. */
+  checkoutDisabledNote?: string | undefined;
   initialServer?: BillingPlanId | null | undefined;
   initialLicense?: LicenseTier | null | undefined;
   /** Shows left of the switches, such as the heading of the page. */
@@ -659,6 +663,9 @@ export function OrderForm(props: OrderFormProps) {
             </Show>
             <Show when={!contact()}>
               <Price value={total()} currency={currency()} unit={totalUnit()} />
+              <Show when={props.checkoutConfigured === false && props.checkoutDisabledNote}>
+                {(note) => <p class="order-form-checkout-note">{note()}</p>}
+              </Show>
               <div class="order-form-action">{props.action(order)}</div>
             </Show>
           </div>

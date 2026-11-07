@@ -1,4 +1,4 @@
-# OpenBot Contributor Assignment Agreement
+# Whilo Contributor Assignment Agreement
 
 Version: 1.0
 
@@ -11,7 +11,7 @@ all of it before you sign. If you do not agree, do not send a Contribution.
 ## 1. Definitions
 
 - **You** are the person who signs this agreement.
-- **Project** is OpenBot and all other software, documentation and material that Synthetify Labs
+- **Project** is Whilo and all other software, documentation and material that Synthetify Labs
   owns or manages, including the repository `github.com/nightly-labs/openbot`.
 - **Contribution** is each work that you send to the Project in any form, including source code,
   object code, documentation, translations, images, designs, tests and text in pull requests,
@@ -111,14 +111,14 @@ the mandatory law of your country gives you.
 1. If you open the pull request, tick this box in its description:
 
    ```markdown
-   - [x] I have read the OpenBot Contributor Assignment Agreement 1.0 and I agree to it.
+   - [x] I have read the Whilo Contributor Assignment Agreement 1.0 and I agree to it.
    ```
 
 2. If you are an author of a commit in a pull request that a different person opened, add a
    comment to that pull request with this line:
 
    ```text
-   I have read the OpenBot Contributor Assignment Agreement 1.0 and I agree to it.
+   I have read the Whilo Contributor Assignment Agreement 1.0 and I agree to it.
    ```
 
 3. The ticked box or the comment from your GitHub account is your electronic signature. It applies

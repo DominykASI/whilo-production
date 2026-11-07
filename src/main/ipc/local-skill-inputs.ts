@@ -1,10 +1,10 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import type {
   CreateLocalSkillInput,
   InstallLocalSkillInput,
   LocalSkillRevisionInput,
   ReviseLocalSkillInput,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import { z } from "zod";
 import {
   createSkillSchema,

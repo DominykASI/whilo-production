@@ -1,8 +1,9 @@
-import { Button, Heading, Input, Plus, Search, Text } from "@openbot/ui";
-import { useText } from "@openbot/ui/text";
+import { Button, Heading, Input, Plus, Search, Text } from "@whilo/ui";
+import { useText } from "@whilo/ui/text";
 import { createEffect, For, Match, Show, Switch } from "solid-js";
 import { AgentLibrary, agentFromSource } from "./MarketplaceAgents";
 import { AppRow } from "./MarketplaceCards";
+import { PluginsLibrary } from "./MarketplacePlugins";
 import { MissingNotice } from "./MarketplaceParts";
 import { SkillLibrary } from "./MarketplaceSkills";
 import { CATEGORY_LABELS } from "./marketplace-listing";
@@ -17,18 +18,21 @@ import {
 const NO_MATCH = {
   agents: "marketplace.noMatch.agents",
   apps: "marketplace.noMatch.apps",
+  plugins: "marketplace.noMatch.plugins",
   skills: "marketplace.noMatch.skills",
 } as const;
 
 const EMPTY = {
   agents: "marketplace.empty.agents",
   apps: "marketplace.empty.apps",
+  plugins: "marketplace.empty.plugins",
   skills: "marketplace.empty.skills",
 } as const;
 
 const SHOW_TAB = {
   agents: "marketplace.noMatch.showAgents",
   apps: "marketplace.noMatch.showApps",
+  plugins: "marketplace.noMatch.showPlugins",
   skills: "marketplace.noMatch.showSkills",
 } as const;
 
@@ -91,6 +95,18 @@ export function createBrowseLists(scope: MarketplaceScope) {
   // A Worker before the `verified` filter sends every agent, so the list filters by source too.
   const agents = () => scope.agents.items().filter((listing) => agentFromSource(listing, state().agentSource));
   const skills = () => scope.skills.items();
+  const plugins = () => {
+    const query = state().query.trim().toLowerCase();
+    return scope.plugins
+      .items()
+      .filter(
+        (plugin) =>
+          !query ||
+          plugin.name.toLowerCase().includes(query) ||
+          plugin.tagline.toLowerCase().includes(query) ||
+          plugin.description.toLowerCase().includes(query),
+      );
+  };
   const apps = () =>
     model()
       .apps()
@@ -98,17 +114,22 @@ export function createBrowseLists(scope: MarketplaceScope) {
   const counts = (): Record<MarketplaceTab, number> => ({
     agents: agents().length,
     apps: apps().length,
+    plugins: plugins().length,
     skills: skills().length,
   });
   return {
     agents,
+    plugins,
     skills,
     apps,
     counts,
     searching: () => state().query.trim() !== "",
     /** A listing that pages shows "50+" while the server holds more rows than the loaded ones. */
     countLabel: (tab: MarketplaceTab) => {
-      const more = (tab === "agents" && scope.agents.hasMore()) || (tab === "skills" && scope.skills.hasMore());
+      const more =
+        (tab === "agents" && scope.agents.hasMore()) ||
+        (tab === "skills" && scope.skills.hasMore()) ||
+        (tab === "plugins" && scope.plugins.hasMore());
       return `${format.number(counts()[tab])}${more ? "+" : ""}`;
     },
   };
@@ -164,7 +185,7 @@ export function MarketplaceBrowse(props: { scope: MarketplaceScope; lists: Brows
   createEffect(
     () => state().tab,
     (tab) => {
-      if (tab === "skills") model().readSkills();
+      if (tab === "skills" || tab === "plugins") model().readSkills();
     },
   );
 
@@ -179,6 +200,20 @@ export function MarketplaceBrowse(props: { scope: MarketplaceScope; lists: Brows
 
   return (
     <Switch>
+      <Match when={state().tab === "plugins"}>
+        <PluginsLibrary
+          scope={props.scope}
+          noMatch={
+            <NoMatch
+              scope={props.scope}
+              tab="plugins"
+              counts={props.lists.counts}
+              filtered={false}
+              onClearFilters={() => undefined}
+            />
+          }
+        />
+      </Match>
       <Match when={state().tab === "skills"}>
         <SkillLibrary
           scope={props.scope}

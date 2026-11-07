@@ -1,20 +1,20 @@
 export const EXTERNAL_LINK_REL = "noopener noreferrer";
 
 /** The installer each platform's download button starts: Apple silicon on macOS, x64 elsewhere. */
-export const OPENBOT_DOWNLOAD_LINKS = {
+export const WHILO_DOWNLOAD_LINKS = {
   macos: "/download/macos/latest",
   windows: "/download/windows/latest",
   linux: "/download/linux/latest",
 } as const;
 
 /** The other installer of a platform that ships two architectures. Windows ships x64 only. */
-export const OPENBOT_ALTERNATE_DOWNLOAD_LINKS = {
+export const WHILO_ALTERNATE_DOWNLOAD_LINKS = {
   macos: "/download/macos/latest?arch=x64",
   linux: "/download/linux/latest?arch=arm64",
 } as const;
 
 /** The pages that describe each installer: requirements, install steps and known limits. */
-export const OPENBOT_DOWNLOAD_PAGE_LINKS = {
+export const WHILO_DOWNLOAD_PAGE_LINKS = {
   hub: "/download",
   macos: "/download/macos",
   windows: "/download/windows",
@@ -23,12 +23,12 @@ export const OPENBOT_DOWNLOAD_PAGE_LINKS = {
   android: "/download/android",
 } as const;
 
-export const OPENBOT_LINKS = {
+export const WHILO_LINKS = {
   /** The contact form page. */
   contact: "/contact",
-  x: "https://x.com/OpenBot_",
-  /** A Redirect Rule in the openbot.run Cloudflare zone sends this to the current Discord invite. */
-  discord: "https://discord.openbot.run",
+  x: "https://x.com/Whilo_",
+  /** A Redirect Rule in the whilo.onerall.com Cloudflare zone sends this to the current Discord invite. */
+  discord: "https://discord.whilo.onerall.com",
   download: "#download",
   news: "/news",
   guides: "/guides",
@@ -41,7 +41,7 @@ export const OPENBOT_LINKS = {
   documentation: "https://github.com/nightly-labs/openbot#readme",
   troubleshooting: "https://github.com/nightly-labs/openbot/blob/main/docs/TROUBLESHOOTING.md",
   /** GitHub Pages hosts the status page, so it stays up when Cloudflare does not. */
-  status: "https://status.openbot.run",
+  status: "https://status.whilo.onerall.com",
   selfHostedServer: "https://github.com/nightly-labs/openbot/blob/main/docs/self-hosted-server.md",
   dockerDocumentation: "https://github.com/nightly-labs/openbot/blob/main/docs/docker.md",
   dockerInstallUbuntu: "https://docs.docker.com/engine/install/ubuntu/",
@@ -107,8 +107,8 @@ export const FOOTER_COLUMNS: readonly FooterColumn[] = [
       { label: "Pricing", external: false, to: "/pricing" },
       { label: "Contact", external: false, to: "/contact" },
       { label: "Brand", external: false, to: "/brand" },
-      { label: "Source code", external: true, href: OPENBOT_LINKS.repository },
-      { label: "License", external: true, href: OPENBOT_LINKS.license },
+      { label: "Source code", external: true, href: WHILO_LINKS.repository },
+      { label: "License", external: true, href: WHILO_LINKS.license },
       { label: "Privacy policy", external: false, to: "/privacy-policy" },
       { label: "Terms", external: false, to: "/terms" },
       { label: "Commercial license", external: false, to: "/commercial-license" },
@@ -118,15 +118,15 @@ export const FOOTER_COLUMNS: readonly FooterColumn[] = [
   {
     title: "Resources",
     links: [
-      { label: "Documentation", external: true, href: OPENBOT_LINKS.documentation },
-      { label: "Troubleshooting", external: true, href: OPENBOT_LINKS.troubleshooting },
-      { label: "Status", external: true, href: OPENBOT_LINKS.status },
-      { label: "Self-hosted server", external: true, href: OPENBOT_LINKS.selfHostedServer },
-      { label: "Architecture", external: true, href: OPENBOT_LINKS.architecture },
-      { label: "Contributing", external: true, href: OPENBOT_LINKS.contributing },
-      { label: "Codex", external: true, href: OPENBOT_LINKS.codex },
-      { label: "Claude Code", external: true, href: OPENBOT_LINKS.claude },
-      { label: "Discord", external: true, href: OPENBOT_LINKS.discord },
+      { label: "Documentation", external: true, href: WHILO_LINKS.documentation },
+      { label: "Troubleshooting", external: true, href: WHILO_LINKS.troubleshooting },
+      { label: "Status", external: true, href: WHILO_LINKS.status },
+      { label: "Self-hosted server", external: true, href: WHILO_LINKS.selfHostedServer },
+      { label: "Architecture", external: true, href: WHILO_LINKS.architecture },
+      { label: "Contributing", external: true, href: WHILO_LINKS.contributing },
+      { label: "Codex", external: true, href: WHILO_LINKS.codex },
+      { label: "Claude Code", external: true, href: WHILO_LINKS.claude },
+      { label: "Discord", external: true, href: WHILO_LINKS.discord },
     ],
   },
   {
@@ -146,17 +146,17 @@ export const FOOTER_COLUMNS: readonly FooterColumn[] = [
   {
     title: "Compare",
     links: [
-      { label: "OpenBot vs Grok Bot", external: false, to: "/compare/$slug", slug: "grok-bot" },
-      { label: "OpenBot vs Hermes Agent", external: false, to: "/compare/$slug", slug: "hermes-agent" },
-      { label: "OpenBot vs Muse", external: false, to: "/compare/$slug", slug: "muse" },
-      { label: "OpenBot vs OpenClaw", external: false, to: "/compare/$slug", slug: "openclaw" },
-      { label: "OpenBot vs Claude Cowork", external: false, to: "/compare/$slug", slug: "claude-cowork" },
-      { label: "OpenBot vs ChatGPT dots", external: false, to: "/compare/$slug", slug: "chatgpt-dots" },
-      { label: "OpenBot vs Manus", external: false, to: "/compare/$slug", slug: "manus" },
-      { label: "OpenBot vs Devin", external: false, to: "/compare/$slug", slug: "devin" },
-      { label: "OpenBot vs Paperclip", external: false, to: "/compare/$slug", slug: "paperclip" },
-      { label: "OpenBot vs Viktor", external: false, to: "/compare/$slug", slug: "viktor" },
-      { label: "OpenBot vs Instinct", external: false, to: "/compare/$slug", slug: "instinct" },
+      { label: "Whilo vs Grok Bot", external: false, to: "/compare/$slug", slug: "grok-bot" },
+      { label: "Whilo vs Hermes Agent", external: false, to: "/compare/$slug", slug: "hermes-agent" },
+      { label: "Whilo vs Muse", external: false, to: "/compare/$slug", slug: "muse" },
+      { label: "Whilo vs OpenClaw", external: false, to: "/compare/$slug", slug: "openclaw" },
+      { label: "Whilo vs Claude Cowork", external: false, to: "/compare/$slug", slug: "claude-cowork" },
+      { label: "Whilo vs ChatGPT dots", external: false, to: "/compare/$slug", slug: "chatgpt-dots" },
+      { label: "Whilo vs Manus", external: false, to: "/compare/$slug", slug: "manus" },
+      { label: "Whilo vs Devin", external: false, to: "/compare/$slug", slug: "devin" },
+      { label: "Whilo vs Paperclip", external: false, to: "/compare/$slug", slug: "paperclip" },
+      { label: "Whilo vs Viktor", external: false, to: "/compare/$slug", slug: "viktor" },
+      { label: "Whilo vs Instinct", external: false, to: "/compare/$slug", slug: "instinct" },
       { label: "Best AI agent apps", external: false, to: "/compare/$slug", slug: "best-ai-agent-apps" },
       { label: "All comparisons", external: false, to: "/compare" },
     ],

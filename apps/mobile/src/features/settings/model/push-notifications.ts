@@ -1,11 +1,11 @@
-import type { ServerNotificationLevel } from "@openbot/contracts/ipc";
-import { NOTIFICATION_SOUNDS, type NotificationSound } from "@openbot/contracts/notification-relay";
-import { isDynamicRecord } from "@openbot/contracts/runtime-values";
-import type { PushNotificationSound } from "@openbot/contracts/team-protocol/push-notifications-v1";
+import type { ServerNotificationLevel } from "@whilo/contracts/ipc";
+import { NOTIFICATION_SOUNDS, type NotificationSound } from "@whilo/contracts/notification-relay";
+import { isDynamicRecord } from "@whilo/contracts/runtime-values";
+import type { PushNotificationSound } from "@whilo/contracts/team-protocol/push-notifications-v1";
 import * as SecureStore from "expo-secure-store";
 import { create } from "zustand";
 
-const key = "openbot.mobile.push-notifications.v1";
+const key = "whilo.mobile.push-notifications.v1";
 
 /** What one server may notify about, as the desktop app sets it for each server. */
 export interface ServerNotificationSetting {
@@ -37,7 +37,7 @@ export const usePushNotificationPreference = create<
   enabled: true,
   preview: true,
   playSound: true,
-  sound: "openbot",
+  sound: "whilo",
   servers: {},
   ready: false,
   saving: false,
@@ -144,7 +144,7 @@ function decode(value: string | null): StoredPreference | null {
     preview: parsed.preview !== false,
     // An earlier build saved "none" as a sound.
     playSound: sound !== "none" && parsed.playSound !== false,
-    sound: NOTIFICATION_SOUNDS.find((known) => known === sound) ?? "openbot",
+    sound: NOTIFICATION_SOUNDS.find((known) => known === sound) ?? "whilo",
     servers,
   };
 }

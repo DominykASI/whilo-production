@@ -1,4 +1,4 @@
-import { translateFor } from "@openbot/i18n";
+import { translateFor } from "@whilo/i18n";
 import type { JSX } from "@solidjs/web";
 import { createRootRoute, createRoute, createRouter, RouterContextProvider } from "@tanstack/solid-router";
 import type { Meta, StoryObj } from "storybook-solidjs-vite";
@@ -42,8 +42,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /** After a Slack install: one action, in the middle of the card. */
-export const SlackReturnToOpenBot: Story = {
-  args: { openUrl: "openbot://slack-workspace?nonce=example&grant=example" },
+export const SlackReturnToWhilo: Story = {
+  args: { openUrl: "whilo://slack-workspace?nonce=example&grant=example" },
 };
 
 /** The browser client tab took the grant. */
@@ -69,8 +69,8 @@ export const SlackUnknownError: Story = {
   args: { failure: "slack_something_new" },
 };
 
-export const DiscordReturnToOpenBot: Story = {
-  args: { provider: "discord", text: DISCORD_TEXT, openUrl: "openbot://discord-guild?nonce=example&grant=example" },
+export const DiscordReturnToWhilo: Story = {
+  args: { provider: "discord", text: DISCORD_TEXT, openUrl: "whilo://discord-guild?nonce=example&grant=example" },
 };
 
 export const DiscordGuildTaken: Story = {

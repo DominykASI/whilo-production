@@ -1,23 +1,23 @@
-import { isKnownAgentProvider, providerDisplayName } from "@openbot/contracts/agent-providers";
+import { isKnownAgentProvider, providerDisplayName } from "@whilo/contracts/agent-providers";
 import {
   type FileQuoteTarget,
   fileQuoteId,
   fileQuoteTarget,
   limitedQuoteText,
-} from "@openbot/contracts/chat-tag-references";
+} from "@whilo/contracts/chat-tag-references";
 import {
   customProviderOfModel,
   isCustomProviderHarness,
   type McpSignInRelayPage,
   relayableSignInLink,
   type UpdateAgentInput,
-} from "@openbot/contracts/ipc";
-import { toast } from "@openbot/ui";
-import type { QuestionPromptComposerAnswer } from "@openbot/ui/components/QuestionPromptBubble";
-import type { QuoteRequest } from "@openbot/ui/features/conversation/ComposerEditor";
-import { currentText } from "@openbot/ui/text";
-import { usesTouchLayout } from "@openbot/ui/utils";
-import { errorReference } from "@openbot/user-errors";
+} from "@whilo/contracts/ipc";
+import { toast } from "@whilo/ui";
+import type { QuestionPromptComposerAnswer } from "@whilo/ui/components/QuestionPromptBubble";
+import type { QuoteRequest } from "@whilo/ui/features/conversation/ComposerEditor";
+import { currentText } from "@whilo/ui/text";
+import { usesTouchLayout } from "@whilo/ui/utils";
+import { errorReference } from "@whilo/user-errors";
 import {
   createContext,
   createEffect,

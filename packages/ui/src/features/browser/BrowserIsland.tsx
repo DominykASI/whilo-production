@@ -1,13 +1,13 @@
-import type { BrowserDockIsland, LocalBrowserSecretResponse } from "@openbot/contracts/ipc";
-import { Button, LoaderCircle, MousePointer2, X } from "@openbot/ui";
-import { QuestionPromptBubble } from "@openbot/ui/components/QuestionPromptBubble";
-import type { ComposerAgent } from "@openbot/ui/data";
-import { AgentAvatar } from "@openbot/ui/features/agents/AgentAvatar";
-import { BrowserSecretCard, type BrowserSecretVault } from "@openbot/ui/features/conversation/BrowserSecretCard";
-import { ApprovalCard } from "@openbot/ui/features/conversation/ConversationPrompts";
-import { RichMessageText } from "@openbot/ui/features/conversation/RichMessageText";
-import type { SendShortcut } from "@openbot/ui/features/conversation/send-shortcut";
-import { useText } from "@openbot/ui/text";
+import type { BrowserDockIsland, LocalBrowserSecretResponse } from "@whilo/contracts/ipc";
+import { Button, LoaderCircle, MousePointer2, X } from "@whilo/ui";
+import { QuestionPromptBubble } from "@whilo/ui/components/QuestionPromptBubble";
+import type { ComposerAgent } from "@whilo/ui/data";
+import { AgentAvatar } from "@whilo/ui/features/agents/AgentAvatar";
+import { BrowserSecretCard, type BrowserSecretVault } from "@whilo/ui/features/conversation/BrowserSecretCard";
+import { ApprovalCard } from "@whilo/ui/features/conversation/ConversationPrompts";
+import { RichMessageText } from "@whilo/ui/features/conversation/RichMessageText";
+import type { SendShortcut } from "@whilo/ui/features/conversation/send-shortcut";
+import { useText } from "@whilo/ui/text";
 import { Match, Show, Switch } from "solid-js";
 
 /**

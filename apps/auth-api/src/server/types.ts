@@ -1,5 +1,5 @@
-import type { AccountSession } from "@openbot/contracts/mobile-connect";
-import { isDynamicRecord, isFunction } from "@openbot/contracts/runtime-values";
+import type { AccountSession } from "@whilo/contracts/mobile-connect";
+import { isDynamicRecord, isFunction } from "@whilo/contracts/runtime-values";
 import type { Effect } from "effect";
 import type { AuthStoreError } from "./d1-auth-repository";
 import type { EmailDeliveryError } from "./email-delivery";
@@ -7,9 +7,12 @@ import type { SmtpContactMessage, SmtpFailure, SmtpLicenseMessage, SmtpWelcomeMe
 
 export interface WorkerBindings {
   DB: D1Database;
-  AVATARS: R2Bucket;
-  SKILLS: R2Bucket;
-  SITES: R2Bucket;
+  /** Absent on a deployment without R2: only the avatar routes need it. */
+  AVATARS?: R2Bucket;
+  /** Absent on a deployment without R2: only the skill marketplace needs it. */
+  SKILLS?: R2Bucket;
+  /** Absent on a deployment without R2: only hosted sites need it. */
+  SITES?: R2Bucket;
   MARKETPLACE_INGRESS_RATE_LIMITER: RateLimit;
   MARKETPLACE_MUTATION_RATE_LIMITER: RateLimit;
   MARKETPLACE_UPLOAD_RATE_LIMITER: RateLimit;
@@ -58,7 +61,7 @@ export interface WorkerBindings {
   /** Signs Slack route tickets. Its public key must also be in `REMOTE_TICKET_PUBLIC_JWKS`. */
   SLACK_ROUTE_PRIVATE_JWK?: string;
   SLACK_ROUTE_KEY_ID?: string;
-  /** The OpenBot Slack app, which every workspace installs. */
+  /** The Whilo Slack app, which every workspace installs. */
   SLACK_CLIENT_ID?: string;
   SLACK_CLIENT_SECRET?: string;
   /** Signs the OAuth `state` of the Slack install. At least 32 bytes. */
@@ -68,7 +71,7 @@ export interface WorkerBindings {
   /** Signs Discord route tickets. Its public key must also be in `REMOTE_TICKET_PUBLIC_JWKS`. */
   DISCORD_ROUTE_PRIVATE_JWK?: string;
   DISCORD_ROUTE_KEY_ID?: string;
-  /** The OpenBot Discord app, which every Discord server adds. Its bot token is only in Signal. */
+  /** The Whilo Discord app, which every Discord server adds. Its bot token is only in Signal. */
   DISCORD_CLIENT_ID?: string;
   DISCORD_CLIENT_SECRET?: string;
   /** Signs the OAuth `state` of the Discord install. At least 32 bytes. */
@@ -76,7 +79,7 @@ export interface WorkerBindings {
   /** Development only: the public origin of a local API, which Discord can send the browser back to. */
   DISCORD_DEV_PUBLIC_ORIGIN?: string;
   /**
-   * The OpenBot Telegram bot, which every chat adds: its ID (the part of the token before the colon)
+   * The Whilo Telegram bot, which every chat adds: its ID (the part of the token before the colon)
    * and its username. Not secret. Without them, the Telegram routes answer 503. The Telegram route
    * ticket uses the Slack route key.
    */
@@ -93,7 +96,7 @@ export interface WorkerBindings {
   HOSTED_SERVERS_ENABLED?: string;
   /** Comma-separated account IDs or emails that can create hosted servers. `*` allows each account. */
   HOSTED_SERVERS_ALLOWED_USER_IDS?: string;
-  /** A request with this key in `OpenBot-Hosting-Developer-Key` can create hosted servers. Test Worker only. */
+  /** A request with this key in `Whilo-Hosting-Developer-Key` can create hosted servers. Test Worker only. */
   HOSTED_SERVERS_DEVELOPER_KEY?: string;
   /** The boat named snapshot that new hosted servers start from. */
   HOSTED_SERVER_TEMPLATE?: string;
@@ -102,9 +105,15 @@ export interface WorkerBindings {
   /** An OpenPanel server client and its write-only secret, for account events. Set only in production. */
   OPENPANEL_CLIENT_ID?: string;
   OPENPANEL_CLIENT_SECRET?: string;
-  /** The public Client ID of the OpenBot GitHub App. */
+  /** The public Client ID of the Whilo GitHub App. */
   GITHUB_APP_CLIENT_ID?: string;
-  /** The private key of the OpenBot GitHub App as a PKCS #8 PEM. Without it, no installation token is issued. */
+  /** The Google OAuth client of the web sign-in. The ID is public; the secret is a Worker secret. */
+  GOOGLE_OAUTH_CLIENT_ID?: string;
+  GOOGLE_OAUTH_CLIENT_SECRET?: string;
+  /** The GitHub OAuth app of the web sign-in. The client ID is public; the secret is a Worker secret. */
+  GITHUB_OAUTH_CLIENT_ID?: string;
+  GITHUB_OAUTH_CLIENT_SECRET?: string;
+  /** The private key of the Whilo GitHub App as a PKCS #8 PEM. Without it, no installation token is issued. */
   GITHUB_APP_PRIVATE_KEY?: string;
   /** The Apple Push Notification service key (`.p8`, PEM text). The Live Activity relay is off without it. */
   APNS_PRIVATE_KEY?: string;
@@ -121,6 +130,14 @@ export interface WorkerBindings {
   FCM_SERVICE_ACCOUNT?: string;
 }
 
+/** A bucket that is absent is fine; a bucket that is present must be one. */
+function isOptionalBucket(value: unknown): boolean {
+  if (value === undefined || value === null) return true;
+  return (
+    isDynamicRecord(value) && isFunction(value.get) && isFunction(value.put) && isFunction(value.delete)
+  );
+}
+
 function isWorkerBindings(value: unknown): value is WorkerBindings {
   if (!isDynamicRecord(value)) return false;
   const database = value.DB;
@@ -135,18 +152,9 @@ function isWorkerBindings(value: unknown): value is WorkerBindings {
   if (
     !isDynamicRecord(database) ||
     !isFunction(database.prepare) ||
-    !isDynamicRecord(avatars) ||
-    !isFunction(avatars.get) ||
-    !isFunction(avatars.put) ||
-    !isFunction(avatars.delete) ||
-    !isDynamicRecord(skills) ||
-    !isFunction(skills.get) ||
-    !isFunction(skills.put) ||
-    !isFunction(skills.delete) ||
-    !isDynamicRecord(sites) ||
-    !isFunction(sites.get) ||
-    !isFunction(sites.put) ||
-    !isFunction(sites.delete) ||
+    !isOptionalBucket(avatars) ||
+    !isOptionalBucket(skills) ||
+    !isOptionalBucket(sites) ||
     !isDynamicRecord(marketplaceIngressRateLimiter) ||
     !isFunction(marketplaceIngressRateLimiter.limit) ||
     !isDynamicRecord(marketplaceMutationRateLimiter) ||
@@ -173,7 +181,7 @@ export function requireWorkerBindings(value: unknown): WorkerBindings {
 export interface MobileAuthSessionResult {
   sessionToken: string;
   user: AuthUser;
-  host?: import("@openbot/contracts/mobile-connect").MobileConnectHostBinding;
+  host?: import("@whilo/contracts/mobile-connect").MobileConnectHostBinding;
 }
 
 export interface AuthUser {
@@ -306,7 +314,7 @@ export interface AuthRepository {
     expiresAt: number;
   }): Effect.Effect<void, AuthStoreError>;
   replaceMobileAuthTicket(input: {
-    host?: import("@openbot/contracts/mobile-connect").MobileConnectHostBinding | undefined;
+    host?: import("@whilo/contracts/mobile-connect").MobileConnectHostBinding | undefined;
     ticketHash: string;
     userId: string;
     serverId: string;
@@ -337,7 +345,7 @@ export interface AuthRepository {
     linkHash: string;
     desktopSessionToken: string;
     userId: string;
-    host: import("@openbot/contracts/mobile-connect").MobileConnectHostBinding;
+    host: import("@whilo/contracts/mobile-connect").MobileConnectHostBinding;
     createdAt: number;
   }): Effect.Effect<boolean, AuthStoreError>;
   revokeMobileConnectLink(input: { userId: string; hostId: string; now: number }): Effect.Effect<void, AuthStoreError>;
@@ -368,4 +376,21 @@ export interface AuthRepository {
     now: number;
     session: { id: string; token: string; expiresAt: number };
   }): Effect.Effect<{ sessionToken: string; user: AuthUser } | null, AuthStoreError>;
+  /**
+   * Links a verified provider identity to its account: the account of that email when there is one,
+   * and a new account when there is none. `created` says that this sign-in made the account.
+   */
+  upsertProviderUser(input: {
+    provider: string;
+    subject: string;
+    email: string;
+    name: string | null;
+    now: number;
+  }): Effect.Effect<{ user: AuthUser; created: boolean }, AuthStoreError>;
+  /** Makes the account session that a sign-in issues: a desktop session, the same record in every way. */
+  createDesktopSession(input: {
+    userId: string;
+    session: { id: string; token: string; expiresAt: number };
+    now: number;
+  }): Effect.Effect<void, AuthStoreError>;
 }

@@ -1,11 +1,12 @@
 import { createHash, randomUUID } from "node:crypto";
 import { lstat, mkdir, readdir, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import type {
   AgentSummary,
   AgentTemplateSkill,
   InstalledSkill,
+  InstallBundledInput,
   InstallSkillInput,
   MarketplaceAgentSkill,
   MarketplaceSkillDetail,
@@ -16,17 +17,18 @@ import type {
   SkillSubmission,
   SubmitSkillInput,
   UninstallSkillInput,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   AGENT_TEMPLATE_LIMITS,
+  BUNDLED_PLUGINS,
   decodeMarketplaceSkillDetail,
   decodeMarketplaceSkillPage,
   isSkillCategory,
   marketplaceQueryParams,
   SKILL_DESCRIPTION_MAX_LENGTH,
-} from "@openbot/contracts/ipc";
-import { isBoolean, isDynamicRecord, isNumber, isOneOf, isString } from "@openbot/contracts/runtime-values";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/ipc";
+import { isBoolean, isDynamicRecord, isNumber, isOneOf, isString } from "@whilo/contracts/runtime-values";
+import { sourceText } from "@whilo/i18n/source";
 import { Cache, Effect, Exit, Result, Schema, Semaphore } from "effect";
 import { parse as parseYaml } from "yaml";
 import type { AgentLifecycleFailed } from "../backend/agent-service";
@@ -90,6 +92,7 @@ export class SkillMarketplaceService {
     private readonly refreshAgentRuntime: (agentId: string) => Effect.Effect<void, AgentLifecycleFailed> = () =>
       Effect.void,
     readonly localLibrary?: LocalSkillLibrary,
+    readonly bundledPluginsRoot: string = resolve(__dirname, "../../resources/plugins"),
   ) {}
 
   list(query: MarketplaceSkillQuery = {}): Effect.Effect<MarketplaceSkillPage, SkillMarketplaceFailure> {
@@ -218,6 +221,8 @@ export class SkillMarketplaceService {
 
   /** A local skill is read from this computer each time; a catalog skill comes from the short cache. */
   #availableVersion(skillId: string): Effect.Effect<number, SkillMarketplaceFailure> {
+    // A bundled plugin's skill has no published catalog row; it never asks the network.
+    if (skillId.startsWith("bundled:")) return Effect.succeed(1);
     return skillId.startsWith("local-skill-")
       ? this.get(skillId).pipe(Effect.map((detail) => detail.version))
       : Cache.get(this.#catalogVersions, skillId);
@@ -328,7 +333,7 @@ export class SkillMarketplaceService {
         } else result.push({ kind: "marketplace", ...(yield* this.publishedReferenceEffect(agent, entry)) });
       }
       for (const skill of yield* listFolderSkills(agent, lockedSlugs(lock)).pipe(toSkillMarketplaceFailure)) {
-        // A managed skill without its ownership marker is still OpenBot's: every install writes its own.
+        // A managed skill without its ownership marker is still Whilo's: every install writes its own.
         if (skill.problem || !skill.location || MANAGED_SKILL_SLUGS.has(skill.slug)) continue;
         result.push(yield* embeddedSkill(join(agent.workspacePath, skill.location, "SKILL.md"), skill.name));
       }
@@ -512,6 +517,108 @@ export class SkillMarketplaceService {
     });
   }
 
+
+  /** Installs every skill of a bundled plugin into the agent's workspace, as lock entries. */
+  installBundled(input: InstallBundledInput): Effect.Effect<void, SkillMarketplaceFailure> {
+    return this.serialize(input.agentId, this.installBundledEffect(input));
+  }
+  private installBundledEffect(input: InstallBundledInput): Effect.Effect<void, SkillMarketplaceFailure> {
+    return Effect.gen({ self: this }, function* (): Effect.fn.Return<void, SkillMarketplaceFailure> {
+      const plugin = BUNDLED_PLUGINS.find((entry) => entry.id === input.pluginId);
+      if (!plugin)
+        return yield* new SkillMarketplaceFailure({ cause: new Error(`Unknown bundled plugin: ${input.pluginId}`) });
+      const agent = yield* skillSync(() => this.requireAgent(input.agentId));
+      for (const skill of plugin.skills) {
+        const source = join(this.bundledPluginsRoot, plugin.id, "skills", skill.slug);
+        const bundle = yield* archiveDirectory(source).pipe(
+          Effect.mapError(({ cause }) => new SkillMarketplaceFailure({ cause })),
+        );
+        const archive = yield* skillSync(() => inspectArchive(bundle));
+        const files = yield* skillSync(() => normalizedFiles(bundle));
+        const children = packChildren(archive.slug, files);
+        const folders = skillFolders(archive.slug, files, children);
+        for (const folder of folders.keys()) yield* assertSkillPaths(agent.workspacePath, folder);
+        const detailId = `bundled:${plugin.id}:${archive.slug}`;
+        const lock = yield* readLock(agent.workspacePath);
+        const existing = lock.skills[detailId];
+        const owned = new Set(Object.values(lock.skills).flatMap(entryFolders));
+        for (const folder of folders.keys())
+          for (const target of [
+            ...targetDirectories(agent.workspacePath, folder),
+            disabledDirectory(agent.workspacePath, folder),
+          ]) {
+            if (owned.has(folder)) continue;
+            if (yield* pathExists(target))
+              return yield* new SkillMarketplaceFailure({
+                cause: new Error(`The skill folder exists and Whilo did not install it: ${target}`),
+              });
+          }
+        if (!existing && Object.keys(lock.skills).length >= INPUT_LIMITS.agentSkills)
+          return yield* new SkillMarketplaceFailure({
+            cause: new Error(sourceText("error.skill.tooManySkills", { limit: INPUT_LIMITS.agentSkills })),
+          });
+        if (existing) {
+          const state = yield* installedState(agent.workspacePath, existing);
+          if (state === "modified")
+            return yield* new SkillMarketplaceFailure({
+              cause: new Error(`${skill.name} was changed on this computer; uninstall it first.`),
+            });
+        }
+        const stayDisabled = existing?.enabled === false;
+        yield* replaceTargets(
+          [...folders].flatMap(([folder, folderFiles]) =>
+            (stayDisabled
+              ? [disabledDirectory(agent.workspacePath, folder)]
+              : targetDirectories(agent.workspacePath, folder)
+            ).map((target) => ({ target, files: folderFiles })),
+          ),
+        );
+        for (const folder of existing ? entryFolders(existing) : [])
+          if (!folders.has(folder)) yield* removeFolder(agent.workspacePath, folder, !stayDisabled);
+        const entry: LockEntry = {
+          skillId: detailId,
+          versionId: plugin.version,
+          slug: archive.slug,
+          name: skill.name,
+          version: 1,
+          bundleSha256: sha256(bundle),
+          receiptId: existing?.receiptId ?? randomUUID(),
+          files: Object.fromEntries(Object.entries(files).map(([name, bytes]) => [name, sha256(bytes)])),
+          description: skill.description,
+          ...(stayDisabled ? { enabled: false } : {}),
+          ...(children.length > 0 ? { folders: children } : {}),
+        };
+        lock.skills[detailId] = entry;
+        yield* writeLock(agent.workspacePath, lock);
+      }
+      yield* this.refreshAgentRuntime(agent.id).pipe(toSkillMarketplaceFailure);
+    });
+  }
+  /** Removes every lock entry `bundled:<pluginId>:*` that Whilo wrote into the agent's workspace. */
+  uninstallBundled(input: InstallBundledInput): Effect.Effect<void, SkillMarketplaceFailure> {
+    return this.serialize(input.agentId, this.uninstallBundledEffect(input));
+  }
+  private uninstallBundledEffect(input: InstallBundledInput): Effect.Effect<void, SkillMarketplaceFailure> {
+    return Effect.gen({ self: this }, function* (): Effect.fn.Return<void, SkillMarketplaceFailure> {
+      const prefix = `bundled:${input.pluginId}:`;
+      const agent = yield* skillSync(() => this.requireAgent(input.agentId));
+      const lock = yield* readLock(agent.workspacePath);
+      const entries = Object.values(lock.skills).filter((entry) => entry.skillId.startsWith(prefix));
+      for (const entry of entries) {
+        for (const folder of entryFolders(entry)) yield* assertSkillPaths(agent.workspacePath, folder);
+      }
+      for (const entry of entries) {
+        for (const folder of entryFolders(entry))
+          yield* removeFolder(agent.workspacePath, folder, entry.enabled !== false);
+        delete lock.skills[entry.skillId];
+      }
+      if (entries.length > 0) {
+        yield* writeLock(agent.workspacePath, lock);
+        yield* this.refreshAgentRuntime(agent.id).pipe(toSkillMarketplaceFailure);
+      }
+    });
+  }
+
   setEnabled(input: SetEnabledSkillInput): Effect.Effect<InstalledSkill, SkillMarketplaceFailure> {
     return this.serialize(input.agentId, this.changeEnabledEffect(input));
   }
@@ -653,7 +760,7 @@ function targetDirectories(workspace: string, slug: string): [string, string] {
 }
 
 function disabledDirectory(workspace: string, slug: string): string {
-  return join(workspace, ".openbot", "skills-disabled", slug);
+  return join(workspace, ".whilo", "skills-disabled", slug);
 }
 
 /**
@@ -777,8 +884,8 @@ const replaceTargets = Effect.fn("SkillMarketplace.replaceTargets")(function* (
     Effect.gen(function* () {
       for (const { target, files } of writes) {
         yield* skillIO(() => mkdir(dirname(target), { recursive: true, mode: 0o700 }));
-        const stage = `${target}.openbot-stage-${randomUUID()}`;
-        const backup = (yield* pathExists(target)) ? `${target}.openbot-backup-${randomUUID()}` : null;
+        const stage = `${target}.whilo-stage-${randomUUID()}`;
+        const backup = (yield* pathExists(target)) ? `${target}.whilo-backup-${randomUUID()}` : null;
         yield* writeFiles(stage, files);
         if (backup) yield* skillIO(() => rename(target, backup));
         const moved = yield* Effect.result(skillIO(() => rename(stage, target)));
@@ -913,7 +1020,7 @@ function lockedSlugs(lock: SkillsLock): Set<string> {
 }
 
 function lockPath(workspace: string): string {
-  return join(workspace, ".openbot", "skills-lock.json");
+  return join(workspace, ".whilo", "skills-lock.json");
 }
 const readLock = Effect.fn("SkillMarketplace.readLock")(function* (
   workspace: string,

@@ -13,9 +13,9 @@ import type {
   RespondToApprovalInput,
   RespondToBrowserTakeoverInput,
   RespondToPromptInput,
-} from "@openbot/contracts/ipc";
-import { AGENT_RUNTIME_ATTENTION_LIMIT, BROWSER_TAKEOVER_REASONS, cardBrand } from "@openbot/contracts/ipc";
-import { type DynamicRecord, isOneOf } from "@openbot/contracts/runtime-values";
+} from "@whilo/contracts/ipc";
+import { AGENT_RUNTIME_ATTENTION_LIMIT, BROWSER_TAKEOVER_REASONS, cardBrand } from "@whilo/contracts/ipc";
+import { type DynamicRecord, isOneOf } from "@whilo/contracts/runtime-values";
 import {
   type ConversationUiBlock,
   normalizeConversationUiBlock,
@@ -36,9 +36,9 @@ import {
   uiBlockOutcomeText,
   uiBlockResponseFromAnswers,
   validateUiBlockResponse,
-} from "@openbot/contracts/ui-blocks";
-import { sourceText } from "@openbot/i18n/source";
-import { createOpenBotLogger, redactText, toLogValue } from "@openbot/logging";
+} from "@whilo/contracts/ui-blocks";
+import { sourceText } from "@whilo/i18n/source";
+import { createWhiloLogger, redactText, toLogValue } from "@whilo/logging";
 import { Deferred, Effect, Result, Schema } from "effect";
 import { getDomain } from "tldts";
 import type { AgentApiKeys } from "../agent-api-keys";
@@ -93,7 +93,7 @@ import {
 import { compactRuntimeApproval, compactRuntimeQuestion } from "./runtime-snapshot";
 import { isDynamicToolCall } from "./thread-items";
 
-const logger = createOpenBotLogger("attention-registry");
+const logger = createWhiloLogger("attention-registry");
 
 interface PendingPrompt {
   client: AgentClient;
@@ -166,7 +166,7 @@ interface PendingApproval {
 
 type ToolApprovalDecision = "accept" | "decline" | "cancel";
 
-const TOOL_APPROVAL_METHOD = "openbot/tool-approval";
+const TOOL_APPROVAL_METHOD = "whilo/tool-approval";
 /** The agent reads this, not the user: it says how to ask in a Slack, Discord or Telegram turn. */
 const MESSAGING_QUESTION_REFUSED =
   "This conversation is in Slack, Discord or Telegram, where nobody can answer a question card. Ask the question in your answer: the person replies in the conversation.";
@@ -326,9 +326,9 @@ interface PendingBrowserTakeover {
   providerRequestId: RequestId;
   secret?: PreparedBrowserSecret | undefined;
   submitting?: boolean;
-  /** The saved login that OpenBot filled without the card, so the agent does not credit the user. */
+  /** The saved login that Whilo filled without the card, so the agent does not credit the user. */
   vaultLoginId?: string;
-  /** Why OpenBot did not fill a saved login, so the agent can tell the user and correct its call. */
+  /** Why Whilo did not fill a saved login, so the agent can tell the user and correct its call. */
   vaultSkipped?: string;
   params: DynamicToolCallParams;
   request: BrowserTakeoverRequest;
@@ -401,7 +401,7 @@ export interface AttentionRegistryOptions {
   emitError(code: string, error: unknown, agentId?: string): void;
   emitRuntimeSnapshot(): void;
   /**
-   * The vault the user shared with OpenBot, or null. A password or authenticator request for a login
+   * The vault the user shared with Whilo, or null. A password or authenticator request for a login
    * saved there is filled without a card: putting the login in the shared vault is the consent.
    */
   passwordVault?: PasswordVault | null | undefined;
@@ -503,14 +503,14 @@ export class AttentionRegistry {
         .map((pending) => ({
           requestId: this.#localHandle(pending),
           questions: structuredClone(pending.questions),
-          requiresOpenBot: pending.questions.some(localQuestionNeedsOpenBot),
+          requiresWhilo: pending.questions.some(localQuestionNeedsWhilo),
         })),
       approvals: [...this.#approvals.values()]
         .filter((pending) => pending.approval.agentId === agentId)
         .map((pending) => ({ ...structuredClone(pending.approval), requestId: this.#localHandle(pending) })),
       browserTakeovers: [...this.#takeovers.values()]
         .filter((pending) => pending.request.agentId === agentId)
-        .map((pending) => ({ requestId: this.#localHandle(pending), requiresOpenBot: true })),
+        .map((pending) => ({ requestId: this.#localHandle(pending), requiresWhilo: true })),
     };
   }
 
@@ -523,7 +523,7 @@ export class AttentionRegistry {
       const pending = [...this.#prompts.values()].find(
         (entry) => entry.agentId === agentId && this.#localHandles.get(entry) === input.requestId,
       );
-      if (!pending || pending.questions.some(localQuestionNeedsOpenBot)) {
+      if (!pending || pending.questions.some(localQuestionNeedsWhilo)) {
         return yield* attentionStep(() => {
           throw new InactiveAttentionRequest(sourceText("error.backend.promptInactive"));
         });
@@ -821,7 +821,7 @@ export class AttentionRegistry {
       if (this.#takeovers.get(input.requestId) !== pending) return;
       if (outcome === "submitted") {
         const vault = pending.vaultLoginId
-          ? `OpenBot filled saved login ${pending.vaultLoginId}; the user did not type it.`
+          ? `Whilo filled saved login ${pending.vaultLoginId}; the user did not type it.`
           : input.saveToVault && secret.request.method === "password"
             ? yield* this.#saveTypedPassword(pending, secret.request.origin, input.secret)
             : undefined;
@@ -860,7 +860,7 @@ export class AttentionRegistry {
   }
 
   /**
-   * The one rule for every approval OpenBot could answer itself: the agent has Full access. A
+   * The one rule for every approval Whilo could answer itself: the agent has Full access. A
    * Workspace only agent asks to go outside the limit the user chose, so its approvals always reach
    * the user, and an agent at Ask first has no standing grant.
    */
@@ -1077,7 +1077,7 @@ export class AttentionRegistry {
     this.#takeovers.set(requestId, pending);
     return yield* Effect.gen({ self: this }, function* () {
       // The card is only shown once the tab has actually been handed over -- references invalidated,
-      // diagnostics cleared, any recording stopped. Asking the user for control OpenBot then failed to
+      // diagnostics cleared, any recording stopped. Asking the user for control Whilo then failed to
       // give them would leave the agent acting on the page underneath them.
       const prepare = Effect.gen({ self: this }, function* () {
         if (params.tool === "submit_secret") {
@@ -1219,7 +1219,7 @@ export class AttentionRegistry {
   /**
    * Answers `request_link_payment`: asks Link for a one-time card, and waits while the user approves or
    * declines the payment in Link. The answer names the card for `fill_card`, never its number or code.
-   * Link's approval is the user's consent, so OpenBot asks nothing more here.
+   * Link's approval is the user's consent, so Whilo asks nothing more here.
    */
   readonly requestLinkPayment = Effect.fn("AttentionRegistry.requestLinkPayment")(function* (
     this: AttentionRegistry,
@@ -1472,7 +1472,7 @@ export class AttentionRegistry {
         contentItems: [
           {
             type: "inputText",
-            text: "OpenBot could not create a user question.",
+            text: "Whilo could not create a user question.",
           },
         ],
       });
@@ -1541,7 +1541,7 @@ export class AttentionRegistry {
     if (!threadId || !turnId || !agentId || !publicThreadId || !uiBlock || !validPromptQuestions(questions)) {
       client.respond(request.id, {
         success: false,
-        contentItems: [{ type: "inputText", text: "OpenBot could not show this block." }],
+        contentItems: [{ type: "inputText", text: "Whilo could not show this block." }],
       });
       return;
     }
@@ -1647,7 +1647,7 @@ export class AttentionRegistry {
 
   /**
    * Only the consent that Codex marks is covered, a tool set to ask every time included. A form, a
-   * hand-off, a sign-in and any request that OpenBot does not know still reach the user. A Workspace
+   * hand-off, a sign-in and any request that Whilo does not know still reach the user. A Workspace
    * only agent keeps its card: it asks to go outside the limit the user chose. Computer Use is
    * covered too: its own switch already lets the agent control apps, and Full access means no card.
    */
@@ -1665,7 +1665,7 @@ export class AttentionRegistry {
       client.respond(request.id, { action: "decline", content: null, _meta: null });
       this.#emitError(
         "mcp_safety_handoff",
-        "A local plugin requested an unsupported security hand-off, so OpenBot declined it.",
+        "A local plugin requested an unsupported security hand-off, so Whilo declined it.",
         agentId,
       );
       return;
@@ -1868,7 +1868,7 @@ export class AttentionRegistry {
   #respondToMalformedApproval(client: AgentClient, request: AppServerRequest): void {
     client.respond(
       request.id,
-      approvalReply(request.method, request.params, "decline", "OpenBot could not identify this approval."),
+      approvalReply(request.method, request.params, "decline", "Whilo could not identify this approval."),
     );
   }
 
@@ -1888,13 +1888,13 @@ export class AttentionRegistry {
     const kind = request.method === "password" ? "password" : "totp";
     const skip = (reason: string, note: string, loginId?: string) => {
       logger.info("Shared vault fill skipped", { origin: request.origin, method: request.method, loginId, reason });
-      pending.vaultSkipped = `OpenBot did not fill a saved login: ${note}`;
+      pending.vaultSkipped = `Whilo did not fill a saved login: ${note}`;
       return false;
     };
     // A script the agent ran on this site can read what is filled, and a field built for something
     // else can carry the value into a URL. In both cases the card lets the user decide.
     if (pending.secret?.agentScriptedOrigin !== false)
-      return skip("agent-scripted-origin", "you ran a script on this site since OpenBot started.");
+      return skip("agent-scripted-origin", "you ran a script on this site since Whilo started.");
     if (pending.secret.vaultFillable !== true)
       return skip(
         "field-kind",
@@ -1917,7 +1917,7 @@ export class AttentionRegistry {
     );
     if (Result.isFailure(found)) {
       logger.warn("Unable to fill from the shared vault", { error: toLogValue(found.failure.cause) });
-      pending.vaultSkipped = "OpenBot did not fill a saved login: the password manager could not be read.";
+      pending.vaultSkipped = "Whilo did not fill a saved login: the password manager could not be read.";
       return false;
     }
     const login = found.success;
@@ -2094,7 +2094,7 @@ class AttentionOperationFailed extends Schema.TaggedError<AttentionOperationFail
 }) {}
 
 /** Redacted choice labels and IDs cannot be sent back as the provider's original values. */
-function localQuestionNeedsOpenBot(question: AgentPromptQuestion): boolean {
+function localQuestionNeedsWhilo(question: AgentPromptQuestion): boolean {
   return (
     question.isSecret ||
     redactText(question.id) !== question.id ||

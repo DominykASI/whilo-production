@@ -1,4 +1,4 @@
-import type { HostMemoryReview, OpenBotDesktopApi } from "@openbot/contracts/ipc";
+import type { HostMemoryReview, WhiloDesktopApi } from "@whilo/contracts/ipc";
 import {
   Item,
   ItemActions,
@@ -10,15 +10,15 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@openbot/ui";
-import { useText } from "@openbot/ui/text";
+} from "@whilo/ui";
+import { useText } from "@whilo/ui/text";
 import { createEffect, createSignal, Show, untrack } from "solid-js";
 
 /** The memory review calls of one server's host. The desktop reaches them through main. */
-export type HostMemoryReviewCalls = Pick<OpenBotDesktopApi["hostAdmin"], "getMemoryReview" | "setMemoryReview">;
+export type HostMemoryReviewCalls = Pick<WhiloDesktopApi["hostAdmin"], "getMemoryReview" | "setMemoryReview">;
 
 export interface ServerMemoryReviewOptions {
-  /** The calls of a client with no `window.openbot`, such as the web client. */
+  /** The calls of a client with no `window.whilo`, such as the web client. */
   calls?: HostMemoryReviewCalls;
 }
 
@@ -36,7 +36,7 @@ export function ServerMemoryReviewSetting(
   },
 ) {
   const { t, errorMessage } = useText();
-  const calls = (): HostMemoryReviewCalls => props.calls ?? window.openbot.hostAdmin;
+  const calls = (): HostMemoryReviewCalls => props.calls ?? window.whilo.hostAdmin;
   const [settings, setSettings] = createSignal<HostMemoryReview | null>(null);
   const [loadError, setLoadError] = createSignal<string | null>(null);
   /** Bumped for each server, so an answer for an earlier one is dropped. */

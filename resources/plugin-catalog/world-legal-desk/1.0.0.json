@@ -1,0 +1,39 @@
+{
+  "slug": "world-legal-desk",
+  "name": "World Legal Desk",
+  "tagline": "The laws of many countries, as Markdown",
+  "description": "World Legal Desk is a library of statutes as Markdown, one folder per country, from the public corpora that legalize-dev publishes. Agents search a country's folder, quote an article with its citation, and compare how two jurisdictions word the same rule. The library is a copy you keep on this computer: the app reads the folder with a filesystem server and downloads nothing. Point it at the folder whose country folders it should serve, and keep the folder in place while agents use it.",
+  "category": "research",
+  "creatorName": "legalize-dev",
+  "iconUrl": "https://github.com/legalize-dev.png",
+  "version": "1.0.0",
+  "prompts": [
+    {
+      "id": "prompt-article",
+      "text": "Quote article 1 of the German Basic Law from my legal library, with its citation."
+    },
+    { "id": "prompt-compare", "text": "Compare how France and Japan define a legal person in their civil codes." },
+    {
+      "id": "prompt-list-countries",
+      "text": "Which countries does my legal library cover, and how many files does each one hold?"
+    }
+  ],
+  "apps": [
+    {
+      "id": "app-world-legal-desk-files",
+      "name": "Legal library",
+      "description": "Read and search the country folders of your legal library, over a filesystem server limited to that one folder.",
+      "iconUrl": "https://github.com/legalize-dev.png",
+      "server": {
+        "name": "world-legal-desk",
+        "transport": "stdio",
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-filesystem@2.1.0", "~/Documents/world-legal-desk/laws"]
+      }
+    }
+  ],
+  "websiteUrl": "https://github.com/legalize-dev",
+  "privacyPolicyUrl": null,
+  "termsUrl": null,
+  "skills": []
+}

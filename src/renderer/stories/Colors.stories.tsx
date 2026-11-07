@@ -1,35 +1,35 @@
-import { Badge, Heading, Text } from "@openbot/ui";
+import { Badge, Heading, Text } from "@whilo/ui";
 import type { JSX } from "@solidjs/web";
 import { createEffect, createSignal, For } from "solid-js";
 import type { Meta, StoryObj } from "storybook-solidjs-vite";
 
 const colors = [
-  ["Canvas", "--openbot-bg-canvas"],
-  ["Surface", "--openbot-bg-surface"],
-  ["Control", "--openbot-bg-control"],
-  ["Border", "--openbot-border-strong"],
-  ["Accent", "--openbot-accent"],
-  ["Success", "--openbot-success"],
-  ["Warning", "--openbot-warning"],
-  ["Danger", "--openbot-danger"],
+  ["Canvas", "--whilo-bg-canvas"],
+  ["Surface", "--whilo-bg-surface"],
+  ["Control", "--whilo-bg-control"],
+  ["Border", "--whilo-border-strong"],
+  ["Accent", "--whilo-accent"],
+  ["Success", "--whilo-success"],
+  ["Warning", "--whilo-warning"],
+  ["Danger", "--whilo-danger"],
 ] as const;
 
 // The two accent families, and what each step is for. The blue is the action
 // colour and reaches 155 call sites; the pink says "newly available" and has one,
 // the account dock's update pill.
 const accentBlue = [
-  ["Accent", "--openbot-accent", "Filled buttons, switches, the send control"],
-  ["Accent hover", "--openbot-accent-hover", "Hover on a filled control"],
-  ["Accent text", "--openbot-accent-text", "Links, and the blue word in a badge"],
-  ["Accent soft", "--openbot-accent-soft", "Badge and selected-row fills"],
-  ["Accent strong", "--openbot-accent-strong", "Selection rings, glows and gradient stops"],
-  ["Border focus", "--openbot-border-focus", "Focus ring on an interactive edge"],
-  ["Focus tint", "--openbot-focus-tint", "The ring's outer glow"],
+  ["Accent", "--whilo-accent", "Filled buttons, switches, the send control"],
+  ["Accent hover", "--whilo-accent-hover", "Hover on a filled control"],
+  ["Accent text", "--whilo-accent-text", "Links, and the blue word in a badge"],
+  ["Accent soft", "--whilo-accent-soft", "Badge and selected-row fills"],
+  ["Accent strong", "--whilo-accent-strong", "Selection rings, glows and gradient stops"],
+  ["Border focus", "--whilo-border-focus", "Focus ring on an interactive edge"],
+  ["Focus tint", "--whilo-focus-tint", "The ring's outer glow"],
 ] as const;
 
 const accentPink = [
-  ["Badge new", "--openbot-badge-new", "The word in a New pill"],
-  ["Badge new soft", "--openbot-badge-new-soft", "Its fill"],
+  ["Badge new", "--whilo-badge-new", "The word in a New pill"],
+  ["Badge new soft", "--whilo-badge-new-soft", "Its fill"],
 ] as const;
 
 const meta = {

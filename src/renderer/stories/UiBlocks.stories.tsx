@@ -6,12 +6,12 @@ import type {
   UiConfirmBlock as UiConfirmSpec,
   UiFormBlock as UiFormSpec,
   UiQuickRepliesBlock as UiQuickRepliesSpec,
-} from "@openbot/contracts/ui-blocks";
-import { uiBlockOutcomeText } from "@openbot/contracts/ui-blocks";
-import { UiChoiceBlock } from "@openbot/ui/features/conversation/ui-blocks/UiChoiceBlock";
-import { UiConfirmBlock } from "@openbot/ui/features/conversation/ui-blocks/UiConfirmBlock";
-import { UiFormBlock } from "@openbot/ui/features/conversation/ui-blocks/UiFormBlock";
-import { UiQuickReplies } from "@openbot/ui/features/conversation/ui-blocks/UiQuickReplies";
+} from "@whilo/contracts/ui-blocks";
+import { uiBlockOutcomeText } from "@whilo/contracts/ui-blocks";
+import { UiChoiceBlock } from "@whilo/ui/features/conversation/ui-blocks/UiChoiceBlock";
+import { UiConfirmBlock } from "@whilo/ui/features/conversation/ui-blocks/UiConfirmBlock";
+import { UiFormBlock } from "@whilo/ui/features/conversation/ui-blocks/UiFormBlock";
+import { UiQuickReplies } from "@whilo/ui/features/conversation/ui-blocks/UiQuickReplies";
 import type { JSX } from "@solidjs/web";
 import { createSignal } from "solid-js";
 import { fn } from "storybook/test";

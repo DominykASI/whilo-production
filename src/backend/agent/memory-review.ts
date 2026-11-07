@@ -5,8 +5,8 @@ import {
   type ConversationMessage,
   defaultProviderModel,
   isContextResetMarker,
-} from "@openbot/contracts/ipc";
-import { createOpenBotLogger } from "@openbot/logging";
+} from "@whilo/contracts/ipc";
+import { createWhiloLogger } from "@whilo/logging";
 import { Effect, Exit, Fiber, Schema, Scope } from "effect";
 import type { AgentClient } from "../agent-client";
 import { extractJsonObject } from "../structured-output";
@@ -18,7 +18,7 @@ import { type GenerationObserver, GenerationUsageLimitError, generateTextWithout
 import type { ProviderOperationFailed } from "./provider-runtime";
 import { inputPrice } from "./usage-pricing";
 
-const logger = createOpenBotLogger("memory-review");
+const logger = createWhiloLogger("memory-review");
 
 /** The completed turns of one conversation between two reviews, by default. */
 const MEMORY_REVIEW_INTERVAL = 20;

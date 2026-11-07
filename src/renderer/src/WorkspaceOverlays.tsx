@@ -4,20 +4,20 @@ import {
   LOCAL_SERVER_LIMIT,
   type RoutineFields,
   type ServerSummary,
-} from "@openbot/contracts/ipc";
-import { BROWSER_PROFILES_CAPABILITY } from "@openbot/contracts/team-protocol/browser-profiles-v1";
-import { VAULT_CAPABILITY } from "@openbot/contracts/team-protocol/vault-v1";
-import { VAULT_V2_CAPABILITY } from "@openbot/contracts/team-protocol/vault-v2";
-import { classifyFailure } from "@openbot/telemetry";
-import { isAgentAccount } from "@openbot/ui/components/provider-accounts";
-import type { AcpRegistrySettingsApi } from "@openbot/ui/features/custom-providers/AcpRegistrySettings";
-import type { CustomAgentSettingsApi } from "@openbot/ui/features/custom-providers/CustomAgentSettings";
-import { providerDiagnosticsText } from "@openbot/ui/features/provider-diagnostics/provider-diagnostics";
-import { LeaveServerDialog } from "@openbot/ui/features/servers/LeaveServerDialog";
-import { RestartServerDialog } from "@openbot/ui/features/servers/RestartServerDialog";
-import type { HostedSiteDeleteResult } from "@openbot/ui/features/settings/stores/hosted-sites-store";
-import { sidebarAgentOrder } from "@openbot/ui/features/sidebar/sidebar-agent-order";
-import { currentText } from "@openbot/ui/text";
+} from "@whilo/contracts/ipc";
+import { BROWSER_PROFILES_CAPABILITY } from "@whilo/contracts/team-protocol/browser-profiles-v1";
+import { VAULT_CAPABILITY } from "@whilo/contracts/team-protocol/vault-v1";
+import { VAULT_V2_CAPABILITY } from "@whilo/contracts/team-protocol/vault-v2";
+import { classifyFailure } from "@whilo/telemetry";
+import { isAgentAccount } from "@whilo/ui/components/provider-accounts";
+import type { AcpRegistrySettingsApi } from "@whilo/ui/features/custom-providers/AcpRegistrySettings";
+import type { CustomAgentSettingsApi } from "@whilo/ui/features/custom-providers/CustomAgentSettings";
+import { providerDiagnosticsText } from "@whilo/ui/features/provider-diagnostics/provider-diagnostics";
+import { LeaveServerDialog } from "@whilo/ui/features/servers/LeaveServerDialog";
+import { RestartServerDialog } from "@whilo/ui/features/servers/RestartServerDialog";
+import type { HostedSiteDeleteResult } from "@whilo/ui/features/settings/stores/hosted-sites-store";
+import { sidebarAgentOrder } from "@whilo/ui/features/sidebar/sidebar-agent-order";
+import { currentText } from "@whilo/ui/text";
 import { createEffect, createMemo, Loading, Show, untrack } from "solid-js";
 import { actionToast } from "./action-toast";
 import { desktopAnalytics } from "./analytics";
@@ -184,7 +184,7 @@ export function SkillsMarketplace() {
 }
 
 /**
- * A shared agent from an `openbot://agents/<id>` link. It is added where a marketplace agent is: on
+ * A shared agent from an `whilo://agents/<id>` link. It is added where a marketplace agent is: on
  * the selected joined server when this account administers it, otherwise on this computer.
  */
 function SharedAgentInstall() {

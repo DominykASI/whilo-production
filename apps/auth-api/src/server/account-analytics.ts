@@ -6,8 +6,8 @@ import {
   type BillingInterval,
   type BillingPlanId,
   isBillingAmount,
-} from "@openbot/contracts/billing";
-import { FIRST_TOUCH_CAMPAIGN_FIELDS, type FirstTouch, parseFirstTouch } from "@openbot/contracts/first-touch";
+} from "@whilo/contracts/billing";
+import { FIRST_TOUCH_CAMPAIGN_FIELDS, type FirstTouch, parseFirstTouch } from "@whilo/contracts/first-touch";
 import {
   HOSTED_SERVER_ENTRY_POINTS,
   HOSTED_SERVER_ERRORS,
@@ -15,13 +15,13 @@ import {
   type HostedServerEntryPoint,
   type HostedServerError,
   type HostedServerSize,
-} from "@openbot/contracts/hosted-servers";
-import { isOneOf } from "@openbot/contracts/runtime-values";
-import { normalizeEmailAddress } from "@openbot/contracts/validation";
+} from "@whilo/contracts/hosted-servers";
+import { isOneOf } from "@whilo/contracts/runtime-values";
+import { normalizeEmailAddress } from "@whilo/contracts/validation";
 import { Effect, Schema } from "effect";
 
 /** The same OpenPanel project as the desktop app and the website. ANALYTICS.md is the contract. */
-const OPENPANEL_API_URL = "https://analytics.openbot.run/api";
+const OPENPANEL_API_URL = "https://analytics.whilo.onerall.com/api";
 /**
  * The current generation. Generation 10 adds the account events, first-touch properties, and
  * `reactivated` and `end_reason` on plan events. Generation 11 adds the license to the billing events

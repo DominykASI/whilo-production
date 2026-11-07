@@ -1,22 +1,22 @@
 import { createHash, randomBytes } from "node:crypto";
-import type { DiscordDelivery } from "@openbot/contracts/signal-protocol/discord-api";
-import { DISCORD_ROUTE_TTL_SECONDS, type DiscordRouteGuild } from "@openbot/contracts/signal-protocol/discord-route";
-import type { GitHubRouteRepository } from "@openbot/contracts/signal-protocol/github-route";
+import type { DiscordDelivery } from "@whilo/contracts/signal-protocol/discord-api";
+import { DISCORD_ROUTE_TTL_SECONDS, type DiscordRouteGuild } from "@whilo/contracts/signal-protocol/discord-route";
+import type { GitHubRouteRepository } from "@whilo/contracts/signal-protocol/github-route";
 import {
   INGRESS_QUEUE_CAPABILITY,
   type IngressRoute,
   isIngressQueueKey,
   type QueuedSignalMessage,
-} from "@openbot/contracts/signal-protocol/ingress-queue";
-import { SLACK_ROUTE_TTL_SECONDS, type SlackRouteTeam } from "@openbot/contracts/signal-protocol/slack-route";
+} from "@whilo/contracts/signal-protocol/ingress-queue";
+import { SLACK_ROUTE_TTL_SECONDS, type SlackRouteTeam } from "@whilo/contracts/signal-protocol/slack-route";
 import {
   TELEGRAM_CAPABILITY,
   TELEGRAM_ROUTE_TTL_SECONDS,
   type TelegramCallResult,
   type TelegramRouteChat,
   telegramRouteChatKey,
-} from "@openbot/contracts/signal-protocol/telegram-route";
-import { WEBHOOK_ROUTE_TTL_SECONDS, type WebhookRoute } from "@openbot/contracts/signal-protocol/webhook-route";
+} from "@whilo/contracts/signal-protocol/telegram-route";
+import { WEBHOOK_ROUTE_TTL_SECONDS, type WebhookRoute } from "@whilo/contracts/signal-protocol/webhook-route";
 import { Context, Effect, Fiber, Layer, Result, Schema } from "effect";
 import { IngressQueue, queueRouteKey, type RouteWaker } from "./ingress-queue";
 import {
@@ -95,7 +95,7 @@ export interface RemoteTokenProvider {
 }
 
 export class SignalTokens extends Context.Service<SignalTokens, RemoteTokenProvider>()(
-  "@openbot/remote-api/SignalTokens",
+  "@whilo/remote-api/SignalTokens",
 ) {
   static layer(provider: RemoteTokenProvider) {
     return Layer.succeed(SignalTokens, provider);
@@ -213,9 +213,9 @@ export interface SlackDelivery {
   retryNum: number | null;
   retryReason: string | null;
   body: Uint8Array;
-  /** The request addresses OpenBot: a mention, a direct message, a thread reply or a button press. */
+  /** The request addresses Whilo: a mention, a direct message, a thread reply or a button press. */
   wakes: boolean;
-  /** A message that does not address OpenBot. */
+  /** A message that does not address Whilo. */
   chatter: boolean;
 }
 
@@ -790,7 +790,7 @@ export class SignalService {
    * Passes one signed Slack request to the `ingress` socket of the workspace's host and waits for
    * its answer. It resolves 503 when no host holds the workspace, the host is too busy, or it does
    * not answer in time: Slack then sends the request again. For a hosted server that sleeps it
-   * resolves 200, and keeps the request when it addresses OpenBot (`IngressQueue`). Chatter for a
+   * resolves 200, and keeps the request when it addresses Whilo (`IngressQueue`). Chatter for a
    * host with no socket resolves 200 and is lost.
    */
   readonly deliverSlack = Effect.fn("Signal.deliverSlack")((appId: string, teamId: string, delivery: SlackDelivery) => {
@@ -1853,13 +1853,13 @@ function slackRouteKey(appId: string, teamId: string): string {
   return `${appId}:${teamId}`;
 }
 
-/** One OpenBot bot in one chat. The production and development bots can share a chat. */
+/** One Whilo bot in one chat. The production and development bots can share a chat. */
 function telegramRouteKey(botId: string, chatId: string): string {
   return `${botId}:${chatId}`;
 }
 
 /**
- * One repository in one installation of the OpenBot GitHub App. A repository that moves to another
+ * One repository in one installation of the Whilo GitHub App. A repository that moves to another
  * account gets another installation, so a route for the old one stops.
  */
 function githubRepositoryKey(installationId: number, repositoryId: number): string {

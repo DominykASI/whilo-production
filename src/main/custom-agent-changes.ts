@@ -14,9 +14,9 @@ import type {
   CustomAgentSummary,
   CustomAgentUsage,
   SaveCustomAgentInput,
-} from "@openbot/contracts/ipc";
-import { isNewCustomAgentId } from "@openbot/contracts/ipc";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/ipc";
+import { isNewCustomAgentId } from "@whilo/contracts/ipc";
+import { sourceText } from "@whilo/i18n/source";
 import { checkAcpAgent } from "../backend/acp-agent-check";
 import { assertAgentArgs, assertWindowsScriptArgs, resolveAgentCommand } from "../backend/acp-agent-command";
 import { AgentLifecycleFailed, type AgentService } from "../backend/agent-service";

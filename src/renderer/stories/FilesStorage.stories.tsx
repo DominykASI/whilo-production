@@ -1,9 +1,9 @@
-import { SettingsLinkGroup, SettingsLinkRow } from "@openbot/ui/components/SettingsPanel";
-import AgentSettingsPanel from "@openbot/ui/features/conversation/AgentSettingsPanel";
-import { AgentFilesView, agentFilesLinkValue } from "@openbot/ui/features/files/AgentFilesView";
-import { ConversationFilesPanel } from "@openbot/ui/features/files/ConversationFilesPanel";
-import { FileList } from "@openbot/ui/features/files/FileList";
-import { StorageOverview } from "@openbot/ui/features/files/StorageOverview";
+import { SettingsLinkGroup, SettingsLinkRow } from "@whilo/ui/components/SettingsPanel";
+import AgentSettingsPanel from "@whilo/ui/features/conversation/AgentSettingsPanel";
+import { AgentFilesView, agentFilesLinkValue } from "@whilo/ui/features/files/AgentFilesView";
+import { ConversationFilesPanel } from "@whilo/ui/features/files/ConversationFilesPanel";
+import { FileList } from "@whilo/ui/features/files/FileList";
+import { StorageOverview } from "@whilo/ui/features/files/StorageOverview";
 import { createSignal, Show } from "solid-js";
 import { fn } from "storybook/test";
 import type { Meta, StoryObj } from "storybook-solidjs-vite";
@@ -121,7 +121,7 @@ export const StorageError: Story = {
       args={{
         ...overviewArgs(),
         state: "error",
-        error: "OpenBot could not read ~/OpenBot/Agents. Check the folder permissions and try again.",
+        error: "Whilo could not read ~/Whilo/Agents. Check the folder permissions and try again.",
         scannedAt: null,
         breakdown: [],
         agentUsage: [],
@@ -357,6 +357,6 @@ export const ListLoading: Story = {
 export const ListError: Story = {
   name: "File list: Error",
   render: () => (
-    <ListStage error="The attachment index is not available. Restart OpenBot and try again." onRetry={fn()} />
+    <ListStage error="The attachment index is not available. Restart Whilo and try again." onRetry={fn()} />
   ),
 };

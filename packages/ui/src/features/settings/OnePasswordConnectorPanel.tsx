@@ -1,4 +1,4 @@
-import type { OnePasswordConnectorStatus, OnePasswordSetup } from "@openbot/contracts/ipc";
+import type { OnePasswordConnectorStatus, OnePasswordSetup } from "@whilo/contracts/ipc";
 import {
   Button,
   CircleCheck,
@@ -17,7 +17,7 @@ import {
   RefreshCw,
   SettingsSection,
   Text,
-} from "@openbot/ui";
+} from "@whilo/ui";
 import type { JSX } from "@solidjs/web";
 import { createSignal, For, onSettled, Show } from "solid-js";
 import { useText } from "../../text";
@@ -83,7 +83,7 @@ function setupSteps(setup: OnePasswordSetup): { cli: StepState; app: StepState; 
 }
 
 /**
- * The 1Password page of one OpenBot computer. The token never reaches this component after the user
+ * The 1Password page of one Whilo computer. The token never reaches this component after the user
  * types it: the status holds the setup, the vault names and the login count only.
  *
  * Before a connection the page is three steps, each with the one button it needs: install the CLI,

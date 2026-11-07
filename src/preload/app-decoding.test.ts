@@ -7,7 +7,7 @@ import type {
   MobileConnectedDevice,
   NotificationOpenedEvent,
   UpdateStatus,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import { describe, expect, it } from "vitest";
 import {
   decodeAccountSessions,
@@ -100,13 +100,13 @@ const valid: [string, (value: unknown) => unknown, unknown][] = [
   [
     "app info",
     decodeAppInfo,
-    { name: "OpenBot", version: "1.0.0", platform: "darwin", variant: "dev" } satisfies AppInfo,
+    { name: "Whilo", version: "1.0.0", platform: "darwin", variant: "dev" } satisfies AppInfo,
   ],
   [
     "app info with an install ID",
     decodeAppInfo,
     {
-      name: "OpenBot",
+      name: "Whilo",
       version: "1.0.0",
       platform: "darwin",
       variant: "production",
@@ -161,7 +161,7 @@ const valid: [string, (value: unknown) => unknown, unknown][] = [
     decodeCentralAuthState,
     { status: "error", issue: { code: "offline", message: "No network." } } satisfies CentralAuthState,
   ],
-  ["Mobile Connect ticket", decodeMobileConnectTicket, { qrData: "openbot://mobile-connect", expiresAt: 1 }],
+  ["Mobile Connect ticket", decodeMobileConnectTicket, { qrData: "whilo://mobile-connect", expiresAt: 1 }],
   [
     "connected devices",
     decodeMobileConnectedDevices,
@@ -216,7 +216,7 @@ const malformed: [string, (value: unknown) => unknown, unknown][] = [
   [
     "app info with an install ID that is not text",
     decodeAppInfo,
-    { name: "OpenBot", version: "1.0.0", platform: "darwin", variant: "production", analyticsInstallId: 1 },
+    { name: "Whilo", version: "1.0.0", platform: "darwin", variant: "production", analyticsInstallId: 1 },
   ],
   // The key never comes back to the renderer, so a record that carries one fails closed.
   ["a voice server with its key", decodeVoiceServerSettings, { ...voiceServer, apiKey: "sk-secret" }],
@@ -239,7 +239,7 @@ const malformed: [string, (value: unknown) => unknown, unknown][] = [
   [
     "app info on an unknown platform",
     decodeAppInfo,
-    { name: "OpenBot", version: "1", platform: "aix", variant: "dev" },
+    { name: "Whilo", version: "1", platform: "aix", variant: "dev" },
   ],
   [
     "setup state with an unknown provider",

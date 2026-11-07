@@ -1,5 +1,5 @@
-import type { AgentMessage } from "@openbot/ui/data";
-import { prefersReducedMotion } from "@openbot/ui/utils";
+import type { AgentMessage } from "@whilo/ui/data";
+import { prefersReducedMotion } from "@whilo/ui/utils";
 import { createEffect, onCleanup } from "solid-js";
 import type { ChatSearchMatch } from "../chat-search";
 import { clearChatSearchHighlights, findChatSearchMatches, renderChatSearchHighlights } from "../chat-search";

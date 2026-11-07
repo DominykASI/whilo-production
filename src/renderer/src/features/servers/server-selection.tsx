@@ -1,5 +1,5 @@
-import type { AddedAgent, AgentProviderId, NotificationOpenedEvent, ServerSummary } from "@openbot/contracts/ipc";
-import { currentText } from "@openbot/ui/text";
+import type { AddedAgent, AgentProviderId, NotificationOpenedEvent, ServerSummary } from "@whilo/contracts/ipc";
+import { currentText } from "@whilo/ui/text";
 import { onSettled } from "solid-js";
 import { actionToast } from "../../action-toast";
 import { desktopAnalytics } from "../../analytics";

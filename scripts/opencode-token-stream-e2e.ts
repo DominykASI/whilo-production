@@ -3,7 +3,7 @@
 // loopback. Cases: plain tokens, tokens with an empty `reasoning_content` beside each one, tokens with
 // reasoning between them, and a control where the endpoint itself sends the spaces.
 // `bun scripts/opencode-token-stream-e2e.ts [<opencode binary>]`. Without an argument it uses
-// `OPENBOT_OPENCODE_PATH`. Writes .openbot-build/opencode-token-stream-e2e/report.json.
+// `WHILO_OPENCODE_PATH`. Writes .whilo-build/opencode-token-stream-e2e/report.json.
 import assert from "node:assert/strict";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { mkdtemp, rm } from "node:fs/promises";
@@ -11,11 +11,11 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
-const OUT = resolve(import.meta.dirname, "../.openbot-build/opencode-token-stream-e2e");
-const binary = process.argv[2] ?? process.env.OPENBOT_OPENCODE_PATH;
-if (!binary) throw new Error("Give the OpenCode binary as the first argument or in OPENBOT_OPENCODE_PATH.");
+const OUT = resolve(import.meta.dirname, "../.whilo-build/opencode-token-stream-e2e");
+const binary = process.argv[2] ?? process.env.WHILO_OPENCODE_PATH;
+if (!binary) throw new Error("Give the OpenCode binary as the first argument or in WHILO_OPENCODE_PATH.");
 
-const root = await mkdtemp(join(tmpdir(), "openbot-opencode-token-stream-"));
+const root = await mkdtemp(join(tmpdir(), "whilo-opencode-token-stream-"));
 const home = join(root, "home");
 mkdirSync(home, { recursive: true });
 // Before the driver loads: OpenCode keeps its state under the home folder.

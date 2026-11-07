@@ -1,4 +1,4 @@
-import { avatarCandidateSeeds } from "@openbot/brand/bloub-avatar";
+import { avatarCandidateSeeds } from "@whilo/brand/bloub-avatar";
 
 interface AvatarCandidates {
   namespace: string;

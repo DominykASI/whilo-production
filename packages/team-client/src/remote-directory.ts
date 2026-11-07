@@ -1,19 +1,19 @@
-import { type HostKeyHandover, optionalHostKeyHandovers } from "@openbot/contracts/host-key-handover";
+import { type HostKeyHandover, optionalHostKeyHandovers } from "@whilo/contracts/host-key-handover";
 import {
   createInviteUrl,
   type InviteLinkOptions,
   inviteUseCount,
   isPermanentInvite,
-  OPENBOT_CONTROL_PLANE_ORIGIN,
-  OPENBOT_INVITE_ORIGIN,
+  WHILO_CONTROL_PLANE_ORIGIN,
+  WHILO_INVITE_ORIGIN,
   parseInviteUrl,
   selfHostedApiOrigin,
-} from "@openbot/contracts/invite-links";
-import type { MobileConnectHostBinding } from "@openbot/contracts/mobile-connect";
-import { decodeRemoteSession, decodeRemoteSessionTicket } from "@openbot/contracts/remote-control-plane";
-import { isBoolean, isDynamicRecord, isNumber, isString } from "@openbot/contracts/runtime-values";
-import { sourceText } from "@openbot/i18n/source";
-import { referenceFrom, safeReference } from "@openbot/user-errors/reference";
+} from "@whilo/contracts/invite-links";
+import type { MobileConnectHostBinding } from "@whilo/contracts/mobile-connect";
+import { decodeRemoteSession, decodeRemoteSessionTicket } from "@whilo/contracts/remote-control-plane";
+import { isBoolean, isDynamicRecord, isNumber, isString } from "@whilo/contracts/runtime-values";
+import { sourceText } from "@whilo/i18n/source";
+import { referenceFrom, safeReference } from "@whilo/user-errors/reference";
 import { Deferred, Effect, Schema, Semaphore } from "effect";
 import { runTeamEffect } from "./effect-boundary";
 import {
@@ -427,8 +427,8 @@ export class RemoteTeamDirectoryClient {
    */
   #inviteApiUrl(): string {
     const url = new URL(this.#apiUrl);
-    return this.#authentication.kind === "browser" && url.origin === OPENBOT_INVITE_ORIGIN
-      ? new URL(OPENBOT_CONTROL_PLANE_ORIGIN).toString()
+    return this.#authentication.kind === "browser" && url.origin === WHILO_INVITE_ORIGIN
+      ? new URL(WHILO_CONTROL_PLANE_ORIGIN).toString()
       : url.toString();
   }
 
@@ -587,7 +587,7 @@ export class RemoteTeamDirectoryClient {
                     ? { Authorization: `Bearer ${this.#authentication.token}` }
                     : {}),
                   ...(browser
-                    ? { "X-OpenBot-Browser": "1", "Content-Type": "application/json" }
+                    ? { "X-Whilo-Browser": "1", "Content-Type": "application/json" }
                     : options.body
                       ? { "Content-Type": "application/json" }
                       : {}),

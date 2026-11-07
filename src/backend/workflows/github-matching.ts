@@ -7,7 +7,7 @@
  * data: a value of the wrong shape makes the event match nothing.
  */
 
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import {
   isGitHubRepositoryName,
   WORKFLOW_GITHUB_EVENTS,
@@ -16,7 +16,7 @@ import {
   type WorkflowNode,
   workflowGitHubEventItemKind,
   workflowListField,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   type DynamicRecord,
   isBoolean,
@@ -24,7 +24,7 @@ import {
   isNumber,
   isOneOf,
   isString,
-} from "@openbot/contracts/runtime-values";
+} from "@whilo/contracts/runtime-values";
 import { EXTERNAL_EVENT_END, EXTERNAL_EVENT_START } from "../webhook-trigger";
 
 /** The parts of one GitHub event that the triggers, the loop guard and the run text read. */
@@ -38,7 +38,7 @@ export interface GitHubEventFacts {
   actor: string;
   /** Whether the actor is a bot account. */
   actorIsBot: boolean;
-  /** Whether the actor is the OpenBot GitHub App's own bot. */
+  /** Whether the actor is the Whilo GitHub App's own bot. */
   causedByBot: boolean;
   /** GitHub's `author_association` of the comment, review or item. */
   association: string | null;
@@ -268,7 +268,7 @@ export function githubFilterRefuses(node: WorkflowNode, facts: GitHubEventFacts)
   const event = node.fields.event;
   const filters = new Set(workflowListField(node.fields.filters));
   const labels = workflowListField(node.fields.labels).map((label) => label.toLowerCase());
-  // OpenBot's own bot passes "not a bot": the loop guard stops its chains instead.
+  // Whilo's own bot passes "not a bot": the loop guard stops its chains instead.
   if (filters.has("notBot") && facts.actorIsBot && !facts.causedByBot) return true;
   if (filters.has("firstTime") && !isOneOf(FIRST_TIME_ASSOCIATIONS, facts.association)) return true;
   if (filters.has("title")) {

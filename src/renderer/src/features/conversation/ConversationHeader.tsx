@@ -1,4 +1,4 @@
-import { foreignProvider, isKnownAgentProvider } from "@openbot/contracts/agent-providers";
+import { foreignProvider, isKnownAgentProvider } from "@whilo/contracts/agent-providers";
 import {
   type AgentModelId,
   type AgentProviderRef,
@@ -6,13 +6,13 @@ import {
   agentNextProviderAccountId,
   DEFAULT_PROVIDER_ACCOUNT_ID,
   providerDisplayName,
-} from "@openbot/contracts/ipc";
-import { AGENT_FAST_MODE_CAPABILITY } from "@openbot/contracts/team-protocol/agent-fast-mode-v1";
-import { reasoningLabel } from "@openbot/ui/components/ProviderModelPicker";
-import { providerAccountName } from "@openbot/ui/components/provider-accounts";
-import { ConversationHeader as SharedConversationHeader } from "@openbot/ui/features/conversation/ConversationHeader";
-import { ThreadHeader } from "@openbot/ui/features/conversation/threads/ThreadHeader";
-import { MAIN_THREAD_ID } from "@openbot/ui/features/conversation/threads/thread-types";
+} from "@whilo/contracts/ipc";
+import { AGENT_FAST_MODE_CAPABILITY } from "@whilo/contracts/team-protocol/agent-fast-mode-v1";
+import { reasoningLabel } from "@whilo/ui/components/ProviderModelPicker";
+import { providerAccountName } from "@whilo/ui/components/provider-accounts";
+import { ConversationHeader as SharedConversationHeader } from "@whilo/ui/features/conversation/ConversationHeader";
+import { ThreadHeader } from "@whilo/ui/features/conversation/threads/ThreadHeader";
+import { MAIN_THREAD_ID } from "@whilo/ui/features/conversation/threads/thread-types";
 import { Show } from "solid-js";
 import { serverSupportsCapability } from "../servers/server-capabilities";
 import { useConversationViewScope } from "./conversation-scope";
@@ -27,7 +27,7 @@ interface BadgeRuntime {
   providerAccountId?: string | undefined;
 }
 
-import { useText } from "@openbot/ui/text";
+import { useText } from "@whilo/ui/text";
 
 /** @internal Stable HMR boundary for conversation header. */
 export function ConversationHeader() {

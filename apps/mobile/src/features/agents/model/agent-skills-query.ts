@@ -1,4 +1,4 @@
-import type { InstalledSkill } from "@openbot/contracts/ipc";
+import type { InstalledSkill } from "@whilo/contracts/ipc";
 import type { MobileWorkspaceActions } from "@/features/workspace/context/mobile-workspace-context";
 import { type QueryScope, queryKeys } from "@/features/workspace/model/query-keys";
 
@@ -7,7 +7,7 @@ function userAssignedSkills(skills: InstalledSkill[]): InstalledSkill[] {
   return skills
     .filter(
       (skill) =>
-        skill.origin !== "managed" && skill.slug !== "openbot-site-hosting" && skill.skillId !== "openbot-site-hosting",
+        skill.origin !== "managed" && skill.slug !== "whilo-site-hosting" && skill.skillId !== "whilo-site-hosting",
     )
     .sort((left, right) => left.name.localeCompare(right.name));
 }

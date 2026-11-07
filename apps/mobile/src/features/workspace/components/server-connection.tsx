@@ -1,5 +1,5 @@
-import type { AgentEvent, TeamRealtimeEvent } from "@openbot/contracts/ipc";
-import { sourceText } from "@openbot/i18n/source";
+import type { AgentEvent, TeamRealtimeEvent } from "@whilo/contracts/ipc";
+import { sourceText } from "@whilo/i18n/source";
 import {
   createRemoteConnectionRecovery,
   type RemoteConnectionFailure,
@@ -7,8 +7,8 @@ import {
   type RemoteRecoveryStatus,
   type RemoteTeamDirectoryClient,
   remoteConnectionFailureDetails,
-} from "@openbot/team-client";
-import { REMOTE_PEER_LOST_AFTER_MS, type RemoteTeamConnectionUpdate } from "@openbot/team-client/remote-peer";
+} from "@whilo/team-client";
+import { REMOTE_PEER_LOST_AFTER_MS, type RemoteTeamConnectionUpdate } from "@whilo/team-client/remote-peer";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { MobileConnectionAnalytics } from "@/features/analytics/connection";
 import { mobileAnalytics } from "@/features/analytics/mobile-analytics";

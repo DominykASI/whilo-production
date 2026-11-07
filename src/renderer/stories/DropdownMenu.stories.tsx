@@ -1,4 +1,4 @@
-import { ProviderLogo, type ProviderLogoVariant } from "@openbot/brand";
+import { ProviderLogo, type ProviderLogoVariant } from "@whilo/brand";
 import {
   BellOff,
   buttonVariants,
@@ -12,8 +12,8 @@ import {
   Pencil,
   Pin,
   Trash2,
-} from "@openbot/ui";
-import { SwapLabel } from "@openbot/ui/components/SwapLabel";
+} from "@whilo/ui";
+import { SwapLabel } from "@whilo/ui/components/SwapLabel";
 import { createSignal, For, Show } from "solid-js";
 import type { Meta, StoryObj } from "storybook-solidjs-vite";
 import "./DropdownMenu.css";
@@ -36,16 +36,16 @@ interface ModelOption {
 }
 
 const MODELS: readonly ModelOption[] = [
-  { id: "claude", name: "Claude Opus 5.5", provider: "claude", background: "var(--openbot-provider-claude)" },
+  { id: "claude", name: "Claude Opus 5.5", provider: "claude", background: "var(--whilo-provider-claude)" },
   {
     id: "codex",
     name: "GPT-5.5 Codex",
     provider: "codex",
-    background: "var(--openbot-text-primary)",
-    foreground: "var(--openbot-bg-canvas)",
+    background: "var(--whilo-text-primary)",
+    foreground: "var(--whilo-bg-canvas)",
   },
-  { id: "gemini", name: "Gemini 3 Pro", provider: "antigravity", background: "var(--openbot-provider-antigravity)" },
-  { id: "grok", name: "Grok 5", provider: "grok", background: "var(--openbot-bg-sheet)" },
+  { id: "gemini", name: "Gemini 3 Pro", provider: "antigravity", background: "var(--whilo-provider-antigravity)" },
+  { id: "grok", name: "Grok 5", provider: "grok", background: "var(--whilo-bg-sheet)" },
 ];
 
 function ModelAvatar(props: { model: ModelOption }) {

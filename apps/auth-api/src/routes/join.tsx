@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/solid-router";
 import { JoinPage } from "../components/landing/JoinPage";
 import { joinPageText } from "../components/transactional/page-text";
 import { loadPageText } from "../lib/page-text";
-import { OPENBOT_SOCIAL_IMAGE_ALT, OPENBOT_SOCIAL_IMAGE_URL, OPENBOT_X_HANDLE } from "../lib/site-metadata";
+import { WHILO_SOCIAL_IMAGE_ALT, WHILO_SOCIAL_IMAGE_URL, WHILO_X_HANDLE } from "../lib/site-metadata";
 
 export const Route = createFileRoute("/join")({
   loader: ({ context }) => loadPageText(context.locale, joinPageText),
@@ -25,19 +25,19 @@ export const Route = createFileRoute("/join")({
         { name: "referrer", content: "no-referrer" },
         { name: "description", content: text.description },
         { property: "og:type", content: "website" },
-        { property: "og:site_name", content: "OpenBot" },
+        { property: "og:site_name", content: "Whilo" },
         { property: "og:locale", content: "en_US" },
         { property: "og:url", content: url },
         { property: "og:title", content: text.title },
         { property: "og:description", content: text.description },
-        { property: "og:image", content: OPENBOT_SOCIAL_IMAGE_URL },
-        { property: "og:image:alt", content: OPENBOT_SOCIAL_IMAGE_ALT },
+        { property: "og:image", content: WHILO_SOCIAL_IMAGE_URL },
+        { property: "og:image:alt", content: WHILO_SOCIAL_IMAGE_ALT },
         { name: "twitter:card", content: "summary_large_image" },
-        { name: "twitter:site", content: OPENBOT_X_HANDLE },
+        { name: "twitter:site", content: WHILO_X_HANDLE },
         { name: "twitter:title", content: text.title },
         { name: "twitter:description", content: text.description },
-        { name: "twitter:image", content: OPENBOT_SOCIAL_IMAGE_URL },
-        { name: "twitter:image:alt", content: OPENBOT_SOCIAL_IMAGE_ALT },
+        { name: "twitter:image", content: WHILO_SOCIAL_IMAGE_URL },
+        { name: "twitter:image:alt", content: WHILO_SOCIAL_IMAGE_ALT },
       ],
     };
   },

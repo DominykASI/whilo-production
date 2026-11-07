@@ -20,29 +20,29 @@ export const AgentUsagePanel = lazy(() =>
   import("./features/usage/AgentUsagePanel").then((module) => ({ default: module.AgentUsagePanel })),
 );
 export const AccountLogin = lazy(() =>
-  import("@openbot/ui/features/account/AccountLogin").then((module) => ({ default: module.AccountLogin })),
+  import("@whilo/ui/features/account/AccountLogin").then((module) => ({ default: module.AccountLogin })),
 );
 export const DirectConversation = lazy(() =>
-  import("@openbot/ui/features/conversation/DirectConversation").then((module) => ({
+  import("@whilo/ui/features/conversation/DirectConversation").then((module) => ({
     default: module.DirectConversation,
   })),
 );
 export const GlobalSearch = lazy(() =>
-  import("@openbot/ui/components/GlobalSearch").then((module) => ({ default: module.GlobalSearch })),
+  import("@whilo/ui/components/GlobalSearch").then((module) => ({ default: module.GlobalSearch })),
 );
 export const InitialSetup = lazy(() =>
   import("./features/onboarding/InitialSetup").then((module) => ({ default: module.InitialSetup })),
 );
 export const AddServerDialog = lazy(() =>
-  import("@openbot/ui/features/servers/AddServerDialog").then((module) => ({ default: module.AddServerDialog })),
+  import("@whilo/ui/features/servers/AddServerDialog").then((module) => ({ default: module.AddServerDialog })),
 );
 export const CreateLocalServerDialog = lazy(() =>
-  import("@openbot/ui/features/servers/CreateLocalServerDialog").then((module) => ({
+  import("@whilo/ui/features/servers/CreateLocalServerDialog").then((module) => ({
     default: module.CreateLocalServerDialog,
   })),
 );
 export const JoinServerDialog = lazy(() =>
-  import("@openbot/ui/features/servers/JoinServerDialog").then((module) => ({ default: module.JoinServerDialog })),
+  import("@whilo/ui/features/servers/JoinServerDialog").then((module) => ({ default: module.JoinServerDialog })),
 );
 export const FirstRunFlow = lazy(() =>
   import("./features/onboarding/FirstRunFlow").then((module) => ({ default: module.FirstRunFlow })),
@@ -51,7 +51,7 @@ export const LanguageStep = lazy(() =>
   import("./features/onboarding/LanguageStep").then((module) => ({ default: module.LanguageStep })),
 );
 export const RemoteDesktopWorkspace = lazy(() =>
-  import("@openbot/ui/features/remote-desktop/RemoteDesktopWorkspace").then((module) => ({
+  import("@whilo/ui/features/remote-desktop/RemoteDesktopWorkspace").then((module) => ({
     default: module.RemoteDesktopWorkspace,
   })),
 );

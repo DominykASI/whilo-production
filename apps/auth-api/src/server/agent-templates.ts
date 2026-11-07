@@ -1,19 +1,20 @@
-import { isAgentTemplateId } from "@openbot/contracts/agent-template-links";
-import { isValidAvatarImage } from "@openbot/contracts/avatar-images";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { isAgentTemplateId } from "@whilo/contracts/agent-template-links";
+import { isValidAvatarImage } from "@whilo/contracts/avatar-images";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import {
   type AgentTemplateSnapshot,
   isAgentTemplateCardPng,
   isAgentTemplateSnapshot,
   toAgentTemplateSnapshot,
-} from "@openbot/contracts/ipc";
-import { isDynamicRecord } from "@openbot/contracts/runtime-values";
+} from "@whilo/contracts/ipc";
+import { isDynamicRecord } from "@whilo/contracts/runtime-values";
 import { Effect, Result, Schema } from "effect";
 import { AgentMarketplaceError } from "./agent-marketplace";
 import { encodeBase64Url } from "./crypto";
 import { marketplaceCreatorName } from "./marketplace-pagination";
 import { MarketplaceStorage } from "./marketplace-storage";
-import type { AuthUser, WorkerBindings } from "./types";
+import type { MarketplaceBindings } from "./storage-bucket";
+import type { AuthUser } from "./types";
 
 /**
  * Published templates for one account. Unpublished rows do not count. The Worker enforces it in the
@@ -38,7 +39,7 @@ interface TemplateRow {
  * shown by account name only; the account email is never public here.
  */
 export class AgentTemplates {
-  constructor(private readonly bindings: Pick<WorkerBindings, "DB" | "SKILLS">) {}
+  constructor(private readonly bindings: MarketplaceBindings) {}
 
   publish(input: {
     user: AuthUser;

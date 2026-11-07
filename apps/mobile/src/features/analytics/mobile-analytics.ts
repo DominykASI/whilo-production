@@ -1,4 +1,4 @@
-import { ANALYTICS_GENERATIONS } from "@openbot/telemetry";
+import { ANALYTICS_GENERATIONS } from "@whilo/telemetry";
 import { OpenPanel, type TrackHandlerPayload } from "@openpanel/react-native";
 import * as Application from "expo-application";
 import { Platform } from "react-native";
@@ -57,7 +57,8 @@ export const mobileAnalytics = new MobileAnalytics(() => {
   )
     return null;
   const client = new OpenPanel({
-    apiUrl: "https://analytics.openbot.run/api",
+    // Analytics endpoint: override via EXPO_PUBLIC_OPENPANEL_API_URL when a Whilo analytics host exists.
+    apiUrl: process.env.EXPO_PUBLIC_OPENPANEL_API_URL || "https://analytics.openbot.run/api",
     clientId,
     clientSecret,
     filter: filterMobilePayload,

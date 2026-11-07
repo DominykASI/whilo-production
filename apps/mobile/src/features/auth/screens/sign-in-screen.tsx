@@ -1,4 +1,5 @@
 import { useIsFocused } from "expo-router/react-navigation";
+import * as Linking from "expo-linking";
 import { Typography } from "heroui-native";
 import { useThemeColor } from "heroui-native/hooks";
 import type { LucideIcon } from "lucide-react-native";
@@ -25,7 +26,14 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { mobileAnalytics } from "@/features/analytics/mobile-analytics";
-import { type MobileSession, redeemMobileConnectUrl } from "@/features/auth/api/mobile-auth";
+import {
+  type MobileSession,
+  type OAuthProvider,
+  type OAuthProviderStatus,
+  oauthSignInUrl,
+  readOAuthProviderStatus,
+  redeemMobileConnectUrl,
+} from "@/features/auth/api/mobile-auth";
 import type { EmailCodeInputHandle } from "@/features/auth/components/email-code-input";
 import { QrScanner, type ScannerMode, type ScanStatus } from "@/features/auth/components/qr-scanner";
 import {
@@ -184,6 +192,42 @@ export function SignInScreen({ notice }: { notice?: SignInNotice }) {
     setScan({ mode: "pending", status: "idle" });
     setScannerMounted(true);
   }, []);
+  // The browser sign-ins depend on the account service of this deployment: a provider without its
+  // client id and secret answers 503 at `/start`. The screen asks first, so a disc is offered only
+  // when the flow behind it can finish, and one that cannot keeps its honest note.
+  const [oauthProviders, setOauthProviders] = useState<OAuthProviderStatus | null>(null);
+  const [socialNote, setSocialNote] = useState<string | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    void readOAuthProviderStatus().then((status) => {
+      if (cancelled || !status) return;
+      setOauthProviders(status);
+      if (!status.google) setSocialNote(t("mobile.auth.social.googleSoon"));
+      else if (!status.github) setSocialNote(t("mobile.auth.social.githubSoon"));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [t]);
+  const startOAuthSignIn = useCallback(
+    (provider: OAuthProvider) => {
+      const configured = provider === "google" ? oauthProviders?.google === true : oauthProviders?.github === true;
+      if (!configured) {
+        setSocialNote(t(provider === "google" ? "mobile.auth.social.googleSoon" : "mobile.auth.social.githubSoon"));
+        return;
+      }
+      setSocialNote(null);
+      // The provider finishes on the web app, which takes the session from the URL fragment.
+      void Linking.openURL(oauthSignInUrl(provider)).catch(() => setSocialNote(t("mobile.auth.social.openFailed")));
+    },
+    [oauthProviders, t],
+  );
+  const social = {
+    google: oauthProviders?.google ?? null,
+    github: oauthProviders?.github ?? null,
+    note: socialNote,
+    onPress: startOAuthSignIn,
+  };
   const closeScanner = useCallback(() => {
     // A redeemed code ends in the app: closing now could lose its session.
     setScan((current) => (current?.status === "connecting" ? current : null));
@@ -402,6 +446,7 @@ export function SignInScreen({ notice }: { notice?: SignInNotice }) {
             onToggleHelp={() => undefined}
             onScan={() => undefined}
             onEmail={() => undefined}
+            social={social}
             onLayout={setOptionsHeight}
             onHelpLayout={setHelpHeight}
             reduced={reduced}
@@ -427,6 +472,7 @@ export function SignInScreen({ notice }: { notice?: SignInNotice }) {
               onToggleHelp={() => setHelpOpen((open) => !open)}
               onScan={openScanner}
               onEmail={signIn.openEmail}
+              social={social}
               reduced={reduced}
             />
           </Animated.View>

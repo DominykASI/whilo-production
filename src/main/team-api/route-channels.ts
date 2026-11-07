@@ -7,10 +7,10 @@ import {
   isReleasedRoutineSchedule,
   parseChannelCommand,
   parseChannelRead,
-} from "@openbot/contracts/ipc";
-import type { DynamicRecord } from "@openbot/contracts/runtime-values";
-import { CHANNEL_ROUTES, channelRequest, isChannelSettingsRoute } from "@openbot/contracts/team-protocol/channels-v1";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/ipc";
+import type { DynamicRecord } from "@whilo/contracts/runtime-values";
+import { CHANNEL_ROUTES, channelRequest, isChannelSettingsRoute } from "@whilo/contracts/team-protocol/channels-v1";
+import { sourceText } from "@whilo/i18n/source";
 import type { ChannelService } from "../../backend/channel-service";
 import { runCauseEffect } from "../../backend/effect-boundary";
 import {

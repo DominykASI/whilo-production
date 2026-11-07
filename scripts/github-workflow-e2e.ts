@@ -2,8 +2,8 @@
 // temporary profile. The events go through `receiveGitHubDelivery`, as the ingress socket gives them: a
 // comment starts a run; a second comment on the same issue waits and starts when the first run ends; a
 // comment on another issue runs at the same time; the same delivery again records nothing; a bot that is
-// not OpenBot's is refused by "not a bot"; an echo of the workflow's own comment is skipped (`self`);
-// the fourth run of a chain that OpenBot's bot caused on one issue is skipped (`chain`); an event of a
+// not Whilo's is refused by "not a bot"; an echo of the workflow's own comment is skipped (`self`);
+// the fourth run of a chain that Whilo's bot caused on one issue is skipped (`chain`); an event of a
 // repository that no trigger watches gets 404 and a body that is not JSON gets 400; two close times
 // offline are one gap. A fake GitHub API takes the changes of GitHub outputs: a comment output posts
 // once, with the text of the step before it and not the event, and the event of that comment is skipped
@@ -14,16 +14,16 @@
 // network is started.
 //
 // Run: bun scripts/github-workflow-e2e.ts
-// Writes .openbot-build/github-workflow-e2e/report.json and exits non-zero on a failure.
+// Writes .whilo-build/github-workflow-e2e/report.json and exits non-zero on a failure.
 import assert from "node:assert/strict";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import type { WorkflowGitHubHistory, WorkflowGraph, WorkflowNode } from "@openbot/contracts/ipc";
-import { sourceText } from "@openbot/i18n/source";
+import type { WorkflowGitHubHistory, WorkflowGraph, WorkflowNode } from "@whilo/contracts/ipc";
+import { sourceText } from "@whilo/i18n/source";
 import { Effect } from "effect";
-import { OpenBotDatabase } from "../src/backend/openbot-database";
+import { WhiloDatabase } from "../src/backend/whilo-database";
 import { EXTERNAL_EVENT_END } from "../src/backend/webhook-trigger";
 import type { WorkflowGitHubApi, WorkflowGitHubChange } from "../src/backend/workflows/workflow-github-api";
 import { WorkflowGitHubStore } from "../src/backend/workflows/workflow-github-store";
@@ -38,8 +38,8 @@ import {
 } from "../src/backend/workflows/workflows";
 import { receiveGitHubDelivery } from "../src/main/github-relay";
 
-const OUT = resolve(import.meta.dirname, "../.openbot-build/github-workflow-e2e");
-const BOT = "openbotgit";
+const OUT = resolve(import.meta.dirname, "../.whilo-build/github-workflow-e2e");
+const BOT = "whilogit";
 
 interface Report {
   checks: string[];
@@ -126,8 +126,8 @@ const comment = (repository: string, number: number, login: string, type: "User"
   };
 };
 
-const directory = await mkdtemp(join(tmpdir(), "openbot-github-workflow-"));
-const database = new OpenBotDatabase(directory);
+const directory = await mkdtemp(join(tmpdir(), "whilo-github-workflow-"));
+const database = new WhiloDatabase(directory);
 let service: WorkflowsHandle | null = null;
 
 try {
@@ -284,7 +284,7 @@ try {
     chainRows.push(await delivery(chain.summary.id, sent.deliveryId));
   }
   check(
-    "OpenBot's bot starts runs until the chain is too long",
+    "Whilo's bot starts runs until the chain is too long",
     chainRows.slice(0, 3).every((row) => row?.outcome === "started") && chainRows[3]?.reason === "chain",
     chainRows,
   );

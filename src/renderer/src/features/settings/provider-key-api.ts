@@ -1,18 +1,18 @@
-import type { ProviderAdminDesktopApi } from "@openbot/contracts/ipc";
-import type { ProviderKeyApi } from "@openbot/ui/features/settings/OpenCodeKeyDialog";
+import type { ProviderAdminDesktopApi } from "@whilo/contracts/ipc";
+import type { ProviderKeyApi } from "@whilo/ui/features/settings/OpenCodeKeyDialog";
 
 /**
  * The four calls the OpenCode key dialog makes, bound once.
  *
- * It is a narrow object rather than `window.openbot` itself so the dialog's props say exactly what
+ * It is a narrow object rather than `window.whilo` itself so the dialog's props say exactly what
  * it reaches for, and so a test hands it four functions instead of the whole bridge. Settings and
  * onboarding both open the dialog, so it lives here rather than in either.
  */
 export const providerKeyApi: ProviderKeyApi = {
-  getProviderApiKeyState: (provider) => window.openbot.getProviderApiKeyState(provider),
-  setProviderApiKey: (input) => window.openbot.setProviderApiKey(input),
-  clearProviderApiKey: (provider) => window.openbot.clearProviderApiKey(provider),
-  openExternal: (destination) => window.openbot.openExternal(destination),
+  getProviderApiKeyState: (provider) => window.whilo.getProviderApiKeyState(provider),
+  setProviderApiKey: (input) => window.whilo.setProviderApiKey(input),
+  clearProviderApiKey: (provider) => window.whilo.clearProviderApiKey(provider),
+  openExternal: (destination) => window.whilo.openExternal(destination),
 };
 
 /**
@@ -23,7 +23,7 @@ export const providerKeyApi: ProviderKeyApi = {
 export function hostProviderKeyApi(
   admin: () => ProviderAdminDesktopApi,
   serverId: string,
-  openExternal: ProviderKeyApi["openExternal"] = (destination) => window.openbot.openExternal(destination),
+  openExternal: ProviderKeyApi["openExternal"] = (destination) => window.whilo.openExternal(destination),
 ): ProviderKeyApi {
   return {
     getProviderApiKeyState: (provider) => admin().getApiKeyState(provider, serverId),

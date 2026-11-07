@@ -16,7 +16,7 @@ export interface AcpCustomEndpoint {
  * only for an observed agent version, and name that version where the hook is set.
  */
 export interface AcpFlavor {
-  /** The `clientInfo` that `initialize` sends. Absent: `OPENBOT_ACP_CLIENT_INFO`. */
+  /** The `clientInfo` that `initialize` sends. Absent: `WHILO_ACP_CLIENT_INFO`. */
   clientInfo?: { name: string; title: string; version: string };
   /**
    * Whether an error names this missing session. `null` gives the decision to the protocol's
@@ -91,7 +91,7 @@ export interface AcpFlavor {
   thoughtsInsideAnswer?: true;
   /**
    * `session/prompt` stays open with no update while background tasks run, so a silent turn is not
-   * stalled and OpenBot does not end it (`ACP_TURN_STALL_MS`).
+   * stalled and Whilo does not end it (`ACP_TURN_STALL_MS`).
    */
   promptOpenForBackgroundTasks?: true;
   /**
@@ -104,25 +104,25 @@ export interface AcpFlavor {
   messagePerId?: true;
   /**
    * The agent keeps one MCP server of each name for a directory, and a session that opens there
-   * replaces the server that the others in it use. Their OpenBot servers then share one token.
+   * replaces the server that the others in it use. Their Whilo servers then share one token.
    */
   mcpServersPerDirectory?: true;
   /**
    * The agent connects to each MCP server of a session before it answers `session/new` or
-   * `session/load`, and leaves out a server that did not load with no error. A session that OpenBot's
-   * servers did not reach then fails, as the agent cannot use OpenBot's tools.
+   * `session/load`, and leaves out a server that did not load with no error. A session that Whilo's
+   * servers did not reach then fails, as the agent cannot use Whilo's tools.
    */
   mcpServersLoadWithSession?: true;
-  /** Turns OpenBot's servers back on where the agent's own settings for `cwd` turned them off. */
+  /** Turns Whilo's servers back on where the agent's own settings for `cwd` turned them off. */
   enableMcpServers?(cwd: string, names: readonly string[]): void;
-  /** OpenBot compacts by replacing the session, for an agent that reports `usage_update` and has no compact request. */
+  /** Whilo compacts by replacing the session, for an agent that reports `usage_update` and has no compact request. */
   contextCompaction?: "handoff";
-  /** A whole answer chunk that is the agent's own transport error, not answer text. OpenBot drops it. */
+  /** A whole answer chunk that is the agent's own transport error, not answer text. Whilo drops it. */
   noiseChunk?: RegExp;
   /** The `_meta` of each `session/new`, `session/load` and `session/resume` request. */
   sessionMeta?: NewSessionRequest["_meta"];
   /**
-   * OpenBot opens a saved session with `session/load`, also when the agent advertises
+   * Whilo opens a saved session with `session/load`, also when the agent advertises
    * `session/resume`, and this tells from a successful load reply that the session is missing.
    */
   loadInsteadOfResume?: { missing(response: LoadSessionResponse): boolean };
@@ -155,7 +155,7 @@ export const CURSOR_ACP_FLAVOR: AcpFlavor = {
   // failed request as "Invalid model value" (#3800). One set per change, not one per turn.
   processWideModel: true,
   // Cursor 2026.10.22-27dcf5f leaves out a disabled or blocked server, and the agent turn then
-  // finds no OpenBot tools (#3058).
+  // finds no Whilo tools (#3058).
   mcpServersLoadWithSession: true,
   enableMcpServers: enableCursorMcpServers,
 };

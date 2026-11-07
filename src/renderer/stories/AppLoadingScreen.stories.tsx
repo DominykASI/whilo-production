@@ -1,5 +1,5 @@
-import { AppLoadingScreen } from "@openbot/ui/features/account/AppLoadingScreen";
-import { ConversationLoadNotice, ServerConnectionNotice } from "@openbot/ui/features/servers/ServerConnectionNotice";
+import { AppLoadingScreen } from "@whilo/ui/features/account/AppLoadingScreen";
+import { ConversationLoadNotice, ServerConnectionNotice } from "@whilo/ui/features/servers/ServerConnectionNotice";
 import type { Meta, StoryObj } from "storybook-solidjs-vite";
 import { SplashPlayground } from "./splash-story-support";
 
@@ -54,13 +54,13 @@ export const HistoryLoading: Story = {
 export const StartingServer: Story = {
   render: () => <ServerConnectionNotice name="My server" phase="waking" initial onRetry={() => {}} />,
 };
-/** The machine runs and OpenBot on it starts. The time counts from the wake. */
-export const StartingOpenBot: Story = {
+/** The machine runs and Whilo on it starts. The time counts from the wake. */
+export const StartingWhilo: Story = {
   render: () => (
     <ServerConnectionNotice
       name="My server"
       phase="waking"
-      start={{ step: "openbot", startedAt: Date.now() - 4 * 60_000 }}
+      start={{ step: "whilo", startedAt: Date.now() - 4 * 60_000 }}
       initial
       onRetry={() => {}}
     />

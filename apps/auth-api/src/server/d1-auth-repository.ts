@@ -1,4 +1,4 @@
-import type { AccountSession, MobileConnectHostBinding } from "@openbot/contracts/mobile-connect";
+import type { AccountSession, MobileConnectHostBinding } from "@whilo/contracts/mobile-connect";
 import { Context, Effect, Layer, Schema } from "effect";
 import { sha256 } from "./crypto";
 import type {
@@ -246,13 +246,12 @@ export class D1AuthRepository implements AuthRepository {
       const tokenHash = yield* sha256(input.session.token).pipe(
         Effect.mapError(() => new AuthStoreError({ message: "Account store operation failed." })),
       );
-      const insertSession = database
-        .prepare(
-          `INSERT INTO auth_sessions(
-          id, user_id, token_hash, expires_at, created_at, last_used_at
-        ) VALUES (?, ?, ?, ?, ?, ?)`,
-        )
-        .bind(input.session.id, user.id, tokenHash, input.session.expiresAt, input.now, input.now);
+      const insertSession = desktopSessionStatement(database, {
+        userId: user.id,
+        tokenHash,
+        session: input.session,
+        now: input.now,
+      });
       const device = input.device;
       if (device) {
         // One batch: a session without its mobile row would count as a desktop session.
@@ -1093,6 +1092,73 @@ export class D1AuthRepository implements AuthRepository {
     (operation) => operation.pipe(Effect.provide(this.#layer)),
   ).bind(this);
 
+  /**
+   * Links a verified provider identity to the account of its email, and makes the account when
+   * neither exists. One batch: the insert of the identity sees the account that the first statement
+   * made, and a concurrent sign-in of the same person finds the row that the other one inserted.
+   */
+  readonly upsertProviderUser = Effect.fn("D1AuthRepository.upsertProviderUser")(
+    function* (
+      this: D1AuthRepository,
+      input: { provider: string; subject: string; email: string; name: string | null; now: number },
+    ): Effect.fn.Return<{ user: AuthUser; created: boolean }, AuthStoreError, AuthDatabase> {
+      const database = yield* AuthDatabase;
+      const identityKey = `${input.provider}:${input.subject}`;
+      // The account of this email wins over a new one, so a person who signed in with a code and
+      // then with Google keeps one account. `INSERT OR IGNORE` leaves an existing row as it is.
+      const [inserted] = yield* storeCall(() =>
+        database.batch([
+          database
+            .prepare(
+              `INSERT OR IGNORE INTO users(id, identity_key, email, name, avatar_url, created_at, updated_at)
+         VALUES (?, ?, ?, ?, NULL, ?, ?)`,
+            )
+            .bind(crypto.randomUUID(), identityKey, input.email, input.name, input.now, input.now),
+          database
+            .prepare(
+              `INSERT OR IGNORE INTO user_identities(provider, subject, user_id, email, created_at)
+         SELECT ?, ?, id, email, ? FROM users WHERE email = ?`,
+            )
+            .bind(input.provider, input.subject, input.now, input.email),
+        ]),
+      );
+      const row = yield* storeCall(() =>
+        database
+          .prepare(
+            `SELECT id, email, name, avatar_url, analytics_enabled FROM users
+       WHERE id = (SELECT user_id FROM user_identities WHERE provider = ? AND subject = ?)
+          OR identity_key = ?
+       LIMIT 1`,
+          )
+          .bind(input.provider, input.subject, identityKey)
+          .first<UserRow>(),
+      );
+      if (!row) return yield* new AuthStoreError({ message: "Account store operation failed." });
+      return { user: mapUser(row), created: inserted?.meta.changes === 1 };
+    },
+    (operation) => operation.pipe(Effect.provide(this.#layer)),
+  ).bind(this);
+
+  /** The account session that a sign-in issues: the row that a verified email code also makes. */
+  readonly createDesktopSession = Effect.fn("D1AuthRepository.createDesktopSession")(
+    function* (
+      this: D1AuthRepository,
+      input: { userId: string; session: { id: string; token: string; expiresAt: number }; now: number },
+    ): Effect.fn.Return<void, AuthStoreError, AuthDatabase> {
+      const database = yield* AuthDatabase;
+      const tokenHash = yield* storeHash(input.session.token);
+      yield* storeCall(() =>
+        desktopSessionStatement(database, {
+          userId: input.userId,
+          tokenHash,
+          session: input.session,
+          now: input.now,
+        }).run(),
+      );
+    },
+    (operation) => operation.pipe(Effect.provide(this.#layer)),
+  ).bind(this);
+
   readonly #updateSessionActivityEffect = Effect.fn("D1AuthRepository.updateSessionActivity")(function* (
     this: D1AuthRepository,
     tokenHash: string,
@@ -1136,6 +1202,20 @@ export class D1AuthRepository implements AuthRepository {
     );
     return { user: { id, email, name: null, avatarUrl: null, analyticsEnabled: null }, created: true };
   });
+}
+
+/** The row of an account session. The email sign-in, a server claim and the Google sign-in share it. */
+function desktopSessionStatement(
+  database: D1Database,
+  input: { userId: string; tokenHash: string; session: { id: string; expiresAt: number }; now: number },
+): D1PreparedStatement {
+  return database
+    .prepare(
+      `INSERT INTO auth_sessions(
+      id, user_id, token_hash, expires_at, created_at, last_used_at
+    ) VALUES (?, ?, ?, ?, ?, ?)`,
+    )
+    .bind(input.session.id, input.userId, input.tokenHash, input.session.expiresAt, input.now, input.now);
 }
 
 /** Registers the new mobile session and replaces the earlier session of the same device. */

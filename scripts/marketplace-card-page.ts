@@ -4,14 +4,14 @@
 //
 // It draws the "A Dark" card of the prototype in
 // apps/auth-api/src/components/marketplace/MarketplaceShareCardPrototype.{tsx,css}: on the flat
-// canvas colour, the avatar large on the left, and in the column on the right the OpenBot mark and
+// canvas colour, the avatar large on the left, and in the column on the right the Whilo mark and
 // wordmark, the name with the verified shield after its last word, the role, and "by <creator>".
 // The numbers below are the prototype's CSS lengths, in pixels of the 1200-wide card.
 
 import { BloubBot } from "@norbert_bodziony/bloub";
-import { APP_LOGO_CORNER, APP_LOGO_EYE_POINTS, APP_LOGO_SIZE } from "@openbot/brand/app-logo-shape";
-import { bloubAvatarProfile } from "@openbot/brand/bloub-avatar";
-import type { AvatarHue } from "@openbot/contracts/ipc";
+import { APP_LOGO_CORNER, APP_LOGO_SIZE, APP_LOGO_SPARKLES, APP_LOGO_W_PATH } from "@whilo/brand/app-logo-shape";
+import { bloubAvatarProfile } from "@whilo/brand/bloub-avatar";
+import type { AvatarHue } from "@whilo/contracts/ipc";
 import { render } from "@solidjs/web";
 import { flush } from "solid-js";
 
@@ -30,7 +30,7 @@ export interface MarketplaceCardJob {
 
 declare global {
   interface Window {
-    openBotMarketplaceCard?: { render: (job: MarketplaceCardJob) => Promise<string> };
+    whiloMarketplaceCard?: { render: (job: MarketplaceCardJob) => Promise<string> };
   }
 }
 
@@ -38,11 +38,11 @@ const WIDTH = 1200;
 const HEIGHT = 630;
 const FONT_FAMILY = '"Inter Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
-/** `tokens.css`, dark theme: `--openbot-bg-canvas`, `--openbot-text-primary`, `--openbot-text-secondary`. */
+/** `tokens.css`, dark theme: `--whilo-bg-canvas`, `--whilo-text-primary`, `--whilo-text-secondary`. */
 const CANVAS = "#1a1a1a";
 const PRIMARY = "#ffffff";
 const SECONDARY = "#dcdcdc";
-/** `--openbot-logo-production` and `--openbot-logo-production-eye`. */
+/** `--whilo-logo-production` and `--whilo-logo-production-eye`. */
 const LOGO_BACKGROUND = "#d6adf2";
 const LOGO_EYE = "#040007";
 
@@ -69,7 +69,7 @@ const BLOCKS_PATHS = [
   "M15 2h6a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z",
 ];
 
-window.openBotMarketplaceCard = { render: renderMarketplaceCard };
+window.whiloMarketplaceCard = { render: renderMarketplaceCard };
 
 async function renderMarketplaceCard(job: MarketplaceCardJob): Promise<string> {
   await Promise.all([
@@ -125,7 +125,7 @@ async function drawMedia(context: CanvasRenderingContext2D, job: MarketplaceCard
 }
 
 /**
- * The resting Bloub as one SVG element: `createStaticAvatarSvg` in `@openbot/ui/bloub-avatar`. It is
+ * The resting Bloub as one SVG element: `createStaticAvatarSvg` in `@whilo/ui/bloub-avatar`. It is
  * repeated here because that file is JSX, which this bundle cannot compile; `BloubBot` itself is
  * compiled already, so calling it as a function renders the same component.
  */
@@ -175,13 +175,13 @@ function drawBrand(context: CanvasRenderingContext2D): void {
   setFont(context, 600, BRAND.font, -0.02);
   context.fillStyle = PRIMARY;
   // The wordmark is centred on the mark, as `align-items: center` sets it.
-  const metrics = context.measureText("OpenBot");
+  const metrics = context.measureText("Whilo");
   const textHeight = metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent;
   const baseline = BRAND.y + (BRAND.logo - textHeight) / 2 + metrics.fontBoundingBoxAscent;
-  context.fillText("OpenBot", BRAND.x + BRAND.logo + BRAND.gap, baseline);
+  context.fillText("Whilo", BRAND.x + BRAND.logo + BRAND.gap, baseline);
 }
 
-/** The OpenBot mark, from the same shape data as `AppLogo`. */
+/** The Whilo mark, from the same shape data as `AppLogo`. */
 function drawLogo(context: CanvasRenderingContext2D, x: number, y: number, size: number): void {
   context.save();
   context.translate(x, y);
@@ -192,16 +192,27 @@ function drawLogo(context: CanvasRenderingContext2D, x: number, y: number, size:
   context.fill();
   context.clip();
   context.strokeStyle = LOGO_EYE;
-  context.lineWidth = 9.5;
+  context.lineWidth = 30;
   context.lineCap = "round";
   context.lineJoin = "round";
-  for (const points of [APP_LOGO_EYE_POINTS.left, APP_LOGO_EYE_POINTS.right]) {
-    const values = points.split(/\s+/u).map(Number);
+  context.beginPath();
+  for (const [command, ...args] of APP_LOGO_W_PATH.matchAll(/[ML]\s*([\d.]+)\s+([\d.]+)/gu)) {
+    const x = Number(args[0]);
+    const y = Number(args[1]);
+    if (command === "M") context.moveTo(x, y);
+    else context.lineTo(x, y);
+  }
+  context.stroke();
+  context.fillStyle = LOGO_EYE;
+  for (const sparkle of APP_LOGO_SPARKLES) {
+    const waist = sparkle.arm * 0.16;
     context.beginPath();
-    for (let index = 0; index + 1 < values.length; index += 2) {
-      context.lineTo(values[index] ?? 0, values[index + 1] ?? 0);
-    }
-    context.stroke();
+    context.moveTo(sparkle.cx, sparkle.cy - sparkle.arm);
+    context.quadraticCurveTo(sparkle.cx + waist, sparkle.cy - waist, sparkle.cx + sparkle.arm, sparkle.cy);
+    context.quadraticCurveTo(sparkle.cx + waist, sparkle.cy + waist, sparkle.cx, sparkle.cy + sparkle.arm);
+    context.quadraticCurveTo(sparkle.cx - waist, sparkle.cy + waist, sparkle.cx - sparkle.arm, sparkle.cy);
+    context.quadraticCurveTo(sparkle.cx - waist, sparkle.cy - waist, sparkle.cx, sparkle.cy - sparkle.arm);
+    context.fill();
   }
   context.restore();
 }

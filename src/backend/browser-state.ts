@@ -1,9 +1,9 @@
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import { type BrowserBounds, type BrowserEnvironment, isBrowserProfileId } from "@openbot/contracts/ipc";
-import { isBoolean, isNumber, isString } from "@openbot/contracts/runtime-values";
-import { legacyAgentId } from "@openbot/contracts/validation";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import { type BrowserBounds, type BrowserEnvironment, isBrowserProfileId } from "@whilo/contracts/ipc";
+import { isBoolean, isNumber, isString } from "@whilo/contracts/runtime-values";
+import { legacyAgentId } from "@whilo/contracts/validation";
 import { Effect } from "effect";
 import { browserCall, browserSync } from "./browser-effects";
 import type { BrowserToolArguments } from "./browser-tools";
@@ -32,8 +32,8 @@ export type BrowserTabSession = { kind: "agent"; key: string } | { kind: "profil
 /** The directory name of a session under `Partitions`. Its partition is `persist:` and this name. */
 export function browserTabPartition(tabSession: BrowserTabSession): string {
   return tabSession.kind === "agent"
-    ? `openbot-browser-agent-${tabSession.key}`
-    : `openbot-browser-profile-${tabSession.profileId}`;
+    ? `whilo-browser-agent-${tabSession.key}`
+    : `whilo-browser-profile-${tabSession.profileId}`;
 }
 
 /** The session of a saved tab. Undefined: the shared session. */
@@ -236,7 +236,7 @@ export function reownStoredBrowserTab(tab: StoredBrowserTab, agents: readonly Br
   const owner = tabOwner(tab, agents);
   if (!owner) return tab;
   // Both fields are brought to the owner, not just the one that failed to match. A generated agent's
-  // thread id is `openbot-thread-<uuid>` with no agent id inside it, so v13 never touched it and it
+  // thread id is `whilo-thread-<uuid>` with no agent id inside it, so v13 never touched it and it
   // matches on its own -- while the owner id beside it is still the pre-rename spelling. Stopping at the
   // first match would call that tab correct and leave `#canUseToolTab`, which checks both, refusing it.
   const ownerThreadId = tab.ownerThreadId === null || owner.threadId === null ? tab.ownerThreadId : owner.threadId;

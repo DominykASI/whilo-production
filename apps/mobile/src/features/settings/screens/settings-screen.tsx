@@ -3,6 +3,7 @@ import { Typography } from "heroui-native";
 import { mobileUserName } from "@/features/auth/api/mobile-user-name";
 import { useMobileSession } from "@/features/auth/context/mobile-session-context";
 import { SettingsContent, SettingsRow, SettingsSection } from "@/features/settings/components/settings-content";
+import { InstallPromptBanner } from "@/shared/components/install-prompt-banner";
 import { ProfileAvatar } from "@/shared/components/profile-avatar";
 import { useText } from "@/shared/lib/text";
 
@@ -12,6 +13,7 @@ export function SettingsScreen() {
   const displayName = session ? mobileUserName(session.user) : t("mobile.settings.home.profile");
   return (
     <SettingsContent>
+      <InstallPromptBanner />
       <SettingsSection>
         <SettingsRow
           onPress={() => router.push("/settings/profile")}

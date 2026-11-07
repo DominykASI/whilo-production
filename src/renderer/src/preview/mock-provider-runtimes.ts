@@ -1,10 +1,10 @@
-import { isManagedRuntimeProvider, type ManagedProviderId } from "@openbot/contracts/agent-providers";
+import { isManagedRuntimeProvider, type ManagedProviderId } from "@whilo/contracts/agent-providers";
 import type {
   AgentProviderId,
-  OpenBotDesktopApi,
+  WhiloDesktopApi,
   ProviderRuntimeSnapshot,
   ProviderRuntimeStatus,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import { clone, type Listener, type MockRuntime } from "./mock-support";
 
 export interface MockProviderRuntimeOptions {
@@ -46,12 +46,12 @@ export function createMockProviderRuntimes(options: MockProviderRuntimeOptions, 
     for (const listener of runtimeListeners) listener(clone(runtimeSnapshot));
   };
 
-  const providerRuntimes: OpenBotDesktopApi["providerRuntimes"] = {
+  const providerRuntimes: WhiloDesktopApi["providerRuntimes"] = {
     getStatus: async () => clone(runtimeSnapshot),
     // The preview has no upstream to ask: every offer it makes is already in the snapshot.
     checkForUpdates: async () => clone(runtimeSnapshot),
     download: async (provider) => {
-      if (!isManagedRuntimeProvider(provider)) throw new Error("OpenBot does not manage this provider's CLI.");
+      if (!isManagedRuntimeProvider(provider)) throw new Error("Whilo does not manage this provider's CLI.");
       const installed = runtimeSnapshot.providers[provider];
       if (runtimeTransfers.has(provider) || (installed.phase === "ready" && !installed.availableVersion))
         return clone(runtimeSnapshot);
@@ -93,7 +93,7 @@ export function createMockProviderRuntimes(options: MockProviderRuntimeOptions, 
       return clone(runtimeSnapshot);
     },
     cancel: async (provider) => {
-      if (!isManagedRuntimeProvider(provider)) throw new Error("OpenBot does not manage this provider's CLI.");
+      if (!isManagedRuntimeProvider(provider)) throw new Error("Whilo does not manage this provider's CLI.");
       const current = runtimeSnapshot.providers[provider];
       if (current.phase !== "downloading") return clone(runtimeSnapshot);
       runtimeTransfers.delete(provider);
@@ -104,7 +104,7 @@ export function createMockProviderRuntimes(options: MockProviderRuntimeOptions, 
     measureDownload: async (provider) =>
       runtimeSnapshot.providers[provider].phase === "ready" ? MOCK_DOWNLOAD : { bytes: 0, versions: 0 },
     removeDownload: async (provider) => {
-      if (!isManagedRuntimeProvider(provider)) throw new Error("OpenBot does not manage this provider's CLI.");
+      if (!isManagedRuntimeProvider(provider)) throw new Error("Whilo does not manage this provider's CLI.");
       if (runtimeTransfers.has(provider)) throw new Error("Wait for the download to end.");
       setRuntimeStatus(provider, { phase: "not-downloaded", progress: null, message: null, version: null });
       return clone(runtimeSnapshot);

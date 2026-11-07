@@ -1,11 +1,11 @@
-import { AppLogo } from "@openbot/brand";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import type { AppVariant, CentralAuthIssue, CentralAuthState } from "@openbot/contracts/ipc";
-import { normalizeEmailAddress, normalizeOneTimeCode } from "@openbot/contracts/validation";
-import type { TranslatedLocale } from "@openbot/i18n";
-import { appLanguageOption } from "@openbot/i18n/languages";
-import { ArrowLeft, Button, ErrorReference, Globe2, Input, Lock, RefreshCw } from "@openbot/ui";
-import { errorReference, type UserErrorDetails } from "@openbot/user-errors";
+import { AppLogo } from "@whilo/brand";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import type { AppVariant, CentralAuthIssue, CentralAuthState } from "@whilo/contracts/ipc";
+import { normalizeEmailAddress, normalizeOneTimeCode } from "@whilo/contracts/validation";
+import type { TranslatedLocale } from "@whilo/i18n";
+import { appLanguageOption } from "@whilo/i18n/languages";
+import { ArrowLeft, Button, ErrorReference, Globe2, Input, Lock, RefreshCw } from "@whilo/ui";
+import { errorReference, type UserErrorDetails } from "@whilo/user-errors";
 import type { JSX } from "@solidjs/web";
 import { createEffect, createMemo, createSignal, onCleanup, Show, untrack } from "solid-js";
 import { useText } from "../../text";
@@ -45,7 +45,7 @@ const UNCERTAIN_EMAIL_DELIVERY_ISSUES = new Set([
   "email_delivery_unknown",
 ]);
 
-const PRODUCT_NAME = "OpenBot";
+const PRODUCT_NAME = "Whilo";
 const EMAIL_PLACEHOLDER = "you@example.com";
 const EMAIL_MARKER = "\u0000";
 

@@ -1,4 +1,4 @@
-import { Button, IconButton, X } from "@openbot/ui";
+import { Button, IconButton, X } from "@whilo/ui";
 import { createUniqueId, Show } from "solid-js";
 import { Star } from "../../icons";
 import { currentText } from "../../text";

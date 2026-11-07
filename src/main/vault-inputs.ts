@@ -12,9 +12,9 @@ import {
   type VaultSaveInput,
   type VaultSecretField,
   type VaultSecretRequest,
-} from "@openbot/contracts/ipc";
-import type { DynamicRecord } from "@openbot/contracts/runtime-values";
-import { type SourceMessages, sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/ipc";
+import type { DynamicRecord } from "@whilo/contracts/runtime-values";
+import { type SourceMessages, sourceText } from "@whilo/i18n/source";
 import { websiteUrl } from "../backend/password-vault";
 import { isObject } from "./ipc/validation";
 

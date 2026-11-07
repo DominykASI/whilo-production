@@ -1,4 +1,4 @@
-import { leadingAddress } from "@openbot/contracts/chat-tag-references";
+import { leadingAddress } from "@whilo/contracts/chat-tag-references";
 import type {
   AgentEvent,
   Channel,
@@ -20,9 +20,9 @@ import type {
   TestChannelRoutineInput,
   UpdateChannelMemoryInput,
   UpdateChannelRoutineInput,
-} from "@openbot/contracts/ipc";
-import { channelRoutingConversationEventItemType } from "@openbot/contracts/ipc";
-import { markdownPreviewText } from "@openbot/contracts/markdown-preview-text";
+} from "@whilo/contracts/ipc";
+import { channelRoutingConversationEventItemType } from "@whilo/contracts/ipc";
+import { markdownPreviewText } from "@whilo/contracts/markdown-preview-text";
 
 /** A channel that exists when the preview starts, with its history. */
 export interface MockChannelSeed {

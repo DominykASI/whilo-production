@@ -1,5 +1,5 @@
-import { attachmentFileExtension } from "@openbot/contracts/attachment-files";
-import type { AttachmentSummary } from "@openbot/contracts/ipc";
+import { attachmentFileExtension } from "@whilo/contracts/attachment-files";
+import type { AttachmentSummary } from "@whilo/contracts/ipc";
 import { useQuery } from "@tanstack/react-query";
 import { Directory, File, Paths } from "expo-file-system";
 import { useMobileWorkspaceActions } from "@/features/workspace/context/mobile-workspace-context";

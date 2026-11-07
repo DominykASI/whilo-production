@@ -2,12 +2,12 @@ import {
   attachmentReferenceIds,
   expandAttachmentReferences,
   serializeAttachmentReference,
-} from "@openbot/contracts/attachment-references";
-import { expandChatTagReferences } from "@openbot/contracts/chat-tag-references";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import type { AttachmentSummary, FilePreview } from "@openbot/contracts/ipc";
-import { expandComposerMentions } from "@openbot/ui/features/conversation/ComposerEditor";
-import { currentText } from "@openbot/ui/text";
+} from "@whilo/contracts/attachment-references";
+import { expandChatTagReferences } from "@whilo/contracts/chat-tag-references";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import type { AttachmentSummary, FilePreview } from "@whilo/contracts/ipc";
+import { expandComposerMentions } from "@whilo/ui/features/conversation/ComposerEditor";
+import { currentText } from "@whilo/ui/text";
 import { Option, Schema } from "effect";
 import { writeClipboardText } from "../../clipboard";
 import { keptSpaces } from "../../selection-copy";
@@ -15,7 +15,7 @@ import { keptSpaces } from "../../selection-copy";
 // Follows T3's context-fragment design: keep file bytes outside the clipboard payload and retain
 // the latest copy independently of the source draft. No source paths or URLs come from a paste.
 // The clipboard gets readable text and an HTML copy ID; the references stay in memory with the files.
-const HTML_ATTRIBUTE = "data-openbot-composer-fragment";
+const HTML_ATTRIBUTE = "data-whilo-composer-fragment";
 const decodeFragment = Schema.decodeUnknownOption(
   Schema.fromJsonString(
     Schema.Struct({
@@ -153,7 +153,7 @@ export async function copyMessageWithAttachments(
 export function readComposerCopy(clipboard: DataTransfer): PastedComposerCopy | null {
   const html = clipboard.getData("text/html");
   if (html.length > INPUT_LIMITS.messageText * 12) return null;
-  const encoded = /data-openbot-composer-fragment=["']([^"']+)["']/u.exec(html)?.[1];
+  const encoded = /data-whilo-composer-fragment=["']([^"']+)["']/u.exec(html)?.[1];
   if (!encoded) return null;
   let raw: string;
   try {

@@ -1,4 +1,4 @@
-import { APP_INTERFACE_SIZES, type AppInterfaceSize, type AppVariant } from "@openbot/contracts/ipc";
+import { APP_INTERFACE_SIZES, type AppInterfaceSize, type AppVariant } from "@whilo/contracts/ipc";
 import {
   Item,
   ItemActions,
@@ -13,17 +13,20 @@ import {
   SelectValue,
   SettingsSection,
   SwitchField,
-} from "@openbot/ui";
-import { AppearanceSelect } from "@openbot/ui/features/settings/AppearanceSelect";
-import type { GeneralSettingsValue } from "@openbot/ui/features/settings/app-settings";
-import { LanguageSelect } from "@openbot/ui/features/settings/LanguageSelect";
-import { LogoColorPicker } from "@openbot/ui/features/settings/LogoColorPicker";
-import { SendShortcutSelect } from "@openbot/ui/features/settings/SendShortcutSelect";
-import { useText } from "@openbot/ui/text";
+} from "@whilo/ui";
+import { AppearanceSelect } from "@whilo/ui/features/settings/AppearanceSelect";
+import { AccentPicker } from "@whilo/ui/features/settings/AccentPicker";
+import { CornerRadiusSelect } from "@whilo/ui/features/settings/CornerRadiusSelect";
+import type { GeneralSettingsValue } from "@whilo/ui/features/settings/app-settings";
+import { LanguageSelect } from "@whilo/ui/features/settings/LanguageSelect";
+import { LogoColorPicker } from "@whilo/ui/features/settings/LogoColorPicker";
+import { SendShortcutSelect } from "@whilo/ui/features/settings/SendShortcutSelect";
+import { useText } from "@whilo/ui/text";
 import { Show } from "solid-js";
 import { useAppearanceChoice } from "../../appearance-choice";
 import { useI18n } from "../../i18n-context";
 import { useInterfaceSizeChoice } from "../../interface-size";
+import { useInterfaceLookChoice } from "../../interface-look";
 import { useLogoColorChoice } from "../../logo-color";
 import { ExternalLinkSelect } from "./ExternalLinkSelect";
 
@@ -46,10 +49,11 @@ export function SettingsGeneralTab(props: SettingsGeneralTabProps) {
   const appearance = useAppearanceChoice();
   const logoColor = useLogoColorChoice();
   const interfaceSize = useInterfaceSizeChoice();
+  const look = useInterfaceLookChoice();
   const { format } = useText();
   const interfaceSizeLabel = (value: AppInterfaceSize | undefined) =>
     value === undefined ? "" : format.percent(value / 100);
-  /** macOS always keeps running after the window closes. There the switch moves OpenBot from the Dock to the menu bar. */
+  /** macOS always keeps running after the window closes. There the switch moves Whilo from the Dock to the menu bar. */
   const backgroundRow = () =>
     props.platform === "darwin"
       ? ({ title: "settings.menuBar.title", description: "settings.menuBar.description" } as const)
@@ -110,6 +114,26 @@ export function SettingsGeneralTab(props: SettingsGeneralTabProps) {
                 </SelectTrigger>
                 <SelectContent mount={props.selectMount} />
               </Select>
+            </ItemActions>
+          </Item>
+          <Item data-settings-row="settings.accent.title" class="settings-modal-row settings-logo-color-row">
+            <ItemContent>
+              <ItemTitle>{i18n.t("settings.accent.title")}</ItemTitle>
+              <ItemDescription>{i18n.t("settings.accent.description")}</ItemDescription>
+            </ItemContent>
+            <AccentPicker value={look.accent()} onChange={(accent) => look.change({ accent })} />
+          </Item>
+          <Item data-settings-row="settings.cornerRadius.title" class="settings-modal-row">
+            <ItemContent>
+              <ItemTitle>{i18n.t("settings.cornerRadius.title")}</ItemTitle>
+              <ItemDescription>{i18n.t("settings.cornerRadius.description")}</ItemDescription>
+            </ItemContent>
+            <ItemActions>
+              <CornerRadiusSelect
+                value={look.cornerRadius()}
+                onChange={(cornerRadius) => look.change({ cornerRadius })}
+                mount={props.selectMount}
+              />
             </ItemActions>
           </Item>
           <Item data-settings-row="settings.logoColor.title" class="settings-modal-row settings-logo-color-row">

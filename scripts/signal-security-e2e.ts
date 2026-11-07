@@ -3,7 +3,7 @@
 // WebSocket connections: the Telegram secret header, the Slack signature, the signed account
 // events, the GitHub App signature and the fan-out of a GitHub event to each host that watches its repository, the body limits, the remote and route tickets, a failed account service during an initial ticket check after a start, the limit on parallel account service checks during a burst of hellos, the generic webhook headers, the hello deadline, the reuse of
 // TURN credentials, the pick of one TURN relay that allocates for each host, the `signal` ticket claim and the entry rule of
-// two Signal machines (with a second Signal and a fake DNS server), and that no frame or log line holds the Telegram bot token. Writes .openbot-build/signal-security-e2e/report.json and exits
+// two Signal machines (with a second Signal and a fake DNS server), and that no frame or log line holds the Telegram bot token. Writes .whilo-build/signal-security-e2e/report.json and exits
 // non-zero when a check fails. It makes no request to Telegram, Slack or Discord.
 import { type ChildProcess, spawn } from "node:child_process";
 import { createHmac, generateKeyPairSync, randomBytes, randomUUID } from "node:crypto";
@@ -19,34 +19,34 @@ import {
   GITHUB_EVENTS_PATH,
   GITHUB_ROUTE_AUDIENCE,
   GITHUB_SIGNATURE_HEADER,
-} from "@openbot/contracts/signal-protocol/github-route";
+} from "@whilo/contracts/signal-protocol/github-route";
 import {
   createIngressQueueKeyPair,
   importIngressQueuePrivateKey,
   openQueuedDelivery,
-} from "@openbot/contracts/signal-protocol/ingress-queue";
-import { SLACK_EVENTS_PATH } from "@openbot/contracts/signal-protocol/slack-route";
-import { TELEGRAM_ROUTE_AUDIENCE, TELEGRAM_UPDATES_PATH } from "@openbot/contracts/signal-protocol/telegram-route";
+} from "@whilo/contracts/signal-protocol/ingress-queue";
+import { SLACK_EVENTS_PATH } from "@whilo/contracts/signal-protocol/slack-route";
+import { TELEGRAM_ROUTE_AUDIENCE, TELEGRAM_UPDATES_PATH } from "@whilo/contracts/signal-protocol/telegram-route";
 import {
   REMOTE_TICKET_AUDIENCE,
   REMOTE_TICKET_PROTOCOL_VERSION,
   type RemoteTicketClaims,
-} from "@openbot/contracts/signal-protocol/ticket";
+} from "@whilo/contracts/signal-protocol/ticket";
 import {
   WEBHOOK_DELIVERY_ID_HEADER,
   WEBHOOK_EVENTS_PATH,
   WEBHOOK_ROUTE_AUDIENCE,
   WEBHOOK_SIGNATURE_HEADER,
   WEBHOOK_TIMESTAMP_HEADER,
-} from "@openbot/contracts/signal-protocol/webhook-route";
-import { createOpenBotLogger } from "@openbot/logging";
+} from "@whilo/contracts/signal-protocol/webhook-route";
+import { createWhiloLogger } from "@whilo/logging";
 import { exportJWK, type JWTPayload, SignJWT } from "jose";
 
 const ROOT = resolve(import.meta.dirname, "..");
-const OUT = resolve(ROOT, ".openbot-build/signal-security-e2e");
+const OUT = resolve(ROOT, ".whilo-build/signal-security-e2e");
 const WAIT_MS = 10_000;
 
-const logger = createOpenBotLogger("signal-security-e2e");
+const logger = createWhiloLogger("signal-security-e2e");
 
 // Throwaway values for this run only. The bot token's secret part must never leave Signal.
 const BOT_ID = "777000111";
@@ -226,8 +226,8 @@ function readBody(request: IncomingMessage): Promise<string> {
 function startControlPlane(port: number): Promise<Server> {
   const server = createServer(async (request, response) => {
     const body = await readBody(request);
-    const timestamp = String(request.headers["openbot-timestamp"] ?? "");
-    const signature = String(request.headers["openbot-signature"] ?? "");
+    const timestamp = String(request.headers["whilo-timestamp"] ?? "");
+    const signature = String(request.headers["whilo-signature"] ?? "");
     const signed =
       signature === hmac(AUTH_WEBHOOK_SECRET, `${timestamp}.${body}`, "base64url") &&
       Math.abs(Date.now() / 1_000 - Number(timestamp)) < 300;
@@ -434,7 +434,7 @@ const update = (chatId: string, text: string) =>
 const postAuthEvent = (body: string, timestamp: string, signature: string) =>
   fetch(`${base}/internal/auth-events`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "OpenBot-Timestamp": timestamp, "OpenBot-Signature": signature },
+    headers: { "Content-Type": "application/json", "Whilo-Timestamp": timestamp, "Whilo-Signature": signature },
     body,
   });
 const postSlack = (body: string, timestamp: string, signature: string) =>
@@ -519,7 +519,7 @@ async function metricShows(port: number, sample: string): Promise<string> {
     const page = await fetch(`http://127.0.0.1:${port}/metrics`, {
       headers: { Authorization: `Bearer ${METRICS_TOKEN}` },
     }).then((response) => response.text());
-    lines = page.split("\n").filter((line) => line.startsWith("openbot_remote_signal_entry"));
+    lines = page.split("\n").filter((line) => line.startsWith("whilo_remote_signal_entry"));
     if (lines.includes(sample)) return sample;
     await new Promise((wake) => setTimeout(wake, 200));
   }
@@ -654,7 +654,7 @@ try {
     return "the next socket got the kept link with linked=true, and the next update of the chat";
   });
 
-  await check("Only a Telegram update that can address OpenBot asks to start a hosted server", async () => {
+  await check("Only a Telegram update that can address Whilo asks to start a hosted server", async () => {
     // Each case uses its own chat that no socket holds, so Signal asks the account service once for it.
     const message = <Fields extends object>(fields: Fields) => ({ message_id: 1, from: { id: 5 }, ...fields });
     const cases: Array<{ chatId: string; wake: boolean; body: object }> = [
@@ -943,8 +943,8 @@ try {
       withDeadline(fetch(`${base}${path}`, { method: "POST", headers, body: endless() }), path);
     const event = await post("/internal/auth-events", {
       "Content-Type": "application/json",
-      "OpenBot-Timestamp": nowSeconds(),
-      "OpenBot-Signature": "v1=bad",
+      "Whilo-Timestamp": nowSeconds(),
+      "Whilo-Signature": "v1=bad",
     });
     const slack = await post(SLACK_EVENTS_PATH, {
       "Content-Type": "application/json",
@@ -1116,7 +1116,7 @@ try {
   // 7. TURN relays: Signal probes each relay and gives each host one relay that allocates.
   await check("Signal marks each TURN relay by its probe", async () => {
     const expected = [...LIVE_RELAYS.map((host) => `{host="${host}"} 1`), `{host="${DOWN_RELAY}"} 0`].map(
-      (sample) => `openbot_remote_turn_relay_available${sample}`,
+      (sample) => `whilo_remote_turn_relay_available${sample}`,
     );
     const deadline = Date.now() + WAIT_MS;
     let samples: string[] = [];
@@ -1124,7 +1124,7 @@ try {
       const page = await fetch(`http://127.0.0.1:${healthPort}/metrics`, {
         headers: { Authorization: `Bearer ${METRICS_TOKEN}` },
       }).then((response) => response.text());
-      samples = page.split("\n").filter((line) => line.startsWith("openbot_remote_turn_relay_available{"));
+      samples = page.split("\n").filter((line) => line.startsWith("whilo_remote_turn_relay_available{"));
       if (expected.every((sample) => samples.includes(sample))) return samples.join(", ");
       await new Promise((wake) => setTimeout(wake, 200));
     }
@@ -1240,7 +1240,7 @@ try {
   await waitForReady(`${entryBase}/health/ready`, secondSignal);
 
   await check("A Signal whose address the entry name has is the entry", async () => {
-    const sample = await metricShows(entryHealthPort, `openbot_remote_signal_entry{signal="${SIGNAL_ID}"} 1`);
+    const sample = await metricShows(entryHealthPort, `whilo_remote_signal_entry{signal="${SIGNAL_ID}"} 1`);
     const webhook = await postEntryWebhook();
     expect(webhook.status === 415, `webhook status: ${webhook.status}`);
     return `${sample}; webhook ${webhook.status}`;
@@ -1249,7 +1249,7 @@ try {
   const homedPeer = (await helloReady(entrySignalUrl, await entryTicket("host-homed-e2e", SIGNAL_ID))).peer;
   entryDns.address = OTHER_IPV4;
   await check("When the entry name names another machine, the Signal stops being the entry", async () => {
-    const sample = await metricShows(entryHealthPort, `openbot_remote_signal_entry{signal="${SIGNAL_ID}"} 0`);
+    const sample = await metricShows(entryHealthPort, `whilo_remote_signal_entry{signal="${SIGNAL_ID}"} 0`);
     return sample;
   });
   await check("The Signal closes the sockets without a signal claim with 1013 and no error", async () => {
@@ -1284,7 +1284,7 @@ try {
   homedPeer.socket.close();
   entryDns.address = ENTRY_IPV4;
   await check("When the entry name names the Signal again, it is the entry again", async () => {
-    const sample = await metricShows(entryHealthPort, `openbot_remote_signal_entry{signal="${SIGNAL_ID}"} 1`);
+    const sample = await metricShows(entryHealthPort, `whilo_remote_signal_entry{signal="${SIGNAL_ID}"} 1`);
     const { peer } = await helloReady(entrySignalUrl, await entryTicket("host-entry-e2e"));
     peer.socket.close();
     return `${sample}; a ticket without a signal claim is ready`;
@@ -1324,5 +1324,5 @@ const report = {
   ],
 };
 writeFileSync(resolve(OUT, "report.json"), `${JSON.stringify(report, null, 2)}\n`);
-logger.info(`Wrote .openbot-build/signal-security-e2e/report.json: ${report.passed} passed, ${report.failed} failed.`);
+logger.info(`Wrote .whilo-build/signal-security-e2e/report.json: ${report.passed} passed, ${report.failed} failed.`);
 process.exit(failed.length === 0 ? 0 : 1);

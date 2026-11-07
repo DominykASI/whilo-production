@@ -3,7 +3,7 @@ import {
   MOBILE_CHANGELOG_PATH,
   type MobileReleaseNotes,
   parseMobileReleaseNotes,
-} from "@openbot/contracts/mobile-features";
+} from "@whilo/contracts/mobile-features";
 import { useQuery } from "@tanstack/react-query";
 import * as SecureStore from "expo-secure-store";
 import * as Updates from "expo-updates";
@@ -25,16 +25,16 @@ export type AppUpdate = { kind: "ready"; id: string } | { kind: "store"; id: str
 // The store pages of the app. The web pages are the fallback when the store app does not open.
 const IOS_STORE_URL = "itms-apps://apps.apple.com/app/id6807024266";
 const IOS_STORE_WEB_URL = "https://apps.apple.com/app/id6807024266";
-const ANDROID_STORE_URL = "market://details?id=run.openbot.mobile";
-const ANDROID_STORE_WEB_URL = "https://play.google.com/store/apps/details?id=run.openbot.mobile";
+const ANDROID_STORE_URL = "market://details?id=run.whilo.mobile";
+const ANDROID_STORE_WEB_URL = "https://play.google.com/store/apps/details?id=run.whilo.mobile";
 
 /** The public changelog, for when the notes cannot load. */
-export const MOBILE_CHANGELOG_URL = "https://openbot.run/changelog?platform=mobile";
+export const MOBILE_CHANGELOG_URL = "https://whilo.onerall.com/changelog?platform=mobile";
 const NOTES_TIMEOUT_MS = 10_000;
 // The notes of a version do not change after the store has it.
 const NOTES_STALE_MS = 10 * 60_000;
 
-const key = "openbot.mobile.appUpdate.dismissed.v1";
+const key = "whilo.mobile.appUpdate.dismissed.v1";
 
 /** The update that the user put off with Later. A newer update shows again. */
 const useDismissedAppUpdate = create<{ dismissed: string | null; ready: boolean }>(() => ({

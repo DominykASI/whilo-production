@@ -1,4 +1,4 @@
-import { ServerUpdateDialog, type ServerUpdateView } from "@openbot/ui/features/servers/ServerUpdateDialog";
+import { ServerUpdateDialog, type ServerUpdateView } from "@whilo/ui/features/servers/ServerUpdateDialog";
 import type { Meta, StoryObj } from "storybook-solidjs-vite";
 
 const OFFER: ServerUpdateView = {

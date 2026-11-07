@@ -1,5 +1,5 @@
-import type { ConversationPage, SidebarLayoutSnapshot } from "@openbot/contracts/ipc";
-import { isDynamicRecord, isString } from "@openbot/contracts/runtime-values";
+import type { ConversationPage, SidebarLayoutSnapshot } from "@whilo/contracts/ipc";
+import { isDynamicRecord, isString } from "@whilo/contracts/runtime-values";
 import * as Crypto from "expo-crypto";
 import * as FileSystem from "expo-file-system/legacy";
 import * as LockedKeychain from "@/shared/lib/locked-keychain";
@@ -25,7 +25,7 @@ export interface WorkspaceCache {
 
 const FORMAT = 1;
 const ROOT = "workspace-cache-v1/";
-const KEY_NAME = "openbot.mobile.workspace-cache-key.v1";
+const KEY_NAME = "whilo.mobile.workspace-cache-key.v1";
 /**
  * The escaped JSON of a server file. Base64 adds a third, so the file stays under 4 MB. A server with
  * more keeps its agents and the chats that fit, newest first.

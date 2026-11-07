@@ -1,7 +1,7 @@
 // Builds the page that the iOS share extension runs (`bun scripts/mobile-share-sender.ts`), opens it
 // from a file in Chrome as the extension opens it in its web view, and drives it through the bridge
 // contract of `apps/mobile/plugins/share-extension/ShareSender.swift`:
-// 1. The page runs under its Content Security Policy and offers `openbotShareSend`.
+// 1. The page runs under its Content Security Policy and offers `whiloShareSend`.
 // 2. Every account service request goes through the bridge, with the session as a bearer token. The
 //    page makes no request of its own.
 // 3. A ticket that the account service refuses fails the share at `connect`, before any file is read,
@@ -10,17 +10,17 @@
 //
 // No host takes part, so the WebRTC path after Signal and the message request are not covered here.
 // Run: bun run test:mobile-share-sender
-// It writes .openbot-build/mobile-share-sender-e2e/report.json and exits non-zero on a failure.
+// It writes .whilo-build/mobile-share-sender-e2e/report.json and exits non-zero on a failure.
 import { spawnSync } from "node:child_process";
 import { mkdirSync, statSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { isDynamicRecord, isString } from "@openbot/contracts/runtime-values";
-import { createOpenBotLogger } from "@openbot/logging";
+import { isDynamicRecord, isString } from "@whilo/contracts/runtime-values";
+import { createWhiloLogger } from "@whilo/logging";
 import { chromium } from "playwright-core";
 
 const ROOT = resolve(import.meta.dirname, "..");
-const OUT = join(ROOT, ".openbot-build", "mobile-share-sender-e2e");
+const OUT = join(ROOT, ".whilo-build", "mobile-share-sender-e2e");
 const PAGE = join(OUT, "share-sender.html");
 const API_URL = "https://api.openbot.test/";
 const SESSION_TOKEN = "share-e2e-session-token";
@@ -29,7 +29,7 @@ const SESSION_ID = "share-e2e-session";
 const PAGE_SIZE_LIMIT = 1_500_000;
 const SIGNAL_WAIT_MS = 20_000;
 
-const logger = createOpenBotLogger("mobile-share-sender-e2e");
+const logger = createWhiloLogger("mobile-share-sender-e2e");
 const checks: { name: string; passed: boolean; detail?: unknown }[] = [];
 function check(name: string, passed: boolean, detail?: unknown) {
   checks.push({ name, passed, ...(detail === undefined ? {} : { detail }) });
@@ -59,7 +59,7 @@ function shareRequest(hostId: string) {
 
 /** The call that `ShareSender.swift` makes, as a page script. */
 function sendScript(hostId: string): string {
-  return `window.openbotShareSend(${JSON.stringify(shareRequest(hostId))})`;
+  return `window.whiloShareSend(${JSON.stringify(shareRequest(hostId))})`;
 }
 
 async function main(): Promise<void> {
@@ -98,7 +98,7 @@ async function main(): Promise<void> {
       if (!request.url().startsWith("file:")) directRequests.push(request.url());
     });
     // The account service as the extension answers it, after its own origin check.
-    await page.exposeFunction("openbotBridge", (message: unknown) => {
+    await page.exposeFunction("whiloBridge", (message: unknown) => {
       if (!isDynamicRecord(message)) return null;
       if (message.type === "file") {
         fileReads.push(Number(message.index));
@@ -128,13 +128,13 @@ async function main(): Promise<void> {
       if (path === `/v2/remote/sessions/${SESSION_ID}/end`) return json(200, {});
       return json(404, { error: "not_found" });
     });
-    // WebKit gives the page `window.webkit.messageHandlers.openbot`, whose `postMessage` returns the reply.
+    // WebKit gives the page `window.webkit.messageHandlers.whilo`, whose `postMessage` returns the reply.
     await page.addInitScript(
-      "window.webkit = { messageHandlers: { openbot: { postMessage: (message) => window.openbotBridge(message) } } };",
+      "window.webkit = { messageHandlers: { whilo: { postMessage: (message) => window.whiloBridge(message) } } };",
     );
     await page.goto(pathToFileURL(PAGE).href);
-    const offered = await page.evaluate("typeof window.openbotShareSend");
-    check("the page offers openbotShareSend under its CSP", offered === "function", { offered, pageErrors });
+    const offered = await page.evaluate("typeof window.whiloShareSend");
+    check("the page offers whiloShareSend under its CSP", offered === "function", { offered, pageErrors });
 
     // 2 and 3: a refused ticket.
     const refused = await page.evaluate(sendScript("host-refused"));

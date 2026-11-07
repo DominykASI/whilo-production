@@ -49,8 +49,8 @@ import { Route as MarketplaceIndexRouteImport } from './routes/marketplace/index
 import { Route as MarketplaceAppsRouteImport } from './routes/marketplace/apps'
 import { Route as NewsIndexRouteImport } from './routes/news/index'
 import { Route as NewsSlugRouteImport } from './routes/news/$slug'
-import { Route as NewsOpenbotVsGrokbotRouteImport } from './routes/news/openbot-vs-grokbot'
 import { Route as NewsRssDotxmlRouteImport } from './routes/news/rss[.]xml'
+import { Route as NewsWhiloVsGrokbotRouteImport } from './routes/news/whilo-vs-grokbot'
 import { Route as PluginsIndexRouteImport } from './routes/plugins/index'
 import { Route as PluginsSlugRouteImport } from './routes/plugins/$slug'
 import { Route as ProvidersIndexRouteImport } from './routes/providers/index'
@@ -64,7 +64,7 @@ import { Route as DownloadPlatformLatestRouteImport } from './routes/download/$p
 import { Route as MarketplaceAgentsAgentIdRouteImport } from './routes/marketplace/agents/$agentId'
 import { Route as MarketplaceSkillsIndexRouteImport } from './routes/marketplace/skills/index'
 import { Route as MarketplaceSkillsSlugRouteImport } from './routes/marketplace/skills/$slug'
-import { Route as NewsOgOpenbotVsGrokbotDotpngRouteImport } from './routes/news/og/openbot-vs-grokbot[.]png'
+import { Route as NewsOgWhiloVsGrokbotDotpngRouteImport } from './routes/news/og/whilo-vs-grokbot[.]png'
 import { Route as PluginsIconSlugRouteImport } from './routes/plugins/icon/$slug'
 import { Route as V1AgentTemplatesIndexRouteImport } from './routes/v1/agent-templates/index'
 import { Route as V1AgentTemplatesTemplateIdRouteImport } from './routes/v1/agent-templates/$templateId'
@@ -106,6 +106,7 @@ import { Route as V1AgentTemplatesTemplateIdAvatarRouteImport } from './routes/v
 import { Route as V1AgentTemplatesTemplateIdCardRouteImport } from './routes/v1/agent-templates/$templateId/card'
 import { Route as V1AuthEmailStartRouteImport } from './routes/v1/auth/email/start'
 import { Route as V1AuthEmailVerifyRouteImport } from './routes/v1/auth/email/verify'
+import { Route as V1AuthOauthStatusRouteImport } from './routes/v1/auth/oauth/status'
 import { Route as V1MarketplaceAgentsIndexRouteImport } from './routes/v1/marketplace/agents/index'
 import { Route as V1MarketplaceAgentsAgentIdRouteImport } from './routes/v1/marketplace/agents/$agentId'
 import { Route as V1MarketplaceAgentsMineRouteImport } from './routes/v1/marketplace/agents/mine'
@@ -141,6 +142,10 @@ import { Route as V2RemoteSlackRouteValidateRouteImport } from './routes/v2/remo
 import { Route as V2RemoteTelegramRouteLinkRouteImport } from './routes/v2/remote/telegram-route/link'
 import { Route as V2RemoteTelegramRouteValidateRouteImport } from './routes/v2/remote/telegram-route/validate'
 import { Route as V2RemoteWebhookRouteValidateRouteImport } from './routes/v2/remote/webhook-route/validate'
+import { Route as V1AuthOauthGithubCallbackRouteImport } from './routes/v1/auth/oauth/github/callback'
+import { Route as V1AuthOauthGithubStartRouteImport } from './routes/v1/auth/oauth/github/start'
+import { Route as V1AuthOauthGoogleCallbackRouteImport } from './routes/v1/auth/oauth/google/callback'
+import { Route as V1AuthOauthGoogleStartRouteImport } from './routes/v1/auth/oauth/google/start'
 import { Route as V1MarketplaceAgentsAgentIdAvatarRouteImport } from './routes/v1/marketplace/agents/$agentId/avatar'
 import { Route as V1MarketplaceAgentsAgentIdCardRouteImport } from './routes/v1/marketplace/agents/$agentId/card'
 import { Route as V1MarketplaceAgentsAgentIdInstallRouteImport } from './routes/v1/marketplace/agents/$agentId/install'
@@ -390,14 +395,14 @@ const NewsSlugRoute = NewsSlugRouteImport.update({
   path: '/news/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NewsOpenbotVsGrokbotRoute = NewsOpenbotVsGrokbotRouteImport.update({
-  id: '/news/openbot-vs-grokbot',
-  path: '/news/openbot-vs-grokbot',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const NewsRssDotxmlRoute = NewsRssDotxmlRouteImport.update({
   id: '/news/rss.xml',
   path: '/news/rss.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsWhiloVsGrokbotRoute = NewsWhiloVsGrokbotRouteImport.update({
+  id: '/news/whilo-vs-grokbot',
+  path: '/news/whilo-vs-grokbot',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PluginsIndexRoute = PluginsIndexRouteImport.update({
@@ -466,10 +471,10 @@ const MarketplaceSkillsSlugRoute = MarketplaceSkillsSlugRouteImport.update({
   path: '/marketplace/skills/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NewsOgOpenbotVsGrokbotDotpngRoute =
-  NewsOgOpenbotVsGrokbotDotpngRouteImport.update({
-    id: '/news/og/openbot-vs-grokbot.png',
-    path: '/news/og/openbot-vs-grokbot.png',
+const NewsOgWhiloVsGrokbotDotpngRoute =
+  NewsOgWhiloVsGrokbotDotpngRouteImport.update({
+    id: '/news/og/whilo-vs-grokbot.png',
+    path: '/news/og/whilo-vs-grokbot.png',
     getParentRoute: () => rootRouteImport,
   } as any)
 const PluginsIconSlugRoute = PluginsIconSlugRouteImport.update({
@@ -681,6 +686,11 @@ const V1AuthEmailVerifyRoute = V1AuthEmailVerifyRouteImport.update({
   path: '/v1/auth/email/verify',
   getParentRoute: () => rootRouteImport,
 } as any)
+const V1AuthOauthStatusRoute = V1AuthOauthStatusRouteImport.update({
+  id: '/v1/auth/oauth/status',
+  path: '/v1/auth/oauth/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const V1MarketplaceAgentsIndexRoute =
   V1MarketplaceAgentsIndexRouteImport.update({
     id: '/v1/marketplace/agents/',
@@ -867,6 +877,28 @@ const V2RemoteWebhookRouteValidateRoute =
     path: '/v2/remote/webhook-route/validate',
     getParentRoute: () => rootRouteImport,
   } as any)
+const V1AuthOauthGithubCallbackRoute =
+  V1AuthOauthGithubCallbackRouteImport.update({
+    id: '/v1/auth/oauth/github/callback',
+    path: '/v1/auth/oauth/github/callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const V1AuthOauthGithubStartRoute = V1AuthOauthGithubStartRouteImport.update({
+  id: '/v1/auth/oauth/github/start',
+  path: '/v1/auth/oauth/github/start',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const V1AuthOauthGoogleCallbackRoute =
+  V1AuthOauthGoogleCallbackRouteImport.update({
+    id: '/v1/auth/oauth/google/callback',
+    path: '/v1/auth/oauth/google/callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const V1AuthOauthGoogleStartRoute = V1AuthOauthGoogleStartRouteImport.update({
+  id: '/v1/auth/oauth/google/start',
+  path: '/v1/auth/oauth/google/start',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const V1MarketplaceAgentsAgentIdAvatarRoute =
   V1MarketplaceAgentsAgentIdAvatarRouteImport.update({
     id: '/avatar',
@@ -1183,8 +1215,8 @@ export interface FileRoutesByFullPath {
   '/health/ready': typeof HealthReadyRoute
   '/marketplace/apps': typeof MarketplaceAppsRoute
   '/news/$slug': typeof NewsSlugRoute
-  '/news/openbot-vs-grokbot': typeof NewsOpenbotVsGrokbotRoute
   '/news/rss.xml': typeof NewsRssDotxmlRoute
+  '/news/whilo-vs-grokbot': typeof NewsWhiloVsGrokbotRoute
   '/plugins/$slug': typeof PluginsSlugRoute
   '/providers/$slug': typeof ProvidersSlugRoute
   '/providers/rss.xml': typeof ProvidersRssDotxmlRoute
@@ -1203,7 +1235,7 @@ export interface FileRoutesByFullPath {
   '/download/$platform/latest': typeof DownloadPlatformLatestRoute
   '/marketplace/agents/$agentId': typeof MarketplaceAgentsAgentIdRoute
   '/marketplace/skills/$slug': typeof MarketplaceSkillsSlugRoute
-  '/news/og/openbot-vs-grokbot.png': typeof NewsOgOpenbotVsGrokbotDotpngRoute
+  '/news/og/whilo-vs-grokbot.png': typeof NewsOgWhiloVsGrokbotDotpngRoute
   '/plugins/icon/$slug': typeof PluginsIconSlugRoute
   '/v1/agent-templates/$templateId': typeof V1AgentTemplatesTemplateIdRouteWithChildren
   '/v1/agent-templates/mine': typeof V1AgentTemplatesMineRoute
@@ -1246,6 +1278,7 @@ export interface FileRoutesByFullPath {
   '/v1/agent-templates/$templateId/card': typeof V1AgentTemplatesTemplateIdCardRoute
   '/v1/auth/email/start': typeof V1AuthEmailStartRoute
   '/v1/auth/email/verify': typeof V1AuthEmailVerifyRoute
+  '/v1/auth/oauth/status': typeof V1AuthOauthStatusRoute
   '/v1/marketplace/agents/$agentId': typeof V1MarketplaceAgentsAgentIdRouteWithChildren
   '/v1/marketplace/agents/mine': typeof V1MarketplaceAgentsMineRoute
   '/v1/me/billing/portal': typeof V1MeBillingPortalRoute
@@ -1281,6 +1314,10 @@ export interface FileRoutesByFullPath {
   '/v2/hosting/servers/': typeof V2HostingServersIndexRoute
   '/v2/remote/hosts/': typeof V2RemoteHostsIndexRoute
   '/v2/remote/sessions/': typeof V2RemoteSessionsIndexRoute
+  '/v1/auth/oauth/github/callback': typeof V1AuthOauthGithubCallbackRoute
+  '/v1/auth/oauth/github/start': typeof V1AuthOauthGithubStartRoute
+  '/v1/auth/oauth/google/callback': typeof V1AuthOauthGoogleCallbackRoute
+  '/v1/auth/oauth/google/start': typeof V1AuthOauthGoogleStartRoute
   '/v1/marketplace/agents/$agentId/avatar': typeof V1MarketplaceAgentsAgentIdAvatarRoute
   '/v1/marketplace/agents/$agentId/card': typeof V1MarketplaceAgentsAgentIdCardRoute
   '/v1/marketplace/agents/$agentId/install': typeof V1MarketplaceAgentsAgentIdInstallRoute
@@ -1364,8 +1401,8 @@ export interface FileRoutesByTo {
   '/health/ready': typeof HealthReadyRoute
   '/marketplace/apps': typeof MarketplaceAppsRoute
   '/news/$slug': typeof NewsSlugRoute
-  '/news/openbot-vs-grokbot': typeof NewsOpenbotVsGrokbotRoute
   '/news/rss.xml': typeof NewsRssDotxmlRoute
+  '/news/whilo-vs-grokbot': typeof NewsWhiloVsGrokbotRoute
   '/plugins/$slug': typeof PluginsSlugRoute
   '/providers/$slug': typeof ProvidersSlugRoute
   '/providers/rss.xml': typeof ProvidersRssDotxmlRoute
@@ -1384,7 +1421,7 @@ export interface FileRoutesByTo {
   '/download/$platform/latest': typeof DownloadPlatformLatestRoute
   '/marketplace/agents/$agentId': typeof MarketplaceAgentsAgentIdRoute
   '/marketplace/skills/$slug': typeof MarketplaceSkillsSlugRoute
-  '/news/og/openbot-vs-grokbot.png': typeof NewsOgOpenbotVsGrokbotDotpngRoute
+  '/news/og/whilo-vs-grokbot.png': typeof NewsOgWhiloVsGrokbotDotpngRoute
   '/plugins/icon/$slug': typeof PluginsIconSlugRoute
   '/v1/agent-templates/$templateId': typeof V1AgentTemplatesTemplateIdRouteWithChildren
   '/v1/agent-templates/mine': typeof V1AgentTemplatesMineRoute
@@ -1427,6 +1464,7 @@ export interface FileRoutesByTo {
   '/v1/agent-templates/$templateId/card': typeof V1AgentTemplatesTemplateIdCardRoute
   '/v1/auth/email/start': typeof V1AuthEmailStartRoute
   '/v1/auth/email/verify': typeof V1AuthEmailVerifyRoute
+  '/v1/auth/oauth/status': typeof V1AuthOauthStatusRoute
   '/v1/marketplace/agents/$agentId': typeof V1MarketplaceAgentsAgentIdRouteWithChildren
   '/v1/marketplace/agents/mine': typeof V1MarketplaceAgentsMineRoute
   '/v1/me/billing/portal': typeof V1MeBillingPortalRoute
@@ -1462,6 +1500,10 @@ export interface FileRoutesByTo {
   '/v2/hosting/servers': typeof V2HostingServersIndexRoute
   '/v2/remote/hosts': typeof V2RemoteHostsIndexRoute
   '/v2/remote/sessions': typeof V2RemoteSessionsIndexRoute
+  '/v1/auth/oauth/github/callback': typeof V1AuthOauthGithubCallbackRoute
+  '/v1/auth/oauth/github/start': typeof V1AuthOauthGithubStartRoute
+  '/v1/auth/oauth/google/callback': typeof V1AuthOauthGoogleCallbackRoute
+  '/v1/auth/oauth/google/start': typeof V1AuthOauthGoogleStartRoute
   '/v1/marketplace/agents/$agentId/avatar': typeof V1MarketplaceAgentsAgentIdAvatarRoute
   '/v1/marketplace/agents/$agentId/card': typeof V1MarketplaceAgentsAgentIdCardRoute
   '/v1/marketplace/agents/$agentId/install': typeof V1MarketplaceAgentsAgentIdInstallRoute
@@ -1546,8 +1588,8 @@ export interface FileRoutesById {
   '/health/ready': typeof HealthReadyRoute
   '/marketplace/apps': typeof MarketplaceAppsRoute
   '/news/$slug': typeof NewsSlugRoute
-  '/news/openbot-vs-grokbot': typeof NewsOpenbotVsGrokbotRoute
   '/news/rss.xml': typeof NewsRssDotxmlRoute
+  '/news/whilo-vs-grokbot': typeof NewsWhiloVsGrokbotRoute
   '/plugins/$slug': typeof PluginsSlugRoute
   '/providers/$slug': typeof ProvidersSlugRoute
   '/providers/rss.xml': typeof ProvidersRssDotxmlRoute
@@ -1566,7 +1608,7 @@ export interface FileRoutesById {
   '/download/$platform_/latest': typeof DownloadPlatformLatestRoute
   '/marketplace/agents/$agentId': typeof MarketplaceAgentsAgentIdRoute
   '/marketplace/skills/$slug': typeof MarketplaceSkillsSlugRoute
-  '/news/og/openbot-vs-grokbot.png': typeof NewsOgOpenbotVsGrokbotDotpngRoute
+  '/news/og/whilo-vs-grokbot.png': typeof NewsOgWhiloVsGrokbotDotpngRoute
   '/plugins/icon/$slug': typeof PluginsIconSlugRoute
   '/v1/agent-templates/$templateId': typeof V1AgentTemplatesTemplateIdRouteWithChildren
   '/v1/agent-templates/mine': typeof V1AgentTemplatesMineRoute
@@ -1609,6 +1651,7 @@ export interface FileRoutesById {
   '/v1/agent-templates/$templateId/card': typeof V1AgentTemplatesTemplateIdCardRoute
   '/v1/auth/email/start': typeof V1AuthEmailStartRoute
   '/v1/auth/email/verify': typeof V1AuthEmailVerifyRoute
+  '/v1/auth/oauth/status': typeof V1AuthOauthStatusRoute
   '/v1/marketplace/agents/$agentId': typeof V1MarketplaceAgentsAgentIdRouteWithChildren
   '/v1/marketplace/agents/mine': typeof V1MarketplaceAgentsMineRoute
   '/v1/me/billing/portal': typeof V1MeBillingPortalRoute
@@ -1644,6 +1687,10 @@ export interface FileRoutesById {
   '/v2/hosting/servers/': typeof V2HostingServersIndexRoute
   '/v2/remote/hosts/': typeof V2RemoteHostsIndexRoute
   '/v2/remote/sessions/': typeof V2RemoteSessionsIndexRoute
+  '/v1/auth/oauth/github/callback': typeof V1AuthOauthGithubCallbackRoute
+  '/v1/auth/oauth/github/start': typeof V1AuthOauthGithubStartRoute
+  '/v1/auth/oauth/google/callback': typeof V1AuthOauthGoogleCallbackRoute
+  '/v1/auth/oauth/google/start': typeof V1AuthOauthGoogleStartRoute
   '/v1/marketplace/agents/$agentId/avatar': typeof V1MarketplaceAgentsAgentIdAvatarRoute
   '/v1/marketplace/agents/$agentId/card': typeof V1MarketplaceAgentsAgentIdCardRoute
   '/v1/marketplace/agents/$agentId/install': typeof V1MarketplaceAgentsAgentIdInstallRoute
@@ -1729,8 +1776,8 @@ export interface FileRouteTypes {
     | '/health/ready'
     | '/marketplace/apps'
     | '/news/$slug'
-    | '/news/openbot-vs-grokbot'
     | '/news/rss.xml'
+    | '/news/whilo-vs-grokbot'
     | '/plugins/$slug'
     | '/providers/$slug'
     | '/providers/rss.xml'
@@ -1749,7 +1796,7 @@ export interface FileRouteTypes {
     | '/download/$platform/latest'
     | '/marketplace/agents/$agentId'
     | '/marketplace/skills/$slug'
-    | '/news/og/openbot-vs-grokbot.png'
+    | '/news/og/whilo-vs-grokbot.png'
     | '/plugins/icon/$slug'
     | '/v1/agent-templates/$templateId'
     | '/v1/agent-templates/mine'
@@ -1792,6 +1839,7 @@ export interface FileRouteTypes {
     | '/v1/agent-templates/$templateId/card'
     | '/v1/auth/email/start'
     | '/v1/auth/email/verify'
+    | '/v1/auth/oauth/status'
     | '/v1/marketplace/agents/$agentId'
     | '/v1/marketplace/agents/mine'
     | '/v1/me/billing/portal'
@@ -1827,6 +1875,10 @@ export interface FileRouteTypes {
     | '/v2/hosting/servers/'
     | '/v2/remote/hosts/'
     | '/v2/remote/sessions/'
+    | '/v1/auth/oauth/github/callback'
+    | '/v1/auth/oauth/github/start'
+    | '/v1/auth/oauth/google/callback'
+    | '/v1/auth/oauth/google/start'
     | '/v1/marketplace/agents/$agentId/avatar'
     | '/v1/marketplace/agents/$agentId/card'
     | '/v1/marketplace/agents/$agentId/install'
@@ -1910,8 +1962,8 @@ export interface FileRouteTypes {
     | '/health/ready'
     | '/marketplace/apps'
     | '/news/$slug'
-    | '/news/openbot-vs-grokbot'
     | '/news/rss.xml'
+    | '/news/whilo-vs-grokbot'
     | '/plugins/$slug'
     | '/providers/$slug'
     | '/providers/rss.xml'
@@ -1930,7 +1982,7 @@ export interface FileRouteTypes {
     | '/download/$platform/latest'
     | '/marketplace/agents/$agentId'
     | '/marketplace/skills/$slug'
-    | '/news/og/openbot-vs-grokbot.png'
+    | '/news/og/whilo-vs-grokbot.png'
     | '/plugins/icon/$slug'
     | '/v1/agent-templates/$templateId'
     | '/v1/agent-templates/mine'
@@ -1973,6 +2025,7 @@ export interface FileRouteTypes {
     | '/v1/agent-templates/$templateId/card'
     | '/v1/auth/email/start'
     | '/v1/auth/email/verify'
+    | '/v1/auth/oauth/status'
     | '/v1/marketplace/agents/$agentId'
     | '/v1/marketplace/agents/mine'
     | '/v1/me/billing/portal'
@@ -2008,6 +2061,10 @@ export interface FileRouteTypes {
     | '/v2/hosting/servers'
     | '/v2/remote/hosts'
     | '/v2/remote/sessions'
+    | '/v1/auth/oauth/github/callback'
+    | '/v1/auth/oauth/github/start'
+    | '/v1/auth/oauth/google/callback'
+    | '/v1/auth/oauth/google/start'
     | '/v1/marketplace/agents/$agentId/avatar'
     | '/v1/marketplace/agents/$agentId/card'
     | '/v1/marketplace/agents/$agentId/install'
@@ -2091,8 +2148,8 @@ export interface FileRouteTypes {
     | '/health/ready'
     | '/marketplace/apps'
     | '/news/$slug'
-    | '/news/openbot-vs-grokbot'
     | '/news/rss.xml'
+    | '/news/whilo-vs-grokbot'
     | '/plugins/$slug'
     | '/providers/$slug'
     | '/providers/rss.xml'
@@ -2111,7 +2168,7 @@ export interface FileRouteTypes {
     | '/download/$platform_/latest'
     | '/marketplace/agents/$agentId'
     | '/marketplace/skills/$slug'
-    | '/news/og/openbot-vs-grokbot.png'
+    | '/news/og/whilo-vs-grokbot.png'
     | '/plugins/icon/$slug'
     | '/v1/agent-templates/$templateId'
     | '/v1/agent-templates/mine'
@@ -2154,6 +2211,7 @@ export interface FileRouteTypes {
     | '/v1/agent-templates/$templateId/card'
     | '/v1/auth/email/start'
     | '/v1/auth/email/verify'
+    | '/v1/auth/oauth/status'
     | '/v1/marketplace/agents/$agentId'
     | '/v1/marketplace/agents/mine'
     | '/v1/me/billing/portal'
@@ -2189,6 +2247,10 @@ export interface FileRouteTypes {
     | '/v2/hosting/servers/'
     | '/v2/remote/hosts/'
     | '/v2/remote/sessions/'
+    | '/v1/auth/oauth/github/callback'
+    | '/v1/auth/oauth/github/start'
+    | '/v1/auth/oauth/google/callback'
+    | '/v1/auth/oauth/google/start'
     | '/v1/marketplace/agents/$agentId/avatar'
     | '/v1/marketplace/agents/$agentId/card'
     | '/v1/marketplace/agents/$agentId/install'
@@ -2273,8 +2335,8 @@ export interface RootRouteChildren {
   HealthReadyRoute: typeof HealthReadyRoute
   MarketplaceAppsRoute: typeof MarketplaceAppsRoute
   NewsSlugRoute: typeof NewsSlugRoute
-  NewsOpenbotVsGrokbotRoute: typeof NewsOpenbotVsGrokbotRoute
   NewsRssDotxmlRoute: typeof NewsRssDotxmlRoute
+  NewsWhiloVsGrokbotRoute: typeof NewsWhiloVsGrokbotRoute
   PluginsSlugRoute: typeof PluginsSlugRoute
   ProvidersSlugRoute: typeof ProvidersSlugRoute
   ProvidersRssDotxmlRoute: typeof ProvidersRssDotxmlRoute
@@ -2293,7 +2355,7 @@ export interface RootRouteChildren {
   DownloadPlatformLatestRoute: typeof DownloadPlatformLatestRoute
   MarketplaceAgentsAgentIdRoute: typeof MarketplaceAgentsAgentIdRoute
   MarketplaceSkillsSlugRoute: typeof MarketplaceSkillsSlugRoute
-  NewsOgOpenbotVsGrokbotDotpngRoute: typeof NewsOgOpenbotVsGrokbotDotpngRoute
+  NewsOgWhiloVsGrokbotDotpngRoute: typeof NewsOgWhiloVsGrokbotDotpngRoute
   PluginsIconSlugRoute: typeof PluginsIconSlugRoute
   V1AgentTemplatesTemplateIdRoute: typeof V1AgentTemplatesTemplateIdRouteWithChildren
   V1AgentTemplatesMineRoute: typeof V1AgentTemplatesMineRoute
@@ -2331,6 +2393,7 @@ export interface RootRouteChildren {
   V1SkillsIndexRoute: typeof V1SkillsIndexRoute
   V1AuthEmailStartRoute: typeof V1AuthEmailStartRoute
   V1AuthEmailVerifyRoute: typeof V1AuthEmailVerifyRoute
+  V1AuthOauthStatusRoute: typeof V1AuthOauthStatusRoute
   V1MarketplaceAgentsAgentIdRoute: typeof V1MarketplaceAgentsAgentIdRouteWithChildren
   V1MarketplaceAgentsMineRoute: typeof V1MarketplaceAgentsMineRoute
   V1MobileAuthEmailVerifyRoute: typeof V1MobileAuthEmailVerifyRoute
@@ -2354,6 +2417,10 @@ export interface RootRouteChildren {
   V2HostingServersIndexRoute: typeof V2HostingServersIndexRoute
   V2RemoteHostsIndexRoute: typeof V2RemoteHostsIndexRoute
   V2RemoteSessionsIndexRoute: typeof V2RemoteSessionsIndexRoute
+  V1AuthOauthGithubCallbackRoute: typeof V1AuthOauthGithubCallbackRoute
+  V1AuthOauthGithubStartRoute: typeof V1AuthOauthGithubStartRoute
+  V1AuthOauthGoogleCallbackRoute: typeof V1AuthOauthGoogleCallbackRoute
+  V1AuthOauthGoogleStartRoute: typeof V1AuthOauthGoogleStartRoute
   V1MarketplaceAgentsAdminSubmissionsRoute: typeof V1MarketplaceAgentsAdminSubmissionsRouteWithChildren
   V1SitesAdminSiteIdBlockRoute: typeof V1SitesAdminSiteIdBlockRoute
   V1SitesUploadsUploadIdActivateRoute: typeof V1SitesUploadsUploadIdActivateRoute
@@ -2677,18 +2744,18 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof NewsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/news/openbot-vs-grokbot': {
-      id: '/news/openbot-vs-grokbot'
-      path: '/news/openbot-vs-grokbot'
-      fullPath: '/news/openbot-vs-grokbot'
-      preLoaderRoute: typeof NewsOpenbotVsGrokbotRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/news/rss.xml': {
       id: '/news/rss.xml'
       path: '/news/rss.xml'
       fullPath: '/news/rss.xml'
       preLoaderRoute: typeof NewsRssDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news/whilo-vs-grokbot': {
+      id: '/news/whilo-vs-grokbot'
+      path: '/news/whilo-vs-grokbot'
+      fullPath: '/news/whilo-vs-grokbot'
+      preLoaderRoute: typeof NewsWhiloVsGrokbotRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/plugins/': {
@@ -2782,11 +2849,11 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof MarketplaceSkillsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/news/og/openbot-vs-grokbot.png': {
-      id: '/news/og/openbot-vs-grokbot.png'
-      path: '/news/og/openbot-vs-grokbot.png'
-      fullPath: '/news/og/openbot-vs-grokbot.png'
-      preLoaderRoute: typeof NewsOgOpenbotVsGrokbotDotpngRouteImport
+    '/news/og/whilo-vs-grokbot.png': {
+      id: '/news/og/whilo-vs-grokbot.png'
+      path: '/news/og/whilo-vs-grokbot.png'
+      fullPath: '/news/og/whilo-vs-grokbot.png'
+      preLoaderRoute: typeof NewsOgWhiloVsGrokbotDotpngRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/plugins/icon/$slug': {
@@ -3076,6 +3143,13 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof V1AuthEmailVerifyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/v1/auth/oauth/status': {
+      id: '/v1/auth/oauth/status'
+      path: '/v1/auth/oauth/status'
+      fullPath: '/v1/auth/oauth/status'
+      preLoaderRoute: typeof V1AuthOauthStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/v1/marketplace/agents/': {
       id: '/v1/marketplace/agents/'
       path: '/v1/marketplace/agents'
@@ -3319,6 +3393,34 @@ declare module '@tanstack/solid-router' {
       path: '/v2/remote/webhook-route/validate'
       fullPath: '/v2/remote/webhook-route/validate'
       preLoaderRoute: typeof V2RemoteWebhookRouteValidateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/v1/auth/oauth/github/callback': {
+      id: '/v1/auth/oauth/github/callback'
+      path: '/v1/auth/oauth/github/callback'
+      fullPath: '/v1/auth/oauth/github/callback'
+      preLoaderRoute: typeof V1AuthOauthGithubCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/v1/auth/oauth/github/start': {
+      id: '/v1/auth/oauth/github/start'
+      path: '/v1/auth/oauth/github/start'
+      fullPath: '/v1/auth/oauth/github/start'
+      preLoaderRoute: typeof V1AuthOauthGithubStartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/v1/auth/oauth/google/callback': {
+      id: '/v1/auth/oauth/google/callback'
+      path: '/v1/auth/oauth/google/callback'
+      fullPath: '/v1/auth/oauth/google/callback'
+      preLoaderRoute: typeof V1AuthOauthGoogleCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/v1/auth/oauth/google/start': {
+      id: '/v1/auth/oauth/google/start'
+      path: '/v1/auth/oauth/google/start'
+      fullPath: '/v1/auth/oauth/google/start'
+      preLoaderRoute: typeof V1AuthOauthGoogleStartRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/v1/marketplace/agents/$agentId/avatar': {
@@ -3834,8 +3936,8 @@ const rootRouteChildren: RootRouteChildren = {
   HealthReadyRoute: HealthReadyRoute,
   MarketplaceAppsRoute: MarketplaceAppsRoute,
   NewsSlugRoute: NewsSlugRoute,
-  NewsOpenbotVsGrokbotRoute: NewsOpenbotVsGrokbotRoute,
   NewsRssDotxmlRoute: NewsRssDotxmlRoute,
+  NewsWhiloVsGrokbotRoute: NewsWhiloVsGrokbotRoute,
   PluginsSlugRoute: PluginsSlugRoute,
   ProvidersSlugRoute: ProvidersSlugRoute,
   ProvidersRssDotxmlRoute: ProvidersRssDotxmlRoute,
@@ -3854,7 +3956,7 @@ const rootRouteChildren: RootRouteChildren = {
   DownloadPlatformLatestRoute: DownloadPlatformLatestRoute,
   MarketplaceAgentsAgentIdRoute: MarketplaceAgentsAgentIdRoute,
   MarketplaceSkillsSlugRoute: MarketplaceSkillsSlugRoute,
-  NewsOgOpenbotVsGrokbotDotpngRoute: NewsOgOpenbotVsGrokbotDotpngRoute,
+  NewsOgWhiloVsGrokbotDotpngRoute: NewsOgWhiloVsGrokbotDotpngRoute,
   PluginsIconSlugRoute: PluginsIconSlugRoute,
   V1AgentTemplatesTemplateIdRoute: V1AgentTemplatesTemplateIdRouteWithChildren,
   V1AgentTemplatesMineRoute: V1AgentTemplatesMineRoute,
@@ -3892,6 +3994,7 @@ const rootRouteChildren: RootRouteChildren = {
   V1SkillsIndexRoute: V1SkillsIndexRoute,
   V1AuthEmailStartRoute: V1AuthEmailStartRoute,
   V1AuthEmailVerifyRoute: V1AuthEmailVerifyRoute,
+  V1AuthOauthStatusRoute: V1AuthOauthStatusRoute,
   V1MarketplaceAgentsAgentIdRoute: V1MarketplaceAgentsAgentIdRouteWithChildren,
   V1MarketplaceAgentsMineRoute: V1MarketplaceAgentsMineRoute,
   V1MobileAuthEmailVerifyRoute: V1MobileAuthEmailVerifyRoute,
@@ -3915,6 +4018,10 @@ const rootRouteChildren: RootRouteChildren = {
   V2HostingServersIndexRoute: V2HostingServersIndexRoute,
   V2RemoteHostsIndexRoute: V2RemoteHostsIndexRoute,
   V2RemoteSessionsIndexRoute: V2RemoteSessionsIndexRoute,
+  V1AuthOauthGithubCallbackRoute: V1AuthOauthGithubCallbackRoute,
+  V1AuthOauthGithubStartRoute: V1AuthOauthGithubStartRoute,
+  V1AuthOauthGoogleCallbackRoute: V1AuthOauthGoogleCallbackRoute,
+  V1AuthOauthGoogleStartRoute: V1AuthOauthGoogleStartRoute,
   V1MarketplaceAgentsAdminSubmissionsRoute:
     V1MarketplaceAgentsAdminSubmissionsRouteWithChildren,
   V1SitesAdminSiteIdBlockRoute: V1SitesAdminSiteIdBlockRoute,

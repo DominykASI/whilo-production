@@ -1,15 +1,15 @@
 // The Link account of this computer (link.com, by Stripe): the sign-in, the stored tokens, and the
 // one-time cards that agents ask for.
 
-import type { LinkAccountState, LinkAccountStatus } from "@openbot/contracts/ipc";
-import { sourceText } from "@openbot/i18n/source";
+import type { LinkAccountState, LinkAccountStatus } from "@whilo/contracts/ipc";
+import { sourceText } from "@whilo/i18n/source";
 import {
-  createOpenBotLogger,
+  createWhiloLogger,
   redactText,
   registerSecretValue,
   registerSecretValues,
   toLogValue,
-} from "@openbot/logging";
+} from "@whilo/logging";
 import { Duration, Effect, Exit, Result, Scope, Semaphore } from "effect";
 import { z } from "zod";
 import {
@@ -38,7 +38,7 @@ import {
 } from "./link-auth";
 import { LinkOperationError, linkCall, linkDecode } from "./link-effects";
 
-const logger = createOpenBotLogger("link-account");
+const logger = createWhiloLogger("link-account");
 
 /** An access token this close to its end is refreshed before a call. */
 const REFRESH_MARGIN_MS = 60_000;
@@ -82,7 +82,7 @@ interface PendingSignIn {
   controller: AbortController;
 }
 
-/** A JSON body that OpenBot sends to Link: flat fields only. */
+/** A JSON body that Whilo sends to Link: flat fields only. */
 type LinkRequestBody = Readonly<Record<string, string | number | boolean>>;
 
 interface LinkResponse {

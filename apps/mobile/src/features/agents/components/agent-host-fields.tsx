@@ -10,8 +10,8 @@ import {
   type BusyMessageMode,
   canAdministerServer,
   type UpdateAgentHostSettingsInput,
-} from "@openbot/contracts/ipc";
-import type { MobileTextKey } from "@openbot/i18n/mobile";
+} from "@whilo/contracts/ipc";
+import type { MobileTextKey } from "@whilo/i18n/mobile";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Typography } from "heroui-native";
 import { useRef, useState } from "react";

@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "openbot",
+      "name": "whilo",
       "dependencies": {
         "@1password/sdk": "0.5.0",
         "@agentclientprotocol/sdk": "1.9.0",
@@ -16,14 +16,14 @@
         "@muse-code/sdk": "1.4.12",
         "@noble/hashes": "catalog:",
         "@norbert_bodziony/bloub": "catalog:",
-        "@openbot/brand": "workspace:*",
-        "@openbot/contracts": "workspace:*",
-        "@openbot/i18n": "workspace:*",
-        "@openbot/logging": "workspace:*",
-        "@openbot/team-client": "workspace:*",
-        "@openbot/telemetry": "workspace:*",
-        "@openbot/ui": "workspace:*",
-        "@openbot/user-errors": "workspace:*",
+        "@whilo/brand": "workspace:*",
+        "@whilo/contracts": "workspace:*",
+        "@whilo/i18n": "workspace:*",
+        "@whilo/logging": "workspace:*",
+        "@whilo/team-client": "workspace:*",
+        "@whilo/telemetry": "workspace:*",
+        "@whilo/ui": "workspace:*",
+        "@whilo/user-errors": "workspace:*",
         "@openpanel/web": "catalog:",
         "@paper-design/shaders": "catalog:",
         "@solidjs/web": "catalog:",
@@ -79,14 +79,14 @@
       },
     },
     "apps/auth-api": {
-      "name": "@openbot/auth-api",
+      "name": "@whilo/auth-api",
       "version": "0.0.0",
       "dependencies": {
         "@fontsource-variable/inter": "catalog:",
         "@kobalte/core": "catalog:",
-        "@openbot/brand": "workspace:*",
-        "@openbot/contracts": "workspace:*",
-        "@openbot/ui": "workspace:*",
+        "@whilo/brand": "workspace:*",
+        "@whilo/contracts": "workspace:*",
+        "@whilo/ui": "workspace:*",
         "@openpanel/web": "catalog:",
         "@paper-design/shaders": "catalog:",
         "@solidjs/signals": "catalog:",
@@ -116,7 +116,7 @@
       },
     },
     "apps/mobile": {
-      "name": "@openbot/mobile",
+      "name": "@whilo/mobile",
       "version": "1.4.5",
       "dependencies": {
         "@expo/metro-runtime": "~58.0.15",
@@ -124,13 +124,13 @@
         "@legendapp/list": "3.6.0",
         "@noble/hashes": "catalog:",
         "@norbert_bodziony/bloub": "catalog:",
-        "@openbot/brand": "workspace:*",
-        "@openbot/contracts": "workspace:*",
-        "@openbot/i18n": "workspace:*",
-        "@openbot/logging": "workspace:*",
-        "@openbot/team-client": "workspace:*",
-        "@openbot/telemetry": "workspace:*",
-        "@openbot/user-errors": "workspace:*",
+        "@whilo/brand": "workspace:*",
+        "@whilo/contracts": "workspace:*",
+        "@whilo/i18n": "workspace:*",
+        "@whilo/logging": "workspace:*",
+        "@whilo/team-client": "workspace:*",
+        "@whilo/telemetry": "workspace:*",
+        "@whilo/user-errors": "workspace:*",
         "@openpanel/react-native": "1.4.2",
         "@react-native-masked-view/masked-view": "0.3.2",
         "@shopify/react-native-skia": "2.14.0",
@@ -208,10 +208,10 @@
       },
     },
     "apps/site-router": {
-      "name": "@openbot/site-router",
+      "name": "@whilo/site-router",
       "version": "0.0.0",
       "dependencies": {
-        "@openbot/contracts": "workspace:*",
+        "@whilo/contracts": "workspace:*",
         "effect": "catalog:",
       },
       "devDependencies": {
@@ -221,12 +221,12 @@
       },
     },
     "apps/status": {
-      "name": "@openbot/status",
+      "name": "@whilo/status",
       "version": "0.0.0",
       "dependencies": {
         "@fontsource-variable/inter": "catalog:",
-        "@openbot/brand": "workspace:*",
-        "@openbot/logging": "workspace:*",
+        "@whilo/brand": "workspace:*",
+        "@whilo/logging": "workspace:*",
         "@solidjs/web": "catalog:",
         "effect": "catalog:",
         "lucide-solid": "catalog:",
@@ -240,11 +240,11 @@
       },
     },
     "packages/brand": {
-      "name": "@openbot/brand",
+      "name": "@whilo/brand",
       "version": "0.0.0",
       "dependencies": {
         "@norbert_bodziony/bloub": "catalog:",
-        "@openbot/contracts": "workspace:*",
+        "@whilo/contracts": "workspace:*",
       },
       "devDependencies": {
         "typescript": "catalog:",
@@ -255,7 +255,7 @@
       },
     },
     "packages/contracts": {
-      "name": "@openbot/contracts",
+      "name": "@whilo/contracts",
       "version": "0.0.0",
       "dependencies": {
         "emoji-regex": "10.6.0",
@@ -267,10 +267,10 @@
       },
     },
     "packages/i18n": {
-      "name": "@openbot/i18n",
+      "name": "@whilo/i18n",
       "version": "0.0.0",
       "dependencies": {
-        "@openbot/contracts": "workspace:*",
+        "@whilo/contracts": "workspace:*",
       },
       "devDependencies": {
         "@types/node": "catalog:",
@@ -278,7 +278,7 @@
       },
     },
     "packages/logging": {
-      "name": "@openbot/logging",
+      "name": "@whilo/logging",
       "version": "0.0.0",
       "dependencies": {
         "ts-log": "3.0.3",
@@ -289,14 +289,14 @@
       },
     },
     "packages/team-client": {
-      "name": "@openbot/team-client",
+      "name": "@whilo/team-client",
       "version": "0.0.0",
       "dependencies": {
         "@noble/ed25519": "3.2.0",
         "@noble/hashes": "catalog:",
-        "@openbot/contracts": "workspace:*",
-        "@openbot/i18n": "workspace:*",
-        "@openbot/user-errors": "workspace:*",
+        "@whilo/contracts": "workspace:*",
+        "@whilo/i18n": "workspace:*",
+        "@whilo/user-errors": "workspace:*",
         "effect": "catalog:",
       },
       "devDependencies": {
@@ -304,10 +304,10 @@
       },
     },
     "packages/telemetry": {
-      "name": "@openbot/telemetry",
+      "name": "@whilo/telemetry",
       "version": "0.0.0",
       "dependencies": {
-        "@openbot/contracts": "workspace:*",
+        "@whilo/contracts": "workspace:*",
         "effect": "catalog:",
       },
       "devDependencies": {
@@ -316,17 +316,17 @@
       },
     },
     "packages/ui": {
-      "name": "@openbot/ui",
+      "name": "@whilo/ui",
       "version": "0.0.0",
       "dependencies": {
         "@kobalte/core": "catalog:",
         "@norbert_bodziony/bloub": "catalog:",
-        "@openbot/brand": "workspace:*",
-        "@openbot/contracts": "workspace:*",
-        "@openbot/i18n": "workspace:*",
-        "@openbot/team-client": "workspace:*",
-        "@openbot/telemetry": "workspace:*",
-        "@openbot/user-errors": "workspace:*",
+        "@whilo/brand": "workspace:*",
+        "@whilo/contracts": "workspace:*",
+        "@whilo/i18n": "workspace:*",
+        "@whilo/team-client": "workspace:*",
+        "@whilo/telemetry": "workspace:*",
+        "@whilo/user-errors": "workspace:*",
         "@speed-highlight/core": "catalog:",
         "@tanstack/virtual-core": "catalog:",
         "class-variance-authority": "catalog:",
@@ -345,12 +345,12 @@
       },
     },
     "packages/user-errors": {
-      "name": "@openbot/user-errors",
+      "name": "@whilo/user-errors",
       "version": "0.0.0",
       "dependencies": {
-        "@openbot/contracts": "workspace:*",
-        "@openbot/i18n": "workspace:*",
-        "@openbot/logging": "workspace:*",
+        "@whilo/contracts": "workspace:*",
+        "@whilo/i18n": "workspace:*",
+        "@whilo/logging": "workspace:*",
       },
       "devDependencies": {
         "@types/node": "catalog:",
@@ -358,12 +358,12 @@
       },
     },
     "remote/api": {
-      "name": "@openbot/remote-api",
+      "name": "@whilo/remote-api",
       "version": "0.0.0",
       "dependencies": {
         "@discordjs/rest": "2.6.3",
         "@discordjs/ws": "2.0.4",
-        "@openbot/contracts": "workspace:*",
+        "@whilo/contracts": "workspace:*",
         "discord-api-types": "0.38.57",
         "effect": "catalog:",
         "elysia": "1.4.30",
@@ -1065,31 +1065,31 @@
 
     "@oozcitak/util": ["@oozcitak/util@10.0.0", "", {}, "sha512-hAX0pT/73190NLqBPPWSdBVGtbY6VOhWYK3qqHqtXQ1gK7kS2yz4+ivsN07hpJ6I3aeMtKP6J6npsEKOAzuTLA=="],
 
-    "@openbot/auth-api": ["@openbot/auth-api@workspace:apps/auth-api"],
+    "@whilo/auth-api": ["@whilo/auth-api@workspace:apps/auth-api"],
 
-    "@openbot/brand": ["@openbot/brand@workspace:packages/brand"],
+    "@whilo/brand": ["@whilo/brand@workspace:packages/brand"],
 
-    "@openbot/contracts": ["@openbot/contracts@workspace:packages/contracts"],
+    "@whilo/contracts": ["@whilo/contracts@workspace:packages/contracts"],
 
-    "@openbot/i18n": ["@openbot/i18n@workspace:packages/i18n"],
+    "@whilo/i18n": ["@whilo/i18n@workspace:packages/i18n"],
 
-    "@openbot/logging": ["@openbot/logging@workspace:packages/logging"],
+    "@whilo/logging": ["@whilo/logging@workspace:packages/logging"],
 
-    "@openbot/mobile": ["@openbot/mobile@workspace:apps/mobile"],
+    "@whilo/mobile": ["@whilo/mobile@workspace:apps/mobile"],
 
-    "@openbot/remote-api": ["@openbot/remote-api@workspace:remote/api"],
+    "@whilo/remote-api": ["@whilo/remote-api@workspace:remote/api"],
 
-    "@openbot/site-router": ["@openbot/site-router@workspace:apps/site-router"],
+    "@whilo/site-router": ["@whilo/site-router@workspace:apps/site-router"],
 
-    "@openbot/status": ["@openbot/status@workspace:apps/status"],
+    "@whilo/status": ["@whilo/status@workspace:apps/status"],
 
-    "@openbot/team-client": ["@openbot/team-client@workspace:packages/team-client"],
+    "@whilo/team-client": ["@whilo/team-client@workspace:packages/team-client"],
 
-    "@openbot/telemetry": ["@openbot/telemetry@workspace:packages/telemetry"],
+    "@whilo/telemetry": ["@whilo/telemetry@workspace:packages/telemetry"],
 
-    "@openbot/ui": ["@openbot/ui@workspace:packages/ui"],
+    "@whilo/ui": ["@whilo/ui@workspace:packages/ui"],
 
-    "@openbot/user-errors": ["@openbot/user-errors@workspace:packages/user-errors"],
+    "@whilo/user-errors": ["@whilo/user-errors@workspace:packages/user-errors"],
 
     "@openpanel/react-native": ["@openpanel/react-native@1.4.2", "", { "dependencies": { "@openpanel/sdk": "1.3.2" }, "peerDependencies": { "expo-application": "5 - 7", "expo-constants": "14 - 18", "react-native": "*" } }, "sha512-VC9axx2jcyTIuaAVpx2TTR3W7G31n3M2/yOjXLe7TY1Bqv73uyRw+4ZBoNM5OnbKjg/XFYx6sPKMT602omTxpA=="],
 

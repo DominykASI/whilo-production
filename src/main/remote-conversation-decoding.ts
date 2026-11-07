@@ -12,8 +12,8 @@ import type {
   DirectConversationSnapshot,
   DirectMessage,
   DirectThreadSummary,
-} from "@openbot/contracts/ipc";
-import { isConversationMessage, isConversationReadState, isConversationWithReadState } from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
+import { isConversationMessage, isConversationReadState, isConversationWithReadState } from "@whilo/contracts/ipc";
 import {
   decodeRecord,
   guardedListDecoder,
@@ -22,8 +22,8 @@ import {
   requiredBoolean,
   requiredNumber,
   requiredString,
-} from "@openbot/contracts/ipc-decoding";
-import { isString } from "@openbot/contracts/runtime-values";
+} from "@whilo/contracts/ipc-decoding";
+import { isString } from "@whilo/contracts/runtime-values";
 
 export function decodeDirectMessage(value: unknown): DirectMessage {
   const record = decodeRecord(value, "direct message");

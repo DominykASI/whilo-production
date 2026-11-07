@@ -1,5 +1,5 @@
-import { ProviderLogo } from "@openbot/brand";
-import { agentProviderDescriptor } from "@openbot/contracts/agent-providers";
+import { ProviderLogo } from "@whilo/brand";
+import { agentProviderDescriptor } from "@whilo/contracts/agent-providers";
 import type {
   AgentProviderId,
   AgentProviderState,
@@ -7,7 +7,7 @@ import type {
   CustomProviderSummary,
   ProviderApiKeyStatus,
   ProviderRuntimeStatus,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   Badge,
   Button,
@@ -25,7 +25,7 @@ import {
   Switch,
   UserRoundPlus,
   X,
-} from "@openbot/ui";
+} from "@whilo/ui";
 import type { JSX } from "@solidjs/web";
 import { createEffect, createSignal, createStore, createUniqueId, For, Show } from "solid-js";
 import { useText } from "../text";
@@ -86,7 +86,7 @@ export interface ProviderPickerOption {
   /** A restart the user asked for waits for the provider's tasks to stop. */
   restartPending?: boolean | undefined;
   runtimeStatus?: ProviderRuntimeStatus | undefined;
-  /** The CLI that the provider ran last: the one the user installed, or the one OpenBot downloaded. */
+  /** The CLI that the provider ran last: the one the user installed, or the one Whilo downloaded. */
   cliSource?: AgentProviderStatus["cliSource"];
   /**
    * Whether the provider's key is saved: the optional OpenCode key, a Gemini key in use, or a Claude
@@ -111,7 +111,7 @@ export interface ProviderPickerOption {
   /** What "Copy diagnostics" puts on the clipboard. Offered only while the row has a last error. */
   diagnostics?: string | undefined;
   /**
-   * The user turned the provider off in OpenBot. OpenBot does not start, check or list it, so the
+   * The user turned the provider off in Whilo. Whilo does not start, check or list it, so the
    * row shows only "Off" and the switch that turns it on again.
    */
   off?: boolean | undefined;
@@ -154,7 +154,7 @@ export interface ProviderPickerProps {
   onRestartProvider?: ((provider: AgentProviderId) => void | Promise<void>) | undefined;
   onCancelProviderRestart?: ((provider: AgentProviderId) => void | Promise<void>) | undefined;
   /**
-   * Turns a provider on or off in OpenBot. With it each provider row has a switch. A row whose
+   * Turns a provider on or off in Whilo. With it each provider row has a switch. A row whose
    * `usedBy` names an agent stays on, and a toast tells why, so no agent loses its provider silently.
    */
   onSetProviderOn?: ((provider: AgentProviderId, on: boolean) => void | Promise<void>) | undefined;

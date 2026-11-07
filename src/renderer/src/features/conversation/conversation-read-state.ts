@@ -1,10 +1,10 @@
-import { CHAT_VISUAL_ITEM_TYPE_PREFIX } from "@openbot/contracts/chat-visual";
+import { CHAT_VISUAL_ITEM_TYPE_PREFIX } from "@whilo/contracts/chat-visual";
 import type {
   ConversationMessageAuthor,
   ConversationReadState,
   DirectConversationSnapshot,
   DirectMessage,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   AGENT_EXCHANGE_ITEM_TYPE,
   AGENT_INSTRUCTIONS_CHANGE_ITEM_TYPE,
@@ -19,8 +19,8 @@ import {
   ROUTINE_QUIET_ANSWER_ITEM_TYPE,
   ROUTINE_RUN_EVENT_ITEM_TYPE_PREFIX,
   SKILL_EVENT_ITEM_TYPE_PREFIX,
-} from "@openbot/contracts/ipc";
-import type { AgentMessage } from "@openbot/ui/data";
+} from "@whilo/contracts/ipc";
+import type { AgentMessage } from "@whilo/ui/data";
 
 /**
  * What the renderer has already asked main to mark read, per conversation. A

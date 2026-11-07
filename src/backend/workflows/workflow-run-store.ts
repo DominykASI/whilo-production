@@ -20,8 +20,8 @@ import {
   type WorkflowRunStatus,
   type WorkflowStep,
   type WorkflowStepStatus,
-} from "@openbot/contracts/ipc";
-import { type DynamicRecord, isOneOf } from "@openbot/contracts/runtime-values";
+} from "@whilo/contracts/ipc";
+import { type DynamicRecord, isOneOf } from "@whilo/contracts/runtime-values";
 import {
   checkedColumn,
   databaseRow,
@@ -31,7 +31,7 @@ import {
   requiredNumberColumn,
   requiredStringColumn,
 } from "../database/database-rows";
-import type { OpenBotDatabase } from "../openbot-database";
+import type { WhiloDatabase } from "../whilo-database";
 import { webhookReceiptCutoff } from "../webhook-route-store";
 import { workflowTransaction } from "./workflow-transaction";
 
@@ -122,10 +122,10 @@ export interface WorkflowStepEnd {
 }
 
 export class WorkflowRunStore {
-  readonly #database: OpenBotDatabase;
+  readonly #database: WhiloDatabase;
   readonly #createId: () => string;
 
-  constructor(options: { database: OpenBotDatabase; createId?: () => string }) {
+  constructor(options: { database: WhiloDatabase; createId?: () => string }) {
     this.#database = options.database;
     this.#createId = options.createId ?? (() => crypto.randomUUID());
   }

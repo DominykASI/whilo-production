@@ -1,5 +1,5 @@
-import { AudioLines, DropdownMenu, File, Image, MessageCircleQuestionMark, Plus, Puzzle } from "@openbot/ui";
-import { useText } from "@openbot/ui/text";
+import { AudioLines, DropdownMenu, File, Image, MessageCircleQuestionMark, Plus, Puzzle } from "@whilo/ui";
+import { useText } from "@whilo/ui/text";
 import { Show } from "solid-js";
 
 export interface ComposerAddMenuProps {

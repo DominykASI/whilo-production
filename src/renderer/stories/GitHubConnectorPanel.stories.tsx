@@ -1,5 +1,5 @@
-import type { GitHubConnectorRepositories, GitHubConnectorStatus } from "@openbot/contracts/ipc";
-import { GitHubConnectorPanel } from "@openbot/ui/features/settings/GitHubConnectorPanel";
+import type { GitHubConnectorRepositories, GitHubConnectorStatus } from "@whilo/contracts/ipc";
+import { GitHubConnectorPanel } from "@whilo/ui/features/settings/GitHubConnectorPanel";
 import { fn } from "storybook/test";
 import type { Meta, StoryObj } from "storybook-solidjs-vite";
 import { SettledArgs } from "./settled-args";
@@ -74,7 +74,7 @@ export const ConnectedWithMoreRepositories: Story = {
 };
 
 export const ConnectedRepositoriesFailed: Story = {
-  args: args({ state: "connected", login: "octocat" }, false, null, "OpenBot cannot reach GitHub: fetch failed"),
+  args: args({ state: "connected", login: "octocat" }, false, null, "Whilo cannot reach GitHub: fetch failed"),
 };
 
 export const Expired: Story = { args: args({ state: "expired", login: "octocat" }) };

@@ -58,7 +58,7 @@ export async function runSecretHandoffScenario(browser: BrowserHost, localOrigin
       if (!tabContents) throw new Error(`Missing ${path} fixture.`);
       await waitForPresentedFrame(tabContents);
       const params: DynamicToolCallParams = {
-        namespace: "openbot_browser",
+        namespace: "whilo_browser",
         tool: "submit_secret",
         threadId: "secret-thread",
         ownerAgentId: "secret-agent",
@@ -125,7 +125,7 @@ export async function runSecretHandoffScenario(browser: BrowserHost, localOrigin
       try {
         const handoff = await runCauseEffect(
           browser.prepareSecret({
-            namespace: "openbot_browser",
+            namespace: "whilo_browser",
             tool: "submit_secret",
             threadId: "secret-thread",
             ownerAgentId: "secret-agent",
@@ -173,7 +173,7 @@ export async function runSecretHandoffScenario(browser: BrowserHost, localOrigin
       try {
         const handoff = await runCauseEffect(
           browser.prepareSecret({
-            namespace: "openbot_browser",
+            namespace: "whilo_browser",
             tool: "submit_secret",
             threadId: "secret-thread",
             ownerAgentId: "secret-agent",
@@ -219,7 +219,7 @@ export async function runSecretHandoffScenario(browser: BrowserHost, localOrigin
       try {
         const failure = await runCauseEffect(
           browser.prepareSecret({
-            namespace: "openbot_browser",
+            namespace: "whilo_browser",
             tool: "submit_secret",
             threadId: "secret-thread",
             ownerAgentId: "secret-agent",

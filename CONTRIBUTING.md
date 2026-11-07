@@ -1,13 +1,13 @@
-# Contributing to OpenBot
+# Contributing to Whilo
 
-Thanks for helping improve OpenBot. Pull requests with clear verification are the easiest to
+Thanks for helping improve Whilo. Pull requests with clear verification are the easiest to
 review.
 
 ## What you can send
 
 These rules apply to people outside the `nightly-labs` organization. Organization members and
 users with write access to this repository skip them. So do their agents, which act as
-`openbotgit[bot]` through the OpenBot GitHub App.
+`whilogit[bot]` through the Whilo GitHub App.
 
 You can open a pull request without an issue for:
 
@@ -26,7 +26,7 @@ These need an issue with the `approved` label before you write code:
   security boundaries, or CI.
 
 To propose one, open a [feature request](https://github.com/nightly-labs/openbot/issues/new?template=feature_request.yml)
-and wait. A maintainer adds `approved` when the change fits OpenBot. Then link the issue in your
+and wait. A maintainer adds `approved` when the change fits Whilo. Then link the issue in your
 pull request with `Closes #<number>`.
 
 The `Contribution policy` workflow applies these labels:
@@ -48,14 +48,14 @@ A maintainer who reopens a closed pull request starts a new 7-day period.
 - Use Discussions for questions and for ideas that are not yet a specific request.
 - Use the security process in `SECURITY.md` for vulnerabilities.
 - Remove credentials, private file paths, conversation contents, and personal data from diagnostics.
-- For a bug, give the platform, the OpenBot version, the operating system, the provider and its CLI
+- For a bug, give the platform, the Whilo version, the operating system, the provider and its CLI
   version, the exact steps, and the expected and actual results. The bug form asks for each one.
 
 ## Development setup
 
 ```bash
 git clone https://github.com/nightly-labs/openbot.git
-cd openbot
+cd whilo
 bun install --frozen-lockfile
 bun run check
 bun run dev
@@ -99,11 +99,11 @@ Public guides live in `apps/auth-api/src/content/guides/`. To add one:
 3. Run `bun run api:images` and commit the generated files in `apps/auth-api/content-art`.
 4. Open the guide in a local preview and check the guide index, article page, feed and social card.
 
-Write for someone who has OpenBot open and is trying to complete a task. Use short paragraphs, plain English and the
+Write for someone who has Whilo open and is trying to complete a task. Use short paragraphs, plain English and the
 exact names of buttons, settings and files. Keep product claims tied to the current app. Use `ArticleImage` only
 when the picture adds information that the text does not.
 
-Use `OPENBOT_LINKS` for external links and include useful `alt` text for every image. Do not paste bare URLs into a
+Use `WHILO_LINKS` for external links and include useful `alt` text for every image. Do not paste bare URLs into a
 guide.
 
 ### Answering the NorbiAI review
@@ -156,7 +156,7 @@ Preserve the following boundaries, and their tests where they exist:
 - Electron sandboxing, context isolation, navigation policy, and IPC sender validation.
 - Attachment realpath, MIME, size, quota, and managed-protocol checks.
 - Queue serialization, idempotency, crash reconciliation, and atomic persistence.
-- The remote browser session's lack of preload and `window.openbot` access.
+- The remote browser session's lack of preload and `window.whilo` access.
 - Secret redaction and agent child-process cleanup.
 
 Full agent access is intentional today, but new privileges or network surfaces still require an
@@ -182,7 +182,7 @@ reason in the `bunfig.toml` comment. `bun pm untrusted` shows the blocked script
 ## Licensing
 
 Each author of a pull request must sign the
-[OpenBot Contributor Assignment Agreement](CLA.md). The agreement assigns the copyright in your
+[Whilo Contributor Assignment Agreement](CLA.md). The agreement assigns the copyright in your
 contributions to Synthetify Labs spółka z ograniczoną odpowiedzialnością. Organization members,
 users with write access to this repository and bots do not sign.
 

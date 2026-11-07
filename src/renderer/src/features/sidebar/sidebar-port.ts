@@ -1,4 +1,4 @@
-import type { OpenBotDesktopApi } from "@openbot/contracts/ipc";
+import type { WhiloDesktopApi } from "@whilo/contracts/ipc";
 
 /**
  * What the sidebar reaches in main: the saved sidebar layout and its changes, the pins that the host
@@ -7,14 +7,14 @@ import type { OpenBotDesktopApi } from "@openbot/contracts/ipc";
  */
 export interface SidebarPort {
   agent: Pick<
-    OpenBotDesktopApi["agent"],
+    WhiloDesktopApi["agent"],
     "getSidebarLayout" | "mutateSidebarLayout" | "getSidebarPins" | "setSidebarPins" | "seedSidebarPins"
   >;
-  storage: Pick<OpenBotDesktopApi["storage"], "getDisk" | "getMachineMetrics">;
-  hostAdmin: Pick<OpenBotDesktopApi["hostAdmin"], "getMachineAlerts">;
+  storage: Pick<WhiloDesktopApi["storage"], "getDisk" | "getMachineMetrics">;
+  hostAdmin: Pick<WhiloDesktopApi["hostAdmin"], "getMachineAlerts">;
 }
 
-/** Read on each call: tests and stories replace `window.openbot` per case. */
+/** Read on each call: tests and stories replace `window.whilo` per case. */
 export function sidebarPort(): SidebarPort {
-  return window.openbot;
+  return window.whilo;
 }

@@ -8,7 +8,7 @@
 // a password that an admin saves from the secure card (`browser-secret-vault-v1`),
 // direct-message isolation, agents hidden from an older
 // protocol, the queue routes, the attachment and file routes with their size limits, and the error
-// codes. Writes .openbot-build/team-api-routes-e2e/report.json.
+// codes. Writes .whilo-build/team-api-routes-e2e/report.json.
 // Run: `bun run test:team-api-routes` (the preload gives the server's import graph an `electron`).
 import assert from "node:assert/strict";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
@@ -16,7 +16,7 @@ import { request as httpRequest } from "node:http";
 import { homedir, tmpdir } from "node:os";
 import { join, parse, resolve } from "node:path";
 import { isDeepStrictEqual } from "node:util";
-import { ATTACHMENT_LIMITS, INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { ATTACHMENT_LIMITS, INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import {
   AGENT_PROVIDERS,
   type AgentModelId,
@@ -36,112 +36,112 @@ import {
   type QueueSnapshot,
   type RoutineResultConnectionOption,
   type RoutineResultDestination,
-} from "@openbot/contracts/ipc";
-import { isDynamicRecord } from "@openbot/contracts/runtime-values";
-import { TEAM_API_ROUTES } from "@openbot/contracts/team-api-routes";
-import { TEAM_PROTOCOL_V1_WEBSOCKET } from "@openbot/contracts/team-protocol";
+} from "@whilo/contracts/ipc";
+import { isDynamicRecord } from "@whilo/contracts/runtime-values";
+import { TEAM_API_ROUTES } from "@whilo/contracts/team-api-routes";
+import { TEAM_PROTOCOL_V1_WEBSOCKET } from "@whilo/contracts/team-protocol";
 import {
   AGENT_BACKUP_MODELS_CAPABILITY,
   AGENT_BACKUP_MODELS_ROUTES,
-} from "@openbot/contracts/team-protocol/agent-backup-models-v1";
+} from "@whilo/contracts/team-protocol/agent-backup-models-v1";
 import {
   AGENT_FAST_MODE_CAPABILITY,
   AGENT_FAST_MODE_ROUTES,
-} from "@openbot/contracts/team-protocol/agent-fast-mode-v1";
-import { AGENT_FOLDERS_CAPABILITY, AGENT_FOLDERS_ROUTES } from "@openbot/contracts/team-protocol/agent-folders-v1";
-import { AGENT_HIDDEN_CAPABILITY, AGENT_HIDDEN_ROUTES } from "@openbot/contracts/team-protocol/agent-hidden-v1";
+} from "@whilo/contracts/team-protocol/agent-fast-mode-v1";
+import { AGENT_FOLDERS_CAPABILITY, AGENT_FOLDERS_ROUTES } from "@whilo/contracts/team-protocol/agent-folders-v1";
+import { AGENT_HIDDEN_CAPABILITY, AGENT_HIDDEN_ROUTES } from "@whilo/contracts/team-protocol/agent-hidden-v1";
 import {
   AGENT_INSTRUCTIONS_CAPABILITY,
   AGENT_INSTRUCTIONS_ROUTES,
-} from "@openbot/contracts/team-protocol/agent-instructions-v1";
-import { AGENT_NEW_CHAT_CAPABILITY, AGENT_NEW_CHAT_ROUTES } from "@openbot/contracts/team-protocol/agent-new-chat-v1";
+} from "@whilo/contracts/team-protocol/agent-instructions-v1";
+import { AGENT_NEW_CHAT_CAPABILITY, AGENT_NEW_CHAT_ROUTES } from "@whilo/contracts/team-protocol/agent-new-chat-v1";
 import {
   AGENT_NOTIFICATION_LEVELS_CAPABILITY,
   AGENT_NOTIFICATION_LEVELS_ROUTES,
-} from "@openbot/contracts/team-protocol/agent-notification-levels-v1";
+} from "@whilo/contracts/team-protocol/agent-notification-levels-v1";
 import {
   AGENT_PLAN_CARD_CAPABILITY,
   AGENT_PLAN_CARD_ROUTES,
-} from "@openbot/contracts/team-protocol/agent-plan-card-v1";
+} from "@whilo/contracts/team-protocol/agent-plan-card-v1";
 import {
   AGENT_TASK_LIMIT_CAPABILITY,
   AGENT_TASK_LIMIT_ROUTES,
-} from "@openbot/contracts/team-protocol/agent-task-limit-v1";
+} from "@whilo/contracts/team-protocol/agent-task-limit-v1";
 import {
   BITWARDEN_CONNECTOR_CAPABILITY,
   BITWARDEN_CONNECTOR_ROUTES,
-} from "@openbot/contracts/team-protocol/bitwarden-connector-v1";
+} from "@whilo/contracts/team-protocol/bitwarden-connector-v1";
 import {
   BROWSER_PROFILES_CAPABILITY,
   BROWSER_PROFILES_ROUTES,
-} from "@openbot/contracts/team-protocol/browser-profiles-v1";
+} from "@whilo/contracts/team-protocol/browser-profiles-v1";
 import {
   BROWSER_SECRET_VAULT_CAPABILITY,
   BROWSER_SECRET_VAULT_ROUTES,
-} from "@openbot/contracts/team-protocol/browser-secret-vault-v1";
+} from "@whilo/contracts/team-protocol/browser-secret-vault-v1";
 import {
   CONTEXT_COMPACT_CAPABILITY,
   CONTEXT_COMPACT_ROUTES,
   ContextCompactRefusedError,
-} from "@openbot/contracts/team-protocol/context-compact-v1";
+} from "@whilo/contracts/team-protocol/context-compact-v1";
 import {
   CUSTOM_AGENTS_CAPABILITY,
   CUSTOM_AGENTS_CODECS,
   CUSTOM_AGENTS_ROUTES,
-} from "@openbot/contracts/team-protocol/custom-agents-v1";
+} from "@whilo/contracts/team-protocol/custom-agents-v1";
 import {
   CUSTOM_PROVIDER_HARNESS_CAPABILITY,
   CUSTOM_PROVIDER_HARNESS_CODECS,
   CUSTOM_PROVIDER_HARNESS_ROUTES,
-} from "@openbot/contracts/team-protocol/custom-provider-harness-v1";
+} from "@whilo/contracts/team-protocol/custom-provider-harness-v1";
 import {
   HOST_KEY_ROTATION_CAPABILITY,
   HOST_KEY_ROTATION_ROUTES,
-} from "@openbot/contracts/team-protocol/host-key-rotation-v1";
+} from "@whilo/contracts/team-protocol/host-key-rotation-v1";
 import {
   MACHINE_RESOURCES_CAPABILITY,
   MACHINE_RESOURCES_ROUTES,
   type MachineAlertEvent,
   machineAlertEvent,
-} from "@openbot/contracts/team-protocol/machine-resources-v1";
-import { MEMORY_REVIEW_CAPABILITY, MEMORY_REVIEW_ROUTES } from "@openbot/contracts/team-protocol/memory-review-v1";
+} from "@whilo/contracts/team-protocol/machine-resources-v1";
+import { MEMORY_REVIEW_CAPABILITY, MEMORY_REVIEW_ROUTES } from "@whilo/contracts/team-protocol/memory-review-v1";
 import {
   PROVIDER_DEFAULT_CAPABILITY,
   PROVIDER_DEFAULT_ROUTES,
-} from "@openbot/contracts/team-protocol/provider-default-v1";
+} from "@whilo/contracts/team-protocol/provider-default-v1";
 import {
   PROVIDER_USAGE_RESET_CAPABILITY,
   PROVIDER_USAGE_RESET_ROUTES,
-} from "@openbot/contracts/team-protocol/provider-usage-reset-v1";
-import { PROVIDERS_ADMIN_CAPABILITY, PROVIDERS_ADMIN_ROUTES } from "@openbot/contracts/team-protocol/providers-v1";
-import { PROVIDERS_V5_CAPABILITY, PROVIDERS_V5_ROUTES } from "@openbot/contracts/team-protocol/providers-v5";
-import { PROVIDERS_V8_CAPABILITY, PROVIDERS_V8_ROUTES } from "@openbot/contracts/team-protocol/providers-v8";
-import { QueueEditRejectedError, TEAM_QUEUE_EDIT_CAPABILITY } from "@openbot/contracts/team-protocol/queue-edit-v1";
+} from "@whilo/contracts/team-protocol/provider-usage-reset-v1";
+import { PROVIDERS_ADMIN_CAPABILITY, PROVIDERS_ADMIN_ROUTES } from "@whilo/contracts/team-protocol/providers-v1";
+import { PROVIDERS_V5_CAPABILITY, PROVIDERS_V5_ROUTES } from "@whilo/contracts/team-protocol/providers-v5";
+import { PROVIDERS_V8_CAPABILITY, PROVIDERS_V8_ROUTES } from "@whilo/contracts/team-protocol/providers-v8";
+import { QueueEditRejectedError, TEAM_QUEUE_EDIT_CAPABILITY } from "@whilo/contracts/team-protocol/queue-edit-v1";
 import {
   ROUTINE_RESULTS_CAPABILITY,
   ROUTINE_RESULTS_ROUTES,
-} from "@openbot/contracts/team-protocol/routine-results-v1";
-import { SIDE_QUESTION_CAPABILITY, SIDE_QUESTION_ROUTES } from "@openbot/contracts/team-protocol/side-question-v1";
-import { SIDEBAR_PINS_CAPABILITY, SIDEBAR_PINS_ROUTES } from "@openbot/contracts/team-protocol/sidebar-pins-v1";
-import { STORAGE_DISK_CAPABILITY, STORAGE_DISK_ROUTES } from "@openbot/contracts/team-protocol/storage-disk-v1";
+} from "@whilo/contracts/team-protocol/routine-results-v1";
+import { SIDE_QUESTION_CAPABILITY, SIDE_QUESTION_ROUTES } from "@whilo/contracts/team-protocol/side-question-v1";
+import { SIDEBAR_PINS_CAPABILITY, SIDEBAR_PINS_ROUTES } from "@whilo/contracts/team-protocol/sidebar-pins-v1";
+import { STORAGE_DISK_CAPABILITY, STORAGE_DISK_ROUTES } from "@whilo/contracts/team-protocol/storage-disk-v1";
 import {
   TEAM_APP_VERSION_HEADER,
   TEAM_CAPABILITIES_HEADER,
   TEAM_PROTOCOL_VERSION_HEADER,
-} from "@openbot/contracts/team-protocol/v1";
-import { TEAM_LONG_CAPABILITY_LISTS_CAPABILITY, TEAM_PROTOCOL_V9 } from "@openbot/contracts/team-protocol/v9";
-import { VAULT_IMPORT_CAPABILITY, VAULT_IMPORT_ROUTES } from "@openbot/contracts/team-protocol/vault-import-v1";
-import { VAULT_CAPABILITY, VAULT_ROUTES } from "@openbot/contracts/team-protocol/vault-v1";
-import { VAULT_V2_CAPABILITY, VAULT_V2_ROUTES } from "@openbot/contracts/team-protocol/vault-v2";
-import { sourceText } from "@openbot/i18n/source";
-import { createOpenBotLogger } from "@openbot/logging";
+} from "@whilo/contracts/team-protocol/v1";
+import { TEAM_LONG_CAPABILITY_LISTS_CAPABILITY, TEAM_PROTOCOL_V9 } from "@whilo/contracts/team-protocol/v9";
+import { VAULT_IMPORT_CAPABILITY, VAULT_IMPORT_ROUTES } from "@whilo/contracts/team-protocol/vault-import-v1";
+import { VAULT_CAPABILITY, VAULT_ROUTES } from "@whilo/contracts/team-protocol/vault-v1";
+import { VAULT_V2_CAPABILITY, VAULT_V2_ROUTES } from "@whilo/contracts/team-protocol/vault-v2";
+import { sourceText } from "@whilo/i18n/source";
+import { createWhiloLogger } from "@whilo/logging";
 import { Effect } from "effect";
 import { SteerUnsupportedError } from "../src/backend/agent/queue-controls";
 import { AgentLifecycleFailed } from "../src/backend/agent-service";
 import { BrowserProfileStore } from "../src/backend/browser-profiles/browser-profile-store";
 import type { BrowserTabSession } from "../src/backend/browser-state";
 import { runCauseEffect } from "../src/backend/effect-boundary";
-import { OpenBotDatabase } from "../src/backend/openbot-database";
+import { WhiloDatabase } from "../src/backend/whilo-database";
 import { RoutineResultError } from "../src/backend/routine-results/routine-results";
 import { TeamChatStore } from "../src/backend/team-chat-store";
 import { createAgentFolders } from "../src/main/agent-folders";
@@ -162,7 +162,7 @@ import { TeamStore } from "../src/main/team-store";
 import { VaultService } from "../src/main/vault-service";
 import { VaultStore } from "../src/main/vault-store";
 
-const OUT = resolve(import.meta.dirname, "../.openbot-build/team-api-routes-e2e");
+const OUT = resolve(import.meta.dirname, "../.whilo-build/team-api-routes-e2e");
 const APP_VERSION = "0.43.0";
 const MIB = 1024 * 1024;
 
@@ -202,7 +202,7 @@ interface RecordedCall {
 }
 
 mkdirSync(OUT, { recursive: true });
-const root = mkdtempSync(join(tmpdir(), "openbot-team-api-routes-"));
+const root = mkdtempSync(join(tmpdir(), "whilo-team-api-routes-"));
 const checks: Check[] = [];
 const calls: RecordedCall[] = [];
 const logged: string[] = [];
@@ -573,7 +573,7 @@ const BW_SESSION_KEY = ["bw", "e2e", "session"].join("-");
 const BW_LOGIN_PASSWORD = ["bw", "e2e", "login", "password"].join("-");
 const BW_SECRETS = [BW_CLIENT_SECRET, BW_MASTER_PASSWORD, BW_SESSION_KEY, BW_LOGIN_PASSWORD];
 const bitwardenData = join(root, "bitwarden-host");
-const bitwardenFile = join(root, "openbot-bitwarden-connector-v1.json");
+const bitwardenFile = join(root, "whilo-bitwarden-connector-v1.json");
 const bitwardenCalls: { args: string[]; env: Record<string, string> }[] = [];
 /** While set, `unlock` reports that it started and waits for `released`. */
 let bitwardenUnlockGate: { started: () => void; released: Promise<void> } | null = null;
@@ -625,7 +625,7 @@ const fakeBitwardenCli: BitwardenCliRunner = async (_executable, args, env) => {
   };
   if (command === "sync") return "Syncing complete.";
   if (command === "list" && target === "folders")
-    return JSON.stringify([{ id: "shared", name: "Shared with OpenBot" }]);
+    return JSON.stringify([{ id: "shared", name: "Shared with Whilo" }]);
   if (command === "list" && target === "items") return JSON.stringify([item]);
   if (command === "get" && target === "item") return JSON.stringify(item);
   throw new Error(`Unexpected bw call: ${command}`);
@@ -647,7 +647,7 @@ const createBitwardenHost = () =>
   });
 const bitwardenConnector = createBitwardenHost();
 // The host's Vault: the real service and store, over the same reversible cipher.
-const vaultFile = join(root, "openbot-vault-v1.json");
+const vaultFile = join(root, "whilo-vault-v1.json");
 const vault = new VaultService({ store: new VaultStore(vaultFile, fakeCipher), canPersist: () => true });
 await Effect.runPromise(vault.load());
 const VAULT_PASSWORD = "e2e-vault-password-7f3c";
@@ -728,7 +728,7 @@ const machine = new MachineAlertMonitor({
   members: () => store.listMembers(),
   onError: (message) => logged.push(message),
 });
-const database = new OpenBotDatabase(join(root, "user-data"));
+const database = new WhiloDatabase(join(root, "user-data"));
 let server: TeamApiServer | null = null;
 
 try {
@@ -810,7 +810,7 @@ try {
       folders: createAgentFolders({
         service: {
           listAgents: () => agents,
-          sharedRoot: join(root, "OpenBot", "Shared"),
+          sharedRoot: join(root, "Whilo", "Shared"),
           updateAgent: (input) =>
             Effect.sync(() => {
               record("updateAgentFolders", input);
@@ -1019,7 +1019,7 @@ try {
         return accountUsers[ticket] ?? null;
       }),
     now: () => clock,
-    logger: createOpenBotLogger("team-api-e2e", (line) => logged.push(line)),
+    logger: createWhiloLogger("team-api-e2e", (line) => logged.push(line)),
   });
   const port = await Effect.runPromise(server.start());
   const base = `http://127.0.0.1:${port}`;
@@ -1888,7 +1888,7 @@ try {
     mkdirSync(join(projects, "app", "build"), { recursive: true });
     mkdirSync(join(projects, ".hidden"), { recursive: true });
     mkdirSync(join(root, "workspaces", "agent-ada"), { recursive: true });
-    mkdirSync(join(root, "OpenBot", "Shared"), { recursive: true });
+    mkdirSync(join(root, "Whilo", "Shared"), { recursive: true });
     writeFileSync(join(projects, "notes.txt"), "not a folder\n");
     const app = realpathSync(join(projects, "app"));
     const build = realpathSync(join(projects, "app", "build"));
@@ -2895,7 +2895,7 @@ try {
     const openLevelsSocket = async (token: string) => {
       const socket = new WebSocket(`ws://127.0.0.1:${port}${TEAM_API_ROUTES.events}`, [
         TEAM_PROTOCOL_V1_WEBSOCKET,
-        `openbot-token.${token}`,
+        `whilo-token.${token}`,
       ]);
       const events: unknown[] = [];
       const waiters = new Set<() => void>();
@@ -3131,7 +3131,7 @@ try {
     const openPinsSocket = async (token: string) => {
       const socket = new WebSocket(`ws://127.0.0.1:${port}${TEAM_API_ROUTES.events}`, [
         TEAM_PROTOCOL_V1_WEBSOCKET,
-        `openbot-token.${token}`,
+        `whilo-token.${token}`,
       ]);
       const events: unknown[] = [];
       const waiters = new Set<() => void>();
@@ -3508,7 +3508,7 @@ try {
       capabilities: diskCapabilities,
     });
     check(
-      "the disk route ignores a path in the body and reads the disk of the OpenBot data",
+      "the disk route ignores a path in the body and reads the disk of the Whilo data",
       withBody.status === 200 && isDeepStrictEqual(withBody.body, expected) && callsOf("disk").length === 3,
       summary(withBody),
     );
@@ -3601,7 +3601,7 @@ try {
     // A device of ada that connects now gets the alert that is still in force.
     const socket = new WebSocket(`ws://127.0.0.1:${port}${TEAM_API_ROUTES.events}`, [
       TEAM_PROTOCOL_V1_WEBSOCKET,
-      `openbot-token.${adaToken}`,
+      `whilo-token.${adaToken}`,
     ]);
     await new Promise<void>((resolveOpen, reject) => {
       socket.addEventListener("open", () => resolveOpen(), { once: true });

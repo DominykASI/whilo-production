@@ -3,12 +3,12 @@ import type {
   DynamicIslandAction,
   DynamicIslandPreference,
   DynamicIslandPresentation,
-} from "@openbot/contracts/ipc";
-import { DEFAULT_DYNAMIC_ISLAND_PREFERENCE, IDLE_DYNAMIC_ISLAND_PRESENTATION } from "@openbot/contracts/ipc";
-import type { DynamicIslandNotchSize, DynamicIslandStateChangeReason, DynamicIslandViewState } from "@openbot/ui";
-import { OpenBotDynamicIsland } from "@openbot/ui/features/dynamic-island/OpenBotDynamicIsland";
-import { useText } from "@openbot/ui/text";
-import { errorReference, type UserErrorDetails } from "@openbot/user-errors";
+} from "@whilo/contracts/ipc";
+import { DEFAULT_DYNAMIC_ISLAND_PREFERENCE, IDLE_DYNAMIC_ISLAND_PRESENTATION } from "@whilo/contracts/ipc";
+import type { DynamicIslandNotchSize, DynamicIslandStateChangeReason, DynamicIslandViewState } from "@whilo/ui";
+import { WhiloDynamicIsland } from "@whilo/ui/features/dynamic-island/WhiloDynamicIsland";
+import { useText } from "@whilo/ui/text";
+import { errorReference, type UserErrorDetails } from "@whilo/user-errors";
 import { createSignal, onSettled, Show } from "solid-js";
 import { dynamicIslandPort } from "./dynamic-island-port";
 
@@ -237,7 +237,7 @@ export function DynamicIslandSurface() {
           onFocusOut={leaveFocusInteraction}
           onPointerDown={(event) => void requestKeyboard(event)}
         >
-          <OpenBotDynamicIsland
+          <WhiloDynamicIsland
             presentation={presentation()}
             state={viewState()}
             displayMode={displayMode}

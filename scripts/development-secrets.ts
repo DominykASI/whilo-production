@@ -22,13 +22,15 @@ import { fileURLToPath } from "node:url";
 // `bun run dev` without the maintainer's dotenvx keys.
 //
 // `prepare-dev-environment.ts` calls this before `bun install`, so it uses node builtins only —
-// `@openbot/logging` is not resolvable yet on a fresh clone, which is why this writes to stdout.
+// `@whilo/logging` is not resolvable yet on a fresh clone, which is why this writes to stdout.
 
 // `wrangler.jsonc` pins the active ticket key ID in its top-level `vars`, and `parseJwks` rejects a
 // JWKS that does not carry that `kid`, so the generated pair has to claim the same one.
-const TICKET_KEY_ID = "openbot-remote-1";
+const TICKET_KEY_ID = "whilo-remote-1";
 const DEVELOPMENT_STATE_VERSION = 1 as const;
-const DEVELOPMENT_STATE_DIRECTORY = ".openbot";
+const DEVELOPMENT_STATE_DIRECTORY = ".whilo";
+/** The directory this file wrote before the product was renamed, migrated once on the next read. */
+const LEGACY_DEVELOPMENT_STATE_DIRECTORY = ".openbot";
 const DEVELOPMENT_STATE_FILE = "dev-state.json";
 const DEVELOPMENT_STATE_LOCK = "dev-state.json.lock";
 
@@ -94,6 +96,7 @@ export function ensureDevelopmentState(projectRoot: string): DevelopmentStateOut
 /** Reads or creates local state before dependency installation, using Node built-ins only. */
 export function readDevelopmentState(projectRoot: string): DevelopmentState {
   const paths = developmentStatePaths(projectRoot);
+  migrateLegacyDevelopmentState(projectRoot, paths);
   ensurePrivateDirectory(paths.directory);
 
   const current = readStateIfPresent(paths.state);
@@ -110,6 +113,23 @@ export function readDevelopmentState(projectRoot: string): DevelopmentState {
   } finally {
     releaseStateLock(paths.lock, lock);
   }
+}
+
+/**
+ * Moves the state the project kept under the directory of its previous name, so the local ticket
+ * keys, the SMTP values and the override a developer already set carry over. Only a state file is
+ * moved: the current directory wins when it already holds one, because it may be newer.
+ *
+ * A failure is left to the caller: the state is secrets, so a move that cannot run must not be
+ * silently skipped and replaced with freshly generated keys.
+ */
+function migrateLegacyDevelopmentState(projectRoot: string, paths: DevelopmentStatePaths): void {
+  if (existsSync(paths.state)) return;
+  const legacy = join(projectRoot, LEGACY_DEVELOPMENT_STATE_DIRECTORY, DEVELOPMENT_STATE_FILE);
+  if (!existsSync(legacy)) return;
+  ensurePrivateDirectory(paths.directory);
+  renameSync(legacy, paths.state);
+  rmSync(join(projectRoot, LEGACY_DEVELOPMENT_STATE_DIRECTORY), { recursive: true, force: true });
 }
 
 /**
@@ -177,11 +197,11 @@ function readStateIfPresent(path: string): DevelopmentState | undefined {
   try {
     parsed = JSON.parse(readFileSync(path, "utf8"));
   } catch {
-    throw new Error("The development state file is invalid or unreadable. Restore .openbot/dev-state.json.");
+    throw new Error("The development state file is invalid or unreadable. Restore .whilo/dev-state.json.");
   }
   if (!isDevelopmentState(parsed)) {
     throw new Error(
-      "The development state file has an invalid format. Restore .openbot/dev-state.json before continuing.",
+      "The development state file has an invalid format. Restore .whilo/dev-state.json before continuing.",
     );
   }
   chmodSync(path, 0o600);
@@ -266,7 +286,7 @@ function releaseStateLock(path: string, lock: string): void {
 
 function ensurePrivateDirectory(path: string): void {
   if (existsSync(path)) {
-    if (!lstatSync(path).isDirectory()) throw new Error("The .openbot development state path is not a directory.");
+    if (!lstatSync(path).isDirectory()) throw new Error("The .whilo development state path is not a directory.");
   } else {
     mkdirSync(path, { recursive: true, mode: 0o700 });
   }
@@ -300,7 +320,7 @@ if (import.meta.main) {
   const outcome = ensureDevelopmentState(projectRoot);
   process.stdout.write(
     outcome === "created"
-      ? "Generated .openbot/dev-state.json for local development.\n"
-      : "Kept the existing .openbot/dev-state.json.\n",
+      ? "Generated .whilo/dev-state.json for local development.\n"
+      : "Kept the existing .whilo/dev-state.json.\n",
   );
 }

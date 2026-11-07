@@ -1,0 +1,10 @@
+# Backs up instance %i and verifies the backup. whilo-instance-backup@%i.timer starts it. `setup`
+# replaces /opt/whilo-docker/instances/ with the folder of whilo-instance.
+[Unit]
+Description=Back up Whilo instance %i
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/whilo-docker/instances/whilo-instance backup %i --verify
+TimeoutStartSec=6h

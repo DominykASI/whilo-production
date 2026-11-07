@@ -14,7 +14,7 @@ this is why routine fixes target paths or use the staged-file hook.
 
 The aggregate typecheck selects `typecheck:*`. Mobile was previously named only `mobile:typecheck`
 and was omitted. It now has `typecheck:mobile`; the old name remains an alias for CI. Mobile uses
-`@openbot/brand`, `@openbot/contracts`, and `@openbot/team-client`. Its Expo and Uniwind generation
+`@whilo/brand`, `@whilo/contracts`, and `@whilo/team-client`. Its Expo and Uniwind generation
 writes ignored files before TypeScript runs.
 
 Each `typecheck` script starts `scripts/type-checker.ts`, not a bare `tsc`. The script runs tsrs, the
@@ -84,8 +84,8 @@ an output is missing. File times do not decide: a checkout changes them, and Uni
 file whose content is the same.
 
 In CI, `check:desktop:static` (the UI check, lint, desktop typecheck, build and preload check) takes
-about a minute, and each other typecheck takes a few seconds. When `openbot-database-schema.ts`, `channel-schema.ts`, `mcp-schema.ts`, the parity test or
-`openbot-database-schema-history.json` is staged, the hook also runs `src/backend/openbot-database-schema-parity.test.ts`.
+about a minute, and each other typecheck takes a few seconds. When `whilo-database-schema.ts`, `channel-schema.ts`, `mcp-schema.ts`, the parity test or
+`whilo-database-schema-history.json` is staged, the hook also runs `src/backend/whilo-database-schema-parity.test.ts`.
 
 `check:staged` lets Biome fix the working-tree copy of each staged file, and the hook then stages
 those files again. It stages again only the files that have no unstaged changes; otherwise the commit
@@ -133,7 +133,7 @@ deployment dependencies keep their existing order. Local commands do not change.
 times on GitHub before claiming a time reduction; parallel steps share the runner's resources.
 
 The `Provider CLI canary` workflow is not a pull request check. It runs every six hours on the newest
-upstream provider CLIs, which reach users without an OpenBot release; see
+upstream provider CLIs, which reach users without an Whilo release; see
 [Provider CLI updates](architecture/providers.md#provider-cli-updates).
 
 `check:api` ends with `api:build:check`, which is the preview build of the Worker, so the API job
@@ -184,7 +184,7 @@ of a file that a lane reads into `docs/` still runs the lane.
 
 `verify:preload` reads `out/preload` after the build. TypeScript checks the preload source, but
 the renderer gets the bundle. The script runs each bundle in a `node:vm` context with a fake
-Electron and checks that `window.openbot` has exactly one function for each endpoint that
+Electron and checks that `window.whilo` has exactly one function for each endpoint that
 `IPC_ENDPOINTS` names, and that each function uses the channel of its endpoint. It also rejects
 `import()` and a `require` of a module that a sandboxed preload cannot load. It takes less than one
 second.
@@ -261,7 +261,7 @@ files in worker threads, and a thread's `process.env` does not reach the native 
 start.
 
 A key in the developer's shell could otherwise let a fake-provider test reach a real provider, and
-every profile path (`~/OpenBot`, the app data directory) comes from `homedir()`, so a path bug could
+every profile path (`~/Whilo`, the app data directory) comes from `homedir()`, so a path bug could
 write into the developer's own conversations. A test that needs a token or a directory sets it
 itself.
 
@@ -276,7 +276,7 @@ anything in the tests: building a jsdom for each file was 61.8s of a 176.7s CI r
 registry per file inside a VM context. That took the full suite from 118.7s to 92.6s locally.
 
 The mounts themselves are not the cost, which is worth recording because the file sizes suggest
-otherwise. Measured on one worker: `installOpenbotStub()` is 0.4ms, `AppProviders` with a probe
+otherwise. Measured on one worker: `installWhiloStub()` is 0.4ms, `AppProviders` with a probe
 under it is 4.3ms, and a full `<App />` is 21.8ms, of which the view tree is 17.4ms. Dividing a
 file's total time by its render count attributes the whole test to the mount and overstates it by
 more than twenty times. Two other theories also measured close to nothing: the 50ms `waitFor` poll
@@ -312,7 +312,7 @@ to 141.5s, and reached 2.64 on four. Use it, or repeat the run, before believing
 phase is this repository's own module graph re-executing per file rather than dependency resolution.
 
 The development setup script checks Bun, migrates local D1, and creates missing local state in
-`.openbot/dev-state.json`. The committed `apps/auth-api/.env.dev` is encrypted; a missing
+`.whilo/dev-state.json`. The committed `apps/auth-api/.env.dev` is encrypted; a missing
 development key does not block ordinary local setup. Existing state is reused. Values stored only
 in the old generated `.env.dev` are reset on update.
 
@@ -346,7 +346,7 @@ The UI fixtures have two trees. `renderer` breaks every check beside valid examp
 a valid example without changing the failure count in the first tree.
 
 The shared UI Biome override also runs `tools/ui-foundation/no-desktop-preload.grit`.
-It rejects direct `window.openbot` and `globalThis.openbot` access, including optional and
+It rejects direct `window.whilo` and `globalThis.whilo` access, including optional and
 literal indexed forms. Browser APIs, comments, and string documentation remain valid.
 Its positive and negative fixtures run in `scripts/ui-foundation-check.test.ts`.
 
@@ -379,11 +379,11 @@ baseline. Do not name the script `typecheck:*`:
 
 ### Agent context budget
 
-`bun run check:agent-context` holds the text that OpenBot adds to an agent's context to the byte
+`bun run check:agent-context` holds the text that Whilo adds to an agent's context to the byte
 counts in `tools/agent-context/budget.json`. It uses the same rules as the type debt ratchet
 (`scripts/debt-ratchet.ts`): more bytes fail, and fewer bytes fail until `--write` lowers the
 baseline. A raise is a hand edit that a reviewer sees. The fixture agent has no memories, teammates,
-skills, or connected vault, so the counts measure only OpenBot's own text:
+skills, or connected vault, so the counts measure only Whilo's own text:
 
 - `instructions.claude` and `instructions.codex`: `developerInstructions()` with the options of each
   provider.
@@ -393,7 +393,7 @@ skills, or connected vault, so the counts measure only OpenBot's own text:
 - `guidance`: the distinct `agent/tool-guidance.ts` texts.
 - `list-models.fixture`: the `list_models` result for a synthetic catalog of 200 models.
 
-The script writes the counts to `.openbot-build/agent-context-budget/report.json`. It does not
+The script writes the counts to `.whilo-build/agent-context-budget/report.json`. It does not
 measure the schemas that the Claude Agent SDK makes from the Zod shapes of Claude's visible tools.
 CI runs it in the `check` job.
 

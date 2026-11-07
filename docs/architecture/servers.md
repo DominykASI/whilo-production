@@ -54,7 +54,7 @@ such as `docker run --cpus`), it is the cgroup's `usage_usec` against that limit
 is the limit; otherwise it is the use of all cores of the machine. The panel reads it each minute
 while it is open; the read routes are passive. `.../machine/alerts` and `.../alerts/update` read and
 set one level per metric (50–99%) and the owner or admin who gets the alert, in
-`openbot-machine-alerts-v1.json` (`src/main/machine-alerts.ts`). With no member set, or when that
+`whilo-machine-alerts-v1.json` (`src/main/machine-alerts.ts`). With no member set, or when that
 member is no longer an admin, the owner gets it. The host checks the machine once a minute. A metric
 at or above its level alerts once, and again each day while it stays there; CPU must stay above for
 five readings. The alert ends when the use goes 5 points below the level. The host sends the
@@ -71,7 +71,7 @@ stays closed for that metric and level until the use goes below every level.
 
 A hosted site belongs to the server that published it (`hosted_sites.server_id`, D1 `0024`). The user
 stays the accountable owner, for abuse reports, blocks and account deletion. The desktop sends
-`OpenBot-Host-Id` and `OpenBot-Host-Token` (the machine token of `/v2/remote/hosts/register`) on each
+`Whilo-Host-Id` and `Whilo-Host-Token` (the machine token of `/v2/remote/hosts/register`) on each
 `/v1/sites` request when it is a registered server. The Worker checks the hash and that the host owner
 is the request user; a wrong token is refused with 401, never counted as unlinked. The active-site
 limit comes from the server's plan (`siteLimitForPlan`: none 1, Starter 3, Standard 10, Pro 50). A
@@ -164,7 +164,7 @@ the web client uses the browser chooser and ships the export skill in its bundle
 
 ### Instance transfer with a joined server
 
-`instance-transfer-v1` moves a server's agents and server settings to or from an OpenBot transfer file
+`instance-transfer-v1` moves a server's agents and server settings to or from an Whilo transfer file
 (see [Instance transfer](agents.md#instance-transfer)). Only an owner or admin can use it: the file holds
 every agent's memories and files, and an import adds server settings. It is protocol 7 only. Every file
 that crosses the connection is at most 100 MB, the size of one WebRTC file transfer; a computer's own
@@ -505,7 +505,7 @@ host advertises a capability only when its `TeamApiAdmin` member exists.
 | `provider-default-v1` | Read and set the provider that a new agent of the host starts on | none: only the mobile app sends it |
 | `agent-access-v1` | Read and set the roles that give members access to agents (see [Roles](#roles)) | `hostAdmin` |
 | `server-audit-v1` | Read the changes to the members, roles and agent access of the server (see [Audit log](#audit-log)). Protocol 9 only | `hostAdmin` |
-| `discord-access-v1` | Read and set which Discord roles can use OpenBot in a Discord server; list its roles | `messaging` |
+| `discord-access-v1` | Read and set which Discord roles can use Whilo in a Discord server; list its roles | `messaging` |
 | `events-v1` | Manage webhook routines, their secrets, and activity | `events` |
 | `routine-recovery-v1` | Read and set a routine's missed-run policy; read its runs with the missed occurrences | `events` |
 | `routine-results-v1` | List the messaging connections and their places; read and set where an agent routine sends its answers. Deliveries stay on the host | none: only the mobile app sends it |
@@ -549,7 +549,7 @@ then opens with that provider. The choice stays in memory for the server; it is 
 setup file of this computer. A member, the local server, and a host without `providers-v1` open the
 form directly.
 
-`host-timezone-v1` reads and sets the server timezone (`openbot-server-timezone-v1.json`; `null` is
+`host-timezone-v1` reads and sets the server timezone (`whilo-server-timezone-v1.json`; `null` is
 automatic, the system zone of the host). When an agent creates a routine, the zone comes from the tool
 call first, then from the sender's last message in that turn, then from this setting. The sender's
 zone stays in memory only, so after a restart a queued message uses the server timezone. Agent import
@@ -575,7 +575,7 @@ place that sets the limit, for this computer (`hostAdmin.setAgentMemoryLimit`, l
 joined server. App Settings does not show it, so that one name does not have two values.
 
 `memory-review-v1` reads and sets how many completed turns of one conversation pass between two
-background memory reviews of the host's agents (`openbot-memory-review-v1.json`; 10, 20 or 40, default
+background memory reviews of the host's agents (`whilo-memory-review-v1.json`; 10, 20 or 40, default
 20; `0` is Off). The snapshot gives the value and the values that the host permits; the host refuses
 other values. The agent service reads the value at each use, so a change applies from the next turn.
 Server settings → General → Agents → Memory review sets it for this computer
@@ -584,7 +584,7 @@ Server settings → General → Agents → Memory review sets it for this comput
 `agent-notification-levels-v1` reads and sets the notification levels that the signed-in member chose
 on this server, for all of their devices: the level of the whole server (`server`, `null` until they
 choose one) and the level of each agent (`all`, `needs-me` or `nothing`; `null` removes it). The host
-keeps the levels in `openbot-agent-notification-levels-v1.json`, by member ID; the owner's levels have
+keeps the levels in `whilo-agent-notification-levels-v1.json`, by member ID; the owner's levels have
 the key `owner`, so the desktop app of the host computer and the owner's phones read the same levels. A
 member reads and sets only their own levels, and the read leaves out the agents that the member cannot
 see. After each change, the host sends `agent-notification-levels-changed` with all of the member's
@@ -593,7 +593,7 @@ once on the desktop and the reverse. The owner's levels change in the host store
 the desktop app gets the same event from `RemoteServerManager`. Each client also reads the levels when
 a server connects; the desktop reads them for each notification too. The server level replaces the level that each device kept for the
 server before (the effective level is `server ?? the device level`); the agent level replaces the
-server level for that agent (`agentNotificationLevel` in `@openbot/team-client`), in both directions.
+server level for that agent (`agentNotificationLevel` in `@whilo/team-client`), in both directions.
 A server set to Nothing, or muted on a device, stays quiet for all agents. A mute stays on each device.
 The shared switch of the agent (`notifications`) still turns notifications off for every member, because the released Team API carries it. Current clients do not show it in the agent settings any more: the matrix shows such an agent with a "Turn on" button, which sets the switch back on. The
 host applies the levels to phone notifications itself (`PushNotificationService`), so phones of every
@@ -601,13 +601,13 @@ version follow them. On the desktop, `RemoteServerManager` reports the effective
 `ServerSummary`, so the rail, the menus and the island follow it.
 
 Settings › Notifications is the one place that changes these levels: a matrix of the servers and their
-agents (`NotificationMatrix` in `@openbot/ui`, and its own screen on the phone). Server settings have no
+agents (`NotificationMatrix` in `@whilo/ui`, and its own screen on the phone). Server settings have no
 notification section on any device; the server menu (desktop and web) and the agent settings show the
 current level and open the matrix. A joined server
 without the capability keeps the level of each device and shows "This computer only".
 
 `sidebar-pins-v1` keeps the agents and channels that the signed-in member pinned on this server, in
-their order, for all of their devices. The host keeps the lists in `openbot-sidebar-pins-v1.json` by
+their order, for all of their devices. The host keeps the lists in `whilo-sidebar-pins-v1.json` by
 member ID (`SidebarPinStore`); the owner's list has the key `owner`, so the desktop app of the host
 computer and the owner's phones read the same list. `set` replaces the list; `seed` saves it only when
 the member has no list yet (`updatedAt` is `null`), so the first connect after the upgrade moves the
@@ -622,7 +622,7 @@ a pin (`phoneSidebarPins`). Workflow pins stay on each phone. A server without t
 pins of each device, as before.
 
 `prompt-cache-ttl-v1` reads and sets how long Claude keeps the prompt cache of the host's agents
-(`openbot-prompt-cache-ttl-v1.json`; `5m` or `1h`, default `5m`). With `1h` the host starts each
+(`whilo-prompt-cache-ttl-v1.json`; `5m` or `1h`, default `5m`). With `1h` the host starts each
 Claude process with `ENABLE_PROMPT_CACHING_1H=1`. Claude Code reads this flag before its subscription
 rules, so subagents and a subscription that uses extra usage also get 1 hour. With `5m`, the default, it
 sets nothing, so Claude Code uses its own choice: 5 minutes with an API key, 1 hour for the main thread of a
@@ -633,7 +633,7 @@ The Cache section of the Claude page in Server settings → Providers sets it fo
 for a joined server.
 
 `provider-default-v1` reads and sets the provider, and the model beside it, that a new agent of the
-host starts on when its creator chooses none. It is the setup choice of the host (`openbot-setup`
+host starts on when its creator chooses none. It is the setup choice of the host (`whilo-setup`
 file, `preferredProvider` and `preferredModel`): a set writes the file and calls
 `AgentService.setPreferredProvider`, as the local Settings save does. A read gives the provider that
 `AgentService.preferredProvider` uses now, so a host before its setup choice reads `codex`. A
@@ -657,7 +657,7 @@ the host advertises the capability.
 `host-update-v1` runs the same update as the host's own Settings. `src/main/requested-update.ts`
 keeps the schedule in memory: who asked, and whether the restart waits until
 `describeRestartReadiness` reports no running work or happens as soon as the update is ready. The
-host user can turn the routes off with "Allow updates from server members" (`openbot-update-preference-v1.json`,
+host user can turn the routes off with "Allow updates from server members" (`whilo-update-preference-v1.json`,
 default on) and can cancel a restart that waits. The host still advertises the capability when the
 setting is off, so the client can show why. A Host Manager tenant refuses the routes. The client
 reads the status again every second while a check, a download or a restart runs. An admin can also
@@ -695,7 +695,7 @@ member IDs (`TeamMemberSummary.id`). A member gets the highest level of Everyone
 names them. An owner or an admin always gets `manage`. So a server with no roles works as before, and
 a new agent is open to every member until an admin closes it.
 
-The host keeps the roles in `openbot-agent-access-v1.json`, by server ID (`src/main/agent-access-store.ts`).
+The host keeps the roles in `whilo-agent-access-v1.json`, by server ID (`src/main/agent-access-store.ts`).
 It is a preference file, not the database: there is no migration, and an older build ignores it, so a
 downgrade keeps the roles. A file that does not decode closes every agent to members until the next
 save. Nothing goes to the account service. An owner or admin reads the whole set; a member reads only
@@ -706,7 +706,7 @@ source before the copy shows to clients, so a copy does not open memories that t
 each change it sends `agent-access-changed` and a new `agents-changed` to each connection, so the agent
 lists of members change without a reload.
 
-Server settings → Roles (`ServerRolesSection.tsx`, `@openbot/ui/features/servers/ServerRoles`) edits the
+Server settings → Roles (`ServerRolesSection.tsx`, `@whilo/ui/features/servers/ServerRoles`) edits the
 set on desktop and web. The role menu of each member row on the Members page sets the server role
 (Member or Admin, through the same confirmation as before) and the custom roles. The tab shows for the
 local server and for a joined server whose host advertises the capability to an owner or admin.
@@ -735,7 +735,7 @@ for a join. A member update or removal gives the actor only to the changes of th
 changes that the same directory sync finds have a null actor. A client leaves out an entry whose
 `kind` it does not know, so a later kind needs no new capability.
 
-The host keeps the log in `openbot-server-audit-v1.json`, by server ID (`src/main/server-audit-store.ts`),
+The host keeps the log in `whilo-server-audit-v1.json`, by server ID (`src/main/server-audit-store.ts`),
 with the newest 500 entries of each server. Like the roles file it is a preference file: no migration,
 and an older build ignores it. A file that does not decode reads as an empty log, and an entry that
 does not decode is left out. The next write removes those entries, so a downgrade loses the entries
@@ -746,7 +746,7 @@ member update, a removal, and each account directory sync (`memberAuditChanges`)
 or change runs at a time, from the read of the directory to the audit entry, so a slow read cannot
 apply an older list after a newer one. A join keeps the time when the membership was made.
 
-Server settings → Audit log (`ServerAuditSection.tsx`, `@openbot/ui/features/servers/ServerAuditLog`)
+Server settings → Audit log (`ServerAuditSection.tsx`, `@whilo/ui/features/servers/ServerAuditLog`)
 shows the log on desktop and web, with a filter by kind and a search. The tab shows for an owner or
 admin of the local server and of a joined server whose host advertises the capability. It reads the log
 again each time it shows.
@@ -781,19 +781,19 @@ Billing is per server. One account can pay for several servers; each server has 
 subscription. The Account Worker (`apps/auth-api/src/server/billing-service.ts`) talks to the Stripe
 REST API with `fetch`; there is no Stripe SDK. The plan catalog in `packages/contracts/src/billing.ts`
 holds the plan IDs, storage, member and site limits, relative speed and lookup keys, and no amounts. The amounts are six Stripe Prices with the lookup
-keys `openbot_{plan}_{interval}`. `bun run api:stripe:bootstrap` (`scripts/stripe-bootstrap.ts`)
+keys `whilo_{plan}_{interval}`. `bun run api:stripe:bootstrap` (`scripts/stripe-bootstrap.ts`)
 creates them and the Customer Portal settings.
 
 - The add server dialog starts a plan. The hosting service
   (`apps/auth-api/src/server/hosted-billing.ts`) makes the Stripe customer before the Checkout, so
   two open Checkouts use one customer. The Checkout sets the subscription metadata
-  `openbot_user_id` and `openbot_server_id` (`BILLING_METADATA`). The billing service calls the
+  `whilo_user_id` and `whilo_server_id` (`BILLING_METADATA`). The billing service calls the
   `onSubscriptionSynced` hook after each subscription sync; the hosting side uses it to provision,
   stop and resume servers, so billing does not know about boat. See
   [hosted servers](../hosted-servers.md#lifecycle). The webhook links a new Stripe customer to the
-  account from `openbot_user_id`. It never moves a known
+  account from `whilo_user_id`. It never moves a known
   customer to another account, and it skips a subscription that names no account.
-- Desktop Settings → Billing and the web Billing dialog render `@openbot/ui/features/billing`: one
+- Desktop Settings → Billing and the web Billing dialog render `@whilo/ui/features/billing`: one
   row for each open plan, with the server name, the plan, its price, and its renewal controls.
   Hosted plans support cancellation that keeps data, Keep server, and explicit deletion now or
   after the paid period. A stored deletion date and subscription ID drive the cron; a fresh
@@ -831,17 +831,17 @@ gives 8 Stripe prices (`LICENSE_PLANS`):
 
 | Plan | Lookup key | Month (EUR) | Year (EUR) | Users |
 | --- | --- | --- | --- | --- |
-| Starter | `openbot_license_starter_{month,year}` | 10 | 96 | 1 |
-| Starter bundle | `openbot_license_starter_bundle_{month,year}` | 9 | 86.40 | 1 |
-| Team | `openbot_license_{month,year}` | 25 for 2 users, + 15 for each extra user | 240, + 144 | 2–10 |
-| Team bundle | `openbot_license_bundle_{month,year}` | 22.50, + 13.50 | 216, + 129.60 | 2–10 |
+| Starter | `whilo_license_starter_{month,year}` | 10 | 96 | 1 |
+| Starter bundle | `whilo_license_starter_bundle_{month,year}` | 9 | 86.40 | 1 |
+| Team | `whilo_license_{month,year}` | 25 for 2 users, + 15 for each extra user | 240, + 144 | 2–10 |
+| Team bundle | `whilo_license_bundle_{month,year}` | 22.50, + 13.50 | 216, + 129.60 | 2–10 |
 
 A year is 12 months less 20% (`LICENSE_YEAR_DISCOUNT_PERCENT`). The bundle discount
 (`LICENSE_BUNDLE_DISCOUNT_PERCENT`: 10%) comes off after it. The amounts are
 in `LICENSE_PLAN_PRICES` (EUR is the base currency; USD and PLN are `currency_options` with their own
 amounts). Team prices are graduated; the 1-user prices are flat. `stripe-bootstrap.ts` creates each
-price with the metadata `openbot_license_tier`, `openbot_license_interval` and
-`openbot_license_bundle`, and `licensePlanFromPrice` reads them. A price with no metadata is Team monthly: the license from before
+price with the metadata `whilo_license_tier`, `whilo_license_interval` and
+`whilo_license_bundle`, and `licensePlanFromPrice` reads them. A price with no metadata is Team monthly: the license from before
 the tiers used the same lookup key. The license terms allow 3 devices for each user
 (`LICENSE_DEVICES_PER_USER`); the app shows this and does not count devices.
 
@@ -859,7 +859,7 @@ the tiers used the same lookup key. The license terms allow 3 devices for each u
   `license_users_in_use`, as a license checkout does. One Checkout page then has 2 line items: the server price, and the license bundle
   price for the same interval and currency, with the users as its quantity. The customer pays one
   invoice. On the first sync of the paid subscription, `LicenseService.splitOrder` makes a license
-  subscription with the metadata `openbot_order_subscription` (the server subscription), anchored at
+  subscription with the metadata `whilo_order_subscription` (the server subscription), anchored at
   the server period end with `proration_behavior=none`, so its first invoice is 0. Then it deletes the
   license item from the server subscription, also with no proration. Each later sync runs the split
   again until it is done, and the metadata stops a second license subscription. The sales ledger
@@ -873,7 +873,7 @@ the tiers used the same lookup key. The license terms allow 3 devices for each u
   "Free until" with the date in UTC. A license checkout sets `subscription_data[trial_end]`, so the
   license is `trialing` and the first charge is on the trial end. A server order during the promotion
   has no license item: the server is the only line, and the session and subscription metadata keep
-  the order (`openbot_order_license_{tier,users,interval,trial_end}`). `splitOrder` then makes the
+  the order (`whilo_order_license_{tier,users,interval,trial_end}`). `splitOrder` then makes the
   license subscription at the bundle price with `trial_end` (at least 1 hour ahead, for a late
   webhook) and removes the order metadata from the server subscription. The 0 trial invoice is a
   `first_purchase` sales fact of 0, and the charge on the trial end is a `renewal`. Apps before the
@@ -907,7 +907,7 @@ the tiers used the same lookup key. The license terms allow 3 devices for each u
   subscriptions, and a server checkout in another currency gets 409 `billing_currency`. Add server
   opens in that currency and does not let the user change it. Checkout cannot buy fewer users than are in use. An increase is charged at once
   (`always_invoice`). A decrease starts at the next invoice and cannot go below the users in use or
-  below 5. The subscription metadata `openbot_paid_users` and `openbot_paid_period_end` keep the
+  below 5. The subscription metadata `whilo_paid_users` and `whilo_paid_period_end` keep the
   users paid in the current period, so an increase after a decrease charges only the users above
   that number.
 - Checkout keeps one open page that sells a license for each account: a license page, or a server
@@ -925,7 +925,7 @@ the tiers used the same lookup key. The license terms allow 3 devices for each u
   monthly for 5 users in place of the added user. At 25 users it shows "Contact
   us" and creates no invite. Admins get no step; the join tells the person that the license is full.
 - Desktop calls the `license` IPC group; the web client calls the browser routes. Both render
-  `@openbot/ui/features/billing/LicenseSection` in the license slot of `BillingPanel`.
+  `@whilo/ui/features/billing/LicenseSection` in the license slot of `BillingPanel`.
 
 ## Servers on this computer
 
@@ -936,17 +936,17 @@ change.
 
 Each extra server is a headless child process of the same binary (`src/main/local-server-child.ts`).
 `LocalServers` (`src/main/local-servers/local-servers.ts`) starts it with its own `--user-data-dir`
-(`<userData>/local-servers/<id>`) and its own agent root (`~/OpenBot/Servers/<id>`). The child
+(`<userData>/local-servers/<id>`) and its own agent root (`~/Whilo/Servers/<id>`). The child
 sets up a password host whose one member is the owner, starts the Team API on loopback only, and
 writes one ready line to stdout with the API address and its identity. The line has no secret. The
 desktop pins the identity at the first start, signs in as the owner with the password, and attaches
 the server as a joined server with `thisComputer: true`. `kind` stays `"remote"`.
 
-- **Registry.** `openbot-local-servers-v1.json` in the desktop userData. The owner password is 32
+- **Registry.** `whilo-local-servers-v1.json` in the desktop userData. The owner password is 32
   random bytes, sealed with the secret storage cipher. A file that this build cannot read is
   read-only: no server starts and no write replaces it. Folder names come from a UUID, so a
   changed file cannot name another path.
-- **Connection entry.** The server is an HTTPS entry in `openbot-remote-servers-v1.json`. The
+- **Connection entry.** The server is an HTTPS entry in `whilo-remote-servers-v1.json`. The
   directory sync keeps it. While the child is stopped, the entry has the address
   `http://127.0.0.1:0` and no token, so a client never reaches an old port.
 - **Lifetime.** The child ends when its stdin closes. Teardown step 57 stops all children before
@@ -960,7 +960,7 @@ the server as a joined server with `thisComputer: true`. `kind` stays `"remote"`
 Limits:
 
 - A user can create at most `LOCAL_SERVER_LIMIT` (5) servers on this computer, in addition to
-  "Local", because each one is a full OpenBot process that runs all the time. `LocalServers.create`
+  "Local", because each one is a full Whilo process that runs all the time. `LocalServers.create`
   refuses one more with `error.remote.localServerLimit`. The create dialog tells the user before
   they type a name.
 - A child server is reached as a joined server. Features behind `kind === "local"`, such as
@@ -970,15 +970,15 @@ Limits:
 - The provider CLI sign-ins in the home folder (`~/.codex`, `~/.claude`) and `~/.agents/skills` are
   shared with the other servers.
 - Not confirmed: the memory of each child, the agent browser in a child with no window, and which
-  process gets an `openbot://` link on macOS.
+  process gets an `whilo://` link on macOS.
 
 ## macOS Host Manager
 
 `scripts/macos-tenant-setup.swift` is a separate administrator command for new Standard accounts.
 It uses OpenDirectory directly, creates only new empty homes, and stores generated credentials
 in a new root-only file before account creation. It is not installed or called by the daemon.
-The Host PKG installs this as `create-tenants`, alongside the standalone `openbot-host` CLI.
-`openbot-host-service.ts` owns setup/verification sequencing; `openbot-host-macos.ts` owns OS
+The Host PKG installs this as `create-tenants`, alongside the standalone `whilo-host` CLI.
+`whilo-host-service.ts` owns setup/verification sequencing; `whilo-host-macos.ts` owns OS
 operations. Passwords cross only the native helper's captured pipe and the administrator's tty,
 not the host protocol. The root-only recovery file is removed after successful presentation.
 `build-host-installer.ts` and `verify-host-installer.ts` own release packaging and the exact
@@ -1000,7 +1000,7 @@ See [multi-tenant hosting](../multi-tenant-hosting.md) for installation, permiss
 ## Hosted servers
 
 A hosted server is one [boat](https://boat.dev) sandbox for one account. It runs the Linux
-OpenBot build under Xvfb and is a normal Remote host after its first start. The account Worker
+Whilo build under Xvfb and is a normal Remote host after its first start. The account Worker
 owns the sandbox lifecycle: it creates, resumes and deletes sandboxes, and D1 keeps the desired
 and observed state. A server reports each minute while it is in use, and the Worker stops it after
 15 minutes with no report. boat also stops each sandbox at the end of a 2-hour lease that activity
@@ -1012,8 +1012,8 @@ turns while it is low and limits the turns that run at the same time. See
 [hosted servers](../hosted-servers.md) for the flow, the configuration, the memory guards and the template.
 
 A self-hosted server uses the same Linux build, scripts and units on the owner's own computer, with
-`/opt/OpenBot/hosted/mode` set to `self`. It has no claim: main starts in server mode
-(`src/main/server-mode.ts`, `OPENBOT_SERVER=1`), and the `openbot` terminal command signs it in over
+`/opt/Whilo/hosted/mode` set to `self`. It has no claim: main starts in server mode
+(`src/main/server-mode.ts`, `WHILO_SERVER=1`), and the `whilo` terminal command signs it in over
 a Unix socket in the 0700 runtime directory of the service user. Main publishes the host after each
 sign-in. See [self-hosted servers](../self-hosted-server.md).
 
@@ -1050,11 +1050,11 @@ the time until the workspace can be used, and the host requests that block that 
   `TeamWebRtcClientTransport` and of the HTTPS arm `requestJson` (desktop main): route template,
   method, transport, times, bytes and the requests in flight. The dev test client uses the HTTPS arm
   when its account has no WebRTC membership of the host, so the report names the transport. It records only when a sink is installed. The web harness installs
-  `globalThis.__openbotSyncProfile` before the page loads. Desktop main installs a file sink only in an
-  unpackaged build with `OPENBOT_DEV_SYNC_PROFILE=1`; it writes `dev-sync-profile.ndjson` in the profile
+  `globalThis.__whiloSyncProfile` before the page loads. Desktop main installs a file sink only in an
+  unpackaged build with `WHILO_DEV_SYNC_PROFILE=1`; it writes `dev-sync-profile.ndjson` in the profile
   root, which no export reads. A route keeps its words and `v<n>` segments; every other segment becomes
   `:id`, and query values are dropped. Records never go to the trace file, the logs or analytics.
-- Marks use fixed names only, `openbot:remote-<step>`. Web: `session`, `workspace-code`,
+- Marks use fixed names only, `whilo:remote-<step>`. Web: `session`, `workspace-code`,
   `hosts-start`, `hosts`, `connect-start`, `peer:<step>`, `connected`, `workspace-ready`,
   `panels-ready` and `conversation-ready`. Desktop renderer:
   `workspace-load`, `workspace-shell`, `workspace-ready` and `conversation-ready`. Desktop main keeps
@@ -1072,7 +1072,7 @@ the time until the workspace can be used, and the host requests that block that 
   child by PID on `SIGUSR2` and starts it again. The run measures from the main process start, which
   is the first line of `dev-sync-profile.ndjson`. It writes `steps.md`, the time of each step from
   that origin.
-- `OPENBOT_DEV_CLIENT_TRANSPORT=webrtc` makes the test client sign in as the dev host user. The
+- `WHILO_DEV_CLIENT_TRANSPORT=webrtc` makes the test client sign in as the dev host user. The
   account directory then lists the host, and the client connects over `webrtc-v2` as real users do.
   Without it, the client joins over the HTTPS arm. A new `dev:seed` gives the host a new id while the account keeps the old one; pass
   `--host-id=<id>` so the web client opens the new host.
@@ -1083,7 +1083,7 @@ the time until the workspace can be used, and the host requests that block that 
   each document and fetch request of the web page by that time, and each WebSocket message by half
   of it. Module files keep their time, because the dev server sends hundreds of them. The page wrapper
   also delays each `RTCDataChannel` send and message by half of it. For the desktop client, start
-  the stack with `OPENBOT_DEV_RTT_MS=<ms>`: an unpackaged main then delays the account service calls
+  the stack with `WHILO_DEV_RTT_MS=<ms>`: an unpackaged main then delays the account service calls
   by the full time and each data-channel send and message by half of it. The desktop Signal socket is
   in the hidden peer window, so it keeps its time. The report warns when this value is not equal to
   `--latency`.
@@ -1101,7 +1101,7 @@ A client connects to a live host with as few serial round trips as it can.
   (`refreshWebRtcCompatibility` forces the read). It does not read it twice in sequence.
 - The web app loads the workspace code at the same time as the session request.
 - The web client stores the negotiated host protocol in `localStorage`
-  (`openbot.web.host-protocol:<account>:<host>`). It holds the protocol number only. When it has one,
+  (`whilo.web.host-protocol:<account>:<host>`). It holds the protocol number only. When it has one,
   the gate reads start with that protocol at the same time as the compatibility read. When the new
   compatibility gives a different protocol, the client drops the early results and reads again. A
   first connection, with no stored protocol, reads compatibility first: without it the request frames
@@ -1128,7 +1128,7 @@ and replaces it when the host answers (`src/renderer/src/features/servers/remote
   queues or conversations. The channel rows stop the agents below them from moving down when the
   channel list comes.
 - It is in the renderer's `localStorage`, one key for each account and server
-  (`openbot:remote-frame:v1:<account>:<server>`), not in `openbot.db`. The host stays the source of
+  (`whilo:remote-frame:v1:<account>:<server>`), not in `openbot.db`. The host stays the source of
   truth. A frame older than 30 days is not shown, and a frame with no agents is not shown.
 - Desktop applies the frame only when setup is complete and the remote server has no content yet:
   `hasContent` turns on while `loaded` stays off, so the shell shows the cached-content notice. The

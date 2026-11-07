@@ -1,8 +1,8 @@
-import { markdownPreviewText } from "@openbot/contracts/markdown-preview-text";
-import { Button } from "@openbot/ui";
-import { createDigitRoll } from "@openbot/ui/digit-roll";
-import { useText } from "@openbot/ui/text";
-import { prefersReducedMotion } from "@openbot/ui/utils";
+import { markdownPreviewText } from "@whilo/contracts/markdown-preview-text";
+import { Button } from "@whilo/ui";
+import { createDigitRoll } from "@whilo/ui/digit-roll";
+import { useText } from "@whilo/ui/text";
+import { prefersReducedMotion } from "@whilo/ui/utils";
 import { createEffect, createMemo, createSignal, createStore, For, onSettled, Show, untrack } from "solid-js";
 import type { DayMarkerOptions } from "./chat-day-markers";
 import type { ChatVirtualizer } from "./createChatVirtualizer";

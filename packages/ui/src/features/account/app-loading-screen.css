@@ -9,12 +9,12 @@
   --app-loading-exit-delay: 0ms;
   --app-loading-at: 0s;
   position: absolute;
-  z-index: var(--openbot-layer-dialog);
+  z-index: var(--whilo-layer-dialog);
   inset: 0;
   display: grid;
   place-items: center;
   overflow: hidden;
-  background: var(--openbot-bg-canvas);
+  background: var(--whilo-bg-canvas);
   -webkit-app-region: drag;
 }
 
@@ -72,8 +72,8 @@
 .app-loading-status {
   min-height: 20px;
   margin: 0;
-  color: var(--openbot-text-muted);
-  font-size: var(--openbot-text-md);
+  color: var(--whilo-text-muted);
+  font-size: var(--whilo-text-md);
 }
 
 .app-loading-line {
@@ -87,7 +87,7 @@
 
 /* The fade also runs with reduced motion: its animationend removes the screen. */
 .app-loading:is([data-phase="fade"], [data-phase="exit"]) {
-  animation: app-loading-exit var(--openbot-duration-overlay) var(--openbot-ease-in-out) var(--app-loading-exit-delay)
+  animation: app-loading-exit var(--whilo-duration-overlay) var(--whilo-ease-in-out) var(--app-loading-exit-delay)
     forwards;
 }
 
@@ -99,16 +99,16 @@
 
   /* The stage waits before it shows, so a fast load does not flash the crew. */
   .app-loading-stage {
-    animation: app-loading-enter var(--openbot-duration-overlay) var(--openbot-ease-out)
+    animation: app-loading-enter var(--whilo-duration-overlay) var(--whilo-ease-out)
       calc(250ms - var(--app-loading-at)) both;
   }
 
   .app-loading-line {
-    animation: app-loading-line-in 280ms var(--openbot-ease-out);
+    animation: app-loading-line-in 280ms var(--whilo-ease-out);
   }
 
   .app-loading:not([data-phase="loading"]) .app-loading-status {
-    animation: app-loading-fade 200ms var(--openbot-ease-out) forwards;
+    animation: app-loading-fade 200ms var(--whilo-ease-out) forwards;
   }
 }
 
@@ -142,22 +142,22 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--openbot-space-3);
-  padding: var(--openbot-space-3);
-  background: var(--openbot-bg-canvas);
-  border-bottom: 1px solid var(--openbot-border);
+  gap: var(--whilo-space-3);
+  padding: var(--whilo-space-3);
+  background: var(--whilo-bg-canvas);
+  border-bottom: 1px solid var(--whilo-border);
 }
 .server-connection-notice p {
   margin: 0;
 }
 .server-connection-detail {
-  color: var(--openbot-text-muted);
+  color: var(--whilo-text-muted);
   font-variant-numeric: tabular-nums;
   text-wrap: pretty;
 }
 .server-connection-actions {
   display: flex;
-  gap: var(--openbot-space-2);
+  gap: var(--whilo-space-2);
   -webkit-app-region: no-drag;
 }
 .server-connection-content {

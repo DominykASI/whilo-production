@@ -1,4 +1,4 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import type {
   AgentDefaults,
   AgentMemoryLimitPreference,
@@ -17,6 +17,7 @@ import type {
   ExternalLinkPreference,
   HostUpdateSettingsChange,
   IdleRestartTarget,
+  InstallBundledInput,
   InstallMarketplaceAgentInput,
   InstallSkillInput,
   MacAutomationTarget,
@@ -33,6 +34,7 @@ import type {
   SaveSetupInput,
   SetAnalyticsPreferenceInput,
   SetAppAppearancePreferenceInput,
+  SetAppInterfaceLookPreferenceInput,
   SetAppInterfaceSizePreferenceInput,
   SetAppLanguagePreferenceInput,
   SetAppLogoColorPreferenceInput,
@@ -43,7 +45,7 @@ import type {
   UninstallSkillInput,
   UpdatePreferenceChange,
   VerifyEmailCodeInput,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   decodeExternalLinkTarget,
   IDLE_RESTART_TARGETS,
@@ -52,6 +54,8 @@ import {
   isAgentModel,
   isAgentProvider,
   isAppAppearance,
+  isAppAccent,
+  isAppCornerRadius,
   isAppInterfaceSize,
   isAppLanguage,
   isAppLogoColor,
@@ -67,7 +71,7 @@ import {
   isRemoteNetworkRoute,
   isSkillCategory,
   MAC_AUTOMATION_TARGETS,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   type DynamicRecord,
   isBoolean,
@@ -75,8 +79,8 @@ import {
   isNumber,
   isOneOf,
   isString,
-} from "@openbot/contracts/runtime-values";
-import { validateProfileName } from "@openbot/contracts/validation";
+} from "@whilo/contracts/runtime-values";
+import { validateProfileName } from "@whilo/contracts/validation";
 import { parseAvatarImage } from "./avatar-inputs";
 import { isObject, optionalBoolean, requireString } from "./validation";
 
@@ -175,6 +179,18 @@ export function parseAppAppearancePreference(input: unknown): SetAppAppearancePr
 export function parseAppInterfaceSizePreference(input: unknown): SetAppInterfaceSizePreferenceInput {
   if (!isDynamicRecord(input) || !isAppInterfaceSize(input.percent)) throw new Error("Interface size is required.");
   return { percent: input.percent };
+}
+
+export function parseAppInterfaceLookPreference(input: unknown): SetAppInterfaceLookPreferenceInput {
+  if (!isDynamicRecord(input)) throw new Error("Interface look is required.");
+  const { accent, cornerRadius } = input;
+  if (accent !== undefined && !isAppAccent(accent)) throw new Error("Accent is invalid.");
+  if (cornerRadius !== undefined && !isAppCornerRadius(cornerRadius)) throw new Error("Corner radius is invalid.");
+  if (accent === undefined && cornerRadius === undefined) throw new Error("Interface look is required.");
+  return {
+    ...(accent === undefined ? {} : { accent }),
+    ...(cornerRadius === undefined ? {} : { cornerRadius }),
+  };
 }
 
 export function parseIdleRestartTarget(input: unknown): IdleRestartTarget {
@@ -391,6 +407,14 @@ export function parseUninstallSkill(input: unknown): UninstallSkillInput {
     agentId: requireString(input.agentId, "agentId"),
     skillId: requireString(input.skillId, "skillId"),
     ...(input.removeModified === true ? { removeModified: true } : {}),
+  };
+}
+
+export function parseInstallBundled(input: unknown): InstallBundledInput {
+  if (!isObject(input)) throw new Error("Invalid bundled plugin installation.");
+  return {
+    pluginId: requireString(input.pluginId, "pluginId"),
+    agentId: requireString(input.agentId, "agentId"),
   };
 }
 

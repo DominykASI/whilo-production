@@ -1,8 +1,8 @@
-import type { AgentTask } from "@openbot/contracts/ipc";
-import { isAgentTaskActive } from "@openbot/team-client/agent-tasks";
-import { Archive, ArchiveRestore, Badge, Button, MessageSquare, X } from "@openbot/ui";
-import { AgentTaskMark, type AgentTaskWait } from "@openbot/ui/features/conversation/AgentTasks";
-import { useText } from "@openbot/ui/text";
+import type { AgentTask } from "@whilo/contracts/ipc";
+import { isAgentTaskActive } from "@whilo/team-client/agent-tasks";
+import { Archive, ArchiveRestore, Badge, Button, MessageSquare, X } from "@whilo/ui";
+import { AgentTaskMark, type AgentTaskWait } from "@whilo/ui/features/conversation/AgentTasks";
+import { useText } from "@whilo/ui/text";
 import type { JSX } from "@solidjs/web";
 import { Show } from "solid-js";
 

@@ -6,10 +6,11 @@ import {
   type McpServerConfig,
   SKILL_CATEGORIES,
   type SkillCategory,
-} from "@openbot/contracts/ipc";
-import type { MarketplaceListingKind } from "@openbot/contracts/marketplace-links";
-import { errorReference } from "@openbot/user-errors";
+} from "@whilo/contracts/ipc";
+import type { MarketplaceListingKind } from "@whilo/contracts/marketplace-links";
+import { errorReference } from "@whilo/user-errors";
 import { createStore, onCleanup, onSettled, untrack } from "solid-js";
+import type { BundledPlugin } from "@whilo/contracts/ipc";
 import type { MarketplaceListing } from "./marketplace-listing";
 import type { MarketplaceApp, MarketplaceModel } from "./marketplace-model";
 
@@ -27,7 +28,9 @@ export type MarketplaceView =
   /** "Your skills" or one catalog category, on its own page. */
   | { kind: "skillGroup"; group: SkillGroup }
   /** A skill made on this computer. It has no catalog listing. */
-  | { kind: "localSkill"; skillId: string };
+  | { kind: "localSkill"; skillId: string }
+  /** A bundled plugin, such as Computer Use. */
+  | { kind: "plugin"; id: string };
 
 /** "Your skills", or a catalog category. */
 export type SkillGroup = "yours" | SkillCategory;
@@ -35,15 +38,16 @@ export type SkillGroup = "yours" | SkillCategory;
 /** Which catalog skills the Skills tab shows. No source shows all of them. */
 export type SkillSource = "verified" | "public";
 
-export type MarketplaceTab = "apps" | "agents" | "skills";
+export type MarketplaceTab = "apps" | "agents" | "plugins" | "skills";
 
 /** The kinds, in the order of the side panel. */
-export const MARKETPLACE_TABS: readonly MarketplaceTab[] = ["apps", "agents", "skills"];
+export const MARKETPLACE_TABS: readonly MarketplaceTab[] = ["apps", "agents", "plugins", "skills"];
 
 /** The name of each tab. The header names the browse view after its tab. */
 export const MARKETPLACE_TAB_LABEL = {
   agents: "marketplace.tab.agents",
   apps: "marketplace.tab.apps",
+  plugins: "marketplace.tab.plugins",
   skills: "marketplace.tab.skills",
 } as const satisfies Record<MarketplaceTab, string>;
 
@@ -101,6 +105,7 @@ export interface MarketplaceScope {
   nav: MarketplaceNavigation;
   agents: MarketplaceListing<MarketplaceAgentSummary>;
   skills: MarketplaceListing<MarketplaceSkillSummary>;
+  plugins: MarketplaceListing<BundledPlugin>;
 }
 
 export function createMarketplaceNavigation(): MarketplaceNavigation {
@@ -136,7 +141,7 @@ export function createMarketplaceNavigation(): MarketplaceNavigation {
 }
 
 export function isMarketplaceTab(value: string): value is MarketplaceTab {
-  return value === "apps" || value === "agents" || value === "skills";
+  return value === "apps" || value === "agents" || value === "plugins" || value === "skills";
 }
 
 /**

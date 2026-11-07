@@ -1,13 +1,13 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import type { MemoryEntry } from "@openbot/contracts/ipc";
-import type { AppMessages, AppTextKey } from "@openbot/i18n";
-import { Button, Input, Plus, Search, Switch, Textarea } from "@openbot/ui";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import type { MemoryEntry } from "@whilo/contracts/ipc";
+import type { AppMessages, AppTextKey } from "@whilo/i18n";
+import { Button, Input, Plus, Search, Switch, Textarea } from "@whilo/ui";
 import {
   SettingsLinkGroup,
   SettingsLinkRow,
   SettingsPanelContent,
   SettingsPanelHeader,
-} from "@openbot/ui/components/SettingsPanel";
+} from "@whilo/ui/components/SettingsPanel";
 import { createMemo, createSignal, For, Show, untrack } from "solid-js";
 import { useText } from "../../text";
 import { AgentMemoriesEmpty } from "./AgentMemoriesEmpty";

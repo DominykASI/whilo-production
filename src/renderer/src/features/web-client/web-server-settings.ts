@@ -12,8 +12,8 @@ import type {
   TeamPresenceMember,
   TeamPresenceSnapshot,
   UpdateTeamMemberInput,
-} from "@openbot/contracts/ipc";
-import { runTeamEffect } from "@openbot/team-client";
+} from "@whilo/contracts/ipc";
+import { runTeamEffect } from "@whilo/team-client";
 import {
   cancelMcpSignIn as cancelMcpSignInRequest,
   listMcpServers,
@@ -29,8 +29,8 @@ import {
   startMcpSignIn,
   testMcpServer as testMcpServerRequest,
   updateHostIdentity,
-} from "@openbot/team-client/team-admin-requests";
-import { currentText } from "@openbot/ui/text";
+} from "@whilo/team-client/team-admin-requests";
+import { currentText } from "@whilo/ui/text";
 import { Effect } from "effect";
 import { createEffect, createStore, untrack } from "solid-js";
 import { mcpSignInRecord } from "../servers/mcp-servers";

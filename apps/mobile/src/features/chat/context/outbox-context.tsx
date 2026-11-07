@@ -1,4 +1,4 @@
-import { classifyFailure } from "@openbot/telemetry";
+import { classifyFailure } from "@whilo/telemetry";
 import * as Crypto from "expo-crypto";
 import {
   createContext,

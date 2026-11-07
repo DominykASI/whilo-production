@@ -1,0 +1,14 @@
+# Downloads and unpacks a newer Whilo release next to the running one. whilo-update.timer starts
+# it; whilo-update-apply.service moves the release into place at the next start of the server.
+[Unit]
+Description=Stage an Whilo update
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/Whilo/hosted/whilo-hosted-update stage
+Nice=19
+IOSchedulingClass=idle
+CPUWeight=idle
+TimeoutStartSec=30min

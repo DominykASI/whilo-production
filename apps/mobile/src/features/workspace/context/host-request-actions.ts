@@ -1,4 +1,4 @@
-import { isAvatarMimeType } from "@openbot/contracts/avatar-images";
+import { isAvatarMimeType } from "@whilo/contracts/avatar-images";
 import {
   assertStorageUsageScope,
   CHANNEL_CHATS_CAPABILITY,
@@ -26,53 +26,53 @@ import {
   type SetAgentHiddenInput,
   STORAGE_CAPABILITY,
   type TeamRole,
-} from "@openbot/contracts/ipc";
-import { isDynamicRecord, isString } from "@openbot/contracts/runtime-values";
-import { TEAM_API_ROUTES } from "@openbot/contracts/team-api-routes";
-import { AGENT_ACCESS_CAPABILITY } from "@openbot/contracts/team-protocol/agent-access-v1";
-import { AGENT_ADMIN_CAPABILITY, AGENT_ADMIN_ROUTES } from "@openbot/contracts/team-protocol/agent-admin-v1";
+} from "@whilo/contracts/ipc";
+import { isDynamicRecord, isString } from "@whilo/contracts/runtime-values";
+import { TEAM_API_ROUTES } from "@whilo/contracts/team-api-routes";
+import { AGENT_ACCESS_CAPABILITY } from "@whilo/contracts/team-protocol/agent-access-v1";
+import { AGENT_ADMIN_CAPABILITY, AGENT_ADMIN_ROUTES } from "@whilo/contracts/team-protocol/agent-admin-v1";
 import {
   AGENT_BACKUP_MODELS_CAPABILITY,
   AGENT_BACKUP_MODELS_ROUTES,
-} from "@openbot/contracts/team-protocol/agent-backup-models-v1";
-import { AGENT_FOLDERS_CAPABILITY } from "@openbot/contracts/team-protocol/agent-folders-v1";
-import { AGENT_HIDDEN_CAPABILITY } from "@openbot/contracts/team-protocol/agent-hidden-v1";
+} from "@whilo/contracts/team-protocol/agent-backup-models-v1";
+import { AGENT_FOLDERS_CAPABILITY } from "@whilo/contracts/team-protocol/agent-folders-v1";
+import { AGENT_HIDDEN_CAPABILITY } from "@whilo/contracts/team-protocol/agent-hidden-v1";
 import {
   AGENT_HOST_SETTINGS_CAPABILITY,
   AGENT_HOST_SETTINGS_ROUTES,
-} from "@openbot/contracts/team-protocol/agent-host-settings-v1";
-import { AGENT_IMPORT_CAPABILITY } from "@openbot/contracts/team-protocol/agent-import-v1";
-import { AGENT_INSTALL_CAPABILITY } from "@openbot/contracts/team-protocol/agent-install-v1";
-import { AGENT_MEMORIES_CAPABILITY } from "@openbot/contracts/team-protocol/agent-memories-v1";
-import { AGENT_MEMORY_LIMIT_CAPABILITY } from "@openbot/contracts/team-protocol/agent-memory-limit-v1";
-import { AGENT_NEW_CHAT_CAPABILITY, AGENT_NEW_CHAT_ROUTES } from "@openbot/contracts/team-protocol/agent-new-chat-v1";
-import { AGENT_NOTIFICATION_LEVELS_CAPABILITY } from "@openbot/contracts/team-protocol/agent-notification-levels-v1";
+} from "@whilo/contracts/team-protocol/agent-host-settings-v1";
+import { AGENT_IMPORT_CAPABILITY } from "@whilo/contracts/team-protocol/agent-import-v1";
+import { AGENT_INSTALL_CAPABILITY } from "@whilo/contracts/team-protocol/agent-install-v1";
+import { AGENT_MEMORIES_CAPABILITY } from "@whilo/contracts/team-protocol/agent-memories-v1";
+import { AGENT_MEMORY_LIMIT_CAPABILITY } from "@whilo/contracts/team-protocol/agent-memory-limit-v1";
+import { AGENT_NEW_CHAT_CAPABILITY, AGENT_NEW_CHAT_ROUTES } from "@whilo/contracts/team-protocol/agent-new-chat-v1";
+import { AGENT_NOTIFICATION_LEVELS_CAPABILITY } from "@whilo/contracts/team-protocol/agent-notification-levels-v1";
 import {
   AGENT_PLAN_CARD_CAPABILITY,
   AGENT_PLAN_CARD_ROUTES,
-} from "@openbot/contracts/team-protocol/agent-plan-card-v1";
-import { AGENT_PUBLISH_CAPABILITY } from "@openbot/contracts/team-protocol/agent-publish-v1";
-import { AGENT_SESSION_SETTINGS_CAPABILITY } from "@openbot/contracts/team-protocol/agent-session-settings-v1";
+} from "@whilo/contracts/team-protocol/agent-plan-card-v1";
+import { AGENT_PUBLISH_CAPABILITY } from "@whilo/contracts/team-protocol/agent-publish-v1";
+import { AGENT_SESSION_SETTINGS_CAPABILITY } from "@whilo/contracts/team-protocol/agent-session-settings-v1";
 import {
   AGENT_TASK_LIMIT_CAPABILITY,
   AGENT_TASK_LIMIT_ROUTES,
-} from "@openbot/contracts/team-protocol/agent-task-limit-v1";
-import { AGENT_TASKS_CAPABILITY } from "@openbot/contracts/team-protocol/agent-tasks-v1";
-import { AGENT_THREAD_FILES_CAPABILITY } from "@openbot/contracts/team-protocol/agent-thread-files-v1";
-import { AGENT_THREAD_READS_CAPABILITY } from "@openbot/contracts/team-protocol/agent-thread-reads-v1";
-import { AGENT_THREADS_CAPABILITY } from "@openbot/contracts/team-protocol/agent-threads-v1";
-import { AGENT_UPDATE_CAPABILITY } from "@openbot/contracts/team-protocol/agent-update-v1";
-import { BITWARDEN_CONNECTOR_CAPABILITY } from "@openbot/contracts/team-protocol/bitwarden-connector-v1";
-import { BROWSER_PROFILES_CAPABILITY } from "@openbot/contracts/team-protocol/browser-profiles-v1";
-import { CHANNEL_ROUTES } from "@openbot/contracts/team-protocol/channels-v1";
-import { CONNECTORS_CAPABILITY } from "@openbot/contracts/team-protocol/connectors-v1";
-import { CONTEXT_RESET_CAPABILITY } from "@openbot/contracts/team-protocol/context-reset-v1";
+} from "@whilo/contracts/team-protocol/agent-task-limit-v1";
+import { AGENT_TASKS_CAPABILITY } from "@whilo/contracts/team-protocol/agent-tasks-v1";
+import { AGENT_THREAD_FILES_CAPABILITY } from "@whilo/contracts/team-protocol/agent-thread-files-v1";
+import { AGENT_THREAD_READS_CAPABILITY } from "@whilo/contracts/team-protocol/agent-thread-reads-v1";
+import { AGENT_THREADS_CAPABILITY } from "@whilo/contracts/team-protocol/agent-threads-v1";
+import { AGENT_UPDATE_CAPABILITY } from "@whilo/contracts/team-protocol/agent-update-v1";
+import { BITWARDEN_CONNECTOR_CAPABILITY } from "@whilo/contracts/team-protocol/bitwarden-connector-v1";
+import { BROWSER_PROFILES_CAPABILITY } from "@whilo/contracts/team-protocol/browser-profiles-v1";
+import { CHANNEL_ROUTES } from "@whilo/contracts/team-protocol/channels-v1";
+import { CONNECTORS_CAPABILITY } from "@whilo/contracts/team-protocol/connectors-v1";
+import { CONTEXT_RESET_CAPABILITY } from "@whilo/contracts/team-protocol/context-reset-v1";
 import {
   CONVERSATION_FILE_SEARCH_CAPABILITY,
   CONVERSATION_FILE_SEARCH_ROUTES,
   type ConversationFileSearchRequest,
   decodeConversationFileSearchResponse,
-} from "@openbot/contracts/team-protocol/conversation-file-search-v1";
+} from "@whilo/contracts/team-protocol/conversation-file-search-v1";
 import {
   TEAM_AGENT_CREATE_MODEL_CAPABILITY,
   TEAM_EML_ATTACHMENTS_CAPABILITY,
@@ -82,35 +82,35 @@ import {
   TEAM_SEMANTIC_TAGS_CAPABILITY,
   TEAM_SVG_ATTACHMENTS_CAPABILITY,
   TEAM_ZIP_ATTACHMENTS_CAPABILITY,
-} from "@openbot/contracts/team-protocol/current";
-import { EVENTS_CAPABILITY } from "@openbot/contracts/team-protocol/events-v1";
-import { HOST_MEMBER_UPDATE_CAPABILITY } from "@openbot/contracts/team-protocol/host-member-update-v1";
-import { HOST_RELEASE_CAPABILITY } from "@openbot/contracts/team-protocol/host-release-v1";
-import { HOST_TIMEZONE_CAPABILITY } from "@openbot/contracts/team-protocol/host-timezone-v1";
-import { HOST_UPDATE_CAPABILITY } from "@openbot/contracts/team-protocol/host-update-v1";
-import { HOSTED_SITES_CAPABILITY } from "@openbot/contracts/team-protocol/hosted-sites-v1";
-import { INSTANCE_TRANSFER_CAPABILITY } from "@openbot/contracts/team-protocol/instance-transfer-v1";
-import { MCP_SIGN_IN_CAPABILITY } from "@openbot/contracts/team-protocol/mcp-sign-in-v1";
-import { ONEPASSWORD_CONNECTOR_CAPABILITY } from "@openbot/contracts/team-protocol/onepassword-connector-v1";
-import { PROVIDER_ACCOUNTS_CAPABILITY } from "@openbot/contracts/team-protocol/provider-accounts-v1";
-import { PROVIDERS_ADMIN_CAPABILITY } from "@openbot/contracts/team-protocol/providers-v1";
-import { TEAM_QUEUE_EDIT_CAPABILITY } from "@openbot/contracts/team-protocol/queue-edit-v1";
-import { ROUTINE_RECOVERY_CAPABILITY } from "@openbot/contracts/team-protocol/routine-recovery-v1";
-import { ROUTINE_RESULTS_CAPABILITY } from "@openbot/contracts/team-protocol/routine-results-v1";
-import { SHARED_TABLES_CAPABILITY } from "@openbot/contracts/team-protocol/shared-tables-v1";
-import { SIGN_IN_RELAY_CAPABILITY } from "@openbot/contracts/team-protocol/sign-in-relay-v1";
-import { SKILLS_ADMIN_CAPABILITY } from "@openbot/contracts/team-protocol/skills-admin-v1";
-import { STORAGE_ROUTES } from "@openbot/contracts/team-protocol/storage-v1";
-import type { TeamProtocolV2Json } from "@openbot/contracts/team-protocol/v2";
-import { VAULT_IMPORT_CAPABILITY } from "@openbot/contracts/team-protocol/vault-import-v1";
-import { VAULT_CAPABILITY } from "@openbot/contracts/team-protocol/vault-v1";
-import { VAULT_V2_CAPABILITY } from "@openbot/contracts/team-protocol/vault-v2";
-import { WORKFLOWS_CAPABILITY } from "@openbot/contracts/team-protocol/workflows-v1";
-import type { MobileTextKey } from "@openbot/i18n/mobile";
-import { readHostAnalytics } from "@openbot/team-client";
-import { readPlanLimits } from "@openbot/team-client/plan-limits";
-import type { RemoteFileUpload } from "@openbot/team-client/remote-peer";
-import { buildRoutineCalendar, type RoutineCalendarSource } from "@openbot/team-client/routine-calendar";
+} from "@whilo/contracts/team-protocol/current";
+import { EVENTS_CAPABILITY } from "@whilo/contracts/team-protocol/events-v1";
+import { HOST_MEMBER_UPDATE_CAPABILITY } from "@whilo/contracts/team-protocol/host-member-update-v1";
+import { HOST_RELEASE_CAPABILITY } from "@whilo/contracts/team-protocol/host-release-v1";
+import { HOST_TIMEZONE_CAPABILITY } from "@whilo/contracts/team-protocol/host-timezone-v1";
+import { HOST_UPDATE_CAPABILITY } from "@whilo/contracts/team-protocol/host-update-v1";
+import { HOSTED_SITES_CAPABILITY } from "@whilo/contracts/team-protocol/hosted-sites-v1";
+import { INSTANCE_TRANSFER_CAPABILITY } from "@whilo/contracts/team-protocol/instance-transfer-v1";
+import { MCP_SIGN_IN_CAPABILITY } from "@whilo/contracts/team-protocol/mcp-sign-in-v1";
+import { ONEPASSWORD_CONNECTOR_CAPABILITY } from "@whilo/contracts/team-protocol/onepassword-connector-v1";
+import { PROVIDER_ACCOUNTS_CAPABILITY } from "@whilo/contracts/team-protocol/provider-accounts-v1";
+import { PROVIDERS_ADMIN_CAPABILITY } from "@whilo/contracts/team-protocol/providers-v1";
+import { TEAM_QUEUE_EDIT_CAPABILITY } from "@whilo/contracts/team-protocol/queue-edit-v1";
+import { ROUTINE_RECOVERY_CAPABILITY } from "@whilo/contracts/team-protocol/routine-recovery-v1";
+import { ROUTINE_RESULTS_CAPABILITY } from "@whilo/contracts/team-protocol/routine-results-v1";
+import { SHARED_TABLES_CAPABILITY } from "@whilo/contracts/team-protocol/shared-tables-v1";
+import { SIGN_IN_RELAY_CAPABILITY } from "@whilo/contracts/team-protocol/sign-in-relay-v1";
+import { SKILLS_ADMIN_CAPABILITY } from "@whilo/contracts/team-protocol/skills-admin-v1";
+import { STORAGE_ROUTES } from "@whilo/contracts/team-protocol/storage-v1";
+import type { TeamProtocolV2Json } from "@whilo/contracts/team-protocol/v2";
+import { VAULT_IMPORT_CAPABILITY } from "@whilo/contracts/team-protocol/vault-import-v1";
+import { VAULT_CAPABILITY } from "@whilo/contracts/team-protocol/vault-v1";
+import { VAULT_V2_CAPABILITY } from "@whilo/contracts/team-protocol/vault-v2";
+import { WORKFLOWS_CAPABILITY } from "@whilo/contracts/team-protocol/workflows-v1";
+import type { MobileTextKey } from "@whilo/i18n/mobile";
+import { readHostAnalytics } from "@whilo/team-client";
+import { readPlanLimits } from "@whilo/team-client/plan-limits";
+import type { RemoteFileUpload } from "@whilo/team-client/remote-peer";
+import { buildRoutineCalendar, type RoutineCalendarSource } from "@whilo/team-client/routine-calendar";
 import {
   addAgentFolder,
   bitwardenConnectorRequest,
@@ -196,7 +196,7 @@ import {
   unpublishAgentTemplate,
   updateHostAgentBrowserProfile,
   updateHostBrowserProfile,
-} from "@openbot/team-client/team-admin-requests";
+} from "@whilo/team-client/team-admin-requests";
 import {
   type AgentMemoriesRequest,
   agentTaskControl,
@@ -222,7 +222,7 @@ import {
   startAgentTask,
   type TeamApiRequest,
   TeamRequestError,
-} from "@openbot/team-client/team-api-requests";
+} from "@whilo/team-client/team-api-requests";
 import type { QueryClient } from "@tanstack/react-query";
 import { Effect } from "effect";
 import * as Crypto from "expo-crypto";
@@ -528,7 +528,7 @@ export function createHostRequestActions({
   const phoneTimezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;
   const browserProfilesAdmin = (serverId: string) =>
     capabilityApi(serverId, BROWSER_PROFILES_CAPABILITY, "mobile.server.browserProfiles.unsupported");
-  /** The OpenBot update of the host: the admin route set, or the member set that only checks and starts. */
+  /** The Whilo update of the host: the admin route set, or the member set that only checks and starts. */
   const updateApi = (serverId: string, access: ServerUpdateAccess) =>
     capabilityApi(
       serverId,

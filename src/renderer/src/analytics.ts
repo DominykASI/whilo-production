@@ -1,4 +1,4 @@
-import { isKeyOnlyProvider } from "@openbot/contracts/agent-providers";
+import { isKeyOnlyProvider } from "@whilo/contracts/agent-providers";
 import {
   BILLING_CURRENCIES,
   BILLING_INTERVALS,
@@ -6,8 +6,8 @@ import {
   type BillingCurrency,
   type BillingInterval,
   type BillingPlanId,
-} from "@openbot/contracts/billing";
-import { HOSTED_SERVER_ENTRY_POINTS, type HostedServerEntryPoint } from "@openbot/contracts/hosted-servers";
+} from "@whilo/contracts/billing";
+import { HOSTED_SERVER_ENTRY_POINTS, type HostedServerEntryPoint } from "@whilo/contracts/hosted-servers";
 import {
   AGENT_PROVIDERS,
   AGENT_REASONING_EFFORTS,
@@ -21,10 +21,10 @@ import {
   type SpeechVoice,
   WORKFLOW_NODE_KINDS,
   type WorkflowNodeKind,
-} from "@openbot/contracts/ipc";
-import { isBoolean, isDynamicRecord, isFunction, isNumber, isOneOf, isString } from "@openbot/contracts/runtime-values";
-import { normalizeEmailAddress } from "@openbot/contracts/validation";
-import { ANALYTICS_GENERATIONS } from "@openbot/telemetry";
+} from "@whilo/contracts/ipc";
+import { isBoolean, isDynamicRecord, isFunction, isNumber, isOneOf, isString } from "@whilo/contracts/runtime-values";
+import { normalizeEmailAddress } from "@whilo/contracts/validation";
+import { ANALYTICS_GENERATIONS } from "@whilo/telemetry";
 import { OpenPanelBase, type OpenPanelOptions } from "@openpanel/web";
 import {
   ANALYTICS_SCHEMA_VERSION,
@@ -37,7 +37,7 @@ import { MARKETPLACE_PLUGINS } from "./features/settings/marketplace-plugin-cata
 const OPENPANEL_API_URL = "https://analytics.openbot.run/api";
 const OPENPANEL_CLIENT_ID = "6c989975-87ef-4f0c-857e-ab449a65b5c2";
 const MAX_PENDING_EVENTS = 100;
-const CURATED_LISTING_PATTERN = /^openbot-curated-(?:skill|agent)-([a-z0-9][a-z0-9-]{0,63})$/u;
+const CURATED_LISTING_PATTERN = /^whilo-curated-(?:skill|agent)-([a-z0-9][a-z0-9-]{0,63})$/u;
 const PLUGIN_SLUGS = new Set(MARKETPLACE_PLUGINS.map((plugin) => plugin.slug));
 
 type ServerKind = "local" | "remote" | "unknown";
@@ -183,7 +183,7 @@ interface DesktopAnalyticsEvents {
     action: "view" | "install" | "update" | "uninstall" | "publish" | "enable" | "disable";
     result: AnalyticsResult;
     failure_code?: string;
-    /** A listing id or plugin slug. Only OpenBot's own curated listings and plugins are sent. */
+    /** A listing id or plugin slug. Only Whilo's own curated listings and plugins are sent. */
     listing_slug?: string;
   };
   memory_action: {

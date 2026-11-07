@@ -1,5 +1,5 @@
-import type { MarketplaceAgentSummary } from "@openbot/contracts/ipc";
-import { translateFor } from "@openbot/i18n";
+import type { MarketplaceAgentSummary } from "@whilo/contracts/ipc";
+import { translateFor } from "@whilo/i18n";
 import type { JSX } from "@solidjs/web";
 import {
   createMemoryHistory,
@@ -185,11 +185,11 @@ export const SkillsPhone: Story = { args: { address: "skills", tab: "skills" }, 
 /** `openbot.run/marketplace/apps`: the plugins that `/plugins` showed. */
 export const Apps: Story = { args: { address: "apps", tab: "apps" } };
 
-/** A verified agent. "Add to OpenBot" opens the app; "Copy link" copies this page's address. */
+/** A verified agent. "Add to Whilo" opens the app; "Copy link" copies this page's address. */
 export const AgentVerified: Story = { args: { page: "agent", id: VERIFIED_AGENT } };
 export const AgentVerifiedPhone: Story = { args: { page: "agent", id: VERIFIED_AGENT }, globals: PHONE };
 
-/** An agent by another user: the line before Add says that OpenBot reviewed it before it went live. */
+/** An agent by another user: the line before Add says that Whilo reviewed it before it went live. */
 export const AgentPublic: Story = { args: { page: "agent", id: PUBLIC_AGENT } };
 export const AgentPublicPhone: Story = { args: { page: "agent", id: PUBLIC_AGENT }, globals: PHONE };
 

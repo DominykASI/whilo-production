@@ -5,7 +5,7 @@ import {
   MANAGED_RUNTIME_PROVIDERS,
   MANAGED_TOOL_RUNTIMES,
   type ManagedProviderId,
-} from "@openbot/contracts/agent-providers";
+} from "@whilo/contracts/agent-providers";
 import {
   type CustomProviderModel,
   type CustomProviderResult,
@@ -13,36 +13,36 @@ import {
   DEFAULT_CUSTOM_PROVIDER_HARNESS,
   type ProviderRuntimeSnapshot,
   type ProviderRuntimeStatus,
-} from "@openbot/contracts/ipc";
-import { type DynamicRecord, isOneOf } from "@openbot/contracts/runtime-values";
+} from "@whilo/contracts/ipc";
+import { type DynamicRecord, isOneOf } from "@whilo/contracts/runtime-values";
 import {
   CUSTOM_PROVIDER_HARNESS_CAPABILITY,
   CUSTOM_PROVIDER_HARNESS_ROUTES,
-} from "@openbot/contracts/team-protocol/custom-provider-harness-v1";
-import { PROVIDERS_ADMIN_CAPABILITY, PROVIDERS_ADMIN_ROUTES } from "@openbot/contracts/team-protocol/providers-v1";
+} from "@whilo/contracts/team-protocol/custom-provider-harness-v1";
+import { PROVIDERS_ADMIN_CAPABILITY, PROVIDERS_ADMIN_ROUTES } from "@whilo/contracts/team-protocol/providers-v1";
 import {
   PROVIDERS_RUNTIMES_V2_CAPABILITY,
   PROVIDERS_RUNTIMES_V2_ROUTES,
-} from "@openbot/contracts/team-protocol/providers-v2";
+} from "@whilo/contracts/team-protocol/providers-v2";
 import {
   PROVIDERS_SIGN_IN_V3_CAPABILITY,
   PROVIDERS_SIGN_IN_V3_PROVIDERS,
   PROVIDERS_SIGN_IN_V3_ROUTES,
-} from "@openbot/contracts/team-protocol/providers-v3";
+} from "@whilo/contracts/team-protocol/providers-v3";
 import {
   PROVIDERS_V4_CAPABILITY,
   PROVIDERS_V4_ROUTES,
   PROVIDERS_V4_RUNTIME_PROVIDERS,
   PROVIDERS_V4_SIGN_IN_PROVIDERS,
-} from "@openbot/contracts/team-protocol/providers-v4";
+} from "@whilo/contracts/team-protocol/providers-v4";
 import {
   PROVIDERS_V5_CAPABILITY,
   PROVIDERS_V5_ROUTES,
   PROVIDERS_V5_RUNTIME_PROVIDERS,
-} from "@openbot/contracts/team-protocol/providers-v5";
-import { PROVIDERS_V8_CAPABILITY, PROVIDERS_V8_ROUTES } from "@openbot/contracts/team-protocol/providers-v8";
-import { sourceText } from "@openbot/i18n/source";
-import { redactText, registerSecretValue } from "@openbot/logging";
+} from "@whilo/contracts/team-protocol/providers-v5";
+import { PROVIDERS_V8_CAPABILITY, PROVIDERS_V8_ROUTES } from "@whilo/contracts/team-protocol/providers-v8";
+import { sourceText } from "@whilo/i18n/source";
+import { redactText, registerSecretValue } from "@whilo/logging";
 import { Effect } from "effect";
 import { normalizePastedCode } from "../../backend/agent/cli-code-login";
 import { AgentLifecycleFailed } from "../../backend/agent-service";

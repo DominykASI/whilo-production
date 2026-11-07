@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
-import type { ConversationMessage, ConversationSnapshot } from "@openbot/contracts/ipc";
-import { isAgentProvider } from "@openbot/contracts/ipc";
-import { type DynamicRecord, isNumber, isString } from "@openbot/contracts/runtime-values";
+import type { ConversationMessage, ConversationSnapshot } from "@whilo/contracts/ipc";
+import { isAgentProvider } from "@whilo/contracts/ipc";
+import { type DynamicRecord, isNumber, isString } from "@whilo/contracts/runtime-values";
 import type { ConversationQueries } from "./conversation-queries";
 import { activityTurnId } from "./conversation-writer";
 import { type DatabaseCore, deleteThreadAttachments } from "./database-core";
@@ -49,7 +49,7 @@ export class ThreadReplay {
     const thread = decodeThreadAgentRow(
       db.prepare("SELECT agent_id FROM projection_threads WHERE thread_id = ?").get(threadId),
     );
-    if (!thread) throw new Error(`Unknown OpenBot thread: ${threadId}`);
+    if (!thread) throw new Error(`Unknown Whilo thread: ${threadId}`);
 
     let latest: ConversationSnapshot | null = null;
     let latestSequence = 0;

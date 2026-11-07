@@ -7,24 +7,24 @@ import {
   type MarketplaceSkillSummary,
   type McpServerConfig,
   type SkillCategory,
-} from "@openbot/contracts/ipc";
-import type { McpConnectFlow } from "@openbot/contracts/mcp-connect-flows";
-import { CONNECTOR_LISTINGS } from "@openbot/ui/features/connectors/connector-catalog";
-import { Marketplace } from "@openbot/ui/features/marketplace/Marketplace";
-import { AgentsDialog } from "@openbot/ui/features/marketplace/MarketplaceAgentsDialog";
+} from "@whilo/contracts/ipc";
+import type { McpConnectFlow } from "@whilo/contracts/mcp-connect-flows";
+import { CONNECTOR_LISTINGS } from "@whilo/ui/features/connectors/connector-catalog";
+import { Marketplace } from "@whilo/ui/features/marketplace/Marketplace";
+import { AgentsDialog } from "@whilo/ui/features/marketplace/MarketplaceAgentsDialog";
 import type {
   MarketplaceApp,
   MarketplaceAppAccount,
   MarketplaceAppConnection,
   MarketplaceModel,
-} from "@openbot/ui/features/marketplace/marketplace-model";
+} from "@whilo/ui/features/marketplace/marketplace-model";
 import {
   createMarketplaceNavigation,
   type MarketplaceNavigation,
-} from "@openbot/ui/features/marketplace/marketplace-view";
-import { McpConnectDialog } from "@openbot/ui/features/settings/McpConnectDialog";
-import type { McpConnectSubject } from "@openbot/ui/features/settings/McpConnectShell";
-import { currentText } from "@openbot/ui/text";
+} from "@whilo/ui/features/marketplace/marketplace-view";
+import { McpConnectDialog } from "@whilo/ui/features/settings/McpConnectDialog";
+import type { McpConnectSubject } from "@whilo/ui/features/settings/McpConnectShell";
+import { currentText } from "@whilo/ui/text";
 import type { JSX } from "@solidjs/web";
 import { createSignal, createStore, onSettled, Show, untrack } from "solid-js";
 import { fn } from "storybook/test";
@@ -95,7 +95,7 @@ const MORE_SKILLS: readonly MarketplaceSkillSummary[] = SKILL_WORDS.flatMap(([ca
     name,
     description: `${name.replace(/^\S+/, (verb) => `${verb}s`)} and reports what it found, one line for each.`,
     category,
-    creatorName: index % 3 === 0 ? "OpenBot" : "Priya Raman",
+    creatorName: index % 3 === 0 ? "Whilo" : "Priya Raman",
     version: 1 + (index % 4),
     installs: 900 - index * 17,
     featured: index % 9 === 0,

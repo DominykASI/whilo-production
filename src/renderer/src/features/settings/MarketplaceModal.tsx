@@ -1,12 +1,12 @@
-import type { MarketplaceListingLink } from "@openbot/contracts/marketplace-links";
-import { ConfirmDialog } from "@openbot/ui";
-import { Marketplace } from "@openbot/ui/features/marketplace/Marketplace";
-import type { MarketplaceApp } from "@openbot/ui/features/marketplace/marketplace-model";
-import { createMarketplaceNavigation } from "@openbot/ui/features/marketplace/marketplace-view";
-import { McpConnectDialog } from "@openbot/ui/features/settings/McpConnectDialog";
-import { McpSignInRelayDialog } from "@openbot/ui/features/settings/McpSignInPage";
-import { PluginUninstallDialog } from "@openbot/ui/features/settings/PluginUninstallDialog";
-import { useText } from "@openbot/ui/text";
+import type { MarketplaceListingLink } from "@whilo/contracts/marketplace-links";
+import { ConfirmDialog } from "@whilo/ui";
+import { Marketplace } from "@whilo/ui/features/marketplace/Marketplace";
+import type { MarketplaceApp } from "@whilo/ui/features/marketplace/marketplace-model";
+import { createMarketplaceNavigation } from "@whilo/ui/features/marketplace/marketplace-view";
+import { McpConnectDialog } from "@whilo/ui/features/settings/McpConnectDialog";
+import { McpSignInRelayDialog } from "@whilo/ui/features/settings/McpSignInPage";
+import { PluginUninstallDialog } from "@whilo/ui/features/settings/PluginUninstallDialog";
+import { useText } from "@whilo/ui/text";
 import { createEffect, createSignal, Show, untrack } from "solid-js";
 import {
   createMarketplaceController,
@@ -16,7 +16,7 @@ import {
 
 export interface MarketplaceModalProps extends MarketplaceControllerProps {
   /**
-   * The listing an `openbot://plugins/<slug>` link or a chat suggestion asked for. It opens the app
+   * The listing an `whilo://plugins/<slug>` link or a chat suggestion asked for. It opens the app
    * page; a link never connects, so what a link can do is show a user a listing they then decide
    * about.
    */

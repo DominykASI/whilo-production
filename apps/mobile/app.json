@@ -1,19 +1,31 @@
 {
   "expo": {
-    "name": "OpenBot",
-    "slug": "openbot",
-    "platforms": ["ios", "android"],
+    "name": "Whilo",
+    "slug": "whilo",
+    "platforms": ["ios", "android", "web"],
     "version": "1.4.5",
     "orientation": "portrait",
     "icon": "./assets/icons/app-icon.png",
-    "scheme": "openbot",
+    "scheme": "whilo",
     "userInterfaceStyle": "automatic",
+    "web": {
+      "favicon": "./public/favicon-48.png",
+      "backgroundColor": "#f5f5f7",
+      "themeColor": "#f5f5f7",
+      "shortName": "Whilo",
+      "lang": "en",
+      "scope": "./",
+      "startUrl": "./",
+      "display": "standalone",
+      "orientation": "portrait",
+      "description": "Whilo — chat with your agents from anywhere."
+    },
     "ios": {
-      "bundleIdentifier": "run.openbot.mobile",
+      "bundleIdentifier": "run.whilo.mobile",
       "supportsTablet": true,
-      "associatedDomains": ["applinks:openbot.run"],
+      "associatedDomains": ["applinks:whilo.onerall.com"],
       "infoPlist": {
-        "NSLocalNetworkUsageDescription": "Allow OpenBot to connect to your desktop during local development.",
+        "NSLocalNetworkUsageDescription": "Allow Whilo to connect to your desktop during local development.",
         "NSAppTransportSecurity": {
           "NSAllowsLocalNetworking": true
         },
@@ -22,10 +34,10 @@
       "icon": "./assets/icons/app-icon.icon"
     },
     "android": {
-      "package": "run.openbot.mobile",
+      "package": "run.whilo.mobile",
       "icon": "./assets/icons/app-icon.png",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icons/android-adaptive-eyes.png",
+        "foregroundImage": "./assets/icons/android-adaptive-foreground.png",
         "backgroundImage": "./assets/icons/android-adaptive-background.png",
         "monochromeImage": "./assets/icons/android-adaptive-eyes.png"
       },
@@ -39,6 +51,7 @@
       ]
     },
     "plugins": [
+      "./plugins/with-pwa",
       "./plugins/with-rocketsim",
       "./plugins/with-workspace-bundle-inputs",
       "expo-router",
@@ -62,8 +75,8 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow OpenBot to use your camera to scan QR codes.",
-          "microphonePermission": "Allow OpenBot to use the microphone to dictate messages.",
+          "cameraPermission": "Allow Whilo to use your camera to scan QR codes.",
+          "microphonePermission": "Allow Whilo to use the microphone to dictate messages.",
           "recordAudioAndroid": false,
           "barcodeScannerEnabled": true
         }
@@ -71,16 +84,16 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Allow OpenBot to access the photos you choose to share.",
-          "cameraPermission": "Allow OpenBot to use your camera to add photos.",
-          "microphonePermission": "Allow OpenBot to use the microphone to dictate messages."
+          "photosPermission": "Allow Whilo to access the photos you choose to share.",
+          "cameraPermission": "Allow Whilo to use your camera to add photos.",
+          "microphonePermission": "Allow Whilo to use the microphone to dictate messages."
         }
       ],
       [
         "expo-media-library",
         {
-          "photosPermission": "Allow OpenBot to access the photos you choose to share.",
-          "savePhotosPermission": "Allow OpenBot to save images and videos you download from a chat to your photo library.",
+          "photosPermission": "Allow Whilo to access the photos you choose to share.",
+          "savePhotosPermission": "Allow Whilo to save images and videos you download from a chat to your photo library.",
           "granularPermissions": ["photo"]
         }
       ],
@@ -95,11 +108,11 @@
         "./plugins/with-notification-sounds",
         {
           "sounds": [
-            "./assets/sounds/openbot-task.wav",
-            "./assets/sounds/openbot-warm.wav",
-            "./assets/sounds/openbot-mech.wav",
-            "./assets/sounds/openbot-bubble.wav",
-            "./assets/sounds/openbot-press.wav"
+            "./assets/sounds/whilo-task.wav",
+            "./assets/sounds/whilo-warm.wav",
+            "./assets/sounds/whilo-mech.wav",
+            "./assets/sounds/whilo-bubble.wav",
+            "./assets/sounds/whilo-press.wav"
           ]
         }
       ],
@@ -107,7 +120,7 @@
       [
         "expo-local-authentication",
         {
-          "faceIDPermission": "Allow OpenBot to use Face ID to unlock the app."
+          "faceIDPermission": "Allow Whilo to use Face ID to unlock the app."
         }
       ],
       [
@@ -125,8 +138,8 @@
         {
           "ios": {
             "enabled": true,
-            "appGroupId": "group.run.openbot.mobile",
-            "extensionBundleIdentifier": "run.openbot.mobile.ShareExtension",
+            "appGroupId": "group.run.whilo.mobile",
+            "extensionBundleIdentifier": "run.whilo.mobile.ShareExtension",
             "activationRule": {
               "supportsText": true,
               "supportsWebUrlWithMaxCount": 1,
@@ -201,15 +214,15 @@
       [
         "expo-speech-recognition",
         {
-          "microphonePermission": "Allow OpenBot to use the microphone to dictate messages.",
-          "speechRecognitionPermission": "Allow OpenBot to turn your speech into message text."
+          "microphonePermission": "Allow Whilo to use the microphone to dictate messages.",
+          "speechRecognitionPermission": "Allow Whilo to turn your speech into message text."
         }
       ],
       [
         "expo-widgets",
         {
-          "bundleIdentifier": "run.openbot.mobile.ExpoWidgetsTarget",
-          "groupIdentifier": "group.run.openbot.mobile",
+          "bundleIdentifier": "run.whilo.mobile.ExpoWidgetsTarget",
+          "groupIdentifier": "group.run.whilo.mobile",
           "enablePushNotifications": true,
           "frequentUpdates": true
         }
@@ -217,9 +230,9 @@
       [
         "./plugins/with-notification-service",
         {
-          "targetName": "OpenBotNotificationService",
-          "bundleIdentifier": "run.openbot.mobile.NotificationService",
-          "groupIdentifier": "group.run.openbot.mobile"
+          "targetName": "WhiloNotificationService",
+          "bundleIdentifier": "run.whilo.mobile.NotificationService",
+          "groupIdentifier": "group.run.whilo.mobile"
         }
       ]
     ],
@@ -233,7 +246,7 @@
         "projectId": "eeec730f-c8f4-42c0-a750-64df8af14940"
       }
     },
-    "owner": "openbot",
+    "owner": "whilo",
     "runtimeVersion": {
       "policy": "fingerprint"
     },

@@ -1,8 +1,8 @@
-import type { AgentMemorySelectionChange, AgentMemorySelectionState, MemoryEntry } from "@openbot/contracts/ipc";
-import { ConfirmDialog, toast } from "@openbot/ui";
-import { AGENT_DELETE_UNDO_MS } from "@openbot/ui/features/agents/AgentDeleteUndoToast";
-import { AgentMemoriesView } from "@openbot/ui/features/conversation/AgentMemoriesView";
-import { useText } from "@openbot/ui/text";
+import type { AgentMemorySelectionChange, AgentMemorySelectionState, MemoryEntry } from "@whilo/contracts/ipc";
+import { ConfirmDialog, toast } from "@whilo/ui";
+import { AGENT_DELETE_UNDO_MS } from "@whilo/ui/features/agents/AgentDeleteUndoToast";
+import { AgentMemoriesView } from "@whilo/ui/features/conversation/AgentMemoriesView";
+import { useText } from "@whilo/ui/text";
 import { createEffect, createMemo, createSignal, onCleanup, Show, untrack } from "solid-js";
 import { actionToast } from "../../action-toast";
 import { desktopAnalytics } from "../../analytics";

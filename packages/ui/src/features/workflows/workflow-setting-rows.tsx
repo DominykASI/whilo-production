@@ -4,7 +4,7 @@
  * row, and the settings of that type follow it, so a card keeps its layout when the type changes.
  */
 
-import { Bot, ChevronDown, DropdownMenu, Hash, Input } from "@openbot/ui";
+import { Bot, ChevronDown, DropdownMenu, Hash, Input } from "@whilo/ui";
 import type { JSX } from "@solidjs/web";
 import { For, Show, untrack } from "solid-js";
 import { useText } from "../../text";

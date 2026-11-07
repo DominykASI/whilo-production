@@ -1,4 +1,4 @@
-import type { AddedAgent, InstallMarketplaceAgentInput, McpSignInRelayPage } from "@openbot/contracts/ipc";
+import type { AddedAgent, InstallMarketplaceAgentInput, McpSignInRelayPage } from "@whilo/contracts/ipc";
 import { appPort } from "../../app-port";
 import { type AgentSkillCalls, agentSkillCalls, type SkillsPort, skillsPort } from "../../skills-port";
 
@@ -7,7 +7,8 @@ import { type AgentSkillCalls, agentSkillCalls, type SkillsPort, skillsPort } fr
  * browser client reads the catalog on its own origin and changes its host over the Team API.
  */
 export interface MarketplaceCalls {
-  skills: Pick<SkillsPort["skills"], "get" | "getBySlug" | "list">;
+  skills: Pick<SkillsPort["skills"], "get" | "getBySlug" | "list"> &
+    Pick<Partial<SkillsPort["skills"]>, "installBundled" | "uninstallBundled">;
   agents: Pick<SkillsPort["marketplaceAgents"], "get" | "getListing" | "list">;
   agentSkills: (hostServerId?: string) => AgentSkillCalls;
   mcp: Pick<
@@ -41,7 +42,7 @@ export interface MarketplaceSignInRelay {
   paste: (url: string, address: string, serverId: string) => Promise<void>;
 }
 
-/** Read on each call, as `skillsPort` is: tests and stories replace `window.openbot` per case. */
+/** Read on each call, as `skillsPort` is: tests and stories replace `window.whilo` per case. */
 export function desktopMarketplaceCalls(): MarketplaceCalls {
   const port = skillsPort();
   return {

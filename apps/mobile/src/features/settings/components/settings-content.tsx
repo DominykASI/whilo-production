@@ -96,7 +96,7 @@ export function SettingsRow({
   /** For a row that shows or hides the rows below it. */
   expanded?: boolean;
 }>) {
-  const muted = String(useCSSVariable("--openbot-text-grouped-secondary"));
+  const muted = String(useCSSVariable("--whilo-text-grouped-secondary"));
   const { fontScale } = useWindowDimensions();
   const measures = Boolean(trailing) && fontScale >= STACKED_FONT_SCALE;
   const [rowWidth, setRowWidth] = useState(0);

@@ -2,8 +2,8 @@ import {
   VAULT_IMPORT_CAPABILITY,
   VAULT_IMPORT_CSV_LIMIT,
   VAULT_IMPORT_ROUTES,
-} from "@openbot/contracts/team-protocol/vault-import-v1";
-import { isFixedSourceText, sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/team-protocol/vault-import-v1";
+import { isFixedSourceText, sourceText } from "@whilo/i18n/source";
 import { runCauseEffect } from "../../backend/effect-boundary";
 import type { TeamApiVault } from "./dependencies";
 import { HttpError } from "./http-error";

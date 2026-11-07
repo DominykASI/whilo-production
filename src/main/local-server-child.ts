@@ -1,5 +1,5 @@
 /**
- * A local server: a second OpenBot server on this computer, which the desktop app starts as a
+ * A local server: a second Whilo server on this computer, which the desktop app starts as a
  * headless child process of itself (`local-servers/local-servers.ts`). It has its own user data
  * directory and its own agent root, so its database, agents, chats and files stay apart from the
  * app's own server. It shows no window and listens only on the loopback Team API.
@@ -18,18 +18,18 @@ import type { TeamStore } from "./team-store";
 /** The username of the one member of a local server. The desktop app logs in as it. */
 export const LOCAL_SERVER_OWNER_USERNAME = "owner";
 /** The prefix of the one stdout line that tells the parent where the Team API listens. */
-export const LOCAL_SERVER_READY_PREFIX = "OPENBOT_LOCAL_SERVER_READY ";
+export const LOCAL_SERVER_READY_PREFIX = "WHILO_LOCAL_SERVER_READY ";
 
 export const LOCAL_SERVER_ENVIRONMENT = {
-  child: "OPENBOT_LOCAL_SERVER_CHILD",
-  agentRoot: "OPENBOT_LOCAL_SERVER_ROOT",
-  name: "OPENBOT_LOCAL_SERVER_NAME",
-  secret: "OPENBOT_LOCAL_SERVER_SECRET",
-  runtimeRoot: "OPENBOT_LOCAL_SERVER_RUNTIMES",
+  child: "WHILO_LOCAL_SERVER_CHILD",
+  agentRoot: "WHILO_LOCAL_SERVER_ROOT",
+  name: "WHILO_LOCAL_SERVER_NAME",
+  secret: "WHILO_LOCAL_SERVER_SECRET",
+  runtimeRoot: "WHILO_LOCAL_SERVER_RUNTIMES",
 } as const;
 
 export interface LocalServerChildEnvironment {
-  /** The folder that holds the agents of this server, in place of `~/OpenBot`. */
+  /** The folder that holds the agents of this server, in place of `~/Whilo`. */
   agentRoot: string;
   /** The name of the server when it is made. A rename later goes through the Team API. */
   serverName: string;

@@ -8,44 +8,44 @@
 // not a var(), and this module is read by the build-time generator where no
 // document exists to resolve one. The same test pins them to tokens.css.
 
-/** `--openbot-logo-production` */
+/** `--whilo-logo-production` */
 const LOGO_PRODUCTION = "#d6adf2";
-/** `--openbot-warning` */
+/** `--whilo-warning` */
 const LOGO_DEV = "#ff9412";
-/** `--openbot-success` */
+/** `--whilo-success` */
 const LOGO_PREVIEW = "#31cf76";
-/** `--openbot-accent` */
+/** `--whilo-accent` */
 const ACCENT = "#007cf7";
-/** `--openbot-unread-surface` */
+/** `--whilo-unread-surface` */
 const UNREAD = "#74b9ff";
-/** `--openbot-onboarding-desktop-indigo` */
+/** `--whilo-onboarding-desktop-indigo` */
 const INDIGO = "#6f7de8";
-/** `--openbot-chart-series-grok` */
+/** `--whilo-chart-series-grok` */
 const CYAN = "#6bc7d9";
-/** `--openbot-provider-claude` */
+/** `--whilo-provider-claude` */
 const TERRACOTTA = "#d97757";
-/** `--openbot-danger-text` */
+/** `--whilo-danger-text` */
 const CORAL = "#ff6069";
-/** `--openbot-badge-new` */
+/** `--whilo-badge-new` */
 const MAGENTA = "#ff1e5e";
-/** `--openbot-text-dim` */
+/** `--whilo-text-dim` */
 const DIM = "#6a6a6a";
-/** `--openbot-bg-canvas`, the page behind the card */
+/** `--whilo-bg-canvas`, the page behind the card */
 const CANVAS = "#1a1a1a";
 
 export const ARTICLE_GRADIENT_BRAND_HEXES = {
-  "--openbot-logo-production": LOGO_PRODUCTION,
-  "--openbot-warning": LOGO_DEV,
-  "--openbot-success": LOGO_PREVIEW,
-  "--openbot-accent": ACCENT,
-  "--openbot-unread-surface": UNREAD,
-  "--openbot-onboarding-desktop-indigo": INDIGO,
-  "--openbot-chart-series-grok": CYAN,
-  "--openbot-provider-claude": TERRACOTTA,
-  "--openbot-danger-text": CORAL,
-  "--openbot-badge-new": MAGENTA,
-  "--openbot-text-dim": DIM,
-  "--openbot-bg-canvas": CANVAS,
+  "--whilo-logo-production": LOGO_PRODUCTION,
+  "--whilo-warning": LOGO_DEV,
+  "--whilo-success": LOGO_PREVIEW,
+  "--whilo-accent": ACCENT,
+  "--whilo-unread-surface": UNREAD,
+  "--whilo-onboarding-desktop-indigo": INDIGO,
+  "--whilo-chart-series-grok": CYAN,
+  "--whilo-provider-claude": TERRACOTTA,
+  "--whilo-danger-text": CORAL,
+  "--whilo-badge-new": MAGENTA,
+  "--whilo-text-dim": DIM,
+  "--whilo-bg-canvas": CANVAS,
 } as const;
 
 // Four deep anchors that are not brand tokens. Nothing in the product is this

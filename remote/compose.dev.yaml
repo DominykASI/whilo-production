@@ -1,4 +1,4 @@
-name: openbot-remote-dev
+name: whilo-remote-dev
 
 services:
   remote-api:

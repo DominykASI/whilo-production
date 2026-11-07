@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import { dirname, join } from "node:path";
-import { redactText } from "@openbot/logging";
+import { redactText } from "@whilo/logging";
 import { Effect, Fiber } from "effect";
 import { app, BrowserWindow, webContents } from "electron";
 import { z } from "zod";
@@ -76,7 +76,7 @@ async function main(): Promise<void> {
     browser = new BrowserHost(window, join(fixtureRoot, "downloads"), join(fixtureRoot, "tabs.json"));
     const host = browser;
     const params = (tool: string, args: DynamicToolCallParams["arguments"]): DynamicToolCallParams => ({
-      namespace: "openbot_browser",
+      namespace: "whilo_browser",
       tool,
       arguments: args,
       ownerAgentId: "fixture-agent",
@@ -115,16 +115,16 @@ async function main(): Promise<void> {
     const searched = await runScript({
       tabId: form.tab.id,
       script: `
-        await type("#query", "openbot");
+        await type("#query", "whilo");
         await click(role("button", "Search"));
-        await waitFor("Result: openbot");
+        await waitFor("Result: whilo");
         return await evaluate("document.querySelector('#out').textContent");
       `,
     });
     assert.equal(searched.result.success, true, searched.outcome.error);
     assert.equal(searched.outcome.status, "completed");
     assert.equal(searched.outcome.steps, 4);
-    assert.equal(searched.outcome.value, "Result: openbot");
+    assert.equal(searched.outcome.value, "Result: whilo");
     // Each snapshot raises the revision by one: one final capture, none per step.
     assert.equal(searched.outcome.snapshot?.revision, form.revision + 1, "Script steps took snapshots of their own.");
     recordCases("script-runs-steps-in-order", "script-takes-one-final-snapshot");

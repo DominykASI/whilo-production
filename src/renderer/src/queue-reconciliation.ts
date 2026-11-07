@@ -1,4 +1,4 @@
-import { isQueuedAgentReply, type QueueDelivery, type QueueSnapshot } from "@openbot/contracts/ipc";
+import { isQueuedAgentReply, type QueueDelivery, type QueueSnapshot } from "@whilo/contracts/ipc";
 
 /**
  * Which of an agent's queue the conversation shows, and in what order.

@@ -1,4 +1,4 @@
-import type { AppTextKey } from "@openbot/i18n";
+import type { AppTextKey } from "@whilo/i18n";
 import type { JSX } from "@solidjs/web";
 import { createEffect, createSignal, For, onCleanup, onSettled, untrack } from "solid-js";
 import { ErrorReference } from "../../error-reference";
@@ -10,7 +10,7 @@ import { CrewPile, randomCrewSeed } from "./crew-pile";
 
 /*
  * The app loading screen. In the `pile` scene, a different crew of felt plushes rains into a pile on
- * each run, and the lilac OpenBot plush lands on top; a user can grab and throw them. When the app is
+ * each run, and the lilac Whilo plush lands on top; a user can grab and throw them. When the app is
  * ready, the crew hop out and the screen fades. The `thinking` scene shows the lilac plush, which
  * watches three felt balls bounce. Joke status lines change below, unless the screen has a title.
  */

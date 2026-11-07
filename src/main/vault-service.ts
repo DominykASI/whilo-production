@@ -1,5 +1,5 @@
 // The Vault of this computer: logins, payment cards, contact info and API keys that the user saves in
-// Server settings. Agents fill logins through the `PasswordVault` port (`openbot:` IDs) and cards and
+// Server settings. Agents fill logins through the `PasswordVault` port (`whilo:` IDs) and cards and
 // contact info through `VaultItems`; neither port gives an agent a password, a card number or a security
 // code. Agents can also add and change items through `VaultItems`, but cannot set a secret. API keys
 // reach an agent only as files that `AgentApiKeys` writes; agents cannot see or change them as items.
@@ -18,9 +18,9 @@ import {
   type VaultSecretRequest,
   type VaultState,
   type VaultStatus,
-} from "@openbot/contracts/ipc";
-import { type SourceMessages, sourceText } from "@openbot/i18n/source";
-import { registerSecretValues } from "@openbot/logging";
+} from "@whilo/contracts/ipc";
+import { type SourceMessages, sourceText } from "@whilo/i18n/source";
+import { registerSecretValues } from "@whilo/logging";
 import { Effect } from "effect";
 import { type PasswordVault, PasswordVaultError, websiteMatchesOrigin, websiteUrl } from "../backend/password-vault";
 import type {
@@ -352,7 +352,7 @@ export class VaultService {
     return this.state();
   });
 
-  /** The built-in logins, for the password vault router under the `openbot:` prefix. */
+  /** The built-in logins, for the password vault router under the `whilo:` prefix. */
   readonly logins: PasswordVault = {
     connected: () => this.#status === "ready" && this.#store.read().logins.length > 0,
     loginsFor: (origin) =>

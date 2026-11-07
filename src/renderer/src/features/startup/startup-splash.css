@@ -5,11 +5,11 @@
 
 .startup-splash {
   position: absolute;
-  z-index: var(--openbot-layer-dialog);
+  z-index: var(--whilo-layer-dialog);
   inset: 0;
   display: grid;
   place-items: center;
-  background: var(--openbot-bg-canvas);
+  background: var(--whilo-bg-canvas);
   -webkit-app-region: drag;
 }
 
@@ -17,23 +17,36 @@
   display: block;
   width: 96px;
   height: 96px;
-  animation: startup-splash-in var(--openbot-duration-overlay) var(--openbot-ease-out) backwards;
+  animation: startup-splash-in var(--whilo-duration-overlay) var(--whilo-ease-out) backwards;
+}
+
+/* The mark and the pet are centered as one pair, the pet on the line under the mark. The pet comes
+   in after the mark, so the mark is read first. */
+.startup-splash-stage {
+  display: grid;
+  justify-items: center;
+  gap: var(--whilo-space-4);
+}
+
+.startup-splash-pet {
+  display: block;
+  width: 56px;
+  height: 56px;
+  animation: startup-splash-in var(--whilo-duration-overlay) var(--whilo-ease-out) 280ms backwards;
 }
 
 /* The fade also runs with reduced motion: its animationend removes the splash. */
 .startup-splash[data-phase="exit"] {
   pointer-events: none;
   -webkit-app-region: no-drag;
-  animation: startup-splash-exit var(--openbot-duration-overlay) var(--openbot-ease-in-out) forwards;
+  animation: startup-splash-exit var(--whilo-duration-overlay) var(--whilo-ease-in-out) forwards;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  /* Both eyes use the longer stroke's length, so they draw at the same time. */
-  .startup-splash-logo .app-logo-eye {
-    stroke-dasharray: var(--splash-eye-length) calc(var(--splash-eye-length) + 24px);
-    animation:
-      startup-splash-eye-draw 480ms var(--openbot-ease-in-out) 160ms backwards,
-      app-logo-blink 4.8s var(--openbot-ease-in-out) 1s infinite;
+  /* The mark draws itself once, then the sparkles pulse: the same intro the eyes had. */
+  .startup-splash-logo .app-logo-mark {
+    stroke-dasharray: var(--splash-mark-length) calc(var(--splash-mark-length) + 24px);
+    animation: startup-splash-mark-draw 480ms var(--whilo-ease-in-out) 160ms backwards;
   }
 }
 
@@ -43,9 +56,9 @@
   }
 }
 
-@keyframes startup-splash-eye-draw {
+@keyframes startup-splash-mark-draw {
   from {
-    stroke-dashoffset: calc(var(--splash-eye-length) + 12px);
+    stroke-dashoffset: calc(var(--splash-mark-length) + 12px);
   }
   to {
     stroke-dashoffset: 0px;

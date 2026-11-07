@@ -1,6 +1,6 @@
 /**
  * The Discord settings of a trigger and of an output card. A Discord trigger starts a run when a person
- * mentions OpenBot in a server, a channel and with a role that match it. A Discord output replies to that
+ * mentions Whilo in a server, a channel and with a role that match it. A Discord output replies to that
  * message, adds a reaction to it, or posts in a channel.
  */
 
@@ -13,9 +13,9 @@ import {
   type WorkflowDiscordAction,
   type WorkflowDiscordEmoji,
   type WorkflowDiscordEvent,
-} from "@openbot/contracts/ipc";
-import type { AppTextKey } from "@openbot/i18n";
-import { AtSign, CirclePlus, Hash, Megaphone, MessageSquare, MessageSquareReply, Zap } from "@openbot/ui";
+} from "@whilo/contracts/ipc";
+import type { AppTextKey } from "@whilo/i18n";
+import { AtSign, CirclePlus, Hash, Megaphone, MessageSquare, MessageSquareReply, Zap } from "@whilo/ui";
 import type { JSX } from "@solidjs/web";
 import { Show } from "solid-js";
 import { useText } from "../../text";

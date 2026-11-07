@@ -1,8 +1,8 @@
-import { AppLogo } from "@openbot/brand";
-import type { AppVariant } from "@openbot/contracts/ipc";
-import { TRANSLATED_LOCALES, type TranslatedLocale } from "@openbot/i18n";
-import { APP_LANGUAGE_OPTIONS, type AppLanguageOption } from "@openbot/i18n/languages";
-import { ArrowRight, Button, ChevronDown, ChevronUp, IconButton, RadioGroup } from "@openbot/ui";
+import { AppLogo } from "@whilo/brand";
+import type { AppVariant } from "@whilo/contracts/ipc";
+import { TRANSLATED_LOCALES, type TranslatedLocale } from "@whilo/i18n";
+import { APP_LANGUAGE_OPTIONS, type AppLanguageOption } from "@whilo/i18n/languages";
+import { ArrowRight, Button, ChevronDown, ChevronUp, IconButton, RadioGroup } from "@whilo/ui";
 import { createSignal, createStore, For, onSettled } from "solid-js";
 import { useText } from "../../text";
 
@@ -21,7 +21,7 @@ interface WheelEntry {
   option: AppLanguageOption;
 }
 
-const PRODUCT_NAME = "OpenBot";
+const PRODUCT_NAME = "Whilo";
 const TITLE_ID = "language-wheel-title";
 
 /** The catalog languages in selector order. "System default" is not a row: the wheel opens on it. */
@@ -281,7 +281,7 @@ function LanguageWheelPicker(props: {
 }
 
 /**
- * The first screen OpenBot shows, before sign-in, with the same brand lockup as the sign-in screen
+ * The first screen Whilo shows, before sign-in, with the same brand lockup as the sign-in screen
  * after it. The screen text follows the language in the centre, so a reader sees each choice at once.
  */
 export function LanguageWheel(props: LanguageWheelProps) {

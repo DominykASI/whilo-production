@@ -33,7 +33,9 @@
     "brave-search",
     "resend",
     "composio",
-    "clickup"
+    "clickup",
+    "computer-use",
+    "world-legal-desk"
   ],
   "featured": ["aave", "canva", "notion", "figma"]
 }

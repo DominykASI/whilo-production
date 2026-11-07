@@ -10,18 +10,18 @@ import {
   type WorkflowSaveResult,
   type WorkflowSummary,
   type WorkflowVersion,
-} from "@openbot/contracts/ipc";
-import type { AppTextKey } from "@openbot/i18n";
-import { toast } from "@openbot/ui";
-import type { WorkflowCanvasProps } from "@openbot/ui/features/workflows/WorkflowCanvas";
+} from "@whilo/contracts/ipc";
+import type { AppTextKey } from "@whilo/i18n";
+import { toast } from "@whilo/ui";
+import type { WorkflowCanvasProps } from "@whilo/ui/features/workflows/WorkflowCanvas";
 import {
   EMPTY_GITHUB_HISTORY,
   githubItemUrl,
   type WorkflowGitHubCanvas,
-} from "@openbot/ui/features/workflows/workflow-github";
-import type { WorkflowDiscordServer, WorkflowPlace } from "@openbot/ui/features/workflows/workflow-model";
-import { EMPTY_WORKFLOW_RUN_VIEW, type WorkflowRunView } from "@openbot/ui/features/workflows/workflow-run-view";
-import { useText } from "@openbot/ui/text";
+} from "@whilo/ui/features/workflows/workflow-github";
+import type { WorkflowDiscordServer, WorkflowPlace } from "@whilo/ui/features/workflows/workflow-model";
+import { EMPTY_WORKFLOW_RUN_VIEW, type WorkflowRunView } from "@whilo/ui/features/workflows/workflow-run-view";
+import { useText } from "@whilo/ui/text";
 import { createEffect, createMemo, createSignal, onSettled, untrack } from "solid-js";
 import type { DesktopAnalyticsScope, WorkflowAnalyticsAction } from "../../analytics";
 import { createGitHubConnector } from "../connectors/github-connector";

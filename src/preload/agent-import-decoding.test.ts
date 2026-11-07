@@ -4,11 +4,11 @@ import {
   decodeAgentImportResult,
   decodeInstanceTransferResult,
   decodeRemoteInstanceTransferResult,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import { describe, expect, it } from "vitest";
 
 // The preload decodes these results with the same contracts decoders. A remote import or transfer
-// lists the host's agents, and a newer host can run an agent on a provider that this OpenBot does not
+// lists the host's agents, and a newer host can run an agent on a provider that this Whilo does not
 // know. The host has already done the import, so the result must still decode.
 
 const AGENT = {
@@ -21,7 +21,7 @@ const AGENT = {
   reasoningEffort: "medium",
   notifications: true,
   threadId: null,
-  workspacePath: "/Users/ada/OpenBot/Agents/Ada",
+  workspacePath: "/Users/ada/Whilo/Agents/Ada",
   preview: "",
   updatedAt: null,
   avatarSeed: "agent-1",

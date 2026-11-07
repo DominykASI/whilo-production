@@ -5,7 +5,7 @@ import type { ExternalDestination } from "./ipc-app-auth";
 import { isOneOf, isString } from "./runtime-values";
 
 /**
- * The coding agents OpenBot can drive, and everything about one that is the same wherever it is
+ * The coding agents Whilo can drive, and everything about one that is the same wherever it is
  * named. A provider used to be written out by hand about twenty times - five copies of the same
  * literal chain, four renderer lists, a preload destructure that threw on an id it did not know,
  * an analytics regex - so adding one meant finding every copy, and missing one was silent.
@@ -48,7 +48,7 @@ export const PROVIDER_ID_PATTERN = /^[a-z][a-z0-9-]{0,63}$/u;
 
 declare const FOREIGN_PROVIDER: unique symbol;
 /**
- * A provider that a newer host runs and this OpenBot does not know. Only client data holds one: the
+ * A provider that a newer host runs and this Whilo does not know. Only client data holds one: the
  * host's own agents, database and drivers use `AgentProviderId`.
  */
 export type ForeignProviderId = string & { readonly [FOREIGN_PROVIDER]: true };
@@ -63,7 +63,7 @@ export function isAgentProviderRef(value: unknown): value is AgentProviderRef {
   return isAgentProvider(value) || isForeignProviderId(value);
 }
 
-/** Whether this OpenBot can set up, sign in and pick models for the provider. */
+/** Whether this Whilo can set up, sign in and pick models for the provider. */
 export function isKnownAgentProvider(provider: AgentProviderRef): provider is AgentProviderId {
   return isAgentProvider(provider);
 }
@@ -92,7 +92,7 @@ export interface AgentProviderDescriptor {
   readonly onboardingDescription: string;
   /** What to tell a user whose provider needs a credential before it can answer. */
   readonly signInMessage: string;
-  /** Where "install it yourself" leads. `null` means OpenBot ships the CLI and there is nowhere to go. */
+  /** Where "install it yourself" leads. `null` means Whilo ships the CLI and there is nowhere to go. */
   readonly installGuideLink: ExternalDestination | null;
   /** The model a new agent starts on. A provider lists its own models, so this id can be missing. */
   readonly defaultModel: AgentModelId;
@@ -106,7 +106,7 @@ export interface AgentProviderDescriptor {
   /** Left-to-right order in the model picker and top-to-bottom in the onboarding list. */
   readonly pickerOrder: number;
   /**
-   * The sign-in that this computer's driver runs when the browser callback cannot reach OpenBot.
+   * The sign-in that this computer's driver runs when the browser callback cannot reach Whilo.
    * `device`: a device code or a link that the user finishes on any device. `paste`: a code that
    * the user pastes back, which only a computer where `pasteCodeSignInSupported` can run. `null`:
    * none. It mirrors the driver's `codeSignIn` in `src/backend/provider-drivers.ts`; keep the
@@ -124,7 +124,7 @@ export interface AgentProviderDescriptor {
    */
   readonly signInPageEnd: "callback" | "page";
   /**
-   * The workspace skill folders the CLI reads by itself, in its own order. OpenBot writes only
+   * The workspace skill folders the CLI reads by itself, in its own order. Whilo writes only
    * `.agents/skills` and `.claude/skills`, so each list names at least one of them.
    * Sources: the Codex "build skills" guide, the Claude Code skills guide, the opencode skills guide
    * and the skill paths in Google's Antigravity ACP server, in the Cursor CLI, in the Cline CLI and in
@@ -133,7 +133,7 @@ export interface AgentProviderDescriptor {
   readonly skillFolders: readonly [string, ...string[]];
   /**
    * How the CLI gets the user's skills in `~/.agents/skills`. `native`: the CLI reads that folder by
-   * itself. `plugin`: OpenBot gives the folder to Claude as a session plugin
+   * itself. `plugin`: Whilo gives the folder to Claude as a session plugin
    * (`claudeHomeSkillPlugin`). `instructions`: the CLI does not read it, so the developer instructions
    * name each skill and its `SKILL.md`. Sources: the strings and docs of the installed Codex, Grok,
    * OpenCode, Cursor, Cline, Kimi and Pi CLIs; the Antigravity ACP server reads only `$GEMINI_HOME`; Muse
@@ -142,7 +142,7 @@ export interface AgentProviderDescriptor {
   readonly homeSkills: "native" | "plugin" | "instructions";
   /**
    * The agent instruction files that the CLI reads by itself from its working directory, the agent's
-   * workspace. OpenBot adds the agent's file to the developer instructions only when its name is not
+   * workspace. Whilo adds the agent's file to the developer instructions only when its name is not
    * in this list, so that the CLI does not read it twice.
    */
   readonly workspaceInstructionFiles: readonly AgentInstructionFileName[];
@@ -162,11 +162,11 @@ export interface AgentProviderDescriptor {
   /**
    * Whether the CLI runs turns of two sessions of one agent at the same time. `false`: the agent runs
    * one turn at a time, so its tasks and its own chat wait for each other. A custom ACP agent is
-   * `false`, because OpenBot cannot know what the command does with a second prompt.
+   * `false`, because Whilo cannot know what the command does with a second prompt.
    */
   readonly concurrentTurns: boolean;
   /**
-   * Whether OpenBot can read the plan's remaining usage. `false`: the CLI exposes no usage reading,
+   * Whether Whilo can read the plan's remaining usage. `false`: the CLI exposes no usage reading,
    * so the dock says the provider does not report usage instead of waiting for a reading. Declared
    * here because the renderer cannot see the drivers; set it to `true` with a driver's usage read
    * (Codex and Claude read it themselves, Grok, OpenCode, Antigravity and Cursor through `readRateLimits`).
@@ -197,7 +197,7 @@ const AGENT_PROVIDER_DESCRIPTOR_TABLE = {
     id: "codex",
     displayName: "ChatGPT",
     cliName: "Codex CLI",
-    onboardingDescription: "Included with OpenBot",
+    onboardingDescription: "Included with Whilo",
     signInMessage: "Connect ChatGPT to continue.",
     installGuideLink: null,
     defaultModel: "gpt-6-luna",
@@ -220,7 +220,7 @@ const AGENT_PROVIDER_DESCRIPTOR_TABLE = {
     id: "claude",
     displayName: "Claude",
     cliName: "Claude Code",
-    onboardingDescription: "Included with OpenBot",
+    onboardingDescription: "Included with Whilo",
     signInMessage: "Connect Claude to continue.",
     installGuideLink: "claude-install",
     defaultModel: "claude-haiku-5-5",
@@ -243,7 +243,7 @@ const AGENT_PROVIDER_DESCRIPTOR_TABLE = {
     id: "grok",
     displayName: "Grok",
     cliName: "Grok CLI",
-    onboardingDescription: "Included with OpenBot",
+    onboardingDescription: "Included with Whilo",
     signInMessage: "Run `grok login` or set XAI_API_KEY to use Grok.",
     installGuideLink: null,
     defaultModel: "grok-4.6",
@@ -391,7 +391,7 @@ const AGENT_PROVIDER_DESCRIPTOR_TABLE = {
     id: "pi",
     displayName: "Pi",
     cliName: "Pi CLI",
-    onboardingDescription: "Included with OpenBot",
+    onboardingDescription: "Included with Whilo",
     signInMessage: "Use /login in Pi on the host computer. Close Pi when sign-in is complete.",
     installGuideLink: null,
     defaultModel: "",
@@ -414,7 +414,7 @@ const AGENT_PROVIDER_DESCRIPTOR_TABLE = {
     id: "muse",
     displayName: "Muse",
     cliName: "Muse CLI",
-    onboardingDescription: "Included with OpenBot",
+    onboardingDescription: "Included with Whilo",
     signInMessage: "Sign in to Muse on the host computer to continue.",
     installGuideLink: null,
     defaultModel: "",
@@ -433,7 +433,7 @@ const AGENT_PROVIDER_DESCRIPTOR_TABLE = {
     approvalsInFullAccess: true,
     foldersInFullAccess: false,
   },
-  // Inception's Mercury models run in the Pi CLI that OpenBot downloads for Pi, with a key the user
+  // Inception's Mercury models run in the Pi CLI that Whilo downloads for Pi, with a key the user
   // saves here. Pi's own sign-in and models stay on the Pi row.
   inception: {
     id: "inception",
@@ -458,7 +458,7 @@ const AGENT_PROVIDER_DESCRIPTOR_TABLE = {
     approvalsInFullAccess: true,
     foldersInFullAccess: false,
   },
-  // DeepSeek's models run in the Pi CLI that OpenBot downloads for Pi, which has a built-in DeepSeek
+  // DeepSeek's models run in the Pi CLI that Whilo downloads for Pi, which has a built-in DeepSeek
   // provider. The user saves the key here. Pi's own sign-in and models stay on the Pi row.
   deepseek: {
     id: "deepseek",
@@ -483,7 +483,7 @@ const AGENT_PROVIDER_DESCRIPTOR_TABLE = {
     approvalsInFullAccess: true,
     foldersInFullAccess: false,
   },
-  // OpenRouter's models run in the Pi CLI that OpenBot downloads for Pi, which has a built-in OpenRouter
+  // OpenRouter's models run in the Pi CLI that Whilo downloads for Pi, which has a built-in OpenRouter
   // provider. The user saves the key here. Pi's own sign-in and models stay on the Pi row.
   openrouter: {
     id: "openrouter",
@@ -601,7 +601,7 @@ export const PICKER_PROVIDERS: readonly AgentProviderId[] = AGENT_PROVIDER_DESCR
   .map((descriptor) => descriptor.id);
 
 /**
- * The providers whose CLI OpenBot downloads and pins itself, as a literal tuple rather than a
+ * The providers whose CLI Whilo downloads and pins itself, as a literal tuple rather than a
  * filter over the descriptors: `ManagedProviderId` is what makes `ProviderRuntimeSnapshot.providers`
  * a total record, so every reader gets a status without a guard, and a managed provider that has no
  * runtime entry is a compile error instead of an empty download card.
@@ -649,7 +649,7 @@ export function isLocalOnlyProvider(provider: AgentProviderId): boolean {
 }
 
 /**
- * The providers that sign in only with an API key that the user saves in OpenBot. They run in the Pi
+ * The providers that sign in only with an API key that the user saves in Whilo. They run in the Pi
  * CLI, so their Connect and Reconnect open the key dialog.
  */
 export const KEY_ONLY_PROVIDERS = ["inception", "deepseek", "openrouter"] as const satisfies readonly AgentProviderId[];
@@ -704,7 +704,7 @@ export function customAgentIdOfModel(model: string): string | null {
 }
 
 /**
- * The tools OpenBot downloads for the MCP servers rather than for an agent: a JavaScript runtime,
+ * The tools Whilo downloads for the MCP servers rather than for an agent: a JavaScript runtime,
  * so that `npx some-server` starts on a machine that has never had Node.
  *
  * A separate id space, not a fifth managed provider. `ManagedProviderId` is what makes
@@ -729,7 +729,7 @@ export function isManagedToolRuntime(id: string): id is ManagedToolRuntimeId {
  * neither OpenCode endpoint authenticates, so this trailing word is the only thing that
  * separates a model any user can run from one that bills. The picker labels a model with it and the
  * catalog order picks the default from it, and those two have to agree -- a "Free" badge on a model
- * OpenBot would never default to, or a default that quietly bills, is the same bug twice.
+ * Whilo would never default to, or a default that quietly bills, is the same bug twice.
  *
  * Only a trailing word counts. Anything looser would catch a model named for something else that
  * happens to contain "free".

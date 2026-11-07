@@ -5,34 +5,34 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { FuseV1Options, getCurrentFuseWire } from "@electron/fuses";
-import { isDynamicRecord, isNumber, isString } from "@openbot/contracts/runtime-values";
-import { createOpenBotLogger, toLogValue } from "@openbot/logging";
+import { isDynamicRecord, isNumber, isString } from "@whilo/contracts/runtime-values";
+import { createWhiloLogger, toLogValue } from "@whilo/logging";
 import { isMissingFileError } from "../src/backend/file-errors";
 import { elfSearchPaths, ORIGIN_SEARCH_PATH } from "./elf-search-paths";
 
-const logger = createOpenBotLogger("verify-linux-package");
+const logger = createWhiloLogger("verify-linux-package");
 
 // Each launch step ends on a state or an event. This limit only turns a real hang into a clear failure:
 // a slow release runner can need much more time than usual to start the first instance.
 const launchStepLimitMs = 5 * 60_000;
 
-/** The scripts that a server installs from a release (`RELEASE_FILES` in scripts/hosting/openbot-hosted-update). */
+/** The scripts that a server installs from a release (`RELEASE_FILES` in scripts/hosting/whilo-hosted-update). */
 const HOSTED_SCRIPTS = [
-  "openbot-hosted-server",
-  "openbot-hosted-env",
-  "openbot-hosted-update",
-  "openbot",
-  "openbot-boat-pre-stop",
+  "whilo-hosted-server",
+  "whilo-hosted-env",
+  "whilo-hosted-update",
+  "whilo",
+  "whilo-boat-pre-stop",
   // Not installed on a server: `install-server.sh` runs it from the unpacked release.
-  "openbot-server-setup",
+  "whilo-server-setup",
 ];
 const HOSTED_UNITS = [
-  "openbot.service",
-  "openbot-update.service",
-  "openbot-update.timer",
-  "openbot-update-apply.service",
-  "openbot-update-request.path",
-  "openbot-update-request.service",
+  "whilo.service",
+  "whilo-update.service",
+  "whilo-update.timer",
+  "whilo-update-apply.service",
+  "whilo-update-request.path",
+  "whilo-update-request.service",
 ];
 
 const FUSE_DISABLED = 48;
@@ -59,7 +59,7 @@ const appPath = resolve(
   appPathArgument ?? (architecture === "x64" ? "dist/linux-unpacked" : "dist/linux-arm64-unpacked"),
 );
 // electron-builder names the Linux binary after `name` in package.json, not `productName`.
-const executablePath = resolve(appPath, "openbot");
+const executablePath = resolve(appPath, "whilo");
 const resourcesPath = resolve(appPath, "resources");
 const asarPath = resolve(resourcesPath, "app.asar");
 const voiceRuntimePath = resolve(resourcesPath, "voice/runtime");
@@ -81,7 +81,7 @@ await Promise.all([
   access(voiceHostPath),
   access(speechHostPath),
   // A hosted server refuses an update to a release without all of its hosting files.
-  ...["packages.txt", "openbot-hosted.apparmor", ...HOSTED_UNITS].map((file) =>
+  ...["packages.txt", "whilo-hosted.apparmor", ...HOSTED_UNITS].map((file) =>
     access(resolve(resourcesPath, "hosting", file)),
   ),
   ...HOSTED_SCRIPTS.map((file) => access(resolve(resourcesPath, "hosting", file), constants.X_OK)),
@@ -167,16 +167,16 @@ if (!isString(packageJson.version)) throw new Error("package.json version is mis
 // was built. It is the same file the running app reports through `app.getVersion()`.
 const packagedManifest = JSON.parse(await readAsarFile(asarPath, "package.json"));
 if (!isDynamicRecord(packagedManifest)) throw new Error("The packaged package.json is not a JSON object.");
-expectEqual(packagedManifest.name, "openbot", "packaged name");
-expectEqual(packagedManifest.productName, "OpenBot", "packaged product name");
+expectEqual(packagedManifest.name, "whilo", "packaged name");
+expectEqual(packagedManifest.productName, "Whilo", "packaged product name");
 expectEqual(packagedManifest.version, packageJson.version, "packaged version");
 
 await assertElfMachine(executablePath);
 
 const appImages = existsSync("dist") ? await findAppImages() : [];
 for (const appImage of appImages) {
-  if (!appImage.startsWith(`OpenBot-${packageJson.version}-`)) {
-    throw new Error(`Unexpected AppImage name: ${appImage} (expected OpenBot-${packageJson.version}-<arch>.AppImage)`);
+  if (!appImage.startsWith(`Whilo-${packageJson.version}-`)) {
+    throw new Error(`Unexpected AppImage name: ${appImage} (expected Whilo-${packageJson.version}-<arch>.AppImage)`);
   }
 }
 
@@ -212,7 +212,7 @@ await verifyLaunch(executablePath);
 
 logger.info(`Verified ${appPath}`);
 logger.info(
-  `OpenBot ${packageJson.version} · Linux ${architecture} · manifest · voice runtime · ASAR integrity · hardened fuses · launch`,
+  `Whilo ${packageJson.version} · Linux ${architecture} · manifest · voice runtime · ASAR integrity · hardened fuses · launch`,
 );
 
 function expectEqual(actual: unknown, expected: unknown, label: string): void {
@@ -287,7 +287,7 @@ async function verifyLaunch(executable: string): Promise<void> {
   if (!process.env.DISPLAY && !process.env.WAYLAND_DISPLAY) {
     throw new Error("The launch check needs a display. Run it under `xvfb-run -a`.");
   }
-  const userDataPath = await mkdtemp(join(tmpdir(), "openbot-package-smoke-"));
+  const userDataPath = await mkdtemp(join(tmpdir(), "whilo-package-smoke-"));
   const child = spawn(executable, [`--user-data-dir=${userDataPath}`], {
     env: launchEnvironment(userDataPath),
     stdio: ["ignore", "ignore", "pipe"],
@@ -301,7 +301,7 @@ async function verifyLaunch(executable: string): Promise<void> {
   const launchExit = new Promise<never>((_, reject) => {
     child.once("exit", (code, signal) => {
       reject(
-        new Error(`Packaged OpenBot exited during launch (${signal ?? `code ${String(code)}`}): ${stderr.trim()}`),
+        new Error(`Packaged Whilo exited during launch (${signal ?? `code ${String(code)}`}): ${stderr.trim()}`),
       );
     });
   });
@@ -328,7 +328,7 @@ async function verifyLaunch(executable: string): Promise<void> {
     await verifySecondInstanceExits(executable, userDataPath, launchExit);
     if (child.exitCode !== null || child.signalCode !== null) {
       throw new Error(
-        `Packaged OpenBot exited when a second instance started (${child.signalCode ?? `code ${String(child.exitCode)}`}): ${stderr.trim()}`,
+        `Packaged Whilo exited when a second instance started (${child.signalCode ?? `code ${String(child.exitCode)}`}): ${stderr.trim()}`,
       );
     }
   } finally {
@@ -351,9 +351,9 @@ function launchEnvironment(userDataPath: string): NodeJS.ProcessEnv {
     ...process.env,
     CODEX_HOME: join(userDataPath, "codex-home"),
     CLAUDE_CONFIG_DIR: join(userDataPath, "claude-home"),
-    OPENBOT_CODEX_PATH: join(userDataPath, "missing-codex"),
-    OPENBOT_CLAUDE_PATH: join(userDataPath, "missing-claude"),
-    OPENBOT_GROK_PATH: join(userDataPath, "missing-grok"),
+    WHILO_CODEX_PATH: join(userDataPath, "missing-codex"),
+    WHILO_CLAUDE_PATH: join(userDataPath, "missing-claude"),
+    WHILO_GROK_PATH: join(userDataPath, "missing-grok"),
   };
 }
 
@@ -369,7 +369,7 @@ async function waitForFirstInstance(
     const limit = Date.now() + launchStepLimitMs;
     while (!(await reached())) {
       if (Date.now() > limit) {
-        throw new Error(`Packaged OpenBot did not ${step} in 5 minutes: ${stderr().trim()}`);
+        throw new Error(`Packaged Whilo did not ${step} in 5 minutes: ${stderr().trim()}`);
       }
       await delay(200, undefined, { signal: stop.signal });
     }
@@ -432,11 +432,11 @@ async function verifySecondInstanceExits(
       delay(launchStepLimitMs, null, { signal: stop.signal }),
     ]);
     if (!result) {
-      throw new Error(`A second OpenBot instance did not exit in 5 minutes: ${stderr.trim()}`);
+      throw new Error(`A second Whilo instance did not exit in 5 minutes: ${stderr.trim()}`);
     }
     if (result.code !== 0 || result.signal) {
       throw new Error(
-        `A second OpenBot instance exited unexpectedly (${result.signal ?? `code ${String(result.code)}`}): ${stderr.trim()}`,
+        `A second Whilo instance exited unexpectedly (${result.signal ?? `code ${String(result.code)}`}): ${stderr.trim()}`,
       );
     }
   } finally {

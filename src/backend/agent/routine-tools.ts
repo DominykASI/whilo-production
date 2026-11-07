@@ -1,4 +1,4 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import {
   isRoutineSchedule,
   ROUTINE_LIMIT_POLICIES,
@@ -7,9 +7,9 @@ import {
   type RoutineLimitPolicy,
   type RoutineMissedPolicy,
   type RoutineSchedule,
-} from "@openbot/contracts/ipc";
-import { type DynamicRecord, isOneOf, isString } from "@openbot/contracts/runtime-values";
-import { RoutineInputError } from "@openbot/team-client/routine-schedule";
+} from "@whilo/contracts/ipc";
+import { type DynamicRecord, isOneOf, isString } from "@whilo/contracts/runtime-values";
+import { RoutineInputError } from "@whilo/team-client/routine-schedule";
 import { isRecord } from "../protocol";
 
 export function routineToolArguments(value: unknown, allowedKeys: readonly string[]): DynamicRecord {
@@ -89,13 +89,13 @@ export function localTimezone(): string {
   }
 }
 
-/** The shape every `openbot` namespace dynamic tool answers with. */
-export interface OpenBotToolResponse {
+/** The shape every `whilo` namespace dynamic tool answers with. */
+export interface WhiloToolResponse {
   success: boolean;
   contentItems: Array<{ type: "inputText"; text: string }>;
 }
 
-export function openBotToolResult(value: unknown): OpenBotToolResponse {
+export function whiloToolResult(value: unknown): WhiloToolResponse {
   return {
     success: true,
     contentItems: [{ type: "inputText", text: JSON.stringify(value) }],
@@ -109,7 +109,7 @@ export function openBotToolResult(value: unknown): OpenBotToolResponse {
  * give up on. `claude-client.ts` maps `success: false` onto `isError: true`, so both provider paths
  * show this as a failed tool call with the reason attached.
  */
-export function openBotToolFailure(message: string): OpenBotToolResponse {
+export function whiloToolFailure(message: string): WhiloToolResponse {
   return {
     success: false,
     contentItems: [{ type: "inputText", text: JSON.stringify({ error: message }) }],

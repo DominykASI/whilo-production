@@ -16,7 +16,7 @@ import {
   isConversationSnapshot,
   isHiddenAgentsSnapshot,
   isSidebarPinsSnapshot,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 // Agent-shaped wire payloads: summaries, status, models, skills, memories, routines, queue.
 // See `remote-host-decoding.ts` for why the `FromHost` suffix exists and must not be merged away.
 
@@ -39,7 +39,7 @@ import type {
   QueuedMessageReceipt,
   QueueSnapshot,
   SidebarLayoutSnapshot,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   isAccountUsage,
   isAgentExclusionChange,
@@ -59,10 +59,10 @@ import {
   isRoutineFlowLink,
   isRoutineRun,
   isSidebarLayoutSnapshot,
-} from "@openbot/contracts/ipc";
-import { decodeRecord, guardedDecoder, guardedListDecoder } from "@openbot/contracts/ipc-decoding";
-import { isBoolean, isDynamicRecord, isNumber, isString } from "@openbot/contracts/runtime-values";
-import { isAgentThreadBranchLinks } from "@openbot/contracts/team-protocol/agent-thread-branches-v1";
+} from "@whilo/contracts/ipc";
+import { decodeRecord, guardedDecoder, guardedListDecoder } from "@whilo/contracts/ipc-decoding";
+import { isBoolean, isDynamicRecord, isNumber, isString } from "@whilo/contracts/runtime-values";
+import { isAgentThreadBranchLinks } from "@whilo/contracts/team-protocol/agent-thread-branches-v1";
 
 export const decodeAgentHostSettingsFromHost = guardedDecoder(isAgentHostSettings, "agent host settings response");
 export const decodeHiddenAgentsFromHost = guardedDecoder(isHiddenAgentsSnapshot, "hidden agents response");

@@ -1,4 +1,4 @@
-import type { AgentProviderId, AppSetupState } from "@openbot/contracts/ipc";
+import type { AgentProviderId, AppSetupState } from "@whilo/contracts/ipc";
 import { fn } from "storybook/test";
 import type { Meta, StoryObj } from "storybook-solidjs-vite";
 import { FirstRunFlow, type FirstRunFlowProps } from "../src/features/onboarding/FirstRunFlow";
@@ -80,7 +80,7 @@ export const SubscriptionPath: Story = {
 };
 
 /**
- * OpenCode downloads slowly. Press "Start free", then "Open OpenBot" at once: the button waits,
+ * OpenCode downloads slowly. Press "Start free", then "Open Whilo" at once: the button waits,
  * says why, and opens the app when OpenCode is ready.
  */
 export const FreeStillDownloading: Story = {

@@ -1,5 +1,5 @@
-import type { AttachmentSummary } from "@openbot/contracts/ipc";
-import { currentText } from "@openbot/ui/text";
+import type { AttachmentSummary } from "@whilo/contracts/ipc";
+import { currentText } from "@whilo/ui/text";
 import { createSignal, onCleanup } from "solid-js";
 import { actionToast } from "../../action-toast";
 import { appPort } from "../../app-port";
@@ -42,7 +42,7 @@ export function TasksPanel(props: TasksPanelProps) {
   const layout = useLayout();
 
   function openAttachment(attachment: AttachmentSummary, action: "open" | "reveal" | "download"): void {
-    window.openbot.agent.openAttachment({ attachmentId: attachment.id, action }, props.serverId).catch((error) => {
+    window.whilo.agent.openAttachment({ attachmentId: attachment.id, action }, props.serverId).catch((error) => {
       const { t, errorMessage } = currentText();
       actionToast.error(errorMessage(error, t("attachment.error.open")));
     });
@@ -58,8 +58,8 @@ export function TasksPanel(props: TasksPanelProps) {
       onAttachmentAction={openAttachment}
       files={{
         accepted: threads.filesAccepted,
-        import: (data, serverId) => window.openbot.agent.importAttachmentData(data, serverId),
-        discard: (id, serverId) => window.openbot.agent.discardDraftAttachment(id, serverId),
+        import: (data, serverId) => window.whilo.agent.importAttachmentData(data, serverId),
+        discard: (id, serverId) => window.whilo.agent.discardDraftAttachment(id, serverId),
       }}
       approvals={approvals()}
       // A question and a browser takeover wait by thread, as the thread tab reads them.

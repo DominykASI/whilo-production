@@ -1,4 +1,4 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import type {
   BrowserBounds,
   BrowserLocalSignInFinish,
@@ -6,9 +6,9 @@ import type {
   BrowserNavigateInput,
   BrowserOpenInput,
   BrowserVisibilityInput,
-} from "@openbot/contracts/ipc";
-import { isBoolean, isNumber } from "@openbot/contracts/runtime-values";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/ipc";
+import { isBoolean, isNumber } from "@whilo/contracts/runtime-values";
+import { sourceText } from "@whilo/i18n/source";
 import { isObject, requireString } from "./validation";
 
 export function parseBrowserOpen(value: unknown): BrowserOpenInput {

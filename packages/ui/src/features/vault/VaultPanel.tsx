@@ -10,7 +10,7 @@ import type {
   VaultSecretField,
   VaultSecretRequest,
   VaultState,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   API_KEY_NAME_PATTERN,
   cardBrand,
@@ -20,8 +20,8 @@ import {
   VAULT_PASSWORD_LIMIT,
   VAULT_TEXT_LIMIT,
   vaultExpiryText,
-} from "@openbot/contracts/ipc";
-import type { AppTextKey } from "@openbot/i18n";
+} from "@whilo/contracts/ipc";
+import type { AppTextKey } from "@whilo/i18n";
 import {
   Alert,
   AlertActions,
@@ -67,8 +67,8 @@ import {
   UserRound,
   userInitials,
   X,
-} from "@openbot/ui";
-import type { UserErrorDetails } from "@openbot/user-errors";
+} from "@whilo/ui";
+import type { UserErrorDetails } from "@whilo/user-errors";
 import type { JSX } from "@solidjs/web";
 import { createMemo, createSignal, createStore, For, Match, Show, Switch, untrack } from "solid-js";
 import { useText } from "../../text";

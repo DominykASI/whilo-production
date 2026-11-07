@@ -1,9 +1,9 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import {
   type AgentPromptQuestion,
   type AgentPromptResolution,
   MCP_ELICITATION_DECISION_QUESTION_ID,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   Badge,
   Bubble,
@@ -25,9 +25,9 @@ import {
   Questionnaire,
   Spinner,
   X,
-} from "@openbot/ui";
-import { useText } from "@openbot/ui/text";
-import { prefersReducedMotion } from "@openbot/ui/utils";
+} from "@whilo/ui";
+import { useText } from "@whilo/ui/text";
+import { prefersReducedMotion } from "@whilo/ui/utils";
 import { createEffect, createSignal, For, onCleanup, onSettled, Show, untrack } from "solid-js";
 import { isSendShortcutKey, type SendShortcut, sendShortcutAriaKey } from "../features/conversation/send-shortcut";
 

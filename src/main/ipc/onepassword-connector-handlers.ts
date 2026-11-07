@@ -2,19 +2,19 @@
 // service account token, cancel, and disconnect. The `host*` endpoints read, connect with a token,
 // and disconnect a joined server's connection (`onepassword-connector-v1`).
 
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import {
   decodeHostOnePasswordConnectorStatus,
   type OnePasswordConnectInput,
   type OnePasswordHostConnectInput,
-} from "@openbot/contracts/ipc";
-import type { TeamCurrentCapability } from "@openbot/contracts/team-protocol/current";
+} from "@whilo/contracts/ipc";
+import type { TeamCurrentCapability } from "@whilo/contracts/team-protocol/current";
 import {
   ONEPASSWORD_CONNECTOR_CAPABILITY,
   ONEPASSWORD_CONNECTOR_ROUTES,
-} from "@openbot/contracts/team-protocol/onepassword-connector-v1";
-import { sourceText } from "@openbot/i18n/source";
-import { registerSecretValue } from "@openbot/logging";
+} from "@whilo/contracts/team-protocol/onepassword-connector-v1";
+import { sourceText } from "@whilo/i18n/source";
+import { registerSecretValue } from "@whilo/logging";
 import type { Effect } from "effect";
 import { runCauseEffect } from "../../backend/effect-boundary";
 import type { OnePasswordConnectorService } from "../onepassword-connector-service";

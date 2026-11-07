@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { sortConversationMessages } from "@openbot/contracts/conversation-order";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { sortConversationMessages } from "@whilo/contracts/conversation-order";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import type {
   AgentEvent,
   AgentSummary,
@@ -17,12 +17,12 @@ import type {
   RoutineRunConversationEventStatus,
   TestRoutineInput,
   UpdateRoutineInput,
-} from "@openbot/contracts/ipc";
-import { routineConversationEventItemType, routineRunConversationEventItemType } from "@openbot/contracts/ipc";
-import type { EventRoutine } from "@openbot/contracts/ipc-events";
-import { type DynamicRecord, isBoolean } from "@openbot/contracts/runtime-values";
-import { sourceText } from "@openbot/i18n/source";
-import { collapseMissedOccurrences, RoutineInputError } from "@openbot/team-client/routine-schedule";
+} from "@whilo/contracts/ipc";
+import { routineConversationEventItemType, routineRunConversationEventItemType } from "@whilo/contracts/ipc";
+import type { EventRoutine } from "@whilo/contracts/ipc-events";
+import { type DynamicRecord, isBoolean } from "@whilo/contracts/runtime-values";
+import { sourceText } from "@whilo/i18n/source";
+import { collapseMissedOccurrences, RoutineInputError } from "@whilo/team-client/routine-schedule";
 import { Effect, Schema } from "effect";
 import { AgentRoutineStore } from "../agent-routine-store";
 import { AGENT_PREVIEW_MAX_LENGTH, type AgentStore } from "../agent-store";
@@ -42,9 +42,9 @@ import { routineStatusForDelivery } from "./delivery-content";
 import { quietRoutineRun } from "./routine-quiet-runs";
 import {
   localTimezone,
-  type OpenBotToolResponse,
-  openBotToolFailure,
-  openBotToolResult,
+  type WhiloToolResponse,
+  whiloToolFailure,
+  whiloToolResult,
   routineToolAgentId,
   routineToolArguments,
   routineToolPolicies,
@@ -532,7 +532,7 @@ export class RoutineScheduler implements RoutineDueSource {
   }
 
   /**
-   * The eight `openbot` routine tools. Returns null when `tool` is not one of them.
+   * The eight `whilo` routine tools. Returns null when `tool` is not one of them.
    *
    * A request the model can correct is a tool failure, not a throw: a throw becomes a provider error
    * toast, although the model's corrected retry then creates the routine. Other errors are faults
@@ -541,12 +541,12 @@ export class RoutineScheduler implements RoutineDueSource {
   handleTool(
     params: DynamicToolCallParams,
     senderAgentId: string,
-  ): Effect.Effect<OpenBotToolResponse | null, RoutineOperationFailed> {
+  ): Effect.Effect<WhiloToolResponse | null, RoutineOperationFailed> {
     return this.#handleTool(params, senderAgentId).pipe(
       Effect.catchDefect((cause) => Effect.fail(new RoutineOperationFailed({ cause }))),
       Effect.catch((failure) =>
         failure.cause instanceof RoutineInputError
-          ? Effect.succeed(openBotToolFailure(failure.cause.message))
+          ? Effect.succeed(whiloToolFailure(failure.cause.message))
           : Effect.fail(failure),
       ),
     );
@@ -583,7 +583,7 @@ export class RoutineScheduler implements RoutineDueSource {
     if (params.tool === "list_routines") {
       const args = routineToolArguments(params.arguments, ["agentId"]);
       const agentId = this.#toolAgentId(args, senderAgentId);
-      return openBotToolResult({
+      return whiloToolResult({
         routines: this.list(agentId),
         webhookRoutines: this.#routines
           .listRecords(agentId)
@@ -636,7 +636,7 @@ export class RoutineScheduler implements RoutineDueSource {
         },
         this.#toolMutationOptions(agentId, senderAgentId, params),
       );
-      return openBotToolResult(routine);
+      return whiloToolResult(routine);
     }
 
     if (params.tool === CREATE_WEBHOOK_ROUTINE_TOOL) {
@@ -668,7 +668,7 @@ export class RoutineScheduler implements RoutineDueSource {
       // Only the caller's own chat shows the card with the secret: the card needs the turn.
       const turnId = agentId === senderAgentId ? params.turnId : undefined;
       const recorded = this.#recordWebhookEvent(agentId, "created", routine, turnId);
-      return openBotToolResult(webhookRoutineToolResult(routine, recorded && turnId !== undefined));
+      return whiloToolResult(webhookRoutineToolResult(routine, recorded && turnId !== undefined));
     }
 
     if (params.tool === UPDATE_WEBHOOK_ROUTINE_TOOL) {
@@ -716,7 +716,7 @@ export class RoutineScheduler implements RoutineDueSource {
       });
       const turnId = agentId === senderAgentId ? params.turnId : undefined;
       const recorded = this.#recordWebhookEvent(agentId, "updated", routine, turnId);
-      return openBotToolResult(webhookRoutineToolResult(routine, recorded && turnId !== undefined, true));
+      return whiloToolResult(webhookRoutineToolResult(routine, recorded && turnId !== undefined, true));
     }
 
     if (params.tool === "update_routine") {
@@ -760,7 +760,7 @@ export class RoutineScheduler implements RoutineDueSource {
         hasUpdate = true;
       }
       if (!hasUpdate) throw new RoutineInputError("At least one routine update is required.");
-      return openBotToolResult(this.update(input, this.#toolMutationOptions(input.agentId, senderAgentId, params)));
+      return whiloToolResult(this.update(input, this.#toolMutationOptions(input.agentId, senderAgentId, params)));
     }
 
     if (params.tool === "delete_routine") {
@@ -773,7 +773,7 @@ export class RoutineScheduler implements RoutineDueSource {
         "routineId is required.",
       );
       yield* this.delete({ agentId, routineId }, agentId === senderAgentId ? { turnId: params.turnId } : {});
-      return openBotToolResult({ deleted: true, agentId, routineId });
+      return whiloToolResult({ deleted: true, agentId, routineId });
     }
 
     if (params.tool === "test_routine") {
@@ -785,7 +785,7 @@ export class RoutineScheduler implements RoutineDueSource {
         INPUT_LIMITS.identifier,
         "routineId is required.",
       );
-      return openBotToolResult(yield* this.test({ agentId, routineId }));
+      return whiloToolResult(yield* this.test({ agentId, routineId }));
     }
 
     return null;

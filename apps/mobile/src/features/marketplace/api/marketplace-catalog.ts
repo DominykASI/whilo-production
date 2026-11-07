@@ -5,9 +5,9 @@ import type {
   MarketplaceSkillDetail,
   MarketplaceSkillPage,
   MarketplaceSkillQuery,
-} from "@openbot/contracts/ipc";
-import { runTeamEffect } from "@openbot/team-client";
-import { createMarketplaceCatalog, type MarketplaceCatalog } from "@openbot/team-client/marketplace-catalog";
+} from "@whilo/contracts/ipc";
+import { runTeamEffect } from "@whilo/team-client";
+import { createMarketplaceCatalog, type MarketplaceCatalog } from "@whilo/team-client/marketplace-catalog";
 import { fetch } from "@/features/support/model/logged-fetch";
 
 const CATALOG_REQUEST_TIMEOUT_MS = 10_000;

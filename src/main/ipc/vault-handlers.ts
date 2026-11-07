@@ -9,13 +9,13 @@ import {
   decodeHostVaultState,
   type VaultSaveInput,
   type VaultSecretRequest,
-} from "@openbot/contracts/ipc";
-import type { TeamCurrentCapability } from "@openbot/contracts/team-protocol/current";
-import { VAULT_CAPABILITY, VAULT_ROUTES } from "@openbot/contracts/team-protocol/vault-v1";
-import { VAULT_V2_CAPABILITY, VAULT_V2_ROUTES } from "@openbot/contracts/team-protocol/vault-v2";
-import type { AppTranslate } from "@openbot/i18n";
-import { sourceText } from "@openbot/i18n/source";
-import { registerSecretValue } from "@openbot/logging";
+} from "@whilo/contracts/ipc";
+import type { TeamCurrentCapability } from "@whilo/contracts/team-protocol/current";
+import { VAULT_CAPABILITY, VAULT_ROUTES } from "@whilo/contracts/team-protocol/vault-v1";
+import { VAULT_V2_CAPABILITY, VAULT_V2_ROUTES } from "@whilo/contracts/team-protocol/vault-v2";
+import type { AppTranslate } from "@whilo/i18n";
+import { sourceText } from "@whilo/i18n/source";
+import { registerSecretValue } from "@whilo/logging";
 import type { Effect } from "effect";
 import { type BrowserWindow, clipboard, dialog, type OpenDialogOptions } from "electron";
 import { runCauseEffect } from "../../backend/effect-boundary";

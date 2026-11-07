@@ -1,5 +1,5 @@
-import type { DraftAttachment } from "@openbot/contracts/ipc";
-import { ImageRemoveButton, Spinner } from "@openbot/ui";
+import type { DraftAttachment } from "@whilo/contracts/ipc";
+import { ImageRemoveButton, Spinner } from "@whilo/ui";
 import { For, Show } from "solid-js";
 import { useText } from "../../text";
 import { fileBadge } from "./AttachmentCards";

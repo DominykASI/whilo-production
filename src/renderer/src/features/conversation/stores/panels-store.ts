@@ -5,9 +5,9 @@ import {
   type FileAction,
   type FilePreview,
   type WorkspaceDirectory,
-} from "@openbot/contracts/ipc";
-import type { MessageImageFile } from "@openbot/ui/features/conversation/MarkdownMessageText";
-import { currentText } from "@openbot/ui/text";
+} from "@whilo/contracts/ipc";
+import type { MessageImageFile } from "@whilo/ui/features/conversation/MarkdownMessageText";
+import { currentText } from "@whilo/ui/text";
 import { createEffect, createMemo, createSignal, onCleanup, type Store, type StoreSetter, untrack } from "solid-js";
 import { createScopeGuard } from "../../../scope-lifetime";
 import { attachmentFilePreview } from "../attachment-preview";
@@ -89,9 +89,9 @@ export interface PanelsStoreDeps {
   /** Owned with `rightPanels`, so that the tabs stay with the open pane when the view of the chat closes. */
   panels: Store<SidePanelsState>;
   setPanels: StoreSetter<SidePanelsState>;
-  settingsProvider: () => import("@openbot/contracts/ipc").AgentProviderId;
-  settingsModel: () => import("@openbot/contracts/ipc").AgentModelId;
-  settingsReasoning: () => import("@openbot/contracts/ipc").AgentReasoningEffort;
+  settingsProvider: () => import("@whilo/contracts/ipc").AgentProviderId;
+  settingsModel: () => import("@whilo/contracts/ipc").AgentModelId;
+  settingsReasoning: () => import("@whilo/contracts/ipc").AgentReasoningEffort;
   setBrowserPipBounds: (bounds: BrowserBounds | null) => void;
   sidebarFilePreview: () => SidebarFilePreview | null;
   setSidebarFilePreview: (preview: SidebarFilePreview | null) => void;
@@ -247,7 +247,7 @@ export function createPanelsStore(deps: PanelsStoreDeps) {
   function saveBrowserPipBounds(bounds: BrowserBounds) {
     deps.setBrowserPipBounds(bounds);
     window.localStorage.setItem(
-      "openbot:browser-pip-native-bounds",
+      "whilo:browser-pip-native-bounds",
       [bounds.x, bounds.y, bounds.width, bounds.height].join(","),
     );
   }

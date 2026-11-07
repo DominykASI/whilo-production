@@ -5,8 +5,8 @@ import type {
   DirectMessageRealtimeEvent,
   DirectThreadSummary,
   DirectTypingRealtimeEvent,
-} from "@openbot/contracts/ipc";
-import { currentText } from "@openbot/ui/text";
+} from "@whilo/contracts/ipc";
+import { currentText } from "@whilo/ui/text";
 import { createEffect, createMemo, createSignal, flush, onSettled } from "solid-js";
 import { desktopAnalytics } from "../../analytics";
 import { usePlatform } from "../../platform";

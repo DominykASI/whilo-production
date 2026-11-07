@@ -24,7 +24,7 @@ export const messages = {
   "marketplace.description.apps": "Conecta las herramientas y los servicios con los que trabajan tus agentes.",
   "marketplace.description.agents": "Agentes listos para usar, con sus propias instrucciones y habilidades.",
   "marketplace.description.skills": "Instrucciones que enseñan a un agente una tarea o una herramienta.",
-  "marketplace.plugins.missing": "Este plugin no está en el catálogo de OpenBot.",
+  "marketplace.plugins.missing": "Este plugin no está en el catálogo de Whilo.",
   "marketplace.agents.loadingDetail": "Cargando detalles del agente…",
   "marketplace.agents.skills": "Habilidades",
   "marketplace.agents.routines": "Rutinas",
@@ -35,15 +35,15 @@ export const messages = {
   "marketplace.agents.all": "Todos los agentes",
   "marketplace.agents.missing": "Este agente no está en el Marketplace.",
   "marketplace.agents.trust.reviewed":
-    "Creado por otra persona usuaria de OpenBot. OpenBot lo revisó antes de publicarlo.",
+    "Creado por otra persona usuaria de Whilo. Whilo lo revisó antes de publicarlo.",
   "marketplace.agents.trust.reviewedBeforeAdd":
-    "Creado por otra persona usuaria de OpenBot. OpenBot lo revisó antes de publicarlo. Una vez añadido, puede actuar en tu nombre.",
-  "marketplace.agents.trust.pending": "Compartido por su creador antes de que OpenBot lo revisara.",
+    "Creado por otra persona usuaria de Whilo. Whilo lo revisó antes de publicarlo. Una vez añadido, puede actuar en tu nombre.",
+  "marketplace.agents.trust.pending": "Compartido por su creador antes de que Whilo lo revisara.",
   "marketplace.agents.trust.pendingBeforeAdd":
-    "Compartido por su creador antes de que OpenBot lo revisara. Una vez añadido, puede actuar en tu nombre.",
+    "Compartido por su creador antes de que Whilo lo revisara. Una vez añadido, puede actuar en tu nombre.",
   "marketplace.agents.source.pending": "Aún sin revisar",
   "marketplace.skill.loading": "Cargando habilidad",
-  "marketplace.try.readFailed": "OpenBot no pudo leer las habilidades de este agente. Inténtalo de nuevo.",
+  "marketplace.try.readFailed": "Whilo no pudo leer las habilidades de este agente. Inténtalo de nuevo.",
   "marketplace.try.enable": "Activa esta habilidad en los ajustes del agente para probarla.",
   "marketplace.try.repair": "Repara esta habilidad en los ajustes del agente para probarla.",
   "marketplace.try.update": "Actualiza esta habilidad para probar esta versión.",
@@ -123,7 +123,7 @@ export const messages = {
   "marketplace.app.setup.account": "Inicia sesión con tu cuenta de {name} en el navegador.",
   "marketplace.app.setup.key": "Necesita una clave de API de tu cuenta de {name}.",
   "marketplace.app.setup.keySaved": "{field} se guarda en {host}.",
-  "marketplace.app.account.removeDescription": "OpenBot elimina el inicio de sesión de esta cuenta en {host}.",
+  "marketplace.app.account.removeDescription": "Whilo elimina el inicio de sesión de esta cuenta en {host}.",
   "marketplace.app.setup.desktop": "Se ejecuta en la app de escritorio de {name} en {address}.",
   "marketplace.app.setup.desktopConnected": "Conectada a {address}.",
   "marketplace.app.setup.open": "No necesita inicio de sesión ni clave.",
@@ -133,10 +133,10 @@ export const messages = {
   "marketplace.app.automation.description":
     "macOS muestra un aviso por cada app. Una app cerrada se abre un momento y luego se cierra.",
   "marketplace.app.automation.request": "Pedir acceso",
-  "marketplace.app.automation.allowed": "OpenBot ya puede controlar todas las apps de Apple.",
+  "marketplace.app.automation.allowed": "Whilo ya puede controlar todas las apps de Apple.",
   "marketplace.app.automation.refused":
-    "macOS no dio acceso a {apps}. Permite OpenBot en Ajustes del Sistema › Privacidad y seguridad › Automatización.",
-  "marketplace.app.automation.failed": "OpenBot no pudo preguntar a macOS por {apps}. Inténtalo de nuevo.",
+    "macOS no dio acceso a {apps}. Permite Whilo en Ajustes del Sistema › Privacidad y seguridad › Automatización.",
+  "marketplace.app.automation.failed": "Whilo no pudo preguntar a macOS por {apps}. Inténtalo de nuevo.",
   "marketplace.app.automation.app.calendar": "Calendario",
   "marketplace.app.automation.app.contacts": "Contactos",
   "marketplace.app.automation.app.mail": "Mail",
@@ -207,7 +207,7 @@ export const messages = {
   "marketplace.plugin.figma.prompt.assets": "Extrae los iconos de marketing a 2x para el paquete de la aplicación.",
   "marketplace.plugin.paper.tagline": "Lienzo de diseño basado en HTML y CSS",
   "marketplace.plugin.paper.description":
-    "Paper permite a los agentes leer y escribir el archivo de diseño abierto en Paper Desktop: inspeccionar mesas de trabajo, selecciones, estilos calculados, JSX y tokens, y crear o cambiar marcos, texto y estilos. Instala Paper Desktop, ábrelo una vez y abre un archivo antes de empezar. OpenBot inicia la CLI de Paper que instala Paper Desktop. Paper no necesita clave. Las herramientas de escritura cambian el archivo abierto, así que revisa cada escritura antes de aprobarla.",
+    "Paper permite a los agentes leer y escribir el archivo de diseño abierto en Paper Desktop: inspeccionar mesas de trabajo, selecciones, estilos calculados, JSX y tokens, y crear o cambiar marcos, texto y estilos. Instala Paper Desktop, ábrelo una vez y abre un archivo antes de empezar. Whilo inicia la CLI de Paper que instala Paper Desktop. Paper no necesita clave. Las herramientas de escritura cambian el archivo abierto, así que revisa cada escritura antes de aprobarla.",
   "marketplace.plugin.paper.app":
     "Lee y escribe el archivo abierto de Paper Desktop, mediante el servidor MCP local que retransmite la CLI de Paper. Necesita Paper Desktop con un archivo abierto.",
   "marketplace.plugin.paper.prompt.implement":
@@ -218,7 +218,7 @@ export const messages = {
     "Lista los tokens de diseño del archivo abierto de Paper y compáralos con nuestro tema.",
   "marketplace.plugin.appleApps.tagline": "Mail, Calendario y más en tu Mac",
   "marketplace.plugin.appleApps.description":
-    "Apple apps permite a los agentes usar Mail, Calendario, Contactos, Recordatorios, Notas, Mensajes y Safari en este Mac. Solo funciona en macOS. OpenBot inicia mcp-icloud, un servidor de la comunidad que no es de Apple ni de OpenBot. El servidor controla las apps con AppleScript, en este equipo, y no necesita cuenta ni clave. Al instalarla, OpenBot puede pedir a macOS acceso a todas estas apps a la vez, con un aviso por app. Si no lo haces, macOS pregunta la primera vez que un agente usa una app. Para cambiarlo después, abre Ajustes del Sistema › Privacidad y seguridad › Automatización. Los agentes pueden enviar correos e iMessages, y cambiar o eliminar eventos, contactos y recordatorios, así que revisa cada escritura antes de aprobarla. Lo que leen las herramientas, como el texto de los correos, va al proveedor del modelo del agente.",
+    "Apple apps permite a los agentes usar Mail, Calendario, Contactos, Recordatorios, Notas, Mensajes y Safari en este Mac. Solo funciona en macOS. Whilo inicia mcp-icloud, un servidor de la comunidad que no es de Apple ni de Whilo. El servidor controla las apps con AppleScript, en este equipo, y no necesita cuenta ni clave. Al instalarla, Whilo puede pedir a macOS acceso a todas estas apps a la vez, con un aviso por app. Si no lo haces, macOS pregunta la primera vez que un agente usa una app. Para cambiarlo después, abre Ajustes del Sistema › Privacidad y seguridad › Automatización. Los agentes pueden enviar correos e iMessages, y cambiar o eliminar eventos, contactos y recordatorios, así que revisa cada escritura antes de aprobarla. Lo que leen las herramientas, como el texto de los correos, va al proveedor del modelo del agente.",
   "marketplace.plugin.appleApps.app":
     "Mail, Calendario, Contactos, Recordatorios, Notas, Mensajes y Safari, mediante el servidor local mcp-icloud. Necesita macOS y acceso de Automatización.",
   "marketplace.plugin.appleApps.prompt.unread": "Resume mis correos no leídos de hoy en Apple Mail.",
@@ -443,8 +443,8 @@ export const messages = {
   "marketplace.skills.source.all": "Todas",
   "marketplace.skills.source.verified": "Verificadas",
   "marketplace.skills.source.public": "Públicas",
-  "marketplace.skills.source.verifiedLong": "Verificada por OpenBot",
-  "marketplace.skills.source.publicLong": "Revisada por OpenBot",
+  "marketplace.skills.source.verifiedLong": "Verificada por Whilo",
+  "marketplace.skills.source.publicLong": "Revisada por Whilo",
   "marketplace.skills.sortLabel": "Ordenar",
   "marketplace.skills.sortName": "Ordenar: {name}",
   "marketplace.skills.sort.installs": "Más usadas",

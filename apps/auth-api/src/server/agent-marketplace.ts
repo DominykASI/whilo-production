@@ -1,5 +1,5 @@
-import { isValidAvatarImage } from "@openbot/contracts/avatar-images";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { isValidAvatarImage } from "@whilo/contracts/avatar-images";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import {
   type AgentPublicationPreview,
   type AgentSubmission,
@@ -14,8 +14,8 @@ import {
   type MarketplaceAgentSkill,
   type MarketplaceAgentSummary,
   type SkillCategory,
-} from "@openbot/contracts/ipc";
-import { isBoolean, isDynamicRecord, isNumber, isOneOf, isString } from "@openbot/contracts/runtime-values";
+} from "@whilo/contracts/ipc";
+import { isBoolean, isDynamicRecord, isNumber, isOneOf, isString } from "@whilo/contracts/runtime-values";
 import { Effect, Result, Schema } from "effect";
 import {
   decodeMarketplaceCursor,
@@ -27,7 +27,8 @@ import {
   normalizeMarketplaceQuery,
 } from "./marketplace-pagination";
 import { MarketplaceStorage } from "./marketplace-storage";
-import type { AuthUser, WorkerBindings } from "./types";
+import type { MarketplaceBindings } from "./storage-bucket";
+import type { AuthUser } from "./types";
 
 const MAX_AGENTS_PER_USER = 5;
 const MAX_VERSIONS_PER_AGENT = 5;
@@ -74,7 +75,7 @@ export class AgentMarketplaceError extends Schema.TaggedError<AgentMarketplaceEr
 }
 
 export class AgentMarketplace {
-  constructor(private readonly bindings: Pick<WorkerBindings, "DB" | "SKILLS">) {}
+  constructor(private readonly bindings: MarketplaceBindings) {}
 
   list(input: MarketplaceAgentQuery = {}) {
     return Effect.fn("AgentMarketplace.list")(() =>

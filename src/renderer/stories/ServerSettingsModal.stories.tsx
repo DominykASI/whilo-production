@@ -9,8 +9,8 @@ import {
   type McpTestResult,
   nextBrowserProfileHue,
   type ServerAuditEntry,
-} from "@openbot/contracts/ipc";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/ipc";
+import { sourceText } from "@whilo/i18n/source";
 import { createSignal, createStore } from "solid-js";
 import { fn } from "storybook/test";
 import type { Meta, StoryObj } from "storybook-solidjs-vite";
@@ -134,7 +134,7 @@ export const LocalOnline: Story = {
   args: {
     hostStatus: {
       ...STORY_HOST_STATUS,
-      apiUrl: "https://eu-west-1.gateway.example.com/openbot/servers/team_7f3c19a2",
+      apiUrl: "https://eu-west-1.gateway.example.com/whilo/servers/team_7f3c19a2",
     },
   },
 };

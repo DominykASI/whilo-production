@@ -9,11 +9,11 @@
 // lead that answers alone gets no "Assigned to" row, that a restore gives archived work the stop
 // reason, and that Cancel ends a stopped task and leaves other stopped work. It makes its own channel
 // and deletes it. Writes
-// .openbot-build/channel-stuck-tasks-e2e/report.json.
+// .whilo-build/channel-stuck-tasks-e2e/report.json.
 import assert from "node:assert/strict";
-import { agentProviderDescriptor } from "@openbot/contracts/agent-providers";
-import { type ChannelPage, type ChannelTask, channelRoutingConversationEvent } from "@openbot/contracts/ipc";
-import { sourceText } from "@openbot/i18n/source";
+import { agentProviderDescriptor } from "@whilo/contracts/agent-providers";
+import { type ChannelPage, type ChannelTask, channelRoutingConversationEvent } from "@whilo/contracts/ipc";
+import { sourceText } from "@whilo/i18n/source";
 import {
   ChannelClient,
   connectChannelE2e,

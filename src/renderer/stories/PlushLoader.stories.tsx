@@ -1,4 +1,4 @@
-import { PlushLoader, Text } from "@openbot/ui";
+import { PlushLoader, Text } from "@whilo/ui";
 import type { Meta, StoryObj } from "storybook-solidjs-vite";
 
 const meta = {

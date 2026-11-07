@@ -1,8 +1,8 @@
-import type { ServerSummary } from "@openbot/contracts/ipc";
-import { classifyFailure } from "@openbot/telemetry";
-import type { ServerActionCallbacks } from "@openbot/ui/features/servers/ServerActionItems";
-import type { HiddenLocalServer } from "@openbot/ui/features/servers/ServerRail";
-import { useText } from "@openbot/ui/text";
+import type { ServerSummary } from "@whilo/contracts/ipc";
+import { classifyFailure } from "@whilo/telemetry";
+import type { ServerActionCallbacks } from "@whilo/ui/features/servers/ServerActionItems";
+import type { HiddenLocalServer } from "@whilo/ui/features/servers/ServerRail";
+import { useText } from "@whilo/ui/text";
 import { actionToast } from "../../action-toast";
 import { usePlatform } from "../../platform";
 import { useSettings } from "../settings/settings-context";

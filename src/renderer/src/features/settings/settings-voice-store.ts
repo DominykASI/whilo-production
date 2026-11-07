@@ -11,9 +11,9 @@ import {
   type VoiceServerInput,
   type VoiceServerSettings,
   type VoiceSettings,
-} from "@openbot/contracts/ipc";
-import { toast } from "@openbot/ui";
-import { currentText } from "@openbot/ui/text";
+} from "@whilo/contracts/ipc";
+import { toast } from "@whilo/ui";
+import { currentText } from "@whilo/ui/text";
 import { createEffect, createStore } from "solid-js";
 import { desktopAnalytics } from "../../analytics";
 import { readAloud, stopSpeech } from "../speech/speech-playback";

@@ -2,7 +2,7 @@
  * content padding). The pricing step is wider. */
 .add-server-dialog {
   width: min(460px, 100%);
-  transition: width var(--openbot-duration-normal) var(--openbot-ease-out);
+  transition: width var(--whilo-duration-normal) var(--whilo-ease-out);
 }
 
 /* Long prices (for example in PLN) need wider columns: 48px for each character over 10, that is
@@ -15,9 +15,9 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--openbot-space-6);
+  gap: var(--whilo-space-6);
   margin: 0;
-  animation: add-server-step-in var(--openbot-duration-slow) var(--openbot-ease-out) both;
+  animation: add-server-step-in var(--whilo-duration-slow) var(--whilo-ease-out) both;
 }
 
 .add-server-step .ui-heading:focus {
@@ -27,11 +27,11 @@
 /* Pricing */
 
 .add-server-pricing {
-  gap: var(--openbot-space-4);
+  gap: var(--whilo-space-4);
 }
 
 .add-server-dialog[data-step="pricing"] .join-server-content {
-  padding: var(--openbot-space-6);
+  padding: var(--whilo-space-6);
 }
 
 /* Over the plans, so it is as wide as the plans. */
@@ -41,8 +41,8 @@
 
 /* What the plans buy, before the prices. */
 .add-server-intro {
-  gap: var(--openbot-space-2);
-  padding-block: var(--openbot-space-2);
+  gap: var(--whilo-space-2);
+  padding-block: var(--whilo-space-2);
 }
 
 .add-server-intro .ui-heading,
@@ -53,11 +53,11 @@
 
 /* The inline padding keeps the title clear of the close button of the shell. */
 .add-server-intro .ui-heading {
-  padding-inline: calc(var(--openbot-control-md) + var(--openbot-space-2));
-  font-size: var(--openbot-text-3xl);
-  font-weight: var(--openbot-weight-bold);
-  line-height: var(--openbot-leading-3xl);
-  letter-spacing: var(--openbot-tracking-tight);
+  padding-inline: calc(var(--whilo-control-md) + var(--whilo-space-2));
+  font-size: var(--whilo-text-3xl);
+  font-weight: var(--whilo-weight-bold);
+  line-height: var(--whilo-leading-3xl);
+  letter-spacing: var(--whilo-tracking-tight);
 }
 
 /* The "Other options" button is wider than the close button. The same padding on the two sides keeps
@@ -68,20 +68,20 @@
 
 .add-server-intro .ui-text {
   max-width: 560px;
-  font-size: var(--openbot-text-lg);
-  line-height: var(--openbot-leading-lg);
+  font-size: var(--whilo-text-lg);
+  line-height: var(--whilo-leading-lg);
 }
 
 /* The billing switch is in the centre. The same inline padding on the two sides keeps it clear of
  * the close button of the shell. */
 .add-server-bar {
   position: relative;
-  min-height: var(--openbot-control-md);
+  min-height: var(--whilo-control-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--openbot-space-2);
-  padding-inline: calc(var(--openbot-control-md) + var(--openbot-space-2));
+  gap: var(--whilo-space-2);
+  padding-inline: calc(var(--whilo-control-md) + var(--whilo-space-2));
 }
 
 /* At the left, across from the close button, so that the billing switch stays in the centre. */
@@ -98,10 +98,10 @@
 .hosted-currency-locked {
   display: inline-flex;
   align-items: center;
-  height: var(--openbot-control-md);
+  height: var(--whilo-control-md);
   padding-inline: 10px;
-  color: var(--openbot-text-secondary);
-  font-size: var(--openbot-text-sm);
+  color: var(--whilo-text-secondary);
+  font-size: var(--whilo-text-sm);
 }
 
 /* With a license offer: personal or work use at the left, the currency and billing at the right. */
@@ -126,9 +126,9 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   padding: 3px;
-  border: 1px solid var(--openbot-border);
-  border-radius: var(--openbot-radius-pill);
-  background: var(--openbot-bg-canvas);
+  border: 1px solid var(--whilo-border);
+  border-radius: var(--whilo-radius-pill);
+  background: var(--whilo-bg-canvas);
 }
 
 .hosted-billing::before {
@@ -138,9 +138,9 @@
   bottom: 3px;
   left: 3px;
   width: calc(50% - 3px);
-  border-radius: var(--openbot-radius-pill);
-  background: var(--openbot-bg-control-active);
-  box-shadow: inset 0 0 0 1px var(--openbot-border);
+  border-radius: var(--whilo-radius-pill);
+  background: var(--whilo-bg-control-active);
+  box-shadow: inset 0 0 0 1px var(--whilo-border);
   transition: transform 300ms var(--hosted-billing-ease);
 }
 
@@ -160,41 +160,41 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--openbot-space-2);
-  padding: var(--openbot-space-1) var(--openbot-space-4);
-  border-radius: var(--openbot-radius-pill);
-  color: var(--openbot-text-muted);
-  font-size: var(--openbot-text-md);
-  font-weight: var(--openbot-weight-medium);
-  line-height: var(--openbot-leading-md);
+  gap: var(--whilo-space-2);
+  padding: var(--whilo-space-1) var(--whilo-space-4);
+  border-radius: var(--whilo-radius-pill);
+  color: var(--whilo-text-muted);
+  font-size: var(--whilo-text-md);
+  font-weight: var(--whilo-weight-medium);
+  line-height: var(--whilo-leading-md);
   white-space: nowrap;
   cursor: pointer;
-  transition: color var(--openbot-duration-normal) var(--openbot-ease-out);
+  transition: color var(--whilo-duration-normal) var(--whilo-ease-out);
 }
 
 .hosted-billing-control[data-checked] {
-  color: var(--openbot-text-primary);
+  color: var(--whilo-text-primary);
 }
 
 .hosted-billing-option:has(:focus-visible) .hosted-billing-control {
-  box-shadow: var(--openbot-focus-ring);
+  box-shadow: var(--whilo-focus-ring);
 }
 
 .hosted-billing-save {
-  padding: 0 var(--openbot-space-2);
-  border-radius: var(--openbot-radius-pill);
-  background: var(--openbot-bg-control);
-  color: var(--openbot-text-muted);
-  font-size: var(--openbot-text-sm);
-  line-height: var(--openbot-leading-md);
+  padding: 0 var(--whilo-space-2);
+  border-radius: var(--whilo-radius-pill);
+  background: var(--whilo-bg-control);
+  color: var(--whilo-text-muted);
+  font-size: var(--whilo-text-sm);
+  line-height: var(--whilo-leading-md);
   transition:
-    color var(--openbot-duration-overlay) var(--openbot-ease-out),
-    background-color var(--openbot-duration-overlay) var(--openbot-ease-out);
+    color var(--whilo-duration-overlay) var(--whilo-ease-out),
+    background-color var(--whilo-duration-overlay) var(--whilo-ease-out);
 }
 
 .hosted-billing[data-billing="yearly"] .hosted-billing-save {
-  background: var(--openbot-success-soft);
-  color: var(--openbot-success-text);
+  background: var(--whilo-success-soft);
+  color: var(--whilo-success-text);
   animation: hosted-billing-save-pop 300ms var(--hosted-billing-ease) 80ms both;
 }
 
@@ -210,9 +210,9 @@
   overflow: hidden;
   margin: 0;
   padding: 0;
-  border: 1px solid var(--openbot-border);
-  border-radius: var(--openbot-radius-card);
-  background: var(--openbot-bg-canvas);
+  border: 1px solid var(--whilo-border);
+  border-radius: var(--whilo-radius-card);
+  background: var(--whilo-bg-canvas);
   list-style: none;
 }
 
@@ -224,20 +224,20 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  padding: var(--openbot-space-6);
+  padding: var(--whilo-space-6);
   transition:
-    opacity var(--openbot-duration-overlay) var(--openbot-ease-out),
-    background-color var(--openbot-duration-normal) var(--openbot-ease-out);
-  animation: hosted-plan-in var(--openbot-duration-overlay) var(--openbot-ease-out)
+    opacity var(--whilo-duration-overlay) var(--whilo-ease-out),
+    background-color var(--whilo-duration-normal) var(--whilo-ease-out);
+  animation: hosted-plan-in var(--whilo-duration-overlay) var(--whilo-ease-out)
     calc(var(--plan-index) * 40ms + 60ms) backwards;
 }
 
 .hosted-plan + .hosted-plan {
-  border-left: 1px solid var(--openbot-border);
+  border-left: 1px solid var(--whilo-border);
 }
 
 .hosted-plan[data-recommended] {
-  background: var(--openbot-bg-surface);
+  background: var(--whilo-bg-surface);
 }
 
 .hosted-plan[data-dimmed] {
@@ -250,7 +250,7 @@
   position: absolute;
   inset: 0 0 auto;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--openbot-accent), var(--openbot-warning), transparent);
+  background: linear-gradient(90deg, transparent, var(--whilo-accent), var(--whilo-warning), transparent);
   opacity: 0.8;
   pointer-events: none;
 }
@@ -261,35 +261,35 @@
   inset: auto 0 0;
   z-index: -1;
   height: 50%;
-  background: linear-gradient(90deg, var(--openbot-accent), var(--openbot-warning));
+  background: linear-gradient(90deg, var(--whilo-accent), var(--whilo-warning));
   opacity: 0.22;
-  mask-image: radial-gradient(90% 100% at 50% 100%, var(--openbot-text-primary), transparent);
+  mask-image: radial-gradient(90% 100% at 50% 100%, var(--whilo-text-primary), transparent);
   pointer-events: none;
-  transition: opacity var(--openbot-duration-overlay) var(--openbot-ease-out);
+  transition: opacity var(--whilo-duration-overlay) var(--whilo-ease-out);
 }
 
 /* A fixed height, so that the badge does not move this column's content down. */
 .hosted-plan-head {
-  height: var(--openbot-control-sm);
+  height: var(--whilo-control-sm);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--openbot-space-2);
+  gap: var(--whilo-space-2);
 }
 
 .hosted-plan-name {
   margin: 0;
-  color: var(--openbot-accent-text);
-  font-size: var(--openbot-text-md);
-  font-weight: var(--openbot-weight-medium);
-  line-height: var(--openbot-leading-md);
+  color: var(--whilo-accent-text);
+  font-size: var(--whilo-text-md);
+  font-weight: var(--whilo-weight-medium);
+  line-height: var(--whilo-leading-md);
 }
 
 /* Light, like the "Choose" button of the same plan. */
 .hosted-plan-badge {
   border-color: transparent;
-  background: var(--openbot-surface-light);
-  color: var(--openbot-text-on-light);
+  background: var(--whilo-surface-light);
+  color: var(--whilo-text-on-light);
 }
 
 /* One line: the dialog gets wider for long prices. Only when the window is too narrow for that
@@ -298,7 +298,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  margin: var(--openbot-space-4) 0 0;
+  margin: var(--whilo-space-4) 0 0;
 }
 
 /* The monthly price on yearly billing. The column grows from zero, so the price slides right
@@ -309,8 +309,8 @@
   align-self: center;
   opacity: 0;
   transition:
-    grid-template-columns var(--openbot-duration-overlay) var(--openbot-ease-out),
-    opacity var(--openbot-duration-overlay) var(--openbot-ease-out);
+    grid-template-columns var(--whilo-duration-overlay) var(--whilo-ease-out),
+    opacity var(--whilo-duration-overlay) var(--whilo-ease-out);
 }
 
 .hosted-plan-was[data-shown] {
@@ -326,10 +326,10 @@
 
 .hosted-plan-was s {
   display: inline-block;
-  margin-right: var(--openbot-space-2);
-  color: var(--openbot-text-dim);
-  font-size: var(--openbot-text-xl);
-  line-height: var(--openbot-leading-xl);
+  margin-right: var(--whilo-space-2);
+  color: var(--whilo-text-dim);
+  font-size: var(--whilo-text-xl);
+  line-height: var(--whilo-leading-xl);
   font-variant-numeric: tabular-nums;
   text-decoration-thickness: 1px;
 }
@@ -342,32 +342,32 @@
 
 .hosted-plan-amount {
   --digit-distance: 12px;
-  color: var(--openbot-text-primary);
-  font-size: var(--openbot-text-display);
-  font-weight: var(--openbot-weight-regular);
-  line-height: var(--openbot-leading-display);
+  color: var(--whilo-text-primary);
+  font-size: var(--whilo-text-display);
+  font-weight: var(--whilo-weight-regular);
+  line-height: var(--whilo-leading-display);
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
 }
 
 .hosted-plan-period {
   white-space: nowrap;
-  margin-left: var(--openbot-space-1);
-  padding-top: var(--openbot-space-1);
-  color: var(--openbot-text-muted);
-  font-size: var(--openbot-text-sm);
-  line-height: var(--openbot-leading-sm);
+  margin-left: var(--whilo-space-1);
+  padding-top: var(--whilo-space-1);
+  color: var(--whilo-text-muted);
+  font-size: var(--whilo-text-sm);
+  line-height: var(--whilo-leading-sm);
 }
 
 /* Only when the column is too narrow does the saving go on a second line. */
 .hosted-plan-billed {
   display: flex;
   flex-wrap: wrap;
-  margin: var(--openbot-space-1) 0 0;
-  color: var(--openbot-text-dim);
-  font-size: var(--openbot-text-sm);
-  line-height: var(--openbot-leading-sm);
-  animation: add-server-step-in var(--openbot-duration-overlay) var(--openbot-ease-out) both;
+  margin: var(--whilo-space-1) 0 0;
+  color: var(--whilo-text-dim);
+  font-size: var(--whilo-text-sm);
+  line-height: var(--whilo-leading-sm);
+  animation: add-server-step-in var(--whilo-duration-overlay) var(--whilo-ease-out) both;
 }
 
 .hosted-plan-billed-total {
@@ -375,31 +375,31 @@
 }
 
 .hosted-plan-saving {
-  color: var(--openbot-success-text);
+  color: var(--whilo-success-text);
   white-space: nowrap;
 }
 
 .hosted-plan-saving::before {
   content: "\00b7" / "";
-  margin: 0 var(--openbot-space-1);
-  color: var(--openbot-text-dim);
+  margin: 0 var(--whilo-space-1);
+  color: var(--whilo-text-dim);
 }
 
 .hosted-plan-summary {
-  margin: var(--openbot-space-4) 0 var(--openbot-space-6);
-  color: var(--openbot-text-muted);
-  font-size: var(--openbot-text-md);
-  line-height: var(--openbot-leading-md);
+  margin: var(--whilo-space-4) 0 var(--whilo-space-6);
+  color: var(--whilo-text-muted);
+  font-size: var(--whilo-text-md);
+  line-height: var(--whilo-leading-md);
 }
 
 /* The bundle discount of a server with its license, in place of the "Best value" badge. */
 .hosted-plan-bundle {
-  padding: 0 var(--openbot-space-2);
-  border-radius: var(--openbot-radius-pill);
-  background: var(--openbot-success-soft);
-  color: var(--openbot-success-text);
-  font-size: var(--openbot-text-sm);
-  line-height: var(--openbot-leading-md);
+  padding: 0 var(--whilo-space-2);
+  border-radius: var(--whilo-radius-pill);
+  background: var(--whilo-success-soft);
+  color: var(--whilo-success-text);
+  font-size: var(--whilo-text-sm);
+  line-height: var(--whilo-leading-md);
   white-space: nowrap;
 }
 
@@ -407,19 +407,19 @@
 .hosted-plan-summary[data-license] {
   display: flex;
   align-items: baseline;
-  gap: var(--openbot-space-2);
-  color: var(--openbot-text-primary);
-  font-weight: var(--openbot-weight-medium);
+  gap: var(--whilo-space-2);
+  color: var(--whilo-text-primary);
+  font-weight: var(--whilo-weight-medium);
 }
 
 /* The icon bottom is on the baseline of the first line. It moves down so that its middle is on the
  * middle of the capital letters. */
 .hosted-plan-summary svg {
-  width: var(--openbot-icon-sm);
-  height: var(--openbot-icon-sm);
+  width: var(--whilo-icon-sm);
+  height: var(--whilo-icon-sm);
   flex: 0 0 auto;
-  translate: 0 calc((var(--openbot-icon-sm) - 1cap) / 2);
-  color: var(--openbot-success-text);
+  translate: 0 calc((var(--whilo-icon-sm) - 1cap) / 2);
+  color: var(--whilo-success-text);
 }
 
 /* The personal and work summaries differ in length; two lines for both, so the buttons stay in place. */
@@ -457,19 +457,19 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--openbot-space-3);
-  padding: var(--openbot-space-3) var(--openbot-space-6);
-  border: 1px solid var(--openbot-border);
+  gap: var(--whilo-space-3);
+  padding: var(--whilo-space-3) var(--whilo-space-6);
+  border: 1px solid var(--whilo-border);
   border-top: 0;
-  border-radius: 0 0 var(--openbot-radius-card) var(--openbot-radius-card);
-  background: var(--openbot-bg-canvas);
-  color: var(--openbot-text-primary);
-  font-size: var(--openbot-text-md);
-  transition: color var(--openbot-duration-normal) var(--openbot-ease-out);
+  border-radius: 0 0 var(--whilo-radius-card) var(--whilo-radius-card);
+  background: var(--whilo-bg-canvas);
+  color: var(--whilo-text-primary);
+  font-size: var(--whilo-text-md);
+  transition: color var(--whilo-duration-normal) var(--whilo-ease-out);
 }
 
 .hosted-license-people[data-disabled] {
-  color: var(--openbot-text-muted);
+  color: var(--whilo-text-muted);
 }
 
 .hosted-license-people > span {
@@ -479,7 +479,7 @@
 .hosted-license-stepper {
   display: flex;
   align-items: center;
-  gap: var(--openbot-space-2);
+  gap: var(--whilo-space-2);
   margin: 0;
   padding: 0;
   border: 0;
@@ -494,7 +494,7 @@
 }
 
 .hosted-license-stepper .ui-icon-button {
-  border-radius: var(--openbot-radius-pill);
+  border-radius: var(--whilo-radius-pill);
 }
 
 /* The buttons line up when the summaries wrap to different lengths. */
@@ -511,28 +511,28 @@
 .hosted-plan-facts {
   display: flex;
   flex-direction: column;
-  gap: var(--openbot-space-2);
-  margin: var(--openbot-space-6) 0 0;
-  padding: var(--openbot-space-4) 0 0;
-  border-top: 1px dashed var(--openbot-border);
+  gap: var(--whilo-space-2);
+  margin: var(--whilo-space-6) 0 0;
+  padding: var(--whilo-space-4) 0 0;
+  border-top: 1px dashed var(--whilo-border);
   list-style: none;
 }
 
 .hosted-plan-facts li {
   display: flex;
   align-items: center;
-  gap: var(--openbot-space-2);
-  color: var(--openbot-text-secondary);
-  font-size: var(--openbot-text-md);
-  line-height: var(--openbot-leading-md);
+  gap: var(--whilo-space-2);
+  color: var(--whilo-text-secondary);
+  font-size: var(--whilo-text-md);
+  line-height: var(--whilo-leading-md);
 }
 
 .hosted-plan-facts svg {
-  width: var(--openbot-icon-sm);
-  height: var(--openbot-icon-sm);
+  width: var(--whilo-icon-sm);
+  height: var(--whilo-icon-sm);
   flex: 0 0 auto;
-  color: var(--openbot-text-muted);
-  transition: color var(--openbot-duration-normal) var(--openbot-ease-out);
+  color: var(--whilo-text-muted);
+  transition: color var(--whilo-duration-normal) var(--whilo-ease-out);
 }
 
 /* Needs that the plans do not cover. */
@@ -540,8 +540,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--openbot-space-4);
-  padding: 0 var(--openbot-space-1);
+  gap: var(--whilo-space-4);
+  padding: 0 var(--whilo-space-1);
 }
 
 .add-server-custom-text {
@@ -562,29 +562,29 @@
 /* The ways to add a server without a plan, across from the close button of the shell. */
 .add-server-other {
   position: absolute;
-  top: var(--openbot-space-6);
-  left: var(--openbot-space-6);
+  top: var(--whilo-space-6);
+  left: var(--whilo-space-6);
   z-index: 2;
 }
 
 .add-server-other .ui-button {
-  color: var(--openbot-text-muted);
+  color: var(--whilo-text-muted);
 }
 
 /* The menu opens over the dialog, which is on a higher layer than menus. */
 .ui-action-menu.add-server-other-menu {
-  z-index: calc(var(--openbot-layer-dialog) + 1);
+  z-index: calc(var(--whilo-layer-dialog) + 1);
 }
 
 /* Progress */
 
 .add-server-progress {
   align-items: stretch;
-  gap: var(--openbot-space-6);
+  gap: var(--whilo-space-6);
 }
 
 .add-server-progress .join-server-header {
-  gap: var(--openbot-space-2);
+  gap: var(--whilo-space-2);
 }
 
 /* Three ring segments around the server logo, one for each step. The SVG turns by -90deg, so the
@@ -593,7 +593,7 @@
   position: relative;
   width: 96px;
   height: 96px;
-  margin: var(--openbot-space-2) auto 0;
+  margin: var(--whilo-space-2) auto 0;
   display: grid;
   place-items: center;
 }
@@ -611,9 +611,9 @@
 .add-server-ring-segment circle {
   stroke-dasharray: 30.33 100;
   transition:
-    stroke-dasharray var(--openbot-duration-normal) var(--openbot-ease-out),
-    stroke-dashoffset var(--openbot-duration-slow) var(--openbot-ease-out),
-    stroke var(--openbot-duration-slow) var(--openbot-ease-out);
+    stroke-dasharray var(--whilo-duration-normal) var(--whilo-ease-out),
+    stroke-dashoffset var(--whilo-duration-slow) var(--whilo-ease-out),
+    stroke var(--whilo-duration-slow) var(--whilo-ease-out);
 }
 
 .add-server-ring-segment:nth-child(1) circle {
@@ -629,11 +629,11 @@
 }
 
 .add-server-ring-track {
-  stroke: var(--openbot-border);
+  stroke: var(--whilo-border);
 }
 
 .add-server-ring-segment .add-server-ring-fill {
-  stroke: var(--openbot-accent);
+  stroke: var(--whilo-accent);
 }
 
 .add-server-ring-segment[data-state="pending"] .add-server-ring-fill {
@@ -646,7 +646,7 @@
   --add-server-step-creep: 20s;
   stroke-dasharray: 27.3 100;
   transition: stroke-dasharray var(--add-server-step-creep) cubic-bezier(0.05, 0.7, 0.1, 1);
-  animation: add-server-segment-breathe 1.6s var(--openbot-ease-in-out) infinite alternate;
+  animation: add-server-segment-breathe 1.6s var(--whilo-ease-in-out) infinite alternate;
 
   @starting-style {
     stroke-dasharray: 0 100;
@@ -654,13 +654,13 @@
 }
 
 .add-server-ring-segment[data-state="failed"] .add-server-ring-fill {
-  stroke: var(--openbot-danger);
+  stroke: var(--whilo-danger);
 }
 
 /* Ready: the gaps close and the three segments become one success ring. */
 .add-server-progress[data-status="ready"] .add-server-ring-segment circle {
   stroke-dasharray: 33.4 100;
-  stroke: var(--openbot-success);
+  stroke: var(--whilo-success);
 }
 
 .add-server-progress[data-status="ready"] .add-server-ring-segment:nth-child(1) circle {
@@ -684,22 +684,22 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: var(--openbot-space-1);
-  border-radius: var(--openbot-radius-pill);
-  background: var(--openbot-bg-surface);
-  box-shadow: inset 0 0 0 1px var(--openbot-border);
+  gap: var(--whilo-space-1);
+  border-radius: var(--whilo-radius-pill);
+  background: var(--whilo-bg-surface);
+  box-shadow: inset 0 0 0 1px var(--whilo-border);
   transition:
-    opacity var(--openbot-duration-normal) var(--openbot-ease-out),
-    transform var(--openbot-duration-normal) var(--openbot-ease-out);
+    opacity var(--whilo-duration-normal) var(--whilo-ease-out),
+    transform var(--whilo-duration-normal) var(--whilo-ease-out);
 }
 
 .add-server-light {
   position: relative;
   width: 42px;
   height: 13px;
-  border: 1px solid color-mix(in srgb, var(--openbot-text-dim) 55%, transparent);
-  border-radius: var(--openbot-radius-sm);
-  background: var(--openbot-bg-sidebar);
+  border: 1px solid color-mix(in srgb, var(--whilo-text-dim) 55%, transparent);
+  border-radius: var(--whilo-radius-sm);
+  background: var(--whilo-bg-sidebar);
 }
 
 /* The drive slot at the left. */
@@ -710,7 +710,7 @@
   left: 5px;
   width: 16px;
   height: 1px;
-  background: var(--openbot-text-dim);
+  background: var(--whilo-text-dim);
 }
 
 /* The light at the right. */
@@ -721,27 +721,27 @@
   right: 4px;
   width: 4px;
   height: 4px;
-  border-radius: var(--openbot-radius-pill);
-  background: color-mix(in srgb, var(--openbot-text-dim) 55%, transparent);
+  border-radius: var(--whilo-radius-pill);
+  background: color-mix(in srgb, var(--whilo-text-dim) 55%, transparent);
   transition:
-    background var(--openbot-duration-normal) var(--openbot-ease-out),
-    box-shadow var(--openbot-duration-normal) var(--openbot-ease-out);
+    background var(--whilo-duration-normal) var(--whilo-ease-out),
+    box-shadow var(--whilo-duration-normal) var(--whilo-ease-out);
 }
 
 .add-server-light[data-state="active"]::after {
-  background: var(--openbot-accent);
-  box-shadow: 0 0 6px var(--openbot-accent);
+  background: var(--whilo-accent);
+  box-shadow: 0 0 6px var(--whilo-accent);
   animation: add-server-light-flicker 1.3s steps(1, end) infinite;
 }
 
 .add-server-light[data-state="done"]::after {
-  background: var(--openbot-success);
-  box-shadow: 0 0 6px var(--openbot-success);
+  background: var(--whilo-success);
+  box-shadow: 0 0 6px var(--whilo-success);
 }
 
 .add-server-light[data-state="failed"]::after {
-  background: var(--openbot-danger);
-  box-shadow: 0 0 6px var(--openbot-danger);
+  background: var(--whilo-danger);
+  box-shadow: 0 0 6px var(--whilo-danger);
 }
 
 .add-server-progress:is([data-status="ready"], [data-status="error"]) .add-server-ring-core {
@@ -756,14 +756,14 @@
   height: 72px;
   display: grid;
   place-items: center;
-  border-radius: var(--openbot-radius-pill);
-  background: var(--openbot-success);
-  color: var(--openbot-text-on-accent);
-  animation: add-server-pop var(--openbot-duration-overlay) var(--openbot-ease-out) var(--openbot-duration-normal) both;
+  border-radius: var(--whilo-radius-pill);
+  background: var(--whilo-success);
+  color: var(--whilo-text-on-accent);
+  animation: add-server-pop var(--whilo-duration-overlay) var(--whilo-ease-out) var(--whilo-duration-normal) both;
 }
 
 .add-server-ring-result[data-tone="danger"] {
-  background: var(--openbot-danger);
+  background: var(--whilo-danger);
 }
 
 .add-server-ring-result svg {
@@ -774,17 +774,17 @@
 .add-server-ring-result svg path {
   stroke-dasharray: 24;
   stroke-dashoffset: 24;
-  animation: add-server-check-draw var(--openbot-duration-slow) var(--openbot-ease-out) var(--openbot-duration-slow)
+  animation: add-server-check-draw var(--whilo-duration-slow) var(--whilo-ease-out) var(--whilo-duration-slow)
     forwards;
 }
 
 /* What happens now. Each new line rolls in from below. */
 .add-server-ticker {
   margin: 0;
-  color: var(--openbot-text-muted);
-  font-size: var(--openbot-text-md);
-  line-height: var(--openbot-leading-md);
-  animation: add-server-detail-in var(--openbot-duration-slow) var(--openbot-ease-out) both;
+  color: var(--whilo-text-muted);
+  font-size: var(--whilo-text-md);
+  line-height: var(--whilo-leading-md);
+  animation: add-server-detail-in var(--whilo-duration-slow) var(--whilo-ease-out) both;
 }
 
 /* Confetti: pieces start at the logo, burst out, then fall. */
@@ -803,32 +803,32 @@
   left: var(--confetti-origin-x);
   width: 7px;
   height: 12px;
-  border-radius: var(--openbot-radius-xs);
-  background: var(--openbot-accent);
+  border-radius: var(--whilo-radius-xs);
+  background: var(--whilo-accent);
   opacity: 0;
-  animation: add-server-confetti var(--confetti-duration) var(--openbot-ease-out) var(--confetti-delay) both;
+  animation: add-server-confetti var(--confetti-duration) var(--whilo-ease-out) var(--confetti-delay) both;
 }
 
 .add-server-confetti i:nth-child(5n + 1) {
-  background: var(--openbot-success);
+  background: var(--whilo-success);
 }
 
 .add-server-confetti i:nth-child(5n + 2) {
-  background: var(--openbot-warning);
+  background: var(--whilo-warning);
 }
 
 .add-server-confetti i:nth-child(5n + 3) {
-  background: var(--openbot-danger);
+  background: var(--whilo-danger);
 }
 
 .add-server-confetti i:nth-child(5n + 4) {
-  background: var(--openbot-accent-text);
+  background: var(--whilo-accent-text);
 }
 
 .add-server-confetti i:nth-child(3n) {
   width: 8px;
   height: 8px;
-  border-radius: var(--openbot-radius-pill);
+  border-radius: var(--whilo-radius-pill);
 }
 
 @keyframes add-server-confetti {
@@ -920,7 +920,7 @@
 /* After the other svg rules, because this selector is more specific. */
 @media (hover: hover) {
   .hosted-plan:not([data-recommended]):hover {
-    background: var(--openbot-bg-surface);
+    background: var(--whilo-bg-surface);
   }
 
   .hosted-plan[data-recommended]:hover::after {
@@ -928,7 +928,7 @@
   }
 
   .hosted-plan:hover .hosted-plan-facts svg {
-    color: var(--openbot-text-secondary);
+    color: var(--whilo-text-secondary);
   }
 }
 
@@ -938,20 +938,20 @@
   }
 
   .hosted-plan + .hosted-plan {
-    border-top: 1px solid var(--openbot-border);
+    border-top: 1px solid var(--whilo-border);
     border-left: 0;
   }
 }
 
 @media (max-width: 560px) {
   .add-server-intro .ui-heading {
-    font-size: var(--openbot-text-2xl);
-    line-height: var(--openbot-leading-2xl);
+    font-size: var(--whilo-text-2xl);
+    line-height: var(--whilo-leading-2xl);
   }
 
   /* The title goes under the row of the "Other options" button and the close button. */
   .add-server-dialog:has(.add-server-other) .add-server-intro {
-    padding-top: calc(var(--openbot-control-md) + var(--openbot-space-1));
+    padding-top: calc(var(--whilo-control-md) + var(--whilo-space-1));
   }
 
   .add-server-dialog:has(.add-server-other) .add-server-intro .ui-heading {
@@ -959,18 +959,18 @@
   }
 
   .add-server-other {
-    top: var(--openbot-space-3);
-    left: var(--openbot-space-3);
+    top: var(--whilo-space-3);
+    left: var(--whilo-space-3);
   }
 
   .add-server-intro .ui-text {
-    font-size: var(--openbot-text-md);
-    line-height: var(--openbot-leading-md);
+    font-size: var(--whilo-text-md);
+    line-height: var(--whilo-leading-md);
   }
 
   /* The switch goes under the close button and fills the width. */
   .add-server-bar {
-    padding: calc(var(--openbot-control-md) + var(--openbot-space-1)) 0 0;
+    padding: calc(var(--whilo-control-md) + var(--whilo-space-1)) 0 0;
   }
 
   .add-server-bar .hosted-billing {

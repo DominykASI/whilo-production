@@ -1,4 +1,4 @@
-import type { AgentMessage, AgentProfile } from "@openbot/ui/data";
+import type { AgentMessage, AgentProfile } from "@whilo/ui/data";
 import { createStore } from "solid-js";
 
 /**

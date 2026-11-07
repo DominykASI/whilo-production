@@ -1,4 +1,4 @@
-import type { ChannelSummary } from "@openbot/contracts/ipc";
+import type { ChannelSummary } from "@whilo/contracts/ipc";
 import { router } from "expo-router";
 import { Spinner, Typography } from "heroui-native";
 import { Pressable, View } from "react-native";
@@ -22,7 +22,7 @@ export function ChatChannelWorkRow({
   serverId: string;
 }) {
   const { t } = useText();
-  const accent = useCSSVariable("--openbot-accent-text");
+  const accent = useCSSVariable("--whilo-accent-text");
   const label = t(
     activity.phase === "waiting" ? "mobile.chat.channelWork.waiting" : "mobile.chat.channelWork.working",
     {

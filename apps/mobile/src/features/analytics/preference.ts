@@ -1,17 +1,17 @@
-import { isBoolean, isDynamicRecord, isNumber } from "@openbot/contracts/runtime-values";
-import { currentAnalyticsInstallId, newAnalyticsInstallId } from "@openbot/telemetry";
+import { isBoolean, isDynamicRecord, isNumber } from "@whilo/contracts/runtime-values";
+import { currentAnalyticsInstallId, newAnalyticsInstallId } from "@whilo/telemetry";
 import { randomUUID } from "expo-crypto";
 import * as SecureStore from "expo-secure-store";
 import { create } from "zustand";
 import { mobileAnalytics } from "./mobile-analytics";
 
-const key = "openbot.mobile.analytics.v1";
+const key = "whilo.mobile.analytics.v1";
 /** A choice of this phone that the account has not saved yet: JSON `{ enabled, at }`, `at` in ms. */
-const accountPendingKey = "openbot.mobile.analytics.account-pending.v1";
+const accountPendingKey = "whilo.mobile.analytics.account-pending.v1";
 /** "true" or "false". Missing: an app from before the account kept answers saved the choice. */
-const keepOffKey = "openbot.mobile.analytics.keep-off.v1";
+const keepOffKey = "whilo.mobile.analytics.keep-off.v1";
 /** JSON `{ id, createdAt }`: the random ID of events while tracking is off. It changes after 13 months. */
-const installIdKey = "openbot.mobile.analytics.install-id.v1";
+const installIdKey = "whilo.mobile.analytics.install-id.v1";
 // The longest wait for the opt-out event before tracking stops. The opt-out must not wait for a slow network.
 const OPT_OUT_EVENT_LIMIT_MS = 2_000;
 export const useAnalyticsPreference = create<{ enabled: boolean; ready: boolean; saving: boolean }>(() => ({

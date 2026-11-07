@@ -1,8 +1,8 @@
 /** An asset step: a workspace file as an input. The output type follows the file. */
 
-import type { StoredFileRow } from "@openbot/contracts/ipc";
-import type { AppTextKey } from "@openbot/i18n";
-import { Button, Download, File, FileInput, Input, Maximize2, Popover, Search, SlidingTabs, Upload } from "@openbot/ui";
+import type { StoredFileRow } from "@whilo/contracts/ipc";
+import type { AppTextKey } from "@whilo/i18n";
+import { Button, Download, File, FileInput, Input, Maximize2, Popover, Search, SlidingTabs, Upload } from "@whilo/ui";
 import { createSignal, createStore, For, onCleanup, Show, untrack } from "solid-js";
 import { createScrollFades } from "../../components/createScrollFades";
 import { useText } from "../../text";

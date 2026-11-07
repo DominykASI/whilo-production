@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { CHAT_VISUAL_ITEM_TYPE_PREFIX } from "@openbot/contracts/chat-visual";
+import { CHAT_VISUAL_ITEM_TYPE_PREFIX } from "@whilo/contracts/chat-visual";
 import {
   AGENT_EXCHANGE_ITEM_TYPE,
   AGENT_INSTRUCTIONS_CHANGE_ITEM_TYPE,
@@ -18,21 +18,21 @@ import {
   ROUTINE_QUIET_ANSWER_ITEM_TYPE,
   ROUTINE_RUN_EVENT_ITEM_TYPE_PREFIX,
   SKILL_EVENT_ITEM_TYPE_PREFIX,
-} from "@openbot/contracts/ipc";
-import { isDynamicRecord, isNumber, isString } from "@openbot/contracts/runtime-values";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/ipc";
+import { isDynamicRecord, isNumber, isString } from "@whilo/contracts/runtime-values";
+import { sourceText } from "@whilo/i18n/source";
 import {
   type ConversationMarkerExclusions,
   ORDER_KEY_COLUMNS,
   ORDER_KEY_DESC,
   ORDERED_THREAD_MESSAGES,
 } from "./database/conversation-queries";
-import type { OpenBotDatabase } from "./openbot-database";
+import type { WhiloDatabase } from "./whilo-database";
 
 export type { ConversationMarkerExclusions } from "./database/conversation-queries";
 
 export class ConversationReadStore {
-  constructor(readonly database: OpenBotDatabase) {}
+  constructor(readonly database: WhiloDatabase) {}
 
   listStates(
     memberId: string,

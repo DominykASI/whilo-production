@@ -1,4 +1,4 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import type {
   AgentApproval,
   AgentEvent,
@@ -24,25 +24,25 @@ import type {
   SidebarLayoutSnapshot,
   TeamPresenceSnapshot,
   TeamRealtimeEvent,
-} from "@openbot/contracts/ipc";
-import { canAdministerServer } from "@openbot/contracts/ipc";
-import { AGENT_HIDDEN_CAPABILITY } from "@openbot/contracts/team-protocol/current";
-import { FOCUS_USE_CAPABILITY } from "@openbot/contracts/team-protocol/focus-use-v1";
-import { SIDEBAR_PINS_CAPABILITY } from "@openbot/contracts/team-protocol/sidebar-pins-v1";
-import { cleanAgentMessageText } from "@openbot/team-client/agent-message-text";
-import { createFocusUsePing } from "@openbot/team-client/focus-use";
-import { WAKE_RECONNECT_DELAY_MS } from "@openbot/team-client/hosted-server-wake";
-import type { RemoteTeamHost } from "@openbot/team-client/remote-directory";
+} from "@whilo/contracts/ipc";
+import { canAdministerServer } from "@whilo/contracts/ipc";
+import { AGENT_HIDDEN_CAPABILITY } from "@whilo/contracts/team-protocol/current";
+import { FOCUS_USE_CAPABILITY } from "@whilo/contracts/team-protocol/focus-use-v1";
+import { SIDEBAR_PINS_CAPABILITY } from "@whilo/contracts/team-protocol/sidebar-pins-v1";
+import { cleanAgentMessageText } from "@whilo/team-client/agent-message-text";
+import { createFocusUsePing } from "@whilo/team-client/focus-use";
+import { WAKE_RECONNECT_DELAY_MS } from "@whilo/team-client/hosted-server-wake";
+import type { RemoteTeamHost } from "@whilo/team-client/remote-directory";
 import {
   createRemoteConnectionRecovery,
   isSafeConnectionError,
   type RemoteRecoveryStatus,
-} from "@openbot/team-client/remote-recovery";
-import { reconcilePendingRequests } from "@openbot/team-client/runtime-attention";
-import { markRemoteSync } from "@openbot/team-client/sync-profile";
-import { duplicateSection as duplicateSectionWith } from "@openbot/ui/features/sidebar/duplicate-section";
-import { currentText } from "@openbot/ui/text";
-import { errorReference, type UserErrorDetails } from "@openbot/user-errors";
+} from "@whilo/team-client/remote-recovery";
+import { reconcilePendingRequests } from "@whilo/team-client/runtime-attention";
+import { markRemoteSync } from "@whilo/team-client/sync-profile";
+import { duplicateSection as duplicateSectionWith } from "@whilo/ui/features/sidebar/duplicate-section";
+import { currentText } from "@whilo/ui/text";
+import { errorReference, type UserErrorDetails } from "@whilo/user-errors";
 import { createEffect, createMemo, createSignal, createStore, onSettled } from "solid-js";
 import { toAgentProfile } from "../../app-message-projection";
 import { mergeConversationPage, missingReplyOriginals } from "../conversation/conversation-merge";
@@ -680,7 +680,7 @@ export function createWebWorkspace(
   );
   const [serverOrder, setServerOrder] = createSignal(readWebServerOrder(props.accountId));
   const orderedHosts = createMemo(() => orderWebHosts(state.hosts, serverOrder()));
-  // The host sends an `openbot-avatar:` URL, which only the desktop app can open. The image comes
+  // The host sends an `whilo-avatar:` URL, which only the desktop app can open. The image comes
   // through the host connection; until then, the agent keeps the host URL and its generated avatar.
   const [avatars, setAvatars] = createSignal<ReadonlyMap<string, { source: string; url: string }>>(new Map());
   const avatarLoads = new Set<string>();
@@ -719,7 +719,7 @@ export function createWebWorkspace(
       sources:
         state.status === "online"
           ? state.agents.flatMap((agent) =>
-              agent.avatarUrl?.startsWith("openbot-avatar:") ? [{ id: agent.id, source: agent.avatarUrl }] : [],
+              agent.avatarUrl?.startsWith("whilo-avatar:") ? [{ id: agent.id, source: agent.avatarUrl }] : [],
             )
           : [],
     }),

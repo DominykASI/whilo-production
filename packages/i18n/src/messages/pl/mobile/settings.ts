@@ -16,7 +16,7 @@ export const messages = {
   "mobile.settings.about.privacy": "Polityka prywatności",
   "mobile.settings.home.profile": "Profil",
   "mobile.settings.home.preferences": "Preferencje",
-  "mobile.settings.home.about": "O OpenBot",
+  "mobile.settings.home.about": "O Whilo",
   "mobile.settings.home.support": "Pomoc",
   "mobile.settings.home.supportHint": "Uzyskaj pomoc i zapisz dziennik pomocy",
   "mobile.settings.support.help": "Uzyskaj pomoc",
@@ -36,7 +36,7 @@ export const messages = {
   "mobile.settings.support.clearTitle": "Wyczyścić dziennik pomocy?",
   "mobile.settings.support.clearBody": "Usuwa to wszystkie zdarzenia z dziennika na tym telefonie.",
   "mobile.settings.support.logFooter":
-    "Dziennik pozostaje na tym telefonie, a OpenBot go nie wysyła. Zapisuje kroki połączenia, żądania i błędy. Nie zapisuje wiadomości ani plików i maskuje hasła oraz tokeny. Przeczytaj plik, zanim go udostępnisz.",
+    "Dziennik pozostaje na tym telefonie, a Whilo go nie wysyła. Zapisuje kroki połączenia, żądania i błędy. Nie zapisuje wiadomości ani plików i maskuje hasła oraz tokeny. Przeczytaj plik, zanim go udostępnisz.",
   "mobile.settings.support.saveFailed": "Nie udało się zapisać pliku dziennika. Spróbuj ponownie.",
   "mobile.settings.support.sharingUnavailable": "Udostępnianie jest niedostępne na tym telefonie.",
   "mobile.settings.support.recent": "Ostatnie zdarzenia",
@@ -91,27 +91,27 @@ export const messages = {
   "mobile.settings.feedback.retry": "Ponów zapis ustawienia haptyki",
   "mobile.settings.liveActivities.title": "Aktywności na żywo",
   "mobile.settings.liveActivities.footer":
-    "Pokazuje pracę agentów, wiadomości, pytania i zatwierdzenia na ekranie blokady i w Dynamic Island, gdy OpenBot działa.",
+    "Pokazuje pracę agentów, wiadomości, pytania i zatwierdzenia na ekranie blokady i w Dynamic Island, gdy Whilo działa.",
   "mobile.settings.liveActivities.toggle": "Pokazuj aktywność agentów",
   "mobile.settings.liveActivities.retry": "Ponów zapis ustawienia Aktywności na żywo",
   "mobile.settings.notifications.title": "Powiadomienia",
   "mobile.settings.notifications.toggle": "Zezwalaj na powiadomienia",
   "mobile.settings.notifications.footer":
-    "Agenci powiadomią cię, gdy skończą, zatrzymają się z błędem albo będą potrzebować twojej odpowiedzi, zatwierdzenia lub kroku w przeglądarce. Nic nie przychodzi, gdy używasz OpenBot tutaj albo w aplikacji na komputer. Gdy widać Aktywność na żywo, to ona pokazuje zdarzenie.",
+    "Agenci powiadomią cię, gdy skończą, zatrzymają się z błędem albo będą potrzebować twojej odpowiedzi, zatwierdzenia lub kroku w przeglądarce. Nic nie przychodzi, gdy używasz Whilo tutaj albo w aplikacji na komputer. Gdy widać Aktywność na żywo, to ona pokazuje zdarzenie.",
   "mobile.settings.notifications.footerAndroid":
-    "Agenci powiadomią cię, gdy skończą, zatrzymają się z błędem albo będą potrzebować twojej odpowiedzi, zatwierdzenia lub kroku w przeglądarce. Nic nie przychodzi, gdy używasz OpenBot tutaj albo w aplikacji na komputer.",
-  "mobile.settings.notifications.denied": "Powiadomienia OpenBot są wyłączone w Ustawieniach iOS.",
-  "mobile.settings.notifications.deniedAndroid": "Powiadomienia OpenBot są wyłączone w ustawieniach Androida.",
+    "Agenci powiadomią cię, gdy skończą, zatrzymają się z błędem albo będą potrzebować twojej odpowiedzi, zatwierdzenia lub kroku w przeglądarce. Nic nie przychodzi, gdy używasz Whilo tutaj albo w aplikacji na komputer.",
+  "mobile.settings.notifications.denied": "Powiadomienia Whilo są wyłączone w Ustawieniach iOS.",
+  "mobile.settings.notifications.deniedAndroid": "Powiadomienia Whilo są wyłączone w ustawieniach Androida.",
   "mobile.settings.notifications.openSettings": "Otwórz Ustawienia iOS",
   "mobile.settings.notifications.openSettingsAndroid": "Otwórz ustawienia Androida",
   "mobile.settings.notifications.preview": "Pokazuj podgląd odpowiedzi",
   "mobile.settings.notifications.previewFooter":
-    "Pokazuje początek odpowiedzi, pytanie albo działanie do zatwierdzenia. Apple i usługa kont OpenBot nie mogą go odczytać.",
+    "Pokazuje początek odpowiedzi, pytanie albo działanie do zatwierdzenia. Apple i usługa kont Whilo nie mogą go odczytać.",
   "mobile.settings.notifications.previewFooterAndroid":
-    "Pokazuje początek odpowiedzi, pytanie albo działanie do zatwierdzenia. Google i usługa kont OpenBot nie mogą go odczytać.",
+    "Pokazuje początek odpowiedzi, pytanie albo działanie do zatwierdzenia. Google i usługa kont Whilo nie mogą go odczytać.",
   "mobile.settings.notifications.sound": "Dźwięk",
   "mobile.settings.notifications.playSound": "Odtwarzaj dźwięk",
-  "mobile.settings.notifications.sound.openbot": "OpenBot",
+  "mobile.settings.notifications.sound.whilo": "Whilo",
   "mobile.settings.notifications.sound.warm": "Ciepły",
   "mobile.settings.notifications.sound.mech": "Mechaniczny",
   "mobile.settings.notifications.sound.bubble": "Bąbelkowy",
@@ -119,9 +119,9 @@ export const messages = {
   "mobile.settings.notifications.sound.default": "Domyślny iOS",
   "mobile.settings.notifications.sound.defaultAndroid": "Domyślny Androida",
   "mobile.settings.notifications.soundFooter":
-    "Powiadomienia i Aktywność na żywo odtwarzają ten dźwięk. Aktywność na żywo włącza też ekran. Dźwięk OpenBot to ten sam dźwięk, który aplikacja na komputer odtwarza po ukończeniu zadania. Cztery kolejne dźwięki to dźwięki motywów dźwiękowych aplikacji na komputer.",
+    "Powiadomienia i Aktywność na żywo odtwarzają ten dźwięk. Aktywność na żywo włącza też ekran. Dźwięk Whilo to ten sam dźwięk, który aplikacja na komputer odtwarza po ukończeniu zadania. Cztery kolejne dźwięki to dźwięki motywów dźwiękowych aplikacji na komputer.",
   "mobile.settings.notifications.soundFooterAndroid":
-    "Powiadomienia odtwarzają ten dźwięk. Dźwięk OpenBot to ten sam dźwięk, który aplikacja na komputer odtwarza po ukończeniu zadania. Cztery kolejne dźwięki to dźwięki motywów dźwiękowych aplikacji na komputer.",
+    "Powiadomienia odtwarzają ten dźwięk. Dźwięk Whilo to ten sam dźwięk, który aplikacja na komputer odtwarza po ukończeniu zadania. Cztery kolejne dźwięki to dźwięki motywów dźwiękowych aplikacji na komputer.",
   "mobile.settings.notifications.level.all": "Cała aktywność",
   "mobile.settings.notifications.level.needsMe": "Tylko gdy wymaga mojej uwagi",
   "mobile.settings.notifications.level.nothing": "Nic",
@@ -137,7 +137,7 @@ export const messages = {
   "mobile.settings.notifications.serverFooter":
     "Zdarzenia tego serwera, o których powiadamia ten telefon. Aplikacja na komputer ma własne ustawienia.",
   "mobile.settings.notifications.serverUnsupported":
-    "Ten serwer nie może wysyłać powiadomień. Zaktualizuj OpenBot na komputerze, na którym działa.",
+    "Ten serwer nie może wysyłać powiadomień. Zaktualizuj Whilo na komputerze, na którym działa.",
   "mobile.settings.notifications.thisPhone": "Ten telefon",
   "mobile.settings.notifications.whatYouHear": "Co do ciebie dociera",
   "mobile.settings.notifications.wholeServer": "Cały serwer",
@@ -151,7 +151,7 @@ export const messages = {
   "mobile.settings.notifications.chooseAgent": "Wybierz dla jednego agenta",
   "mobile.settings.notifications.chooseAnotherAgent": "Wybierz innego agenta",
   "mobile.settings.notifications.levelsFooter": "Stuknij ponownie poziom agenta, aby wrócił do ustawienia serwera.",
-  "mobile.settings.notifications.agentsUnsupported": "Zaktualizuj OpenBot na tym serwerze, aby wybierać agentów.",
+  "mobile.settings.notifications.agentsUnsupported": "Zaktualizuj Whilo na tym serwerze, aby wybierać agentów.",
   "mobile.settings.notifications.agentsOffline": "Agenci pojawią się, gdy ten serwer będzie online.",
   "mobile.settings.notifications.scopeFooter":
     "Twoje wybory obowiązują na wszystkich twoich urządzeniach. Wyciszenie dotyczy tylko tego telefonu.",
@@ -159,7 +159,7 @@ export const messages = {
   "mobile.settings.notifications.channelSilent": "Powiadomienia agentów (bez dźwięku)",
   "mobile.settings.privacy.title": "Prywatność",
   "mobile.settings.privacy.footer":
-    "Dane o użyciu funkcji i wynikach połączeń z tego telefonu zawsze trafiają do analityki OpenBot. Włączone: wraz z ID konta i adresem e-mail. Wyłączone: tylko z losowym ID instalacji. Treść wiadomości i pliki nie są wysyłane.",
+    "Dane o użyciu funkcji i wynikach połączeń z tego telefonu zawsze trafiają do analityki Whilo. Włączone: wraz z ID konta i adresem e-mail. Wyłączone: tylko z losowym ID instalacji. Treść wiadomości i pliki nie są wysyłane.",
   "mobile.settings.privacy.analytics": "Łącz analitykę z moim kontem",
   "mobile.settings.privacy.retry": "Ponów zapis ustawienia prywatności",
   "mobile.settings.conversations.title": "Rozmowy",
@@ -179,7 +179,7 @@ export const messages = {
   "mobile.settings.profile.security": "Bezpieczeństwo",
   "mobile.settings.profile.accountSessions": "Sesje konta",
   "mobile.settings.profile.signOutTitle": "Wylogować się?",
-  "mobile.settings.profile.signOutBody": "Połącz się ponownie, skanując nowy kod z OpenBot na komputerze.",
+  "mobile.settings.profile.signOutBody": "Połącz się ponownie, skanując nowy kod z Whilo na komputerze.",
   "mobile.settings.profile.signOut": "Wyloguj się",
   "mobile.settings.voice.title": "Głos",
   "mobile.settings.voice.sample": "Cześć. Tak będę czytać Ci moje odpowiedzi.",
@@ -212,7 +212,7 @@ export const messages = {
   "mobile.settings.voice.supertonic.male": "Głos męski {number}",
   "mobile.settings.voice.elevenLabs.title": "ElevenLabs",
   "mobile.settings.voice.elevenLabs.footer":
-    "OpenBot wysyła tekst każdej odpowiedzi do ElevenLabs z Twoim kluczem, a ElevenLabs obciąża Twoje konto. Klucz zostaje w pęku kluczy tego telefonu.",
+    "Whilo wysyła tekst każdej odpowiedzi do ElevenLabs z Twoim kluczem, a ElevenLabs obciąża Twoje konto. Klucz zostaje w pęku kluczy tego telefonu.",
   "mobile.settings.voice.elevenLabs.key": "Klucz API",
   "mobile.settings.voice.elevenLabs.keySaved": "Zapisany na tym telefonie",
   "mobile.settings.voice.elevenLabs.chooseVoice": "Wybierz głos",
@@ -222,7 +222,7 @@ export const messages = {
   "mobile.settings.voice.elevenLabs.removeBody": "Supertonic 3 znów czyta odpowiedzi.",
   "mobile.settings.voice.elevenLabs.saveKey": "Zapisz klucz",
   "mobile.settings.voice.elevenLabs.testing": "Sprawdzanie klucza",
-  "mobile.settings.voice.elevenLabs.keyHint": "OpenBot sprawdza pierwsze dwa uprawnienia przed zapisaniem klucza.",
+  "mobile.settings.voice.elevenLabs.keyHint": "Whilo sprawdza pierwsze dwa uprawnienia przed zapisaniem klucza.",
   "mobile.settings.voice.elevenLabs.testFailed": "ElevenLabs nie odpowiedział. Spróbuj ponownie.",
   "mobile.settings.voice.elevenLabs.getKey": "Uzyskaj klucz API",
   "mobile.settings.voice.engine.supertonicReady": "Na tym telefonie · {voice}",
@@ -266,5 +266,5 @@ export const messages = {
   "mobile.settings.voice.tab.listening": "Słuchanie",
   "mobile.settings.voice.tab.speaking": "Mówienie",
   "mobile.settings.voice.elevenLabs.recognitionFooter":
-    "OpenBot przesyła Twoją mowę do ElevenLabs z jednorazowym tokenem, a ElevenLabs obciąża Twoje konto. Klucz zostaje na tym telefonie.",
+    "Whilo przesyła Twoją mowę do ElevenLabs z jednorazowym tokenem, a ElevenLabs obciąża Twoje konto. Klucz zostaje na tym telefonie.",
 } as const satisfies PartialTranslation<typeof source>;

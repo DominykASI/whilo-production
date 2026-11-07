@@ -4,9 +4,9 @@ import type {
   MobileConnectedDevice,
   ServerSummary,
   UpdateStatus,
-} from "@openbot/contracts/ipc";
-import { Button, Toaster, toast } from "@openbot/ui";
-import { DEFAULT_GENERAL_SETTINGS, type GeneralSettingsValue } from "@openbot/ui/features/settings/app-settings";
+} from "@whilo/contracts/ipc";
+import { Button, Toaster, toast } from "@whilo/ui";
+import { DEFAULT_GENERAL_SETTINGS, type GeneralSettingsValue } from "@whilo/ui/features/settings/app-settings";
 import { createSignal, onCleanup } from "solid-js";
 import { fn } from "storybook/test";
 import type { Meta, StoryObj } from "storybook-solidjs-vite";
@@ -15,7 +15,7 @@ import type { SettingsTab } from "../src/features/settings/settings-tabs";
 import { STORY_SERVERS } from "../src/preview/fixtures";
 import { createMockBilling } from "../src/preview/mock-billing";
 import type { MockVoiceOptions } from "../src/preview/mock-voice";
-import { createMockOpenBot } from "./mock-openbot";
+import { createMockWhilo } from "./mock-whilo";
 import { SettingsPageStory } from "./settings-page-story";
 import { previewStorySoundSettings } from "./sound-feedback-fixture";
 
@@ -28,7 +28,7 @@ const storyGeneralSettings: GeneralSettingsValue = {
   keepAwakeOnBattery: false,
 };
 
-const storyAppInfo = { name: "OpenBot", version: "0.2.1", platform: "darwin", variant: "dev" } as const;
+const storyAppInfo = { name: "Whilo", version: "0.2.1", platform: "darwin", variant: "dev" } as const;
 const storyAccount: CentralAuthUser = {
   id: "user-1",
   email: "person@example.com",
@@ -58,15 +58,15 @@ function SettingsModalStory(props: {
   /** The downloaded dictation models and the saved voice setting. */
   voice?: MockVoiceOptions;
 }) {
-  const previousApi = window.openbot;
+  const previousApi = window.whilo;
   const billingApi = createMockBilling();
-  const mock = createMockOpenBot(props.voice);
-  window.openbot = mock.api;
+  const mock = createMockWhilo(props.voice);
+  window.whilo = mock.api;
   onCleanup(() => {
     mock.dispose();
     toast.dismiss();
     // Storybook can render the story again before it cleans up the first render. That render's API stays.
-    if (window.openbot === mock.api) window.openbot = previousApi;
+    if (window.whilo === mock.api) window.whilo = previousApi;
   });
   const hostedServersApi = {
     ...mock.api.hostedServers,
@@ -142,7 +142,7 @@ function SettingsModalStory(props: {
     }, 6_000);
     return {
       qrData:
-        "openbot://mobile-connect?api=https%3A%2F%2Fapi.openbot.run&ticket=storybook-mobile-ticket_1234567890abcdef",
+        "whilo://mobile-connect?api=https%3A%2F%2Fapi.openbot.run&ticket=storybook-mobile-ticket_1234567890abcdef",
       expiresAt: Date.now() + 120_000,
     };
   }
@@ -231,7 +231,7 @@ const meta = {
     onUpdateAccountAvatar: fn(async () => undefined),
     onCreateMobileConnect: fn(async () => ({
       qrData:
-        "openbot://mobile-connect?api=https%3A%2F%2Fapi.openbot.run&ticket=storybook-mobile-ticket_1234567890abcdef",
+        "whilo://mobile-connect?api=https%3A%2F%2Fapi.openbot.run&ticket=storybook-mobile-ticket_1234567890abcdef",
       expiresAt: Date.now() + 120_000,
     })),
   },

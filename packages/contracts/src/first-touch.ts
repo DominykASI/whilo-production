@@ -1,7 +1,7 @@
 import { isDynamicRecord, isOneOf, isString } from "./runtime-values";
 
 /**
- * The first visit of this browser to openbot.run, as the website saves it. The web client and the
+ * The first visit of this browser to whilo.onerall.com, as the website saves it. The web client and the
  * checkout return page send it to the account service, which keeps the first one it gets for an
  * account. ANALYTICS.md describes the attribution; every field is a closed set or a bounded label.
  */
@@ -43,7 +43,7 @@ export type FirstTouchSourcePlatform = (typeof FIRST_TOUCH_SOURCE_PLATFORMS)[num
 
 export const FIRST_TOUCH_CAMPAIGN_FIELDS = ["utmSource", "utmMedium", "utmCampaign", "utmContent", "utmTerm"] as const;
 
-export const FIRST_TOUCH_STORAGE_KEY = "openbot.first-touch.v1";
+export const FIRST_TOUCH_STORAGE_KEY = "whilo.first-touch.v1";
 /** A visit older than this is not a source of a later account: the next visit replaces it. */
 export const FIRST_TOUCH_MAX_AGE_DAYS = 90;
 

@@ -5,7 +5,7 @@
  * model catalog, the host picks the model.
  */
 
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import type {
   AgentModelId,
   AgentProviderId,
@@ -13,8 +13,8 @@ import type {
   ClientAgentModelOption,
   CustomAgentSummary,
   CustomProviderSummary,
-} from "@openbot/contracts/ipc";
-import { Button, Input } from "@openbot/ui";
+} from "@whilo/contracts/ipc";
+import { Button, Input } from "@whilo/ui";
 import { createSignal, onSettled, Show } from "solid-js";
 import { ProviderModelPicker } from "../../components/ProviderModelPicker";
 import { useText } from "../../text";

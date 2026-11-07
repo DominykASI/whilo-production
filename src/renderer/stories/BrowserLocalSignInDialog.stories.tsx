@@ -1,4 +1,4 @@
-import BrowserLocalSignInDialog from "@openbot/ui/features/browser/BrowserLocalSignInDialog";
+import BrowserLocalSignInDialog from "@whilo/ui/features/browser/BrowserLocalSignInDialog";
 import { fn } from "storybook/test";
 import type { Meta, StoryObj } from "storybook-solidjs-vite";
 
@@ -21,13 +21,13 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** The window on this computer is open. OpenBot sends the sign-in when the site looks signed in. */
+/** The window on this computer is open. Whilo sends the sign-in when the site looks signed in. */
 export const WindowOpen: Story = {};
 
 /** The person closed the window before the sign-in was complete. */
 export const WindowClosed: Story = { args: { windowOpen: false } };
 
-/** OpenBot sends the sign-in and checks the server tab. */
+/** Whilo sends the sign-in and checks the server tab. */
 export const Sending: Story = { args: { pending: true } };
 
 /** The server tab still shows a sign-in page, so the window stays open. */

@@ -2,22 +2,22 @@ import {
   attachmentReferenceIds,
   removeAttachmentReferences,
   serializeAttachmentReference,
-} from "@openbot/contracts/attachment-references";
-import type { DraftAttachment } from "@openbot/contracts/ipc";
-import type { AgentMessage } from "@openbot/ui/data";
-import { ChatMessageRow } from "@openbot/ui/features/conversation/ChatMessageRow";
+} from "@whilo/contracts/attachment-references";
+import type { DraftAttachment } from "@whilo/contracts/ipc";
+import type { AgentMessage } from "@whilo/ui/data";
+import { ChatMessageRow } from "@whilo/ui/features/conversation/ChatMessageRow";
 import {
   ComposerAttachmentRow,
   type ComposerPendingImage,
-} from "@openbot/ui/features/conversation/ComposerAttachmentRow";
-import { ComposerEditor } from "@openbot/ui/features/conversation/ComposerEditor";
+} from "@whilo/ui/features/conversation/ComposerAttachmentRow";
+import { ComposerEditor } from "@whilo/ui/features/conversation/ComposerEditor";
 import { createSignal } from "solid-js";
 import { fn } from "storybook/test";
 import type { Meta, StoryObj } from "storybook-solidjs-vite";
 import desktopScreenshot from "./assets/remote-desktop-mac-mock.png";
 import { STORY_AGENTS } from "./fixtures";
 
-const logo = new URL("../src/assets/openbot-logo-production.png", import.meta.url).href;
+const logo = new URL("../src/assets/whilo-logo-production.png", import.meta.url).href;
 
 function image(id: string, previewUrl: string, name = "image.png"): DraftAttachment {
   return { id, name, size: 151_552, kind: "image", mimeType: "image/png", previewKind: "image", previewUrl };

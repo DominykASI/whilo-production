@@ -16,7 +16,7 @@ export const messages = {
   "mobile.settings.about.privacy": "Gizlilik politikası",
   "mobile.settings.home.profile": "Profil",
   "mobile.settings.home.preferences": "Tercihler",
-  "mobile.settings.home.about": "OpenBot hakkında",
+  "mobile.settings.home.about": "Whilo hakkında",
   "mobile.settings.home.support": "Destek",
   "mobile.settings.home.supportHint": "Yardım alın ve destek günlüğünü kaydedin",
   "mobile.settings.support.help": "Yardım alın",
@@ -31,7 +31,7 @@ export const messages = {
   "mobile.settings.support.clearTitle": "Destek günlüğü temizlensin mi?",
   "mobile.settings.support.clearBody": "Bu işlem, bu telefondaki günlükten tüm olayları kaldırır.",
   "mobile.settings.support.logFooter":
-    "Günlük bu telefonda kalır ve OpenBot onu göndermez. Bağlantı adımlarını, istekleri ve hataları kaydeder. Mesajları ve dosyaları kaydetmez; parolaları ve belirteçleri gizler. Paylaşmadan önce dosyayı okuyun.",
+    "Günlük bu telefonda kalır ve Whilo onu göndermez. Bağlantı adımlarını, istekleri ve hataları kaydeder. Mesajları ve dosyaları kaydetmez; parolaları ve belirteçleri gizler. Paylaşmadan önce dosyayı okuyun.",
   "mobile.settings.support.saveFailed": "Günlük dosyası kaydedilemedi. Tekrar deneyin.",
   "mobile.settings.support.sharingUnavailable": "Bu telefonda paylaşım kullanılamıyor.",
   "mobile.settings.support.recent": "Son olaylar",
@@ -86,27 +86,27 @@ export const messages = {
   "mobile.settings.feedback.retry": "Dokunsal ayarını kaydetmeyi tekrar dene",
   "mobile.settings.liveActivities.title": "Canlı Etkinlikler",
   "mobile.settings.liveActivities.footer":
-    "OpenBot çalışırken Kilit Ekranı'nda ve Dynamic Island'da ajan çalışmasını, mesajları, soruları ve onayları gösterir.",
+    "Whilo çalışırken Kilit Ekranı'nda ve Dynamic Island'da ajan çalışmasını, mesajları, soruları ve onayları gösterir.",
   "mobile.settings.liveActivities.toggle": "Ajan etkinliğini göster",
   "mobile.settings.liveActivities.retry": "Canlı Etkinlikler ayarını kaydetmeyi tekrar dene",
   "mobile.settings.notifications.title": "Bildirimler",
   "mobile.settings.notifications.toggle": "Bildirimlere izin ver",
   "mobile.settings.notifications.footer":
-    "Ajanlar işi bitirdiğinde, bir hatayla durduğunda veya girdinize, bir onaya ya da tarayıcıda bir adıma ihtiyaç duyduğunda size haber verir. OpenBot'u burada veya masaüstü uygulamasında kullanırken bildirim gelmez. Canlı Etkinlik gösterilirken olayı o gösterir.",
+    "Ajanlar işi bitirdiğinde, bir hatayla durduğunda veya girdinize, bir onaya ya da tarayıcıda bir adıma ihtiyaç duyduğunda size haber verir. Whilo'u burada veya masaüstü uygulamasında kullanırken bildirim gelmez. Canlı Etkinlik gösterilirken olayı o gösterir.",
   "mobile.settings.notifications.footerAndroid":
-    "Ajanlar işi bitirdiğinde, bir hatayla durduğunda veya girdinize, bir onaya ya da tarayıcıda bir adıma ihtiyaç duyduğunda size haber verir. OpenBot'u burada veya masaüstü uygulamasında kullanırken bildirim gelmez.",
-  "mobile.settings.notifications.denied": "OpenBot bildirimleri iOS Ayarlar'da kapalı.",
-  "mobile.settings.notifications.deniedAndroid": "OpenBot bildirimleri Android ayarlarında kapalı.",
+    "Ajanlar işi bitirdiğinde, bir hatayla durduğunda veya girdinize, bir onaya ya da tarayıcıda bir adıma ihtiyaç duyduğunda size haber verir. Whilo'u burada veya masaüstü uygulamasında kullanırken bildirim gelmez.",
+  "mobile.settings.notifications.denied": "Whilo bildirimleri iOS Ayarlar'da kapalı.",
+  "mobile.settings.notifications.deniedAndroid": "Whilo bildirimleri Android ayarlarında kapalı.",
   "mobile.settings.notifications.openSettings": "iOS Ayarlar'ı aç",
   "mobile.settings.notifications.openSettingsAndroid": "Android ayarlarını aç",
   "mobile.settings.notifications.preview": "Yanıt önizlemesini göster",
   "mobile.settings.notifications.previewFooter":
-    "Bir yanıtın başını, bir soruyu veya onaylanacak işlemi gösterir. Apple ve OpenBot hesap hizmeti bunu okuyamaz.",
+    "Bir yanıtın başını, bir soruyu veya onaylanacak işlemi gösterir. Apple ve Whilo hesap hizmeti bunu okuyamaz.",
   "mobile.settings.notifications.previewFooterAndroid":
-    "Bir yanıtın başını, bir soruyu veya onaylanacak işlemi gösterir. Google ve OpenBot hesap hizmeti bunu okuyamaz.",
+    "Bir yanıtın başını, bir soruyu veya onaylanacak işlemi gösterir. Google ve Whilo hesap hizmeti bunu okuyamaz.",
   "mobile.settings.notifications.sound": "Ses",
   "mobile.settings.notifications.playSound": "Ses çal",
-  "mobile.settings.notifications.sound.openbot": "OpenBot",
+  "mobile.settings.notifications.sound.whilo": "Whilo",
   "mobile.settings.notifications.sound.warm": "Sıcak",
   "mobile.settings.notifications.sound.mech": "Mekanik",
   "mobile.settings.notifications.sound.bubble": "Köpüklü",
@@ -114,9 +114,9 @@ export const messages = {
   "mobile.settings.notifications.sound.default": "iOS varsayılanı",
   "mobile.settings.notifications.sound.defaultAndroid": "Android varsayılanı",
   "mobile.settings.notifications.soundFooter":
-    "Bildirimler ve Canlı Etkinlik bu sesi çalar. Canlı Etkinlik ekranı da açar. OpenBot sesi, masaüstü uygulamasının bir görev bittiğinde çaldığı sestir. Sonraki dört ses, masaüstü uygulamasının ses temalarının sesleridir.",
+    "Bildirimler ve Canlı Etkinlik bu sesi çalar. Canlı Etkinlik ekranı da açar. Whilo sesi, masaüstü uygulamasının bir görev bittiğinde çaldığı sestir. Sonraki dört ses, masaüstü uygulamasının ses temalarının sesleridir.",
   "mobile.settings.notifications.soundFooterAndroid":
-    "Bildirimler bu sesi çalar. OpenBot sesi, masaüstü uygulamasının bir görev bittiğinde çaldığı sestir. Sonraki dört ses, masaüstü uygulamasının ses temalarının sesleridir.",
+    "Bildirimler bu sesi çalar. Whilo sesi, masaüstü uygulamasının bir görev bittiğinde çaldığı sestir. Sonraki dört ses, masaüstü uygulamasının ses temalarının sesleridir.",
   "mobile.settings.notifications.level.all": "Tüm etkinlikler",
   "mobile.settings.notifications.level.needsMe": "Yalnızca bana ihtiyaç duyduğunda",
   "mobile.settings.notifications.level.nothing": "Hiçbir şey",
@@ -132,7 +132,7 @@ export const messages = {
   "mobile.settings.notifications.serverFooter":
     "Bu sunucunun bu telefona bildirdiği olaylar. Masaüstü uygulamasının kendi ayarları vardır.",
   "mobile.settings.notifications.serverUnsupported":
-    "Bu sunucu bildirim gönderemez. Sunucuyu çalıştıran bilgisayardaki OpenBot'u güncelleyin.",
+    "Bu sunucu bildirim gönderemez. Sunucuyu çalıştıran bilgisayardaki Whilo'u güncelleyin.",
   "mobile.settings.notifications.thisPhone": "Bu telefon",
   "mobile.settings.notifications.whatYouHear": "Neler hakkında bildirim alırsın",
   "mobile.settings.notifications.wholeServer": "Tüm sunucu",
@@ -146,7 +146,7 @@ export const messages = {
   "mobile.settings.notifications.chooseAgent": "Bir ajan için seç",
   "mobile.settings.notifications.chooseAnotherAgent": "Başka bir ajan seç",
   "mobile.settings.notifications.levelsFooter": "Sunucuyu izlemesi için bir ajanın düzeyine yeniden dokun.",
-  "mobile.settings.notifications.agentsUnsupported": "Ajanları seçmek için bu sunucudaki OpenBot’u güncelle.",
+  "mobile.settings.notifications.agentsUnsupported": "Ajanları seçmek için bu sunucudaki Whilo’u güncelle.",
   "mobile.settings.notifications.agentsOffline": "Bu sunucu çevrimiçi olduğunda ajanlar görünür.",
   "mobile.settings.notifications.scopeFooter":
     "Seçimlerin tüm cihazlarında geçerlidir. Sessize alma yalnızca bu telefonda geçerlidir.",
@@ -154,7 +154,7 @@ export const messages = {
   "mobile.settings.notifications.channelSilent": "Ajan bildirimleri (sessiz)",
   "mobile.settings.privacy.title": "Gizlilik",
   "mobile.settings.privacy.footer":
-    "Bu telefondaki özellik kullanımı ve bağlantı sonuçları her zaman OpenBot analizlerine gönderilir. Açık: hesap kimliğiniz ve e-postanızla birlikte. Kapalı: yalnızca rastgele bir kurulum kimliğiyle. Mesaj içerikleri ve dosyalar gönderilmez.",
+    "Bu telefondaki özellik kullanımı ve bağlantı sonuçları her zaman Whilo analizlerine gönderilir. Açık: hesap kimliğiniz ve e-postanızla birlikte. Kapalı: yalnızca rastgele bir kurulum kimliğiyle. Mesaj içerikleri ve dosyalar gönderilmez.",
   "mobile.settings.privacy.analytics": "Analizleri hesabıma bağla",
   "mobile.settings.privacy.retry": "Gizlilik ayarını kaydetmeyi tekrar dene",
   "mobile.settings.conversations.title": "Konuşmalar",
@@ -174,7 +174,7 @@ export const messages = {
   "mobile.settings.profile.security": "Güvenlik",
   "mobile.settings.profile.accountSessions": "Hesap oturumları",
   "mobile.settings.profile.signOutTitle": "Oturum kapatılsın mı?",
-  "mobile.settings.profile.signOutBody": "Masaüstünüzdeki OpenBot'tan yeni bir kod tarayarak yeniden bağlanın.",
+  "mobile.settings.profile.signOutBody": "Masaüstünüzdeki Whilo'tan yeni bir kod tarayarak yeniden bağlanın.",
   "mobile.settings.profile.signOut": "Oturumu kapat",
   "mobile.settings.voice.title": "Ses",
   "mobile.settings.voice.sample": "Merhaba. Yanıtlarımı sana böyle okuyacağım.",
@@ -205,7 +205,7 @@ export const messages = {
   "mobile.settings.voice.supertonic.male": "Erkek sesi {number}",
   "mobile.settings.voice.elevenLabs.title": "ElevenLabs",
   "mobile.settings.voice.elevenLabs.footer":
-    "OpenBot her yanıtın metnini anahtarınla ElevenLabs'e gönderir ve ElevenLabs hesabından ücret alır. Anahtar bu telefonun anahtar zincirinde kalır.",
+    "Whilo her yanıtın metnini anahtarınla ElevenLabs'e gönderir ve ElevenLabs hesabından ücret alır. Anahtar bu telefonun anahtar zincirinde kalır.",
   "mobile.settings.voice.elevenLabs.key": "API anahtarı",
   "mobile.settings.voice.elevenLabs.keySaved": "Bu telefona kaydedildi",
   "mobile.settings.voice.elevenLabs.chooseVoice": "Ses seç",
@@ -215,7 +215,7 @@ export const messages = {
   "mobile.settings.voice.elevenLabs.removeBody": "Supertonic 3 yanıtları yeniden okur.",
   "mobile.settings.voice.elevenLabs.saveKey": "Anahtarı kaydet",
   "mobile.settings.voice.elevenLabs.testing": "Anahtar sınanıyor",
-  "mobile.settings.voice.elevenLabs.keyHint": "OpenBot anahtarı kaydetmeden önce ilk iki izni sınar.",
+  "mobile.settings.voice.elevenLabs.keyHint": "Whilo anahtarı kaydetmeden önce ilk iki izni sınar.",
   "mobile.settings.voice.elevenLabs.testFailed": "ElevenLabs yanıt vermedi. Yeniden dene.",
   "mobile.settings.voice.elevenLabs.getKey": "API anahtarı al",
   "mobile.settings.voice.engine.supertonicReady": "Bu telefonda · {voice}",
@@ -256,5 +256,5 @@ export const messages = {
   "mobile.settings.voice.tab.listening": "Dinleme",
   "mobile.settings.voice.tab.speaking": "Konuşma",
   "mobile.settings.voice.elevenLabs.recognitionFooter":
-    "OpenBot sesini tek kullanımlık bir belirteçle ElevenLabs'e aktarır ve ElevenLabs bunu hesabından ücretlendirir. Anahtar bu telefonda kalır.",
+    "Whilo sesini tek kullanımlık bir belirteçle ElevenLabs'e aktarır ve ElevenLabs bunu hesabından ücretlendirir. Anahtar bu telefonda kalır.",
 } as const satisfies PartialTranslation<typeof source>;

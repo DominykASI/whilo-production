@@ -1,5 +1,5 @@
-import type { AgentEvent } from "@openbot/contracts/ipc";
-import type { OpenBotDatabase } from "../openbot-database";
+import type { AgentEvent } from "@whilo/contracts/ipc";
+import type { WhiloDatabase } from "../whilo-database";
 import type { ConversationRuntime } from "./conversation-runtime";
 
 export interface PendingDeltaInput {
@@ -22,7 +22,7 @@ export interface DeltaBufferHooks {
 
 export interface DeltaBufferOptions {
   conversation: ConversationRuntime;
-  database: OpenBotDatabase;
+  database: WhiloDatabase;
   hooks: DeltaBufferHooks;
 }
 
@@ -37,7 +37,7 @@ export interface DeltaBufferOptions {
  */
 export class DeltaBuffer {
   readonly #conversation: ConversationRuntime;
-  readonly #database: OpenBotDatabase;
+  readonly #database: WhiloDatabase;
   readonly #hooks: DeltaBufferHooks;
   readonly #pending = new Map<string, BufferedDelta>();
 

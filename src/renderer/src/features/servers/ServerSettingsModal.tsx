@@ -7,9 +7,9 @@ import type {
   TeamInviteSummary,
   TeamPresenceMember,
   UpdateTeamMemberInput,
-} from "@openbot/contracts/ipc";
-import type { AppTextKey } from "@openbot/i18n";
-import { classifyFailure } from "@openbot/telemetry";
+} from "@whilo/contracts/ipc";
+import type { AppTextKey } from "@whilo/i18n";
+import { classifyFailure } from "@whilo/telemetry";
 import {
   Alert,
   AlertActions,
@@ -36,20 +36,20 @@ import {
   Tabs,
   Text,
   UsersRound,
-} from "@openbot/ui";
-import type { LicenseCalls } from "@openbot/ui/features/billing/license-store";
-import type { ProviderSettingsDetail } from "@openbot/ui/features/settings/ProviderSettingsPage";
+} from "@whilo/ui";
+import type { LicenseCalls } from "@whilo/ui/features/billing/license-store";
+import type { ProviderSettingsDetail } from "@whilo/ui/features/settings/ProviderSettingsPage";
 import {
   SaveBarDock,
   SettingsDialogShell,
   type SettingsPagePlacement,
-} from "@openbot/ui/features/settings/SettingsDialogShell";
-import { SettingsHostedSitesTab } from "@openbot/ui/features/settings/SettingsHostedSitesTab";
+} from "@whilo/ui/features/settings/SettingsDialogShell";
+import { SettingsHostedSitesTab } from "@whilo/ui/features/settings/SettingsHostedSitesTab";
 import {
   createSettingsHostedSitesStore,
   type HostedSiteDeleteResult,
-} from "@openbot/ui/features/settings/stores/hosted-sites-store";
-import { useText } from "@openbot/ui/text";
+} from "@whilo/ui/features/settings/stores/hosted-sites-store";
+import { useText } from "@whilo/ui/text";
 import { createEffect, createSignal, onCleanup, Show, untrack } from "solid-js";
 import { actionToast } from "../../action-toast";
 import { type ServerBrowserProfilesOptions, ServerBrowserProfilesPanel } from "../browser/ServerBrowserProfilesPanel";
@@ -115,7 +115,7 @@ export interface ServerSettingsModalProps {
    * The Remove section appears only when a caller supplies this.
    */
   onRemoveServer?: (() => Promise<void>) | undefined;
-  /** Opens the macOS pane that grants OpenBot screen recording, for the host that was refused it. */
+  /** Opens the macOS pane that grants Whilo screen recording, for the host that was refused it. */
   onOpenScreenRecordingSettings: () => Promise<void>;
   /** Asks the host to read the grant again, so the owner who gave it sees the warning go. */
   onRecheckScreenRecording: () => Promise<void>;

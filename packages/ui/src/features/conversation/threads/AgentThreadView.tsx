@@ -5,38 +5,38 @@ import type {
   AttachmentSummary,
   DraftAttachment,
   InstalledSkill,
-} from "@openbot/contracts/ipc";
-import type { AppTextKey } from "@openbot/i18n";
-import { isAgentTaskActive } from "@openbot/team-client/agent-tasks";
-import { createScrollFades } from "@openbot/ui/components/createScrollFades";
-import type { AgentMessage, AgentProfile, ComposerMcpServer } from "@openbot/ui/data";
-import { AgentActivityIndicator, nextAgentActivityLabel } from "@openbot/ui/features/conversation/AgentActivity";
+} from "@whilo/contracts/ipc";
+import type { AppTextKey } from "@whilo/i18n";
+import { isAgentTaskActive } from "@whilo/team-client/agent-tasks";
+import { createScrollFades } from "@whilo/ui/components/createScrollFades";
+import type { AgentMessage, AgentProfile, ComposerMcpServer } from "@whilo/ui/data";
+import { AgentActivityIndicator, nextAgentActivityLabel } from "@whilo/ui/features/conversation/AgentActivity";
 import {
   type AgentStep,
   AgentStepsDisclosure,
   type AgentStepsFacts,
-} from "@openbot/ui/features/conversation/AgentSteps";
-import type { AttachmentMediaSource } from "@openbot/ui/features/conversation/AttachmentCards";
-import { branchPointIds } from "@openbot/ui/features/conversation/branch-points";
-import { type ChatMessageAuthor, ChatMessageRow } from "@openbot/ui/features/conversation/ChatMessageRow";
-import { ComposerAddMenu } from "@openbot/ui/features/conversation/ComposerAddMenu";
+} from "@whilo/ui/features/conversation/AgentSteps";
+import type { AttachmentMediaSource } from "@whilo/ui/features/conversation/AttachmentCards";
+import { branchPointIds } from "@whilo/ui/features/conversation/branch-points";
+import { type ChatMessageAuthor, ChatMessageRow } from "@whilo/ui/features/conversation/ChatMessageRow";
+import { ComposerAddMenu } from "@whilo/ui/features/conversation/ComposerAddMenu";
 import {
   ComposerAttachmentRow,
   type ComposerPendingImage,
-} from "@openbot/ui/features/conversation/ComposerAttachmentRow";
+} from "@whilo/ui/features/conversation/ComposerAttachmentRow";
 import {
   ComposerEditor,
   type ComposerPasteResult,
   type ComposerSelection,
-} from "@openbot/ui/features/conversation/ComposerEditor";
-import { ComposerNotice } from "@openbot/ui/features/conversation/ComposerNotice";
-import { ComposerSendControl } from "@openbot/ui/features/conversation/ComposerSendControl";
-import { ContextUsageMeter, type ContextUsageView } from "@openbot/ui/features/conversation/ContextUsage";
-import { ApprovalCard } from "@openbot/ui/features/conversation/ConversationPrompts";
-import { MessageActions, MessageMenu } from "@openbot/ui/features/conversation/MessageRendering";
-import type { SendShortcut } from "@openbot/ui/features/conversation/send-shortcut";
-import { ComposerVoiceControls, type VoicePhase } from "@openbot/ui/features/conversation/VoiceRecordingMorph";
-import { type TextValue, useText } from "@openbot/ui/text";
+} from "@whilo/ui/features/conversation/ComposerEditor";
+import { ComposerNotice } from "@whilo/ui/features/conversation/ComposerNotice";
+import { ComposerSendControl } from "@whilo/ui/features/conversation/ComposerSendControl";
+import { ContextUsageMeter, type ContextUsageView } from "@whilo/ui/features/conversation/ContextUsage";
+import { ApprovalCard } from "@whilo/ui/features/conversation/ConversationPrompts";
+import { MessageActions, MessageMenu } from "@whilo/ui/features/conversation/MessageRendering";
+import type { SendShortcut } from "@whilo/ui/features/conversation/send-shortcut";
+import { ComposerVoiceControls, type VoicePhase } from "@whilo/ui/features/conversation/VoiceRecordingMorph";
+import { type TextValue, useText } from "@whilo/ui/text";
 import type { JSX } from "@solidjs/web";
 import { children, createEffect, createMemo, createSignal, For, onSettled, Show, untrack } from "solid-js";
 import { type AgentThreadBranchSource, BranchDivider } from "./BranchDivider";

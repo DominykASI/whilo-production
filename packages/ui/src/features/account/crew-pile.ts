@@ -4,7 +4,7 @@ import { clamp } from "../../utils";
 
 /*
  * The crew pile of the app loading screen: each run, a different crew of felt plushes rains into a
- * pile, and the lilac OpenBot plush lands last, on top. Any plush can be grabbed and thrown. When
+ * pile, and the lilac Whilo plush lands last, on top. Any plush can be grabbed and thrown. When
  * the app is ready, each plush hops out of the screen in its own direction.
  *
  * This is a small fixed-step simulation: circles on an invisible bowl between two walls, with
@@ -26,7 +26,7 @@ export interface CrewFace {
 
 export interface CrewMember {
   id: string;
-  /** A bloub character. The lead has none: it is the lilac OpenBot plush. */
+  /** A bloub character. The lead has none: it is the lilac Whilo plush. */
   character?: PlushCharacterId;
   lead: boolean;
   /** The size of the plush's square box, in pixels. */
@@ -164,7 +164,7 @@ function createCrew(random: () => number): CrewMember[] {
   });
   crew.sort((a, b) => a.dropAt - b.dropAt);
   crew.push({
-    id: "openbot",
+    id: "whilo",
     lead: true,
     size: Math.round(base * LEAD_SCALE),
     cy: PLUSH_MASCOT_BODY.cy,

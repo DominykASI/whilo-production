@@ -1,6 +1,6 @@
-import { SERVER_NOTIFICATION_LEVELS, type ServerNotificationLevel } from "@openbot/contracts/ipc";
-import type { AppTextKey } from "@openbot/i18n";
-import { classifyFailure } from "@openbot/telemetry";
+import { SERVER_NOTIFICATION_LEVELS, type ServerNotificationLevel } from "@whilo/contracts/ipc";
+import type { AppTextKey } from "@whilo/i18n";
+import { classifyFailure } from "@whilo/telemetry";
 import {
   Badge,
   Bell,
@@ -19,7 +19,7 @@ import {
   SlidingTabs,
   toast,
   X,
-} from "@openbot/ui";
+} from "@whilo/ui";
 import type { JSX } from "@solidjs/web";
 import { createEffect, createStore, For, onCleanup, Show, untrack } from "solid-js";
 import type { AgentProfile } from "../../data";
@@ -39,7 +39,7 @@ export interface NotificationMatrixAgent extends Pick<AgentProfile, "avatarSeed"
 
 /**
  * The agents of a server. `unsupported`: the server cannot keep a level for each agent, so the user
- * must update OpenBot on it first.
+ * must update Whilo on it first.
  */
 export type NotificationMatrixAgents =
   | { status: "loading" }

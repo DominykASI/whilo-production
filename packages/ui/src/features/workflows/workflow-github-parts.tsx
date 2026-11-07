@@ -1,7 +1,7 @@
 /**
  * The GitHub settings of a trigger and of an output card. A GitHub trigger starts a run for each event that
  * matches its repository, its event and its filters; the Events row lists what each event did. A GitHub
- * output makes one change on the issue or the pull request of the event, as OpenBot's bot.
+ * output makes one change on the issue or the pull request of the event, as Whilo's bot.
  */
 
 import {
@@ -18,8 +18,8 @@ import {
   type WorkflowGitHubItem,
   type WorkflowGitHubSkipReason,
   workflowGitHubEventItemKind,
-} from "@openbot/contracts/ipc";
-import type { AppTextKey, AppTranslate } from "@openbot/i18n";
+} from "@whilo/contracts/ipc";
+import type { AppTextKey, AppTranslate } from "@whilo/i18n";
 import {
   AtSign,
   Bot,
@@ -53,7 +53,7 @@ import {
   UserPlus,
   WifiOff,
   Zap,
-} from "@openbot/ui";
+} from "@whilo/ui";
 import type { JSX } from "@solidjs/web";
 import { createSignal, Show } from "solid-js";
 import { useText } from "../../text";

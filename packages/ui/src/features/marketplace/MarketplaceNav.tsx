@@ -1,5 +1,6 @@
-import { Blocks, BookOpen, Bot, Button, TriangleAlert } from "@openbot/ui";
-import { useText } from "@openbot/ui/text";
+import { Blocks, BookOpen, Bot, Button, TriangleAlert } from "@whilo/ui";
+import { PluginsMark } from "./PluginArt";
+import { useText } from "@whilo/ui/text";
 import { Dynamic } from "@solidjs/web";
 import { For, Show } from "solid-js";
 import type { BrowseLists } from "./MarketplaceBrowse";
@@ -12,7 +13,7 @@ import {
   ownedApps,
 } from "./marketplace-view";
 
-const TAB_ICON = { apps: Blocks, agents: Bot, skills: BookOpen } as const;
+const TAB_ICON = { apps: Blocks, agents: Bot, plugins: PluginsMark, skills: BookOpen } as const;
 
 /**
  * The side panel of the Marketplace, as the settings page has: the kinds, then the apps that the user connected. While

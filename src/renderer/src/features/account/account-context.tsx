@@ -1,5 +1,5 @@
-import type { AccountUsage, AccountUsageLimit, AvatarImageInput, CentralAuthState } from "@openbot/contracts/ipc";
-import { currentText } from "@openbot/ui/text";
+import type { AccountUsage, AccountUsageLimit, AvatarImageInput, CentralAuthState } from "@whilo/contracts/ipc";
+import { currentText } from "@whilo/ui/text";
 import { createMemo, createSignal, createStore, flush, onCleanup, onSettled } from "solid-js";
 import { type DesktopAnalyticsProperties, desktopAnalytics } from "../../analytics";
 import { createSimpleContext } from "../../simple-context";

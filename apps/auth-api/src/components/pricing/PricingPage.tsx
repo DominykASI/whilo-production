@@ -1,8 +1,8 @@
-import type { BillingPlanId } from "@openbot/contracts/billing";
-import { type LicenseTier, pricingOrderSearch } from "@openbot/contracts/license";
-import type { TranslatedLocale } from "@openbot/i18n";
-import { OrderForm, type OrderFormOrder } from "@openbot/ui/features/billing/OrderForm";
-import { TextProvider, useText } from "@openbot/ui/text";
+import type { BillingPlanId } from "@whilo/contracts/billing";
+import { type LicenseTier, pricingOrderSearch } from "@whilo/contracts/license";
+import type { TranslatedLocale } from "@whilo/i18n";
+import { OrderForm, type OrderFormOrder } from "@whilo/ui/features/billing/OrderForm";
+import { TextProvider, useText } from "@whilo/ui/text";
 import { type Accessor, createSignal, onSettled, Show } from "solid-js";
 import { landingAnalytics } from "../../lib/analytics";
 import { PRICING_ROUTE, type PricingOffer } from "../../lib/pricing-page";
@@ -37,8 +37,9 @@ const FIRST_LICENSE: LicenseTier = "team";
  * A full page load, as the header's App link. The web app reads `start` and the order after sign-in: an order with
  * a server opens the add server dialog, which sells the server and its license together, and a license alone opens
  * Billing. Each one fills in the order and goes on to Checkout, so the buyer does not choose again.
+ * While the deployment has no Stripe key, the action is a disabled button instead of a link that ends nowhere.
  */
-function OrderAction(props: { order: Accessor<OrderFormOrder> }) {
+function OrderAction(props: { order: Accessor<OrderFormOrder>; configured: boolean; unavailable: string }) {
   const { t } = useText();
   const buying = () => props.order().server !== null || props.order().license !== null;
   const start = () => (props.order().server === null ? "license" : "server");
@@ -48,19 +49,34 @@ function OrderAction(props: { order: Accessor<OrderFormOrder> }) {
       {t("billing.order.cta.download")}
     </ButtonLink>
   );
+  const unavailable = () => (
+    <p class="pricing-cta-note" role="note">
+      {props.unavailable}
+    </p>
+  );
   return (
     <Show when={buying()} fallback={download()}>
-      <ButtonLink
-        to="/app"
-        search={{ start: start(), ...pricingOrderSearch(props.order()) }}
-        reloadDocument
-        variant="primary"
-        size="md"
-        icon="arrow-right"
-        class="pricing-cta"
+      <Show
+        when={props.configured}
+        fallback={
+          <ButtonLink to="/pricing" variant="primary" size="md" class="pricing-cta" aria-disabled="true">
+            {label()}
+          </ButtonLink>
+        }
       >
-        {label()}
-      </ButtonLink>
+        <ButtonLink
+          to="/app"
+          search={{ start: start(), ...pricingOrderSearch(props.order()) }}
+          reloadDocument
+          variant="primary"
+          size="md"
+          icon="arrow-right"
+          class="pricing-cta"
+        >
+          {label()}
+        </ButtonLink>
+      </Show>
+      <Show when={!props.configured}>{unavailable()}</Show>
     </Show>
   );
 }
@@ -99,7 +115,9 @@ export function PricingPage(props: {
       <h1 id="pricing-title">{props.text.heading}</h1>
     </div>
   );
-  const action = (current: Accessor<OrderFormOrder>) => <OrderAction order={current} />;
+  const action = (current: Accessor<OrderFormOrder>) => (
+    <OrderAction order={current} configured={props.offer.checkoutConfigured} unavailable={props.text.unavailable} />
+  );
   const contact = () => <ContactAction />;
   const remember = (next: OrderFormOrder) => setOrder({ server: next.server, license: next.license?.tier ?? null });
 
@@ -118,6 +136,8 @@ export function PricingPage(props: {
               plans={props.offer.plans}
               inEu={props.offer.inEu}
               licenseTrialEnd={props.offer.licenseTrialEnd}
+              checkoutConfigured={props.offer.checkoutConfigured}
+              checkoutDisabledNote={props.offer.checkoutConfigured ? undefined : props.text.unavailable}
               initialServer={FIRST_SERVER}
               initialLicense={FIRST_LICENSE}
               heading={heading}

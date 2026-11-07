@@ -2,7 +2,7 @@ import { Effect } from "effect";
 // Signing in to a provider, storing the optional provider API keys, and downloading the CLI
 // runtimes the providers need.
 
-import { isManagedRuntimeProvider, type ManagedProviderId } from "@openbot/contracts/agent-providers";
+import { isManagedRuntimeProvider, type ManagedProviderId } from "@whilo/contracts/agent-providers";
 import {
   type AgentProviderId,
   type ConnectProviderAccountInput,
@@ -12,10 +12,10 @@ import {
   type RenameProviderAccountInput,
   type ResetProviderUsageInput,
   type SetProviderApiKeyInput,
-} from "@openbot/contracts/ipc";
-import { isDynamicRecord, isString } from "@openbot/contracts/runtime-values";
-import { sourceText } from "@openbot/i18n/source";
-import { registerSecretValue } from "@openbot/logging";
+} from "@whilo/contracts/ipc";
+import { isDynamicRecord, isString } from "@whilo/contracts/runtime-values";
+import { sourceText } from "@whilo/i18n/source";
+import { registerSecretValue } from "@whilo/logging";
 import { AgentLifecycleFailed, type AgentService } from "../../backend/agent-service";
 import { runCauseEffect } from "../../backend/effect-boundary";
 import type { ProviderCredentialStore } from "../provider-credential-store";
@@ -156,7 +156,7 @@ export function providerIpcHandlers({
 }
 
 /**
- * Codex keeps its key in its own login, not in OpenBot's store, so the store does not register it for
+ * Codex keeps its key in its own login, not in Whilo's store, so the store does not register it for
  * redaction. It is registered here, before Codex can echo it in a log line.
  */
 export function signInCodexWithApiKey(service: Pick<AgentService, "signInCodexWithApiKey">, key: string) {
@@ -180,7 +180,7 @@ export function parseProviderApiKeyInput(value: unknown): SetProviderApiKeyInput
 
 export function parseManagedProviderId(value: unknown): ManagedProviderId {
   const provider = parseProviderId(value);
-  if (!isManagedRuntimeProvider(provider)) throw new Error("OpenBot does not manage this provider's CLI.");
+  if (!isManagedRuntimeProvider(provider)) throw new Error("Whilo does not manage this provider's CLI.");
   return provider;
 }
 

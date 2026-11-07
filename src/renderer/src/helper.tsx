@@ -1,4 +1,4 @@
-import { installPointerFocusGuard } from "@openbot/ui/pointer-focus";
+import { installPointerFocusGuard } from "@whilo/ui/pointer-focus";
 import { render } from "@solidjs/web";
 import { syncAppearance } from "./appearance-choice";
 import { BrowserDockSurface } from "./features/browser/BrowserDockSurface";
@@ -7,6 +7,7 @@ import { ComputerUsePermissionHelp, permissionFromQuery } from "./features/compu
 import { DynamicIslandSurface } from "./features/dynamic-island/DynamicIslandSurface";
 import { I18nProvider } from "./i18n-context";
 import { syncLogoColor } from "./logo-color";
+import { syncInterfaceLook } from "./interface-look";
 import "./styles.css";
 
 // The helper windows have an entry of their own, so they do not load `App`. There is one Dynamic
@@ -25,6 +26,7 @@ const surface = query.get("surface");
 // The Dynamic Island imitates the camera housing, so it stays dark in the light theme.
 if (surface !== "dynamic-island") syncAppearance();
 syncLogoColor();
+syncInterfaceLook();
 // The helper windows are not inside `App`, so each gets the language setting of its own. They use
 // the same preload and the same trusted-origin IPC gate as the main window, and main already sends
 // every language change to every window.

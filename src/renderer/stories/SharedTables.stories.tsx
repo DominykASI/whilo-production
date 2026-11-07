@@ -1,4 +1,4 @@
-import type { SharedTable } from "@openbot/contracts/ipc";
+import type { SharedTable } from "@whilo/contracts/ipc";
 import { onCleanup } from "solid-js";
 import { fn } from "storybook/test";
 import type { Meta, StoryObj } from "storybook-solidjs-vite";
@@ -11,18 +11,18 @@ import {
   STORY_SHARED_TABLES,
   storyRuntimeSettings,
 } from "./fixtures";
-import { createMockOpenBot } from "./mock-openbot";
+import { createMockWhilo } from "./mock-whilo";
 
 const storyAgent = STORY_AGENT;
 
 function SharedTablesStory(props: { tables: SharedTable[] }) {
-  const previousApi = window.openbot;
-  const mock = createMockOpenBot({ tables: props.tables });
-  window.openbot = mock.api;
+  const previousApi = window.whilo;
+  const mock = createMockWhilo({ tables: props.tables });
+  window.whilo = mock.api;
 
   onCleanup(() => {
     mock.dispose();
-    window.openbot = previousApi;
+    window.whilo = previousApi;
   });
 
   return (

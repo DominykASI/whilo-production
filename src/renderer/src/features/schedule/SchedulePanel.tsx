@@ -2,13 +2,13 @@ import type {
   RoutineCalendar as HostCalendar,
   RoutineCalendarInput,
   RoutineCalendarRunStatus,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   RoutineCalendar,
   type RoutineCalendarAgent,
   type RoutineCalendarRoutine,
   type RoutineCalendarStatus,
-} from "@openbot/ui/features/conversation/RoutineCalendar";
+} from "@whilo/ui/features/conversation/RoutineCalendar";
 import { createEffect, createMemo, createSignal, createStore, onSettled } from "solid-js";
 import { useNavigation } from "../../navigation";
 import { useAgents } from "../agents/agents-context";

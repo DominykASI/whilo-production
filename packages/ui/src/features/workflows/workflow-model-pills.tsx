@@ -4,15 +4,15 @@
  * the step.
  */
 
-import { ProviderLogo } from "@openbot/brand";
+import { ProviderLogo } from "@whilo/brand";
 import {
   type AgentModelId,
   type AgentProviderRef,
   type AgentReasoningEffort,
   type ClientAgentModelOption,
   providerDisplayName,
-} from "@openbot/contracts/ipc";
-import type { AppTextKey, AppTranslate } from "@openbot/i18n";
+} from "@whilo/contracts/ipc";
+import type { AppTextKey, AppTranslate } from "@whilo/i18n";
 import {
   buttonVariants,
   ChartNoAxesColumnIncreasing,
@@ -25,7 +25,7 @@ import {
   Search,
   Tabs,
   Zap,
-} from "@openbot/ui";
+} from "@whilo/ui";
 import { createSignal, For, Show, untrack } from "solid-js";
 import { useText } from "../../text";
 import { type PickerChip, PickerMenu, type PickerOption, PickerRow, pickerMatches } from "./WorkflowPicker";

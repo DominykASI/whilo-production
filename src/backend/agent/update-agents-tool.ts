@@ -1,20 +1,20 @@
-import { type AgentSummary, agentComputerUseEnabled, workspaceAccessEnforced } from "@openbot/contracts/ipc";
-import { sourceText } from "@openbot/i18n/source";
-import { createOpenBotLogger } from "@openbot/logging";
+import { type AgentSummary, agentComputerUseEnabled, workspaceAccessEnforced } from "@whilo/contracts/ipc";
+import { sourceText } from "@whilo/i18n/source";
+import { createWhiloLogger } from "@whilo/logging";
 import { Effect } from "effect";
 import type { DynamicToolCallParams } from "../protocol";
 import { requestedRuntime, requestedToolModel } from "./model-tools";
-import type { OpenBotToolRouterHooks } from "./openbot-tool-router";
+import type { WhiloToolRouterHooks } from "./whilo-tool-router";
 import {
   profileToolErrorMessage,
   restrictionInput,
   updateAgentsToolSchema,
   widensAgentSettings,
 } from "./profile-tools";
-import { type OpenBotToolResponse, openBotToolResult } from "./routine-tools";
+import { type WhiloToolResponse, whiloToolResult } from "./routine-tools";
 import { ToolOperationFailed, toolStep } from "./tool-operation";
 
-const logger = createOpenBotLogger("update-agents-tool");
+const logger = createWhiloLogger("update-agents-tool");
 
 /** The settings of one changed agent. Instructions are left out, so a result for many agents stays small. */
 function agentSettings(agent: AgentSummary) {
@@ -44,8 +44,8 @@ export const handleUpdateAgentsTool = Effect.fn("UpdateAgentsTool.handle")(
   function* (
     params: DynamicToolCallParams,
     senderAgentId: string,
-    hooks: Pick<OpenBotToolRouterHooks, "listAgents" | "listModels" | "updateAgent" | "redactMcp">,
-  ): Effect.fn.Return<OpenBotToolResponse, ToolOperationFailed> {
+    hooks: Pick<WhiloToolRouterHooks, "listAgents" | "listModels" | "updateAgent" | "redactMcp">,
+  ): Effect.fn.Return<WhiloToolResponse, ToolOperationFailed> {
     const { agentIds, provider, model, reasoningEffort, access, computerUse, notifications } =
       updateAgentsToolSchema.parse(params.arguments, { reportInput: true });
     const runtimeRequest = { provider, model, reasoningEffort };
@@ -93,7 +93,7 @@ export const handleUpdateAgentsTool = Effect.fn("UpdateAgentsTool.handle")(
       ),
     );
     const updatedCount = results.filter((result) => result.ok).length;
-    return openBotToolResult({ updated: updatedCount, failed: results.length - updatedCount, results });
+    return whiloToolResult({ updated: updatedCount, failed: results.length - updatedCount, results });
   },
   Effect.catchDefect((cause) => Effect.fail(new ToolOperationFailed({ cause }))),
 );

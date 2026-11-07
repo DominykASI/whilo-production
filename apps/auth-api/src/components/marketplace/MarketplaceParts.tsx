@@ -1,8 +1,8 @@
-import type { MarketplaceAgentSummary, MarketplaceSkillSummary } from "@openbot/contracts/ipc";
-import { createMarketplaceShareUrl, type MarketplaceListingLink } from "@openbot/contracts/marketplace-links";
-import type { TranslatedLocale } from "@openbot/i18n";
-import { ShieldCheck } from "@openbot/ui/icons";
-import { TextProvider, useText } from "@openbot/ui/text";
+import type { MarketplaceAgentSummary, MarketplaceSkillSummary } from "@whilo/contracts/ipc";
+import { createMarketplaceShareUrl, type MarketplaceListingLink } from "@whilo/contracts/marketplace-links";
+import type { TranslatedLocale } from "@whilo/i18n";
+import { ShieldCheck } from "@whilo/ui/icons";
+import { TextProvider, useText } from "@whilo/ui/text";
 import type { JSX } from "@solidjs/web";
 import { Link } from "@tanstack/solid-router";
 import { createSignal, Loading, lazy, Match, onSettled, Show, Switch } from "solid-js";
@@ -12,7 +12,7 @@ import { SiteHeader } from "../landing/SiteHeader";
 
 // Browser-only, as on the shared agent page: the Worker renders an empty box and the browser draws it.
 const AgentAvatar = lazy(() =>
-  import("@openbot/ui/features/agents/AgentAvatar").then((module) => ({ default: module.AgentAvatar })),
+  import("@whilo/ui/features/agents/AgentAvatar").then((module) => ({ default: module.AgentAvatar })),
 );
 
 /** The page around every Marketplace screen: the site header and footer, and the catalog of the page's language. */
@@ -61,7 +61,7 @@ export function SkillIcon(props: { skill: Pick<MarketplaceSkillSummary, "iconUrl
   );
 }
 
-/** The shield after a verified name, as in the app. A screen reader reads ", verified by OpenBot" after the name. */
+/** The shield after a verified name, as in the app. A screen reader reads ", verified by Whilo" after the name. */
 export function VerifiedMark(props: { verified: boolean }) {
   const { t } = useText();
   return (

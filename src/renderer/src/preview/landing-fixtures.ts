@@ -22,15 +22,15 @@ import type {
   SidebarLayoutSnapshot,
   TeamPresenceSnapshot,
   UpdateStatus,
-} from "@openbot/contracts/ipc";
-import { SIDEBAR_UNASSIGNED_SECTION_ID } from "@openbot/contracts/ipc";
-import { TEAM_CURRENT_CAPABILITIES } from "@openbot/contracts/team-protocol/current";
-import { TEAM_PROTOCOL_V6 } from "@openbot/contracts/team-protocol/v6";
-import developmentLogoUrl from "../assets/openbot-logo-dev.png";
-import productionLogoUrl from "../assets/openbot-logo-production.png";
+} from "@whilo/contracts/ipc";
+import { SIDEBAR_UNASSIGNED_SECTION_ID } from "@whilo/contracts/ipc";
+import { TEAM_CURRENT_CAPABILITIES } from "@whilo/contracts/team-protocol/current";
+import { TEAM_PROTOCOL_V6 } from "@whilo/contracts/team-protocol/v6";
+import developmentLogoUrl from "../assets/whilo-logo-dev.png";
+import productionLogoUrl from "../assets/whilo-logo-production.png";
 import { STORY_AGENT_STATUS, STORY_PRESENCE } from "./fixtures";
 import type { MockChannelSeed } from "./mock-channels";
-import type { MockOpenBotOptions } from "./mock-openbot";
+import type { MockWhiloOptions } from "./mock-whilo";
 
 /*
  * The app demo on the home page: four agents, each on a different provider, that plan a launch
@@ -131,7 +131,7 @@ function landingAgents(at: (minutesAgo: number) => string): ClientAgentSummary[]
     ...fields,
     notifications: true,
     threadId: `thread-${fields.id}`,
-    workspacePath: `/mock/OpenBot/Agents/${fields.id}`,
+    workspacePath: `/mock/Whilo/Agents/${fields.id}`,
     updatedAt: at(minutesAgo),
     avatarSeed: fields.id,
     avatarHue: hue,
@@ -284,7 +284,7 @@ function landingServers(): ServerSummary[] {
     },
     {
       id: "team",
-      name: "OpenBot team",
+      name: "Whilo team",
       logoUrl: productionLogoUrl,
       notificationsMuted: false,
       notificationsMutedUntil: null,
@@ -447,7 +447,7 @@ function landingUpdateStatus(at: (minutesAgo: number) => string): UpdateStatus {
 }
 
 type LandingRoutines = Required<
-  Pick<MockOpenBotOptions, "routines" | "routineRuns" | "routineFlowLinks" | "routineFlowSteps">
+  Pick<MockWhiloOptions, "routines" | "routineRuns" | "routineFlowLinks" | "routineFlowSteps">
 >;
 
 /**
@@ -696,7 +696,7 @@ function landingConversationReads(
   );
 }
 
-export function createLandingPreviewOptions(now: Date): MockOpenBotOptions {
+export function createLandingPreviewOptions(now: Date): MockWhiloOptions {
   const nowMs = now.getTime();
   const at = (minutesAgo: number) => new Date(nowMs - minutesAgo * MINUTE_MS).toISOString();
   const agents = landingAgents(at);

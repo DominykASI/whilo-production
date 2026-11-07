@@ -1,7 +1,7 @@
 import type { ProviderPage } from "./provider-page";
 
 // Every statement about Inception and Mercury here is taken from inceptionlabs.ai and
-// Inception's documentation. Each page used is in `sources`. OpenBot runs Mercury in its own
+// Inception's documentation. Each page used is in `sources`. Whilo runs Mercury in its own
 // copy of Pi (`src/backend/pi-key-providers.ts`). Check the sources again, and move `checkedAt`,
 // whenever this file changes.
 
@@ -11,9 +11,9 @@ export const INCEPTION_PROVIDER: ProviderPage = {
   provider: "inception",
   name: "Inception",
   answer:
-    "OpenBot runs Inception's Mercury models as one agent of a team, on macOS, Windows or Linux, with an Inception API key. You get shared channels with agents on other providers.",
+    "Whilo runs Inception's Mercury models as one agent of a team, on macOS, Windows or Linux, with an Inception API key. You get shared channels with agents on other providers.",
   connect:
-    "Download Pi in OpenBot first: Mercury runs in OpenBot's copy of Pi. Then select Connect on the Inception row and paste an Inception API key. OpenBot keeps the key encrypted and does not change Pi's own settings.",
+    "Download Pi in Whilo first: Mercury runs in Whilo's copy of Pi. Then select Connect on the Inception row and paste an Inception API key. Whilo keeps the key encrypted and does not change Pi's own settings.",
   adds: [
     {
       icon: "cpu",
@@ -22,8 +22,8 @@ export const INCEPTION_PROVIDER: ProviderPage = {
     },
     {
       icon: "lock",
-      title: "Your key stays in OpenBot",
-      text: "OpenBot keeps the Inception API key in its encrypted store, not in Pi's settings files.",
+      title: "Your key stays in Whilo",
+      text: "Whilo keeps the Inception API key in its encrypted store, not in Pi's settings files.",
     },
   ],
   vendor: "Inception",
@@ -54,7 +54,7 @@ export const INCEPTION_PROVIDER: ProviderPage = {
     {
       question: "Why does Inception need Pi?",
       answer:
-        "OpenBot runs Mercury in its own copy of Pi. Download Pi once in OpenBot, and Inception agents then use it with your Inception API key.",
+        "Whilo runs Mercury in its own copy of Pi. Download Pi once in Whilo, and Inception agents then use it with your Inception API key.",
     },
     {
       question: "Can I use Inception agents from my phone or share them with a team?",

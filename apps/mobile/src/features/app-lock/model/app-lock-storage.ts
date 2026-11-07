@@ -11,12 +11,12 @@ import * as LockedKeychain from "@/shared/lib/locked-keychain";
  * The app lock settings. They hold no secret, and the app reads them also when iOS starts it in the
  * background, so they use the keychain items that open after the first unlock.
  */
-const CONFIG_KEY = "openbot.mobile.app-lock.v1";
+const CONFIG_KEY = "whilo.mobile.app-lock.v1";
 /** The PIN hash and the failed attempts. Only an unlocked phone opens them, and they stay on this device. */
-const PIN_KEY = "openbot.mobile.app-lock.pin.v1";
-const ATTEMPTS_KEY = "openbot.mobile.app-lock.attempts.v1";
+const PIN_KEY = "whilo.mobile.app-lock.pin.v1";
+const ATTEMPTS_KEY = "whilo.mobile.app-lock.attempts.v1";
 const SECRET_OPTIONS: SecureStore.SecureStoreOptions = {
-  keychainService: "openbot.app-lock",
+  keychainService: "whilo.app-lock",
   keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
 };
 

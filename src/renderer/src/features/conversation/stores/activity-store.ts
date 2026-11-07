@@ -1,13 +1,13 @@
-import type { AgentModelId, AgentProviderRef, AgentReasoningEffort } from "@openbot/contracts/ipc";
-import { markdownPreviewText } from "@openbot/contracts/markdown-preview-text";
-import type { AgentProfile } from "@openbot/ui/data";
-import { type AgentActivityLabel, nextAgentActivityLabel } from "@openbot/ui/features/conversation/AgentActivity";
+import type { AgentModelId, AgentProviderRef, AgentReasoningEffort } from "@whilo/contracts/ipc";
+import { markdownPreviewText } from "@whilo/contracts/markdown-preview-text";
+import type { AgentProfile } from "@whilo/ui/data";
+import { type AgentActivityLabel, nextAgentActivityLabel } from "@whilo/ui/features/conversation/AgentActivity";
 import {
   agentActivityExitDelay,
   agentActivityExitDuration,
   agentActivityShowDelay,
-} from "@openbot/ui/features/conversation/activity-timing";
-import { currentText } from "@openbot/ui/text";
+} from "@whilo/ui/features/conversation/activity-timing";
+import { currentText } from "@whilo/ui/text";
 import { createEffect, createMemo, createSignal, onCleanup, untrack } from "solid-js";
 import { agentConversationKey } from "../conversation-keys";
 import type { ConversationProps } from "../conversation-types";

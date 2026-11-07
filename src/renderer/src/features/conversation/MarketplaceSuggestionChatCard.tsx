@@ -1,13 +1,13 @@
-import type { McpServerConfig } from "@openbot/contracts/ipc";
-import { connectorSummary } from "@openbot/ui/features/connectors/ConnectorDetailPanel";
-import { CONNECTOR_LISTINGS } from "@openbot/ui/features/connectors/connector-catalog";
-import { isConnectorId } from "@openbot/ui/features/connectors/connectors";
+import type { McpServerConfig } from "@whilo/contracts/ipc";
+import { connectorSummary } from "@whilo/ui/features/connectors/ConnectorDetailPanel";
+import { CONNECTOR_LISTINGS } from "@whilo/ui/features/connectors/connector-catalog";
+import { isConnectorId } from "@whilo/ui/features/connectors/connectors";
 import {
   MarketplaceSuggestionCard,
   type MarketplaceSuggestionState,
-} from "@openbot/ui/features/conversation/MarketplaceSuggestionCard";
-import { isPluginAppConfig } from "@openbot/ui/features/settings/marketplace-plugins";
-import { useText } from "@openbot/ui/text";
+} from "@whilo/ui/features/conversation/MarketplaceSuggestionCard";
+import { isPluginAppConfig } from "@whilo/ui/features/settings/marketplace-plugins";
+import { useText } from "@whilo/ui/text";
 import { createMemo } from "solid-js";
 import type { ConnectorRegistry } from "../connectors/connector-registry";
 import { MARKETPLACE_PLUGINS } from "../settings/marketplace-plugin-catalog";

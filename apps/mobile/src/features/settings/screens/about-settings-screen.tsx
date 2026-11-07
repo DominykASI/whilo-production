@@ -12,7 +12,7 @@ import {
 } from "@/features/settings/components/settings-content";
 import { useText } from "@/shared/lib/text";
 
-const PRODUCT_NAME = "OpenBot";
+const PRODUCT_NAME = "Whilo";
 
 export function AboutSettingsScreen() {
   const { t } = useText();
@@ -28,10 +28,10 @@ export function AboutSettingsScreen() {
   return (
     <SettingsContent>
       <SettingsSection title={t("mobile.settings.about.resources")}>
-        <SettingsRow onPress={() => open("https://openbot.run")}>
+        <SettingsRow onPress={() => open("https://whilo.onerall.com")}>
           <Typography.Paragraph>{t("mobile.settings.about.website")}</Typography.Paragraph>
         </SettingsRow>
-        <SettingsRow onPress={() => open("https://openbot.run/privacy-policy")}>
+        <SettingsRow onPress={() => open("https://whilo.onerall.com/privacy-policy")}>
           <Typography.Paragraph>{t("mobile.settings.about.privacy")}</Typography.Paragraph>
         </SettingsRow>
         {error ? <SettingsNote>{error}</SettingsNote> : null}

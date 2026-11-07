@@ -4,9 +4,9 @@ import type {
   AgentTaskBranch,
   AgentTasksSnapshot,
   ConversationSnapshot,
-} from "@openbot/contracts/ipc";
-import type { AppTextKey } from "@openbot/i18n";
-import { currentText } from "@openbot/ui/text";
+} from "@whilo/contracts/ipc";
+import type { AppTextKey } from "@whilo/i18n";
+import { currentText } from "@whilo/ui/text";
 import { createEffect, createStore, untrack } from "solid-js";
 import { actionToast } from "../../action-toast";
 import { desktopAnalytics } from "../../analytics";

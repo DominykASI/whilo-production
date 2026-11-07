@@ -1,32 +1,32 @@
-import { chatVisualReply } from "@openbot/contracts/chat-visual";
-import type { ConversationMessageSender, MessageReaction } from "@openbot/contracts/ipc";
-import type { ConversationUiBlock } from "@openbot/contracts/ui-blocks";
-import { Button } from "@openbot/ui";
-import type { AgentMessage, ChatActionMarkerModel } from "@openbot/ui/data";
-import { ChannelActivityIndicator } from "@openbot/ui/features/channels/ChannelActivityIndicator";
-import { AgentActivityIndicator } from "@openbot/ui/features/conversation/AgentActivity";
-import { AgentChatEmptyState } from "@openbot/ui/features/conversation/AgentChatEmptyState";
-import { AgentStepsDisclosure, type AgentStepsTrace } from "@openbot/ui/features/conversation/AgentSteps";
-import { AttachmentCards } from "@openbot/ui/features/conversation/AttachmentCards";
-import { UsageLimitAskCard } from "@openbot/ui/features/conversation/BackupModels";
-import { branchPointIds } from "@openbot/ui/features/conversation/branch-points";
-import { ChatActionMarker } from "@openbot/ui/features/conversation/ChatActionMarker";
-import { type ChatMessageAuthor, ChatMessageRow } from "@openbot/ui/features/conversation/ChatMessageRow";
-import { ChatRowBoundary } from "@openbot/ui/features/conversation/ChatRowBoundary";
-import { ChatScrollRail, createChatScrollRail } from "@openbot/ui/features/conversation/ChatScrollRail";
-import { ChatSearch } from "@openbot/ui/features/conversation/ChatSearch";
-import { ChatVisual } from "@openbot/ui/features/conversation/ChatVisual";
-import { ContextCompactionMarker, type ContextCompactionView } from "@openbot/ui/features/conversation/ContextUsage";
-import { dayMarkerLabel } from "@openbot/ui/features/conversation/chat-day-markers";
-import { ReplyReturnButton, ScrollToLatestButton } from "@openbot/ui/features/conversation/MessageNavigation";
-import { MessageActions, MessageMenu } from "@openbot/ui/features/conversation/MessageRendering";
-import { PendingSendStatus } from "@openbot/ui/features/conversation/PendingSendStatus";
-import { SubagentGroup } from "@openbot/ui/features/conversation/Subagents";
-import { TaskList } from "@openbot/ui/features/conversation/TaskList";
-import { UnreadMessagesBanner, UnreadMessagesDivider } from "@openbot/ui/features/conversation/UnreadMessages";
-import { VoicePlayer } from "@openbot/ui/features/conversation/VoicePlayer";
-import { teamMemberName } from "@openbot/ui/features/team/TeamPersonAvatar";
-import { useText } from "@openbot/ui/text";
+import { chatVisualReply } from "@whilo/contracts/chat-visual";
+import type { ConversationMessageSender, MessageReaction } from "@whilo/contracts/ipc";
+import type { ConversationUiBlock } from "@whilo/contracts/ui-blocks";
+import { Button } from "@whilo/ui";
+import type { AgentMessage, ChatActionMarkerModel } from "@whilo/ui/data";
+import { ChannelActivityIndicator } from "@whilo/ui/features/channels/ChannelActivityIndicator";
+import { AgentActivityIndicator } from "@whilo/ui/features/conversation/AgentActivity";
+import { AgentChatEmptyState } from "@whilo/ui/features/conversation/AgentChatEmptyState";
+import { AgentStepsDisclosure, type AgentStepsTrace } from "@whilo/ui/features/conversation/AgentSteps";
+import { AttachmentCards } from "@whilo/ui/features/conversation/AttachmentCards";
+import { UsageLimitAskCard } from "@whilo/ui/features/conversation/BackupModels";
+import { branchPointIds } from "@whilo/ui/features/conversation/branch-points";
+import { ChatActionMarker } from "@whilo/ui/features/conversation/ChatActionMarker";
+import { type ChatMessageAuthor, ChatMessageRow } from "@whilo/ui/features/conversation/ChatMessageRow";
+import { ChatRowBoundary } from "@whilo/ui/features/conversation/ChatRowBoundary";
+import { ChatScrollRail, createChatScrollRail } from "@whilo/ui/features/conversation/ChatScrollRail";
+import { ChatSearch } from "@whilo/ui/features/conversation/ChatSearch";
+import { ChatVisual } from "@whilo/ui/features/conversation/ChatVisual";
+import { ContextCompactionMarker, type ContextCompactionView } from "@whilo/ui/features/conversation/ContextUsage";
+import { dayMarkerLabel } from "@whilo/ui/features/conversation/chat-day-markers";
+import { ReplyReturnButton, ScrollToLatestButton } from "@whilo/ui/features/conversation/MessageNavigation";
+import { MessageActions, MessageMenu } from "@whilo/ui/features/conversation/MessageRendering";
+import { PendingSendStatus } from "@whilo/ui/features/conversation/PendingSendStatus";
+import { SubagentGroup } from "@whilo/ui/features/conversation/Subagents";
+import { TaskList } from "@whilo/ui/features/conversation/TaskList";
+import { UnreadMessagesBanner, UnreadMessagesDivider } from "@whilo/ui/features/conversation/UnreadMessages";
+import { VoicePlayer } from "@whilo/ui/features/conversation/VoicePlayer";
+import { teamMemberName } from "@whilo/ui/features/team/TeamPersonAvatar";
+import { useText } from "@whilo/ui/text";
 import { createMemo, createSignal, For, Loading, lazy, onCleanup, Show, untrack } from "solid-js";
 import { useShowAgentSteps } from "../../agent-steps-preference";
 import { planItems, planTitle } from "../../app-message-projection";
@@ -548,7 +548,7 @@ export function ConversationTimeline() {
   const sampleRoutinePrompt = () =>
     props.routines?.find((routine) => routine.active && routine.instruction.trim())?.instruction ??
     props.routines?.find((routine) => routine.instruction.trim())?.instruction;
-  // A skill of the agent's own: every agent has the managed OpenBot skills.
+  // A skill of the agent's own: every agent has the managed Whilo skills.
   const sampleSkillName = () =>
     installedSkills().find((skill) => skill.enabled !== false && skill.origin !== "managed")?.name;
   return (
@@ -1454,9 +1454,9 @@ export function ConversationTimeline() {
 }
 
 const ApprovalCard = lazy(() =>
-  import("@openbot/ui/features/conversation/ConversationPrompts").then((module) => ({ default: module.ApprovalCard })),
+  import("@whilo/ui/features/conversation/ConversationPrompts").then((module) => ({ default: module.ApprovalCard })),
 );
 const QuestionPromptBubble = lazy(() =>
-  import("@openbot/ui/components/QuestionPromptBubble").then((module) => ({ default: module.QuestionPromptBubble })),
+  import("@whilo/ui/components/QuestionPromptBubble").then((module) => ({ default: module.QuestionPromptBubble })),
 );
 const UiBlockPrompt = lazy(() => import("./UiBlockPrompt").then((module) => ({ default: module.UiBlockPrompt })));

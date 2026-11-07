@@ -3,18 +3,18 @@ import type {
   ConversationMessage,
   MessagingPlatform,
   RoutineResultConnectionOption,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   CONVERSATION_PLAN_ITEM_TYPE,
   CONVERSATION_SUBAGENTS_ITEM_TYPE,
   MESSAGING_LIMITS,
-} from "@openbot/contracts/ipc";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/ipc";
+import { sourceText } from "@whilo/i18n/source";
 import { Deferred, Effect, Result, Schema, type Scope } from "effect";
-import { type OpenBotToolResponse, openBotToolFailure, openBotToolResult } from "../agent/routine-tools";
+import { type WhiloToolResponse, whiloToolFailure, whiloToolResult } from "../agent/routine-tools";
 import { causeHelpers } from "../effect-boundary";
 import type { DeliveryContext, MailboxStore, MessagingOrigin } from "../mailbox-store";
-import type { OpenBotDatabase } from "../openbot-database";
+import type { WhiloDatabase } from "../whilo-database";
 import { MessagingMemoryStore } from "./messaging-memory-store";
 import { type MessagingContextMessage, messagingPromptText } from "./messaging-prompt";
 import type { MessagingOperationFailed } from "./messaging-service";
@@ -122,7 +122,7 @@ export type MessagingDiscordSend =
   | { action: "post"; channelId: string; text: string }
   | { action: "react"; channelId: string; messageId: string; emoji: string };
 
-/** A message in a Discord server that mentions OpenBot, for the Discord triggers of workflows. */
+/** A message in a Discord server that mentions Whilo, for the Discord triggers of workflows. */
 export interface MessagingDiscordMention {
   connectionId: string;
   serverName: string;
@@ -188,7 +188,7 @@ export class MessagingThreads {
   readonly store: MessagingStore;
   /** The facts of each connection, which every prompt of its conversations shows. */
   readonly memories: MessagingMemoryStore;
-  readonly #database: OpenBotDatabase;
+  readonly #database: WhiloDatabase;
   readonly #mailbox: MailboxStore;
   readonly #hooks: MessagingThreadsHooks;
   readonly #listeners = new Set<(activity: MessagingActivity) => void>();
@@ -229,7 +229,7 @@ export class MessagingThreads {
   #outbound: MessagingOutbound | null = null;
   #mentionHandler: ((mention: MessagingDiscordMention) => Effect.Effect<MessagingMentionResult>) | null = null;
 
-  constructor(database: OpenBotDatabase, mailbox: MailboxStore, hooks: MessagingThreadsHooks) {
+  constructor(database: WhiloDatabase, mailbox: MailboxStore, hooks: MessagingThreadsHooks) {
     this.store = new MessagingStore(database);
     this.memories = new MessagingMemoryStore(database);
     this.#database = database;
@@ -306,12 +306,12 @@ export class MessagingThreads {
     this: MessagingThreads,
     tool: string,
     args: unknown,
-  ): Effect.fn.Return<OpenBotToolResponse> {
+  ): Effect.fn.Return<WhiloToolResponse> {
     const call = parseMessagingOutboundTool(tool, args);
-    if ("error" in call) return openBotToolFailure(call.error);
+    if ("error" in call) return whiloToolFailure(call.error);
     const enabled = this.store.connections().filter((record) => record.enabled);
     if (call.tool === "messaging_list_places" && !call.connection)
-      return openBotToolResult({
+      return whiloToolResult({
         connections: enabled.map((record) => ({
           connection: record.connectionId,
           platform: PLATFORM_NAMES[record.platform],
@@ -320,9 +320,9 @@ export class MessagingThreads {
       });
     const record = enabled.find((candidate) => candidate.connectionId === call.connection);
     if (!record)
-      return openBotToolFailure("No enabled connection has that id. Call openbot.messaging_list_places for the ids.");
+      return whiloToolFailure("No enabled connection has that id. Call whilo.messaging_list_places for the ids.");
     const outbound = this.#outbound;
-    if (!outbound) return openBotToolFailure(MESSAGING_NOT_RUNNING);
+    if (!outbound) return whiloToolFailure(MESSAGING_NOT_RUNNING);
     // No deadline on a post: one that ended late could be sent again by the agent.
     const answer =
       call.tool === "messaging_list_places"
@@ -335,11 +335,11 @@ export class MessagingThreads {
             { platformChannelId: call.place, replyThreadId: call.replyTo },
             call.text,
           );
-    return "error" in answer ? openBotToolFailure(answer.error) : openBotToolResult(answer);
+    return "error" in answer ? whiloToolFailure(answer.error) : whiloToolResult(answer);
   });
 
   /**
-   * A post that OpenBot sends on its own, such as a routine's answer, to the top level of one place.
+   * A post that Whilo sends on its own, such as a routine's answer, to the top level of one place.
    * Only an enabled connection of this host can take it.
    */
   readonly deliver = Effect.fn("MessagingThreads.deliver")(function* (
@@ -396,13 +396,13 @@ export class MessagingThreads {
     callId: string,
     tool: string,
     args: unknown,
-  ): Effect.fn.Return<OpenBotToolResponse> {
+  ): Effect.fn.Return<WhiloToolResponse> {
     const call = parseMessagingTool(tool, args);
-    if ("error" in call) return openBotToolFailure(call.error);
+    if ("error" in call) return whiloToolFailure(call.error);
     switch (call.tool) {
       case "messaging_remember": {
         if (link.isDirect)
-          return openBotToolFailure(
+          return whiloToolFailure(
             "A direct message is private. Facts from it are not saved for the whole workspace.",
           );
         const saved = Result.try(() =>
@@ -414,8 +414,8 @@ export class MessagingThreads {
           }),
         );
         if (Result.isFailure(saved))
-          return openBotToolFailure(saved.failure instanceof Error ? saved.failure.message : String(saved.failure));
-        return openBotToolResult({
+          return whiloToolFailure(saved.failure instanceof Error ? saved.failure.message : String(saved.failure));
+        return whiloToolResult({
           accepted: true,
           memoryId: saved.success.id,
           count: this.memories.count(link.connectionId),
@@ -424,8 +424,8 @@ export class MessagingThreads {
       }
       case "messaging_forget_memory":
         return this.memories.delete(link.connectionId, call.memoryId)
-          ? openBotToolResult({ accepted: true })
-          : openBotToolResult({ accepted: false, reason: "No saved fact of this workspace has that memoryId." });
+          ? whiloToolResult({ accepted: true })
+          : whiloToolResult({ accepted: false, reason: "No saved fact of this workspace has that memoryId." });
       case "messaging_history": {
         const source = this.#historySource;
         const history = source
@@ -436,9 +436,9 @@ export class MessagingThreads {
             )
           : null;
         if (!history)
-          return openBotToolFailure("The platform did not answer, or it limits reads now. Try again in a minute.");
-        if (!history.value) return openBotToolFailure(MESSAGING_NOT_RUNNING);
-        return openBotToolResult({
+          return whiloToolFailure("The platform did not answer, or it limits reads now. Try again in a minute.");
+        if (!history.value) return whiloToolFailure(MESSAGING_NOT_RUNNING);
+        return whiloToolResult({
           place: history.value.place,
           scope: call.scope,
           messages: boundedHistory(history.value.messages),

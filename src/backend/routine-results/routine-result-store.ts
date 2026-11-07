@@ -12,10 +12,10 @@ import {
   type RoutineResultDelivery,
   type RoutineResultDeliveryReason,
   type RoutineResultDestination,
-} from "@openbot/contracts/ipc";
-import { type DynamicRecord, isOneOf } from "@openbot/contracts/runtime-values";
+} from "@whilo/contracts/ipc";
+import { type DynamicRecord, isOneOf } from "@whilo/contracts/runtime-values";
 import { databaseRow, databaseRows } from "../database/database-rows";
-import type { OpenBotDatabase } from "../openbot-database";
+import type { WhiloDatabase } from "../whilo-database";
 
 /** A delivery the runtime can send: its place and the text, which a quiet run never has. */
 export interface RoutineResultOutgoing {
@@ -46,9 +46,9 @@ const ROUTINE_RESULT_EXPIRY_MS = 24 * 60 * 60 * 1000;
 const DELIVERY_LIST_LIMIT = 50;
 
 export class RoutineResultStore {
-  readonly #database: OpenBotDatabase;
+  readonly #database: WhiloDatabase;
 
-  constructor(database: OpenBotDatabase) {
+  constructor(database: WhiloDatabase) {
     this.#database = database;
   }
 

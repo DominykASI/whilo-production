@@ -1,0 +1,12 @@
+# Stages the newest release, or stops Whilo, moves the staged release into place and starts Whilo
+# again, when an owner, an admin or a permitted member asks for it in Server Settings > Updates.
+[Unit]
+Description=Update Whilo on request
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/Whilo/hosted/whilo-hosted-update request
+# A download and an apply: the limits of whilo-update.service and whilo-update-apply.service.
+TimeoutStartSec=45min

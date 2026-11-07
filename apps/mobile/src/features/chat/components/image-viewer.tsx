@@ -1,4 +1,4 @@
-import type { AttachmentSummary } from "@openbot/contracts/ipc";
+import type { AttachmentSummary } from "@whilo/contracts/ipc";
 import { BlurView } from "expo-blur";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { Image } from "expo-image";
@@ -90,9 +90,13 @@ const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
 // The device's answer outlives one viewer, so only the first viewer of a launch waits for it.
 let knownReduceTransparency: boolean | null = null;
+// react-native-web has no Reduce Transparency. The call threw in the effect of every viewer, and the
+// browser viewer keeps its solid background instead.
+const readsReduceTransparency = typeof AccessibilityInfo.isReduceTransparencyEnabled === "function";
 function useReduceTransparency() {
   const [enabled, setEnabled] = useState(knownReduceTransparency);
   useEffect(() => {
+    if (!readsReduceTransparency) return;
     let active = true;
     const update = (value: boolean) => {
       knownReduceTransparency = value;

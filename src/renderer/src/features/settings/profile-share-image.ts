@@ -1,14 +1,14 @@
-import type { CentralAuthUser } from "@openbot/contracts/ipc";
-import { userInitials } from "@openbot/ui";
+import type { CentralAuthUser } from "@whilo/contracts/ipc";
+import { userInitials } from "@whilo/ui";
 import {
   heatLevel,
   heatmapMonths,
   heatmapWeeks,
   type ProfileDay,
   type ProfileStats,
-} from "@openbot/ui/features/settings/profile-stats";
-import { usageCompact } from "@openbot/ui/features/usage/usage-format";
-import { currentText } from "@openbot/ui/text";
+} from "@whilo/ui/features/settings/profile-stats";
+import { usageCompact } from "@whilo/ui/features/usage/usage-format";
+import { currentText } from "@whilo/ui/text";
 import { drawLogo, ellipsize, FONT } from "../agent-templates/agent-template-card";
 
 /*
@@ -69,14 +69,14 @@ function shareColors(): ShareColors {
     return value;
   };
   return {
-    surface: token("--openbot-paper"),
-    text: token("--openbot-paper-text"),
-    muted: token("--openbot-paper-text-muted"),
-    border: token("--openbot-paper-border"),
-    accent: token("--openbot-accent"),
-    accentSoft: token("--openbot-accent-soft"),
-    logo: token("--openbot-logo-production"),
-    logoEye: token("--openbot-logo-production-eye"),
+    surface: token("--whilo-paper"),
+    text: token("--whilo-paper-text"),
+    muted: token("--whilo-paper-text-muted"),
+    border: token("--whilo-paper-border"),
+    accent: token("--whilo-accent"),
+    accentSoft: token("--whilo-accent-soft"),
+    logo: token("--whilo-logo-production"),
+    logoEye: token("--whilo-logo-production-eye"),
   };
 }
 

@@ -1,5 +1,5 @@
-import type { AppInfo } from "@openbot/contracts/ipc";
-import type { AppTextKey } from "@openbot/i18n";
+import type { AppInfo } from "@whilo/contracts/ipc";
+import type { AppTextKey } from "@whilo/i18n";
 import {
   Bell,
   Bot,
@@ -12,7 +12,7 @@ import {
   Settings,
   Smartphone,
   UserRound,
-} from "@openbot/ui";
+} from "@whilo/ui";
 
 export type SettingsTab =
   | "general"
@@ -65,6 +65,8 @@ export const navItems: ReadonlyArray<SettingsNavItem> = [
     rows: [
       { titleKey: "settings.language.title", descriptionKey: "settings.language.description" },
       { titleKey: "settings.interfaceSize.title", descriptionKey: "settings.interfaceSize.description" },
+      { titleKey: "settings.accent.title", descriptionKey: "settings.accent.description" },
+      { titleKey: "settings.cornerRadius.title", descriptionKey: "settings.cornerRadius.description" },
       { titleKey: "settings.logoColor.title", descriptionKey: "settings.logoColor.description" },
       { titleKey: "settings.sendShortcut.title", descriptionKey: "settings.sendShortcut.description" },
       { titleKey: "settings.showAgentSteps.title", descriptionKey: "settings.showAgentSteps.description" },

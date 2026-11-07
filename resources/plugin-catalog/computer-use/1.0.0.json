@@ -1,0 +1,39 @@
+{
+  "slug": "computer-use",
+  "name": "Computer Use",
+  "tagline": "Browser, desktop and Chrome control in one install",
+  "description": "Computer Use gathers the three ways Whilo drives a computer. Browser automation runs the tabs Whilo manages: open and close tabs, read a page snapshot, click, type, press keys, fill 1 to 16 ordinary main-frame fields from one fresh snapshot, and run many steps in a single scripted call. Each action passes the tab queue, so a person who takes a tab stops the agent until it is released, and a password, one-time code, CAPTCHA or payment goes through secure input or a takeover. Computer use reaches the rest of the desktop through cua-driver, the MIT driver Whilo packages and pins: it reads the screen and the accessibility tree and posts input, and because Whilo spawns it directly, macOS grants Screen Recording and Accessibility to Whilo rather than to a helper. Both of those run inside Whilo already. This listing adds the third: Chrome over the DevTools Protocol, through the ChromeDevTools server, which drives a Chrome window of its own with navigate, snapshot, click, type, network and performance reads, and screenshots.",
+  "category": "automation",
+  "creatorName": "Whilo",
+  "iconUrl": "https://github.com/ChromeDevTools.png",
+  "version": "1.0.0",
+  "prompts": [
+    {
+      "id": "prompt-browse",
+      "text": "Open the pricing page, read what each plan includes, and tell me which one fits a team of two."
+    },
+    {
+      "id": "prompt-script",
+      "text": "Run one script that searches the docs site for rate limits and returns the table it finds."
+    },
+    { "id": "prompt-desktop", "text": "Look at my screen, find the invoice window, and read the total that is due." }
+  ],
+  "apps": [
+    {
+      "id": "app-computer-use-chrome",
+      "name": "Chrome DevTools",
+      "description": "A Chrome window of its own, driven over the DevTools Protocol: navigate, snapshot the page, click, type, read network and performance, and take screenshots.",
+      "iconUrl": "https://github.com/ChromeDevTools.png",
+      "server": {
+        "name": "chrome-devtools",
+        "transport": "stdio",
+        "command": "npx",
+        "args": ["-y", "chrome-devtools-mcp@1.12.0"]
+      }
+    }
+  ],
+  "websiteUrl": "https://github.com/trycua/cua",
+  "privacyPolicyUrl": null,
+  "termsUrl": null,
+  "skills": []
+}

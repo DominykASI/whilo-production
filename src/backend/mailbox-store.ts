@@ -1,9 +1,9 @@
 import { createHash, randomUUID } from "node:crypto";
 import { mkdir, readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import { playableMediaKind } from "@openbot/contracts/attachment-files";
-import { rewriteAttachmentReferences } from "@openbot/contracts/attachment-references";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { playableMediaKind } from "@whilo/contracts/attachment-files";
+import { rewriteAttachmentReferences } from "@whilo/contracts/attachment-references";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import type {
   AgentRuntimeWorkItem,
   AttachmentDataInput,
@@ -20,7 +20,7 @@ import type {
   QueuedMessageReceipt,
   QueueSnapshot,
   QueueSteerFallback,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   AGENT_EXCHANGE_ITEM_TYPE,
   AGENT_RUNTIME_ATTENTION_LIMIT,
@@ -29,11 +29,11 @@ import {
   isConversationMessageSender,
   isMessageReaction,
   QUEUE_STEER_FALLBACKS,
-} from "@openbot/contracts/ipc";
-import { type DynamicRecord, isNumber, isOneOf, isString } from "@openbot/contracts/runtime-values";
-import { QueueEditRejectedError } from "@openbot/contracts/team-protocol/queue-edit-v1";
-import { sourceText } from "@openbot/i18n/source";
-import { redactText } from "@openbot/logging";
+} from "@whilo/contracts/ipc";
+import { type DynamicRecord, isNumber, isOneOf, isString } from "@whilo/contracts/runtime-values";
+import { QueueEditRejectedError } from "@whilo/contracts/team-protocol/queue-edit-v1";
+import { sourceText } from "@whilo/i18n/source";
+import { redactText } from "@whilo/logging";
 import { Effect, Result } from "effect";
 import {
   AttachmentFiles,
@@ -51,7 +51,7 @@ export type { ExportedAttachmentFile, GeneratedAttachmentSource } from "./attach
 import { isEmptyStoredFile, parseStoredJson } from "./atomic-json-file";
 import { mailboxReactionRowKey } from "./database/mailbox-projection";
 import { MailboxDeliveryGate } from "./mailbox-delivery-gate";
-import { OpenBotDatabase } from "./openbot-database";
+import { WhiloDatabase } from "./whilo-database";
 import { isRecord } from "./protocol";
 import { recordRestartActivity } from "./restart-activity";
 
@@ -127,7 +127,7 @@ export interface UsageLimitContinuation {
 }
 
 /**
- * The turns that OpenBot added to a delivery because its plan still had open steps. `queued` is set
+ * The turns that Whilo added to a delivery because its plan still had open steps. `queued` is set
  * from the end of one turn to the start of the next; the queue then shows the delivery as running.
  */
 interface PlanContinuationMarker {
@@ -152,7 +152,7 @@ interface StoredDelivery {
   steerFallback?: QueueSteerFallback;
   /** The interrupted turn whose work continues after a usage-limit switch. Kept out of queue snapshots. */
   resumeAfterUsageLimit?: UsageLimitContinuation;
-  /** OpenBot's automatic plan continuations of this delivery. Kept out of queue snapshots. */
+  /** Whilo's automatic plan continuations of this delivery. Kept out of queue snapshots. */
   planContinuation?: PlanContinuationMarker;
 }
 
@@ -253,7 +253,7 @@ export const MAILBOX_CONVERSATION_MESSAGE_LIMIT = 100;
 export class MailboxStore {
   readonly #statePath: string;
   readonly #files: AttachmentFiles;
-  readonly #database: OpenBotDatabase;
+  readonly #database: WhiloDatabase;
   readonly #queueUpdates = new Set<string>();
   readonly #deliveryGate = new MailboxDeliveryGate();
   readonly #stagedGeneratedAttachments = new Map<string, StoredGeneratedAttachment>();
@@ -267,7 +267,7 @@ export class MailboxStore {
     reactionKeys: new Set<string>(),
   };
 
-  constructor(userDataPath: string, sharedRoot: string, database = new OpenBotDatabase(userDataPath)) {
+  constructor(userDataPath: string, sharedRoot: string, database = new WhiloDatabase(userDataPath)) {
     this.#statePath = join(userDataPath, "mailbox.json");
     this.#files = new AttachmentFiles({ userDataPath, sharedRoot });
     this.#database = database;

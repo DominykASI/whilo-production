@@ -1,4 +1,4 @@
-import { type AgentProviderId, isKeyOnlyProvider, isKnownAgentProvider } from "@openbot/contracts/agent-providers";
+import { type AgentProviderId, isKeyOnlyProvider, isKnownAgentProvider } from "@whilo/contracts/agent-providers";
 import {
   type AgentModelChoice,
   agentPermissionLevel,
@@ -8,18 +8,18 @@ import {
   sameAgentModelChoice,
   type UpdateAgentAdminSettingsInput,
   type UpdateAgentInput,
-} from "@openbot/contracts/ipc";
-import { BROWSER_PROFILES_CAPABILITY } from "@openbot/contracts/team-protocol/browser-profiles-v1";
-import { hasVisibleToasts } from "@openbot/ui";
+} from "@whilo/contracts/ipc";
+import { BROWSER_PROFILES_CAPABILITY } from "@whilo/contracts/team-protocol/browser-profiles-v1";
+import { hasVisibleToasts } from "@whilo/ui";
 import {
   type BackupModelSource,
   rememberedBackupModels,
   type UsageLimitAskCardProps,
   usageLimitAskOptions,
-} from "@openbot/ui/features/conversation/BackupModels";
-import { unloadedHistory } from "@openbot/ui/features/conversation/ChatScrollRail";
-import { sidebarAgentWaits } from "@openbot/ui/features/sidebar/sidebar-agent-states";
-import { useText } from "@openbot/ui/text";
+} from "@whilo/ui/features/conversation/BackupModels";
+import { unloadedHistory } from "@whilo/ui/features/conversation/ChatScrollRail";
+import { sidebarAgentWaits } from "@whilo/ui/features/sidebar/sidebar-agent-states";
+import { useText } from "@whilo/ui/text";
 import { createEffect, createMemo } from "solid-js";
 import { desktopAnalytics } from "../../analytics";
 import { ProviderSignInDialogs } from "../../components/ProviderSignInDialogs";
@@ -569,7 +569,7 @@ export function WorkspaceConversation(props: { account: () => CentralAuthUser })
         browserEnabled={
           !platform.landingPreview && !platform.chatWindow && activeServerSupportsCapability("browser-control")
         }
-        openLinksInBrowser={generalSettings().externalLinkTarget.kind === "openbot"}
+        openLinksInBrowser={generalSettings().externalLinkTarget.kind === "whilo"}
         remoteDesktopSessionActive={Boolean(activeRemoteDesktopSession())}
         remoteDesktopVisible={remoteDesktopWorkspaceVisible()}
         remoteDesktopEnabled={

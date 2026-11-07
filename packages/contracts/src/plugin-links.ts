@@ -3,8 +3,8 @@
  * in the app, and the browser client's entry for it.
  *
  * ```
- * https://openbot.run/plugins/<slug>    the link a person shares and the app copies
- * openbot://plugins/<slug>              the link the page button opens
+ * https://whilo.onerall.com/plugins/<slug>    the link a person shares and the app copies
+ * whilo://plugins/<slug>              the link the page button opens
  * /app?plugin=<slug>                    the page's link to the browser client, on the same origin
  * ```
  *
@@ -20,9 +20,9 @@
  * rule becomes weaker.
  */
 
-export const OPENBOT_PLUGIN_ORIGIN = "https://openbot.run";
-export const OPENBOT_PLUGIN_PATH_PREFIX = "/plugins/";
-export const OPENBOT_PLUGIN_HOST = "plugins";
+export const WHILO_PLUGIN_ORIGIN = "https://whilo.onerall.com";
+export const WHILO_PLUGIN_PATH_PREFIX = "/plugins/";
+export const WHILO_PLUGIN_HOST = "plugins";
 export const WEB_APP_PLUGIN_PARAM = "plugin";
 
 /**
@@ -38,7 +38,7 @@ export function isPluginSlug(value: string): boolean {
 /** Where a shared plugin link points. */
 export function createPluginShareUrl(slug: string): string {
   assertPluginSlug(slug);
-  return `${OPENBOT_PLUGIN_ORIGIN}${OPENBOT_PLUGIN_PATH_PREFIX}${slug}`;
+  return `${WHILO_PLUGIN_ORIGIN}${WHILO_PLUGIN_PATH_PREFIX}${slug}`;
 }
 
 /**
@@ -57,9 +57,9 @@ export function pluginSlugFromWebAppSearch(search: string): string | null {
 }
 
 /** The link the page's button opens, which raises the app on this listing. */
-export function createOpenBotPluginUrl(slug: string): string {
+export function createWhiloPluginUrl(slug: string): string {
   assertPluginSlug(slug);
-  return `openbot://${OPENBOT_PLUGIN_HOST}/${slug}`;
+  return `whilo://${WHILO_PLUGIN_HOST}/${slug}`;
 }
 
 /**
@@ -85,16 +85,16 @@ export function parsePluginUrl(value: string): string {
   try {
     url = new URL(value);
   } catch {
-    throw new Error("The OpenBot plugin link is invalid.");
+    throw new Error("The Whilo plugin link is invalid.");
   }
 
   /* The origin is compared as one string. An `endsWith` or a host expression here is what lets
-     `openbot.run.example.com` through. */
+     `whilo.onerall.com.example.com` through. */
   const canonical =
     url.protocol === "https:" &&
-    url.origin === OPENBOT_PLUGIN_ORIGIN &&
-    url.pathname.startsWith(OPENBOT_PLUGIN_PATH_PREFIX);
-  const customScheme = url.protocol === "openbot:" && url.hostname === OPENBOT_PLUGIN_HOST;
+    url.origin === WHILO_PLUGIN_ORIGIN &&
+    url.pathname.startsWith(WHILO_PLUGIN_PATH_PREFIX);
+  const customScheme = url.protocol === "whilo:" && url.hostname === WHILO_PLUGIN_HOST;
   if (
     (!canonical && !customScheme) ||
     url.username !== "" ||
@@ -103,15 +103,15 @@ export function parsePluginUrl(value: string): string {
     url.search !== "" ||
     url.hash !== ""
   ) {
-    throw new Error("The OpenBot plugin link is invalid.");
+    throw new Error("The Whilo plugin link is invalid.");
   }
 
   /* One segment after the prefix, and no empty one. `..` and a trailing slash both fail here before
      the pattern ever sees them. */
-  const rest = canonical ? url.pathname.slice(OPENBOT_PLUGIN_PATH_PREFIX.length) : url.pathname.replace(/^\//u, "");
+  const rest = canonical ? url.pathname.slice(WHILO_PLUGIN_PATH_PREFIX.length) : url.pathname.replace(/^\//u, "");
   const segments = rest.split("/");
   if (segments.length !== 1) {
-    throw new Error("The OpenBot plugin link is invalid.");
+    throw new Error("The Whilo plugin link is invalid.");
   }
 
   const slug = segments[0] ?? "";
@@ -130,6 +130,6 @@ export function isPluginUrl(value: string): boolean {
 
 function assertPluginSlug(slug: string): void {
   if (!isPluginSlug(slug)) {
-    throw new Error("The OpenBot plugin link is invalid.");
+    throw new Error("The Whilo plugin link is invalid.");
   }
 }

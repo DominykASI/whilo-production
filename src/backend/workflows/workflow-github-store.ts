@@ -16,8 +16,8 @@ import {
   type WorkflowGitHubHistory,
   type WorkflowGitHubItem,
   type WorkflowGitHubSkipReason,
-} from "@openbot/contracts/ipc";
-import type { DynamicRecord } from "@openbot/contracts/runtime-values";
+} from "@whilo/contracts/ipc";
+import type { DynamicRecord } from "@whilo/contracts/runtime-values";
 import {
   checkedColumn,
   databaseRow,
@@ -28,7 +28,7 @@ import {
   requiredNumberColumn,
   requiredStringColumn,
 } from "../database/database-rows";
-import type { OpenBotDatabase } from "../openbot-database";
+import type { WhiloDatabase } from "../whilo-database";
 import { workflowTransaction } from "./workflow-transaction";
 
 const OPEN_RUN_STATUSES = ["running", "approval", "stopping"] as const;
@@ -94,9 +94,9 @@ export interface GitHubActionRecord {
 }
 
 export class WorkflowGitHubStore {
-  readonly #database: OpenBotDatabase;
+  readonly #database: WhiloDatabase;
 
-  constructor(options: { database: OpenBotDatabase }) {
+  constructor(options: { database: WhiloDatabase }) {
     this.#database = options.database;
   }
 
@@ -234,7 +234,7 @@ export class WorkflowGitHubStore {
       );
   }
 
-  /** The runs that OpenBot's bot caused on the item since `since`, in every workflow. */
+  /** The runs that Whilo's bot caused on the item since `since`, in every workflow. */
   botRunsSince(item: Pick<WorkflowGitHubItem, "repository" | "number">, since: Date): number {
     return requiredNumberColumn(
       databaseRow(
@@ -252,7 +252,7 @@ export class WorkflowGitHubStore {
   /**
    * Whether a GitHub output of the workflow made the change that the event reports: its key matches
    * one that the output kept since `since`, or an output of the workflow on the item is on its way and
-   * has no key yet. The caller asks only for events that OpenBot's bot caused.
+   * has no key yet. The caller asks only for events that Whilo's bot caused.
    */
   selfCaused(
     workflowId: string,

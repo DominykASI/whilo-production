@@ -1,6 +1,6 @@
-import { avatarHueSwatch } from "@openbot/brand/bloub-avatar";
-import type { AvatarHue } from "@openbot/contracts/ipc";
-import type { MobileTextKey } from "@openbot/i18n/mobile";
+import { avatarHueSwatch } from "@whilo/brand/bloub-avatar";
+import type { AvatarHue } from "@whilo/contracts/ipc";
+import type { MobileTextKey } from "@whilo/i18n/mobile";
 
 /** A starting role for the first agent. Its look is an ordinary avatar seed and hue. */
 export interface OnboardingRole {

@@ -1,7 +1,7 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import { isQueueSnapshot, type QueueDelivery } from "@openbot/contracts/ipc";
-import { isBoolean, isDynamicRecord, isString } from "@openbot/contracts/runtime-values";
-import { decodeQueueEditRequest, type QueueEditRequest } from "@openbot/contracts/team-protocol/queue-edit-v1";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import { isQueueSnapshot, type QueueDelivery } from "@whilo/contracts/ipc";
+import { isBoolean, isDynamicRecord, isString } from "@whilo/contracts/runtime-values";
+import { decodeQueueEditRequest, type QueueEditRequest } from "@whilo/contracts/team-protocol/queue-edit-v1";
 import type { ChatMessage } from "./chat-messages";
 
 export interface StoredQueueAttachment {

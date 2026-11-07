@@ -1,5 +1,5 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import type { Channel, ChannelDraft } from "@openbot/contracts/ipc";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import type { Channel, ChannelDraft } from "@whilo/contracts/ipc";
 import {
   Button,
   buttonVariants,
@@ -12,15 +12,15 @@ import {
   Popover,
   Search,
   Tooltip,
-} from "@openbot/ui";
-import { createScrollFades } from "@openbot/ui/components/createScrollFades";
-import { ResizableTextarea } from "@openbot/ui/components/ResizableTextarea";
-import { SettingsField, SettingsLinkGroup, SettingsLinkRow } from "@openbot/ui/components/SettingsPanel";
-import { AgentAvatar } from "@openbot/ui/features/agents/AgentAvatar";
-import { InstructionsLimit, instructionsTooLong } from "@openbot/ui/features/agents/InstructionsLimit";
-import { ChannelMemberRow } from "@openbot/ui/features/channels/ChannelMemberRow";
-import { ContentExitMotion } from "@openbot/ui/menu-motion";
-import { useText } from "@openbot/ui/text";
+} from "@whilo/ui";
+import { createScrollFades } from "@whilo/ui/components/createScrollFades";
+import { ResizableTextarea } from "@whilo/ui/components/ResizableTextarea";
+import { SettingsField, SettingsLinkGroup, SettingsLinkRow } from "@whilo/ui/components/SettingsPanel";
+import { AgentAvatar } from "@whilo/ui/features/agents/AgentAvatar";
+import { InstructionsLimit, instructionsTooLong } from "@whilo/ui/features/agents/InstructionsLimit";
+import { ChannelMemberRow } from "@whilo/ui/features/channels/ChannelMemberRow";
+import { ContentExitMotion } from "@whilo/ui/menu-motion";
+import { useText } from "@whilo/ui/text";
 import { createEffect, createStore, For, onSettled, Show } from "solid-js";
 import { useChannels } from "./channels-context";
 import { matchesAgentSearch, toggleChannelMember } from "./channels-draft";

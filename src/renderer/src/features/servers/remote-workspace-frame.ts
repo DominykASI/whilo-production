@@ -10,8 +10,8 @@ import {
   isHiddenAgent,
   isSidebarLayoutSnapshot,
   type SidebarLayoutSnapshot,
-} from "@openbot/contracts/ipc";
-import { isDynamicRecord, isNumber, isString } from "@openbot/contracts/runtime-values";
+} from "@whilo/contracts/ipc";
+import { isDynamicRecord, isNumber, isString } from "@whilo/contracts/runtime-values";
 
 /**
  * The frame of a joined server's workspace from its last load: the agents, their sidebar layout and
@@ -34,7 +34,7 @@ export interface RemoteWorkspaceFrame {
 
 type FrameStorage = Pick<Storage, "getItem" | "setItem" | "removeItem" | "key" | "length">;
 
-const FRAME_KEY_PREFIX = "openbot:remote-frame:v1:";
+const FRAME_KEY_PREFIX = "whilo:remote-frame:v1:";
 /** An older frame shows a workspace that has changed too much to be useful. */
 const FRAME_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
 

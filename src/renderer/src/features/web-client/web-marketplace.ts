@@ -1,7 +1,7 @@
-import { agentTemplateShareOrigin } from "@openbot/contracts/agent-template-links";
-import { sourceText } from "@openbot/i18n";
-import { runTeamEffect } from "@openbot/team-client";
-import { createMarketplaceCatalog } from "@openbot/team-client/marketplace-catalog";
+import { agentTemplateShareOrigin } from "@whilo/contracts/agent-template-links";
+import { sourceText } from "@whilo/i18n";
+import { runTeamEffect } from "@whilo/team-client";
+import { createMarketplaceCatalog } from "@whilo/team-client/marketplace-catalog";
 import {
   cancelMcpSignIn,
   installAgentSkill,
@@ -15,15 +15,15 @@ import {
   setAgentSkillEnabled,
   testMcpServer,
   uninstallAgentSkill,
-} from "@openbot/team-client/team-admin-requests";
-import type { TeamApiRequest } from "@openbot/team-client/team-api-requests";
-import { currentText } from "@openbot/ui/text";
+} from "@whilo/team-client/team-admin-requests";
+import type { TeamApiRequest } from "@whilo/team-client/team-api-requests";
+import { currentText } from "@whilo/ui/text";
 import { Effect } from "effect";
 import type { AgentTemplateInstallCalls } from "../agent-templates/agent-templates-port";
 import type { MarketplaceCalls } from "../settings/marketplace-calls";
 import { webMcpRelay } from "./web-mcp-relay";
 
-/** No server id: the account is a member, or the host runs an OpenBot without agent-install-v1. */
+/** No server id: the account is a member, or the host runs an Whilo without agent-install-v1. */
 const noAgentInstall = () => currentText().t("webClient.error.agentInstallNotAllowed");
 
 /**

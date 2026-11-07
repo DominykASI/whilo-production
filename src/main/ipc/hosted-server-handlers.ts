@@ -1,4 +1,4 @@
-// OpenBot servers that the account server runs for the signed-in account.
+// Whilo servers that the account server runs for the signed-in account.
 
 import {
   type CreateHostedServerInput,
@@ -6,8 +6,8 @@ import {
   parseCreateHostedServerInput,
   parseDeleteHostedServerInput,
   parseHostedServerLifecycleInput,
-} from "@openbot/contracts/hosted-servers";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+} from "@whilo/contracts/hosted-servers";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import { runCauseEffect } from "../../backend/effect-boundary";
 import type { HostedServerDesktopService } from "../hosted-server-service";
 import { handler, type IpcGroupHandlers, payloadHandler } from "./define-ipc-group";

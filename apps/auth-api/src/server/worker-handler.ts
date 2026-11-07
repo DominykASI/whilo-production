@@ -18,6 +18,7 @@ import {
 } from "./remote-control-plane";
 import { SalesAnalyticsDelivery } from "./sales-analytics-delivery";
 import { checkSignalEntry, SIGNAL_ENTRY_CRON, type SignalEntryBindings } from "./signal-entry-failover";
+import { applyCors, corsPreflight } from "./cors";
 import type { WorkerBindings } from "./types";
 
 type WorkerFetch = (request: Request) => Response | Promise<Response>;
@@ -41,6 +42,8 @@ export function createWorkerHandler(
         >,
       context?: WorkerExecutionContext,
     ) {
+      const preflight = corsPreflight(request);
+      if (preflight) return preflight;
       const hostRedirect = canonicalHostRedirect(request);
       if (hostRedirect) return hostRedirect;
       if (request.method === "GET" && new URL(request.url).pathname === "/billing/checkout-return") {
@@ -72,12 +75,12 @@ export function createWorkerHandler(
           ),
         ),
       );
-      if (earlyResponse) return earlyResponse;
+      if (earlyResponse) return applyCors(request, earlyResponse);
       // Drawn from the HTML pages, so it renders them through the same handler.
       const markdown = await pageMarkdownResponse(request, fetchHandler);
       if (markdown) return markdown;
       const response = Promise.resolve(fetchHandler(request)).then((result) =>
-        permanentTrailingSlashRedirect(request, result),
+        applyCors(request, permanentTrailingSlashRedirect(request, result)),
       );
       if (context && isEmailSignInStart(request)) {
         context.waitUntil(

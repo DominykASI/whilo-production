@@ -4,10 +4,11 @@ import {
   DEFAULT_APP_APPEARANCE,
   DEFAULT_TRANSPARENT_WINDOW,
   isAppAppearance,
-} from "@openbot/contracts/app-appearance";
+} from "@whilo/contracts/app-appearance";
 import { createSignal, onSettled } from "solid-js";
 import { appPort } from "./app-port";
 import { syncColorScheme } from "./color-scheme";
+import { refreshInterfaceLook } from "./interface-look";
 
 /** One Settings control's value. Set optimistically, and reverted if main refuses the write. */
 function optimisticChoice<T extends string | boolean>(initial: T, save: (next: T) => Promise<T>) {
@@ -76,8 +77,8 @@ export function useAppearanceChoice() {
 }
 
 /** This window's copy of the choice, so the first paint after a launch has the saved colors. */
-const CACHED_APPEARANCE_KEY = "openbot.appearance";
-const CACHED_TRANSPARENT_WINDOW_KEY = "openbot.transparentWindow";
+const CACHED_APPEARANCE_KEY = "whilo.appearance";
+const CACHED_TRANSPARENT_WINDOW_KEY = "whilo.transparentWindow";
 
 /** Reading `window.localStorage` throws when the browser blocks storage, so it is read inside the guard. */
 function cachedPreference(): AppAppearancePreference {
@@ -104,7 +105,7 @@ export function syncAppearance(options: { windowGlass?: boolean } = {}): void {
   const scheme = syncColorScheme(() => preference.appearance);
   const showGlass = () => {
     if (options.windowGlass)
-      document.documentElement.toggleAttribute("data-openbot-window-glass", preference.transparentWindow);
+      document.documentElement.toggleAttribute("data-whilo-window-glass", preference.transparentWindow);
   };
   showGlass();
   const apply = (next: AppAppearancePreference) => {
@@ -116,6 +117,8 @@ export function syncAppearance(options: { windowGlass?: boolean } = {}): void {
       // Main's value still applies; only the next first paint can show the default.
     }
     scheme.refresh();
+    // The light and dark palettes carry their own accent, so the look follows the scheme.
+    refreshInterfaceLook();
     showGlass();
   };
   void appPort()

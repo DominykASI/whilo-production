@@ -1,8 +1,8 @@
-import { createOpenBotLogger, toLogValue } from "@openbot/logging";
+import { createWhiloLogger, toLogValue } from "@whilo/logging";
 import { app, BrowserWindow, type NativeImage } from "electron";
 import { ensureMacApplicationPresence } from "./main-window-state";
 
-const logger = createOpenBotLogger("mac-dock");
+const logger = createWhiloLogger("mac-dock");
 
 /** The last icon given to the Dock. Set again after `dock.show()`, so the tile keeps the chosen logo. */
 let dockIcon: NativeImage | string | null = null;

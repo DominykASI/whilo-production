@@ -7,10 +7,10 @@
 // OpenCode starts the final answer with no text, so the channel shows the reply before its text
 // equals the result. Each turn calls `channel_result` and then repeats the result. It checks that
 // no reply of the ended turn is still at streaming. It makes its own
-// channel and deletes it. Writes .openbot-build/channel-result-repeat-e2e/report.json.
+// channel and deletes it. Writes .whilo-build/channel-result-repeat-e2e/report.json.
 import assert from "node:assert/strict";
-import { DEVELOPMENT_FREE_DEFAULT } from "@openbot/contracts/development-defaults";
-import type { AgentSummary, ChannelPage } from "@openbot/contracts/ipc";
+import { DEVELOPMENT_FREE_DEFAULT } from "@whilo/contracts/development-defaults";
+import type { AgentSummary, ChannelPage } from "@whilo/contracts/ipc";
 import { ChannelClient, connectChannelE2e, waitFor, writeReport } from "./channel-e2e-support";
 
 const WORDS = ["OSPREY", "KESTREL", "PLOVER"];

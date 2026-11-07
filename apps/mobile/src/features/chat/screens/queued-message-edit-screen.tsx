@@ -1,5 +1,5 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import type { AttachmentSummary } from "@openbot/contracts/ipc";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import type { AttachmentSummary } from "@whilo/contracts/ipc";
 import { router, useLocalSearchParams } from "expo-router";
 import { usePreventRemove } from "expo-router/react-navigation";
 import { Button, Typography } from "heroui-native";

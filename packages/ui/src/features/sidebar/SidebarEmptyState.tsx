@@ -4,7 +4,8 @@
  * from a joined server says that it connects.
  */
 
-import { Button } from "@openbot/ui";
+import { OrcaPet } from "@whilo/brand";
+import { Button } from "@whilo/ui";
 import { Show } from "solid-js";
 import { useText } from "../../text";
 import { AgentAvatar } from "../agents/AgentAvatar";
@@ -17,7 +18,22 @@ export function SidebarEmptyState() {
     <Show
       when={props.emptyAction}
       fallback={
-        <p class="empty-search">{props.agentsConnecting ? t("common.connecting") : t("sidebar.empty.noAgents")}</p>
+        <Show
+          when={props.agentsConnecting}
+          fallback={
+            <div class="sidebar-empty-state">
+              {/* A roster with no agents yet: the pet keeps the column company while the user makes
+                  the first one. It is decoration here, not a control: the column is a nav list, and
+                  the first-agent row is the one thing to reach for. */}
+              <span class="sidebar-empty-pet">
+                <OrcaPet mood="idle" />
+              </span>
+              <p class="empty-search">{t("sidebar.empty.noAgents")}</p>
+            </div>
+          }
+        >
+          <p class="empty-search">{t("common.connecting")}</p>
+        </Show>
       }
     >
       {(action) => (
