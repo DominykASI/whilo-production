@@ -3,73 +3,113 @@
 // resolve an `?url` specifier. That is why the font asset arrives as an argument
 // from the root route instead of as an import here.
 
-import { LANDING_FAQ_STRUCTURED_DATA } from "./landing-faq";
-import { WHILO_ALTERNATE_DOWNLOAD_LINKS, WHILO_DOWNLOAD_LINKS } from "./landing-links";
+import { faqStructuredData, type LandingQuestion } from "./landing-faq";
+import { OPENBOT_ALTERNATE_DOWNLOAD_LINKS, OPENBOT_DOWNLOAD_LINKS, OPENBOT_LINKS } from "./landing-links";
 
-export const WHILO_SITE_URL = "https://whilo.onerall.com/";
-export const WHILO_SITE_TITLE = "Whilo: Run a team of AI agents on your computer";
-export const WHILO_SITE_DESCRIPTION =
+export const OPENBOT_SITE_URL = "https://openbot.run/";
+export const OPENBOT_SITE_TITLE = "OpenBot: Run a team of AI agents on your computer";
+export const OPENBOT_SITE_DESCRIPTION =
   "A free desktop app that runs AI agents as a team on your own computer, with the ChatGPT, Claude, Gemini or Grok plan you already pay for, or your own model.";
-export const WHILO_SOCIAL_IMAGE_URL = `${WHILO_SITE_URL}whilo-social.png`;
-/** The account `WHILO_LINKS.x` opens, which a shared card names. */
-export const WHILO_X_HANDLE = "@Whilo_";
-const WHILO_X_URL = "https://x.com/Whilo_";
-const WHILO_REPOSITORY_URL = "https://github.com/nightly-labs/openbot";
-const WHILO_PRODUCT_HUNT_URL = "https://www.producthunt.com/products/whilo-3";
-const WHILO_LICENSE_URL = "https://polyformproject.org/licenses/noncommercial/1.0.0/";
+export const OPENBOT_SOCIAL_IMAGE_URL = `${OPENBOT_SITE_URL}openbot-social.png`;
+/** The account `OPENBOT_LINKS.x` opens, which a shared card names. */
+export const OPENBOT_X_HANDLE = "@OpenBot_";
+const OPENBOT_X_URL = "https://x.com/OpenBot_";
+const OPENBOT_REPOSITORY_URL = "https://github.com/nightly-labs/openbot";
+const OPENBOT_PRODUCT_HUNT_URL = "https://www.producthunt.com/products/openbot-3";
+const OPENBOT_LICENSE_URL = "https://polyformproject.org/licenses/noncommercial/1.0.0/";
 // One id for each entity, so that every page describes the same organization,
 // site and app, and an assistant can join what the pages say about each.
-const WHILO_ORGANIZATION_ID = `${WHILO_SITE_URL}#organization`;
-const WHILO_WEBSITE_ID = `${WHILO_SITE_URL}#website`;
-const WHILO_APPLICATION_ID = `${WHILO_SITE_URL}#app`;
+const OPENBOT_ORGANIZATION_ID = `${OPENBOT_SITE_URL}#organization`;
+const OPENBOT_WEBSITE_ID = `${OPENBOT_SITE_URL}#website`;
+const OPENBOT_APPLICATION_ID = `${OPENBOT_SITE_URL}#app`;
 /** Square, as schema.org wants for a publisher logo. */
-export const WHILO_LOGO_URL = `${WHILO_SITE_URL}icon-512x512.png`;
-export const WHILO_SOCIAL_IMAGE_ALT = "Meet Whilo on a dark grid background";
+export const OPENBOT_LOGO_URL = `${OPENBOT_SITE_URL}icon-512x512.png`;
+export const OPENBOT_SOCIAL_IMAGE_ALT = "Meet OpenBot on a dark grid background";
 
 /** The Open Graph tags of the site's own social card, which is 1600x900. */
-export const WHILO_SOCIAL_IMAGE_META = [
-  { property: "og:image", content: WHILO_SOCIAL_IMAGE_URL },
+export const OPENBOT_SOCIAL_IMAGE_META = [
+  { property: "og:image", content: OPENBOT_SOCIAL_IMAGE_URL },
   { property: "og:image:type", content: "image/png" },
   { property: "og:image:width", content: "1600" },
   { property: "og:image:height", content: "900" },
-  { property: "og:image:alt", content: WHILO_SOCIAL_IMAGE_ALT },
+  { property: "og:image:alt", content: OPENBOT_SOCIAL_IMAGE_ALT },
 ] as const;
 
+/** The site's card in the shape of `pageSocialImageMeta`, for a page that can have either. */
+export const OPENBOT_SOCIAL_IMAGE_TAGS = {
+  openGraph: OPENBOT_SOCIAL_IMAGE_META,
+  twitter: [
+    { name: "twitter:image", content: OPENBOT_SOCIAL_IMAGE_URL },
+    { name: "twitter:image:alt", content: OPENBOT_SOCIAL_IMAGE_ALT },
+  ],
+} as const;
+
+/** A page's own social card: a 1600x900 JPEG in `public/social/`, the size of the site's card. */
+export interface PageSocialImage {
+  /** The path from the site root, for example `/social/teams.jpg`. */
+  path: string;
+  alt: string;
+}
+
+/** The card of the terms, the privacy policy and the DPA. */
+export const OPENBOT_LEGAL_SOCIAL_IMAGE: PageSocialImage = {
+  path: "/social/legal.jpg",
+  alt: "Plain terms. No surprises. OpenBot agents beside a paper map",
+};
+
+/**
+ * The Open Graph and X tags of a page's own social card. The image URL uses the site that
+ * serves the page, so a pull-request preview names an image that it has.
+ */
+export function pageSocialImageMeta(image: PageSocialImage, siteUrl: string) {
+  const url = new URL(image.path, siteUrl).toString();
+  return {
+    openGraph: [
+      { property: "og:image", content: url },
+      { property: "og:image:type", content: "image/jpeg" },
+      { property: "og:image:width", content: "1600" },
+      { property: "og:image:height", content: "900" },
+      { property: "og:image:alt", content: image.alt },
+    ],
+    twitter: [
+      { name: "twitter:image", content: url },
+      { name: "twitter:image:alt", content: image.alt },
+    ],
+  } as const;
+}
+
 // The hosts production answers on. Both serve the same pages, and those pages go by
-// whilo.onerall.com.
-const WHILO_PRODUCTION_HOSTS = new Set([
-  "whilo.onerall.com",
-  "api.whilo.onerall.com",
-]);
+// openbot.run.
+const OPENBOT_PRODUCTION_HOSTS = new Set(["openbot.run", "api.openbot.run"]);
 
 /**
  * The site that the head tags of a page served at `pageUrl` name. Social sites fetch
  * `og:url` and `og:image` themselves and show no card when those answer 404. A
- * pull-request preview serves pages and images that whilo.onerall.com does not have yet,
+ * pull-request preview serves pages and images that openbot.run does not have yet,
  * so any host other than production names itself. Cloudflare marks preview URLs
  * `noindex`, so a preview canonical does not compete with production.
  */
 export function siteUrlForPage(pageUrl: URL): string {
-  return WHILO_PRODUCTION_HOSTS.has(pageUrl.hostname) ? WHILO_SITE_URL : `${pageUrl.origin}/`;
+  return OPENBOT_PRODUCTION_HOSTS.has(pageUrl.hostname) ? OPENBOT_SITE_URL : `${pageUrl.origin}/`;
 }
 
 /** What the app's structured data names and that this file can not import: see the note at the top. */
-export interface WhiloApplicationFacts {
+export interface OpenBotApplicationFacts {
   /** The version of the newest release. */
   version: string;
   /** An absolute URL of a picture of the app. */
   screenshot: string;
 }
 
-export function whiloSoftwareApplication(facts: WhiloApplicationFacts) {
+export function openBotSoftwareApplication(facts: OpenBotApplicationFacts) {
   return {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "@id": WHILO_APPLICATION_ID,
-    name: "Whilo",
-    url: WHILO_SITE_URL,
-    image: WHILO_SOCIAL_IMAGE_URL,
-    description: WHILO_SITE_DESCRIPTION,
+    "@id": OPENBOT_APPLICATION_ID,
+    name: "OpenBot",
+    url: OPENBOT_SITE_URL,
+    image: OPENBOT_SOCIAL_IMAGE_URL,
+    description: OPENBOT_SITE_DESCRIPTION,
     applicationCategory: "DeveloperApplication",
     applicationSubCategory: "AI agent app",
     operatingSystem: [
@@ -79,12 +119,12 @@ export function whiloSoftwareApplication(facts: WhiloApplicationFacts) {
     ],
     // The installers themselves: schema.org's `downloadUrl` is the file, not a page about it.
     downloadUrl: [
-      WHILO_DOWNLOAD_LINKS.macos,
-      WHILO_ALTERNATE_DOWNLOAD_LINKS.macos,
-      WHILO_DOWNLOAD_LINKS.windows,
-      WHILO_DOWNLOAD_LINKS.linux,
-      WHILO_ALTERNATE_DOWNLOAD_LINKS.linux,
-    ].map((path) => new URL(path, WHILO_SITE_URL).toString()),
+      OPENBOT_DOWNLOAD_LINKS.macos,
+      OPENBOT_ALTERNATE_DOWNLOAD_LINKS.macos,
+      OPENBOT_DOWNLOAD_LINKS.windows,
+      OPENBOT_DOWNLOAD_LINKS.linux,
+      OPENBOT_ALTERNATE_DOWNLOAD_LINKS.linux,
+    ].map((path) => new URL(path, OPENBOT_SITE_URL).toString()),
     // What people ask an assistant for. Keep it to what the released app does.
     featureList: [
       "Runs Codex, Claude Code, Gemini (Antigravity), Grok and OpenCode agents",
@@ -103,35 +143,45 @@ export function whiloSoftwareApplication(facts: WhiloApplicationFacts) {
     },
     softwareVersion: facts.version,
     screenshot: facts.screenshot,
-    license: WHILO_LICENSE_URL,
-    publisher: { "@id": WHILO_ORGANIZATION_ID },
-    sameAs: [WHILO_REPOSITORY_URL, WHILO_PRODUCT_HUNT_URL],
+    license: OPENBOT_LICENSE_URL,
+    publisher: { "@id": OPENBOT_ORGANIZATION_ID },
+    sameAs: [OPENBOT_REPOSITORY_URL, OPENBOT_PRODUCT_HUNT_URL],
   } as const;
 }
 
-export type WhiloSoftwareApplication = ReturnType<typeof whiloSoftwareApplication>;
+export type OpenBotSoftwareApplication = ReturnType<typeof openBotSoftwareApplication>;
 
 // Search engines read these two for the site name and the logo next to a result.
-const WHILO_ORGANIZATION = {
+const OPENBOT_ORGANIZATION = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "@id": WHILO_ORGANIZATION_ID,
-  name: "Whilo",
-  url: WHILO_SITE_URL,
-  logo: WHILO_LOGO_URL,
-  sameAs: [WHILO_REPOSITORY_URL, WHILO_X_URL, WHILO_PRODUCT_HUNT_URL],
+  "@id": OPENBOT_ORGANIZATION_ID,
+  name: "OpenBot",
+  url: OPENBOT_SITE_URL,
+  logo: OPENBOT_LOGO_URL,
+  sameAs: [
+    OPENBOT_REPOSITORY_URL,
+    OPENBOT_X_URL,
+    OPENBOT_LINKS.threads,
+    OPENBOT_LINKS.linkedin,
+    OPENBOT_LINKS.reddit,
+    OPENBOT_LINKS.instagram,
+    OPENBOT_LINKS.tiktok,
+    OPENBOT_LINKS.facebook,
+    OPENBOT_PRODUCT_HUNT_URL,
+  ],
 } as const;
 
-const WHILO_WEBSITE = {
+const OPENBOT_WEBSITE = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "@id": WHILO_WEBSITE_ID,
-  name: "Whilo",
-  url: WHILO_SITE_URL,
-  publisher: { "@id": WHILO_ORGANIZATION_ID },
+  "@id": OPENBOT_WEBSITE_ID,
+  name: "OpenBot",
+  url: OPENBOT_SITE_URL,
+  publisher: { "@id": OPENBOT_ORGANIZATION_ID },
 } as const;
 
-export const WHILO_SECURITY_HEADERS = {
+export const OPENBOT_SECURITY_HEADERS = {
   "Permissions-Policy": "camera=(), geolocation=(), microphone=(), payment=(), usb=()",
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
@@ -147,14 +197,14 @@ export const WHILO_SECURITY_HEADERS = {
  * replaces it. The caller passes the same hashed asset the `@font-face` rule asks
  * for, so the preload below is that request and not a second one.
  */
-export function whiloRootHead(interLatinFont: string) {
+export function openBotRootHead(interLatinFont: string) {
   return {
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: WHILO_SITE_TITLE },
-      { name: "description", content: WHILO_SITE_DESCRIPTION },
-      { name: "application-name", content: "Whilo" },
+      { title: OPENBOT_SITE_TITLE },
+      { name: "description", content: OPENBOT_SITE_DESCRIPTION },
+      { name: "application-name", content: "OpenBot" },
       { name: "color-scheme", content: "dark" },
       { name: "theme-color", content: "#1a1a1a" },
     ],
@@ -174,27 +224,59 @@ export function whiloRootHead(interLatinFont: string) {
   };
 }
 
-export function whiloHomeHead(application: WhiloSoftwareApplication) {
+/** The home page's own social card. Other pages without a card of their own keep the site's card. */
+const OPENBOT_HOME_SOCIAL_IMAGE: PageSocialImage = {
+  path: "/social/home.jpg",
+  alt: "Models come and go. Your team stays. OpenBot agents on a paper planet",
+};
+
+/** The text and the address of the home page in one language. */
+export interface HomePageHead {
+  title: string;
+  description: string;
+  questions: readonly LandingQuestion[];
+  /** The path of this language's home page, such as `/` or `/pl`. */
+  path: string;
+  openGraphLocale: string;
+  /** The home page in each language, for `hreflang` links. The first is also `x-default`. */
+  alternates: readonly { hreflang: string; path: string }[];
+}
+
+export function openBotHomeHead(application: OpenBotSoftwareApplication, siteUrl: string, page: HomePageHead) {
+  const image = pageSocialImageMeta(OPENBOT_HOME_SOCIAL_IMAGE, siteUrl);
+  const url = new URL(page.path, OPENBOT_SITE_URL).toString();
+  const [fallback] = page.alternates;
   return {
     meta: [
+      { title: page.title },
+      { name: "description", content: page.description },
       { "script:ld+json": application },
-      { "script:ld+json": WHILO_ORGANIZATION },
-      { "script:ld+json": WHILO_WEBSITE },
+      { "script:ld+json": OPENBOT_ORGANIZATION },
+      { "script:ld+json": OPENBOT_WEBSITE },
       { property: "og:type", content: "website" },
-      { property: "og:site_name", content: "Whilo" },
-      { property: "og:locale", content: "en_US" },
-      { property: "og:url", content: WHILO_SITE_URL },
-      { property: "og:title", content: WHILO_SITE_TITLE },
-      { property: "og:description", content: WHILO_SITE_DESCRIPTION },
-      ...WHILO_SOCIAL_IMAGE_META,
+      { property: "og:site_name", content: "OpenBot" },
+      { property: "og:locale", content: page.openGraphLocale },
+      { property: "og:url", content: url },
+      { property: "og:title", content: page.title },
+      { property: "og:description", content: page.description },
+      ...image.openGraph,
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: WHILO_X_HANDLE },
-      { name: "twitter:title", content: WHILO_SITE_TITLE },
-      { name: "twitter:description", content: WHILO_SITE_DESCRIPTION },
-      { name: "twitter:image", content: WHILO_SOCIAL_IMAGE_URL },
-      { name: "twitter:image:alt", content: WHILO_SOCIAL_IMAGE_ALT },
-      { "script:ld+json": LANDING_FAQ_STRUCTURED_DATA },
+      { name: "twitter:site", content: OPENBOT_X_HANDLE },
+      { name: "twitter:title", content: page.title },
+      { name: "twitter:description", content: page.description },
+      ...image.twitter,
+      { "script:ld+json": faqStructuredData(page.questions) },
     ],
-    links: [{ rel: "canonical", href: WHILO_SITE_URL }],
+    links: [
+      { rel: "canonical", href: url },
+      ...page.alternates.map((alternate) => ({
+        rel: "alternate",
+        hreflang: alternate.hreflang,
+        href: new URL(alternate.path, OPENBOT_SITE_URL).toString(),
+      })),
+      ...(fallback
+        ? [{ rel: "alternate", hreflang: "x-default", href: new URL(fallback.path, OPENBOT_SITE_URL).toString() }]
+        : []),
+    ],
   };
 }

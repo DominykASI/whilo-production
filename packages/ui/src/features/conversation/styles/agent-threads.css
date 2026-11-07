@@ -7,7 +7,7 @@
 .conversation-heading-group:has(.agent-threads-header) {
   min-width: 0;
   flex: 1 1 0;
-  margin-right: 6px;
+  margin-inline-end: 6px;
 }
 
 /* The same gap as between two tabs, so "+" and the thread list read as part of the tab row. */
@@ -16,36 +16,42 @@
   min-width: 0;
   align-items: center;
   gap: 3px;
-  margin-left: 4px;
+  margin-inline-start: 4px;
 }
 
 /* The agent's name is the first tab, for the agent's own chat, with the shape of the thread tabs. */
 .conversation-title.ui-button[data-tab] {
-  height: var(--whilo-control-sm);
-  gap: var(--whilo-space-1-5);
-  padding: 0 var(--whilo-space-2) 0 var(--whilo-space-1-5);
-  border-radius: var(--whilo-radius-md);
-  color: var(--whilo-text-secondary);
+  height: var(--openbot-control-sm);
+  gap: var(--openbot-space-1-5);
+  padding-block: 0;
+  padding-inline: var(--openbot-space-1-5) var(--openbot-space-2);
+  border-radius: var(--openbot-radius-md);
+  color: var(--openbot-text-secondary);
 }
 
 .conversation-title.ui-button[data-tab] h1 {
   color: inherit;
-  font-size: var(--whilo-text-sm);
+  font-size: var(--openbot-text-sm);
 }
 
 .conversation-title.ui-button[data-tab]:hover {
-  background: var(--whilo-bg-control-hover);
-  color: var(--whilo-text-primary);
+  background: var(--openbot-bg-control-hover);
+  color: var(--openbot-text-primary);
 }
 
 .conversation-title.ui-button[data-tab][data-selected] {
-  background: var(--whilo-bg-control-active);
-  color: var(--whilo-text-primary);
+  background: var(--openbot-bg-control-active);
+  color: var(--openbot-text-primary);
 }
 
-/* The gap after the name tab is the gap between two tabs, with the same divider in it. */
+/* The gap after the name tab is the gap between two tabs, with the same divider in it: this margin and
+   the padding of the tab list. The gap of the heading group does not apply. */
+.conversation-heading-group:has(> .conversation-title[data-tab] + .agent-threads-header) {
+  gap: 0;
+}
+
 .conversation-heading-group:has(.conversation-title[data-tab]) .agent-threads-header {
-  margin-left: 1px;
+  margin-inline-start: 1px;
 }
 
 /*
@@ -66,7 +72,7 @@
 .conversation-heading-group:has(.agent-threads-header[data-fold]) .conversation-title {
   position: relative;
   flex-shrink: 0;
-  padding-right: var(--whilo-space-1-5);
+  padding-inline-end: var(--openbot-space-1-5);
 }
 
 .conversation-heading-group:has(.agent-threads-header[data-fold]) .conversation-title h1 {
@@ -113,12 +119,12 @@
   position: absolute;
   top: 50%;
   z-index: 2;
-  height: var(--whilo-control-sm);
+  height: var(--openbot-control-sm);
   padding: 0;
   border: 0;
   border-radius: 0;
   background: transparent;
-  font-size: var(--whilo-text-sm);
+  font-size: var(--openbot-text-sm);
   transform: translateY(-50%);
 }
 
@@ -127,37 +133,40 @@
   min-width: 0;
   max-width: 100%;
   /* "+" and the thread list follow the last tab directly. */
-  padding-right: 0;
+  padding-inline-end: 0;
   overflow-x: auto;
-  gap: var(--whilo-space-1);
+  gap: var(--openbot-space-1);
   background: transparent;
   box-shadow: none;
   scrollbar-width: none;
+  /* The soft edges, the fill, the drag and the scroll into view measure `scrollLeft` and `offsetLeft`
+     from the left edge (`ThreadTabs.tsx`), so the tabs keep the left-to-right order in every language. */
+  direction: ltr;
 }
 
 /* A soft edge where more tabs are out of view. */
 .agent-threads-tabs[data-more-before] {
-  mask-image: linear-gradient(to right, transparent, var(--whilo-text-primary) 24px);
+  mask-image: linear-gradient(to right, transparent, var(--openbot-text-primary) 24px);
 }
 
 .agent-threads-tabs[data-more-after] {
-  mask-image: linear-gradient(to left, transparent, var(--whilo-text-primary) 24px);
+  mask-image: linear-gradient(to left, transparent, var(--openbot-text-primary) 24px);
 }
 
 .agent-threads-tabs[data-more-before][data-more-after] {
   mask-image: linear-gradient(
     to right,
     transparent,
-    var(--whilo-text-primary) 24px,
-    var(--whilo-text-primary) calc(100% - 24px),
+    var(--openbot-text-primary) 24px,
+    var(--openbot-text-primary) calc(100% - 24px),
     transparent
   );
 }
 
 /* The fill of the selected tab, as in the side panel tabs. */
 .agent-threads-tabs .agent-threads-fill {
-  border-radius: var(--whilo-radius-md);
-  background: var(--whilo-bg-control-active);
+  border-radius: var(--openbot-radius-md);
+  background: var(--openbot-bg-control-active);
 }
 
 /* The trigger that keeps the agent's own chat selected in the tabs. It never shows. */
@@ -176,13 +185,14 @@
   max-width: 140px;
   flex: 0 1 auto;
   align-items: center;
-  gap: var(--whilo-space-1-5);
-  padding: 0 var(--whilo-space-2) 0 var(--whilo-space-1-5);
-  border-radius: var(--whilo-radius-md);
-  color: var(--whilo-text-secondary);
-  font-size: var(--whilo-text-sm);
-  font-weight: var(--whilo-weight-regular);
-  animation: agent-threads-tab-in var(--whilo-duration-normal) var(--whilo-ease-out);
+  gap: var(--openbot-space-1-5);
+  padding-block: 0;
+  padding-inline: var(--openbot-space-1-5) var(--openbot-space-2);
+  border-radius: var(--openbot-radius-md);
+  color: var(--openbot-text-secondary);
+  font-size: var(--openbot-text-sm);
+  font-weight: var(--openbot-weight-regular);
+  animation: agent-threads-tab-in var(--openbot-duration-normal) var(--openbot-ease-out);
   /* The other tabs slide when a tab moves past them. */
   transition:
     color var(--sliding-tabs-duration) var(--sliding-tabs-ease),
@@ -215,10 +225,10 @@
 /* A tab whose title the user edits has the fill of a selected tab and a thin border, so it reads as
    a field. Its own title hides under the field, and the icon slot stays. */
 .agent-threads-tab.ui-sliding-tabs-trigger[data-renaming] {
-  outline: 1px solid var(--whilo-border-focus);
+  outline: 1px solid var(--openbot-border-focus);
   outline-offset: -1px;
-  background-color: var(--whilo-bg-control-active);
-  color: var(--whilo-text-primary);
+  background-color: var(--openbot-bg-control-active);
+  color: var(--openbot-text-primary);
 }
 
 .agent-threads-tab[data-renaming] .agent-threads-tab-title {
@@ -228,8 +238,8 @@
 /* The selected tab is on the fill, which the tabs measure. The tab of an open right-click menu
    looks hovered, so the user sees which tab the menu acts on. A tab in rename keeps its own fill. */
 .agent-threads-tab.ui-sliding-tabs-trigger:not([aria-selected="true"], [data-renaming]):is(:hover, [data-menu-open]) {
-  background-color: var(--whilo-bg-control-hover);
-  color: var(--whilo-text-primary);
+  background-color: var(--openbot-bg-control-hover);
+  color: var(--openbot-text-primary);
 }
 
 /* The icon slot. On hover, a round fill and an X replace the icon, as in a side panel tab. */
@@ -238,9 +248,9 @@
   display: grid;
   flex: none;
   place-items: center;
-  width: var(--whilo-icon-md);
-  height: var(--whilo-icon-md);
-  border-radius: var(--whilo-radius-pill);
+  width: var(--openbot-icon-md);
+  height: var(--openbot-icon-md);
+  border-radius: var(--openbot-radius-pill);
 }
 
 .agent-threads-tab-icon,
@@ -255,8 +265,8 @@
 
 .agent-threads-tab-icon > svg,
 .agent-threads-tab-x {
-  width: var(--whilo-icon-sm);
-  height: var(--whilo-icon-sm);
+  width: var(--openbot-icon-sm);
+  height: var(--openbot-icon-sm);
 }
 
 .agent-threads-tab-x {
@@ -265,7 +275,7 @@
 
 /* A tab in rename keeps its icon: the pointer is there to edit the title, not to close the tab. */
 .agent-threads-tab:hover:where(:not([data-renaming])) .agent-threads-tab-close {
-  background: var(--whilo-bg-control-hover);
+  background: var(--openbot-bg-control-hover);
 }
 
 .agent-threads-tab:hover:where(:not([data-renaming])) .agent-threads-tab-icon {
@@ -277,8 +287,8 @@
 }
 
 .agent-threads-tab-close:hover {
-  background: var(--whilo-bg-control-active);
-  color: var(--whilo-text-primary);
+  background: var(--openbot-bg-control-active);
+  color: var(--openbot-text-primary);
 }
 
 .agent-threads-tab[data-renaming] .agent-threads-tab-close {
@@ -288,9 +298,9 @@
 /* The state badge of the thread takes the icon slot at its own size. */
 .agent-threads-tab-close:has(.agent-threads-state) {
   width: auto;
-  min-width: var(--whilo-icon-md);
+  min-width: var(--openbot-icon-md);
   height: auto;
-  min-height: var(--whilo-icon-md);
+  min-height: var(--openbot-icon-md);
 }
 
 .agent-threads-tab:not(:hover) .agent-threads-tab-icon:has(.agent-threads-state) {
@@ -299,11 +309,11 @@
 
 /* As tall as a tab and with its corners, so a hover fill on "+" matches the tab fill. */
 .agent-threads-icon-button.ui-button {
-  width: var(--whilo-control-sm);
-  height: var(--whilo-control-sm);
+  width: var(--openbot-control-sm);
+  height: var(--openbot-control-sm);
   flex: 0 0 auto;
-  border-radius: var(--whilo-radius-sm);
-  color: var(--whilo-text-muted);
+  border-radius: var(--openbot-radius-sm);
+  color: var(--openbot-text-muted);
 }
 
 /* A narrow header: the open thread as one button, with the shape, fill and type of a selected tab.
@@ -311,41 +321,42 @@
 .agent-threads-switcher.ui-button {
   min-width: 0;
   max-width: 200px;
-  height: var(--whilo-control-sm);
+  height: var(--openbot-control-sm);
   flex: 0 1 auto;
-  gap: var(--whilo-space-1-5);
-  border-radius: var(--whilo-radius-md);
-  background-color: var(--whilo-bg-control-active);
-  padding: 0 var(--whilo-space-1) 0 var(--whilo-space-1-5);
-  color: var(--whilo-text-primary);
-  font-size: var(--whilo-text-sm);
-  font-weight: var(--whilo-weight-regular);
+  gap: var(--openbot-space-1-5);
+  border-radius: var(--openbot-radius-md);
+  background-color: var(--openbot-bg-control-active);
+  padding-block: 0;
+  padding-inline: var(--openbot-space-1-5) var(--openbot-space-1);
+  color: var(--openbot-text-primary);
+  font-size: var(--openbot-text-sm);
+  font-weight: var(--openbot-weight-regular);
 }
 
 .agent-threads-switcher.ui-button:hover,
 .agent-threads-switcher.ui-button[aria-expanded="true"] {
-  background-color: var(--whilo-bg-control-hover);
+  background-color: var(--openbot-bg-control-hover);
 }
 
 .agent-threads-switcher-icon {
   display: grid;
   flex: none;
   place-items: center;
-  min-width: var(--whilo-icon-md);
-  min-height: var(--whilo-icon-md);
+  min-width: var(--openbot-icon-md);
+  min-height: var(--openbot-icon-md);
 }
 
 .agent-threads-switcher-icon > svg {
-  width: var(--whilo-icon-sm);
-  height: var(--whilo-icon-sm);
+  width: var(--openbot-icon-sm);
+  height: var(--openbot-icon-sm);
   opacity: 0.7;
 }
 
 .agent-threads-switcher-chevron {
-  width: var(--whilo-icon-sm);
-  height: var(--whilo-icon-sm);
+  width: var(--openbot-icon-sm);
+  height: var(--openbot-icon-sm);
   flex: none;
-  color: var(--whilo-text-muted);
+  color: var(--openbot-text-muted);
 }
 
 .agent-threads-menu {
@@ -366,8 +377,8 @@
   mask-image: linear-gradient(
     to bottom,
     transparent,
-    var(--whilo-text-primary) var(--agent-threads-fade-top),
-    var(--whilo-text-primary) calc(100% - var(--agent-threads-fade-bottom)),
+    var(--openbot-text-primary) var(--agent-threads-fade-top),
+    var(--openbot-text-primary) calc(100% - var(--agent-threads-fade-bottom)),
     transparent
   );
 }
@@ -395,7 +406,7 @@
   display: flex;
   flex: none;
   align-self: stretch;
-  margin-block: calc(var(--whilo-space-1-5) * -1);
+  margin-block: calc(var(--openbot-space-1-5) * -1);
 }
 
 .agent-threads-stem-rail,
@@ -408,28 +419,28 @@
 .agent-threads-stem-elbow::before,
 .agent-threads-stem-elbow::after {
   position: absolute;
-  left: 7px;
-  border: 0 solid color-mix(in srgb, var(--whilo-text-muted) 60%, transparent);
+  inset-inline-start: 7px;
+  border: 0 solid color-mix(in srgb, var(--openbot-text-muted) 60%, transparent);
   content: "";
 }
 
 .agent-threads-stem-line::before,
 .agent-threads-stem-elbow::before {
   inset-block: 0;
-  border-left-width: 1px;
+  border-inline-start-width: 1px;
 }
 
 .agent-threads-stem-elbow::after {
   top: 50%;
-  right: 0;
+  inset-inline-end: 0;
   border-top-width: 1px;
 }
 
 .agent-threads-stem-last::before {
-  right: 0;
+  inset-inline-end: 0;
   bottom: 50%;
   border-bottom-width: 1px;
-  border-bottom-left-radius: 6px;
+  border-end-start-radius: 6px;
 }
 
 .agent-threads-stem-last::after {
@@ -450,8 +461,8 @@
   min-width: 44px;
   flex: 0 0 auto;
   white-space: nowrap;
-  color: var(--whilo-text-muted);
-  font-size: var(--whilo-text-sm);
+  color: var(--openbot-text-muted);
+  font-size: var(--openbot-text-sm);
   font-variant-numeric: tabular-nums;
   text-align: end;
 }
@@ -463,14 +474,22 @@
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  border-radius: var(--whilo-radius-pill);
+  border-radius: var(--openbot-radius-pill);
+}
+
+/* Agent messages that the user has not read: a dot in the color of the "new messages" mark of the
+   timeline. A state badge outranks it. */
+.agent-threads-unread {
+  width: 8px;
+  height: 8px;
+  background: var(--openbot-unread-surface);
 }
 
 /* The pill of the sidebar badge, with the dots while the agent works. */
 .agent-threads-state-working {
   width: 24px;
-  background: var(--whilo-bg-control);
-  color: var(--whilo-text-secondary);
+  background: var(--openbot-bg-control);
+  color: var(--openbot-text-secondary);
 }
 
 @keyframes agent-threads-tab-in {
@@ -490,11 +509,11 @@
 }
 
 :is(.agent-threads-tab, .agent-threads-switcher, .side-panel-thread-tab)[data-attention="waiting"] {
-  --agent-threads-tint: color-mix(in srgb, var(--whilo-warning-soft) 40%, var(--whilo-transparent));
+  --agent-threads-tint: color-mix(in srgb, var(--openbot-warning-soft) 40%, var(--openbot-transparent));
 }
 
 :is(.agent-threads-tab, .agent-threads-switcher, .side-panel-thread-tab)[data-attention="failed"] {
-  --agent-threads-tint: color-mix(in srgb, var(--whilo-danger-soft) 40%, var(--whilo-transparent));
+  --agent-threads-tint: color-mix(in srgb, var(--openbot-danger-soft) 40%, var(--openbot-transparent));
 }
 
 /* The tabs measure their own fill. Kobalte's fill stays hidden. */
@@ -510,13 +529,13 @@
   + .agent-threads-tab::before {
   position: absolute;
   top: 50%;
-  left: calc(var(--whilo-space-1) / -2 - 0.5px);
+  inset-inline-start: calc(var(--openbot-space-1) / -2 - 0.5px);
   width: 1px;
-  height: var(--whilo-icon-lg);
-  background: var(--whilo-border-strong);
+  height: var(--openbot-icon-lg);
+  background: var(--openbot-border-strong);
   content: "";
   transform: translateY(-50%);
-  transition: opacity var(--whilo-duration-fast) var(--whilo-ease-out);
+  transition: opacity var(--openbot-duration-fast) var(--openbot-ease-out);
 }
 
 :where(.conversation-heading-group:has(.conversation-title:is([data-selected], :hover)))
@@ -548,8 +567,8 @@
 /* The moving tab wears the fill itself, so it covers the tabs that it passes. */
 .agent-threads-tab.ui-sliding-tabs-trigger[data-dragged=""] {
   z-index: 2;
-  background-color: var(--whilo-bg-control-active);
-  color: var(--whilo-text-primary);
+  background-color: var(--openbot-bg-control-active);
+  color: var(--openbot-text-primary);
   transition: color var(--sliding-tabs-duration) var(--sliding-tabs-ease);
 }
 
@@ -581,10 +600,10 @@
 
 /* Where a side panel tab goes when the pointer lets it go over the chat. */
 .agent-threads-header[data-drop-target] {
-  border-radius: var(--whilo-radius-md);
-  outline: 1px dashed var(--whilo-text-secondary);
+  border-radius: var(--openbot-radius-md);
+  outline: 1px dashed var(--openbot-text-secondary);
   outline-offset: 2px;
-  background: var(--whilo-bg-control-hover);
+  background: var(--openbot-bg-control-hover);
 }
 
 /* Marks after the title in the thread menu, as in a sidebar row. A mark opens and closes in width, and the negative
@@ -593,17 +612,17 @@
   display: grid;
   flex: 0 0 auto;
   grid-template-columns: 0fr;
-  margin-left: -4px;
+  margin-inline-start: -4px;
   opacity: 0;
   transition:
     grid-template-columns var(--sliding-tabs-duration) var(--sliding-tabs-ease),
-    margin-left var(--sliding-tabs-duration) var(--sliding-tabs-ease),
-    opacity var(--whilo-duration-fast) var(--whilo-ease-out);
+    margin-inline-start var(--sliding-tabs-duration) var(--sliding-tabs-ease),
+    opacity var(--openbot-duration-fast) var(--openbot-ease-out);
 }
 
 .agent-threads-tab-mark-slot[data-open] {
   grid-template-columns: 1fr;
-  margin-left: 0;
+  margin-inline-start: 0;
   opacity: 1;
 }
 
@@ -613,7 +632,7 @@
   display: inline-flex;
   flex: 0 0 auto;
   align-items: center;
-  color: var(--whilo-text-secondary);
+  color: var(--openbot-text-secondary);
 }
 
 /* In the menu, the badges share one centred column. */
@@ -627,8 +646,8 @@
 .agent-threads-state-icon {
   width: 20px;
   height: 20px;
-  background: var(--whilo-bg-control);
-  color: var(--whilo-text-muted);
+  background: var(--openbot-bg-control);
+  color: var(--openbot-text-muted);
 }
 
 .agent-threads-state-icon svg {
@@ -637,21 +656,21 @@
 }
 
 .agent-threads-tab-mark[data-kind="waiting"] .agent-threads-state-icon {
-  background: var(--whilo-warning-soft);
-  color: var(--whilo-warning-text);
+  background: var(--openbot-warning-soft);
+  color: var(--openbot-warning-text);
 }
 
 .agent-threads-tab-mark[data-kind="failed"] .agent-threads-state-icon {
-  background: var(--whilo-danger-soft);
-  color: var(--whilo-danger-text);
+  background: var(--openbot-danger-soft);
+  color: var(--openbot-danger-text);
 }
 
 .agent-thread-origin {
   margin: 0;
-  padding-top: var(--whilo-chat-entry-gap);
-  color: var(--whilo-text-muted);
-  font-size: var(--whilo-text-sm);
-  line-height: var(--whilo-leading-sm);
+  padding-top: var(--openbot-chat-entry-gap);
+  color: var(--openbot-text-muted);
+  font-size: var(--openbot-text-sm);
+  line-height: var(--openbot-leading-sm);
 }
 
 /* The line after the messages that a branch copied: "Branched from" and the source, between two rules. */
@@ -659,18 +678,18 @@
   display: flex;
   width: 100%;
   align-items: center;
-  gap: var(--whilo-space-2);
-  margin: var(--whilo-space-2) 0;
-  color: var(--whilo-text-muted);
-  font-size: var(--whilo-text-sm);
-  line-height: var(--whilo-leading-sm);
+  gap: var(--openbot-space-2);
+  margin: var(--openbot-space-2) 0;
+  color: var(--openbot-text-muted);
+  font-size: var(--openbot-text-sm);
+  line-height: var(--openbot-leading-sm);
 }
 
 .agent-thread-branch-divider hr {
   height: 1px;
   flex: 1;
   border: 0;
-  background: var(--whilo-border);
+  background: var(--openbot-border);
 }
 
 .agent-thread-branch-text,
@@ -679,7 +698,7 @@
   flex: 0 1 auto;
   min-width: 0;
   align-items: center;
-  gap: var(--whilo-space-1);
+  gap: var(--openbot-space-1);
   color: inherit;
   font-size: inherit;
 }
@@ -701,22 +720,22 @@
 .agent-thread-queued {
   display: flex;
   flex-direction: column;
-  gap: var(--whilo-space-1);
-  padding-top: var(--whilo-chat-entry-gap);
+  gap: var(--openbot-space-1);
+  padding-top: var(--openbot-chat-entry-gap);
 }
 
 .agent-thread-queued-text {
   margin: 0;
   overflow: hidden;
-  color: var(--whilo-text-secondary);
-  font-size: var(--whilo-text-sm);
+  color: var(--openbot-text-secondary);
+  font-size: var(--openbot-text-sm);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 /* The hint holds the thread title, which can be long. It stays on the one line of the compact box. */
 .agent-thread-composer .composer-editor-placeholder {
-  right: 0;
+  inset-inline-end: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

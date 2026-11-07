@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, describe, expect, it } from "vitest";
-import { migrateWhiloDatabase } from "./whilo-database-schema";
+import { migrateOpenBotDatabase } from "./openbot-database-schema";
 
 // Failure modes: the upgrade changes or loses a row of any table; a failed upgrade leaves the table
 // or its marker; a newer or incomplete history is accepted; a role can point to no connection; a
@@ -22,7 +22,7 @@ function databaseAt(version: number): DatabaseSync {
 function migrateUpTo(db: DatabaseSync, version: number): void {
   db.exec(`CREATE TEMP TRIGGER stop_at_version BEFORE INSERT ON schema_migrations WHEN new.version > ${version}
     BEGIN SELECT RAISE(ABORT, 'fixture stop'); END;`);
-  expect(() => migrateWhiloDatabase(db)).toThrow(`migration to version ${version + 1} failed`);
+  expect(() => migrateOpenBotDatabase(db)).toThrow(`migration to version ${version + 1} failed`);
   db.exec("DROP TRIGGER stop_at_version");
 }
 
@@ -70,7 +70,7 @@ function roleTables(db: DatabaseSync) {
 }
 
 function expectHealthy(db: DatabaseSync): void {
-  expect(db.prepare("SELECT MAX(version) AS version FROM schema_migrations").get()).toEqual({ version: 50 });
+  expect(db.prepare("SELECT MAX(version) AS version FROM schema_migrations").get()).toEqual({ version: 58 });
   expect(db.prepare("PRAGMA foreign_keys").get()).toEqual({ foreign_keys: 1 });
   expect(db.prepare("PRAGMA foreign_key_check").all()).toEqual([]);
   expect(db.prepare("PRAGMA integrity_check").get()).toEqual({ integrity_check: "ok" });
@@ -86,7 +86,7 @@ describe("messaging allowed roles migration", () => {
       if (version < 43) migrateUpTo(db, 43);
       if (version < 25) seedConnection(db);
       const before = contents(db);
-      migrateWhiloDatabase(db);
+      migrateOpenBotDatabase(db);
       expect(contents(db)).toEqual({
         ...before,
         projection_messaging_allowed_roles: [],
@@ -104,6 +104,11 @@ describe("messaging allowed roles migration", () => {
         workflow_versions: [],
         workflow_webhook_receipts: [],
         workflows: [],
+        projection_messaging_allowed_senders: [],
+        projection_deleted_thread_messages: [],
+        browser_proxies: [],
+        browser_profile_proxies: [],
+        agent_usage_skill_loads: [],
       });
       expectHealthy(db);
     },
@@ -115,13 +120,13 @@ describe("messaging allowed roles migration", () => {
     const before = contents(db);
     db.exec(`CREATE TEMP TRIGGER fail_marker BEFORE INSERT ON schema_migrations WHEN new.version=44
       BEGIN SELECT RAISE(ABORT, 'late failure'); END;`);
-    expect(() => migrateWhiloDatabase(db)).toThrow("migration to version 44 failed");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("migration to version 44 failed");
     expect(contents(db)).toEqual(before);
     expect(roleTables(db)).toEqual([]);
     expect(db.prepare("SELECT version FROM schema_migrations WHERE version=44").all()).toEqual([]);
     expect(db.prepare("PRAGMA foreign_keys").get()).toEqual({ foreign_keys: 1 });
     db.exec("DROP TRIGGER fail_marker");
-    migrateWhiloDatabase(db);
+    migrateOpenBotDatabase(db);
     expect(contents(db)).toEqual({
       ...before,
       projection_messaging_allowed_roles: [],
@@ -139,6 +144,11 @@ describe("messaging allowed roles migration", () => {
       workflow_versions: [],
       workflow_webhook_receipts: [],
       workflows: [],
+      projection_messaging_allowed_senders: [],
+      projection_deleted_thread_messages: [],
+      browser_proxies: [],
+      browser_profile_proxies: [],
+      agent_usage_skill_loads: [],
     });
     expectHealthy(db);
   });
@@ -147,10 +157,10 @@ describe("messaging allowed roles migration", () => {
     const db = databaseAt(43);
     seed(db, 43);
     const before = contents(db);
-    db.exec("INSERT INTO schema_migrations VALUES(51,'now')");
-    expect(() => migrateWhiloDatabase(db)).toThrow("newer than this application supports");
-    db.exec("DELETE FROM schema_migrations WHERE version=51; DELETE FROM schema_migrations WHERE version=20");
-    expect(() => migrateWhiloDatabase(db)).toThrow("missing version 20");
+    db.exec("INSERT INTO schema_migrations VALUES(59,'now')");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("newer than this application supports");
+    db.exec("DELETE FROM schema_migrations WHERE version=59; DELETE FROM schema_migrations WHERE version=20");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("missing version 20");
     expect(contents(db)).toEqual(before);
     expect(roleTables(db)).toEqual([]);
   });
@@ -158,7 +168,7 @@ describe("messaging allowed roles migration", () => {
   it("refuses a role of no connection, and keeps a connection that has roles", () => {
     const db = databaseAt(43);
     seed(db, 43);
-    migrateWhiloDatabase(db);
+    migrateOpenBotDatabase(db);
     const insert = db.prepare(`INSERT INTO projection_messaging_allowed_roles
       (connection_id, role_id, role_name, created_at) VALUES (?, '400', 'Maintainers', '2026-01-03')`);
     expect(() => insert.run("connection-unknown")).toThrow("FOREIGN KEY constraint failed");

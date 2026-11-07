@@ -1,10 +1,10 @@
 import {
+  type ConnectorMessagingPlatform,
   MESSAGING_LIMITS,
   type MessagingConnection,
   type MessagingOverview,
-  type MessagingPlatform,
-} from "@whilo/contracts/ipc";
-import type { MessagingConnectorPage as HostPage } from "@whilo/team-client/team-admin-requests";
+} from "@openbot/contracts/ipc";
+import type { MessagingConnectorPage as HostPage } from "@openbot/team-client/team-admin-requests";
 import type { UseQueryResult } from "@tanstack/react-query";
 import { openAuthSessionAsync } from "expo-web-browser";
 import { Typography } from "heroui-native";
@@ -56,7 +56,7 @@ const AVATAR_SIZE = 32;
 /** What to do about a stopped connection, or null for a state that shows the connection's description. */
 function connectionHelp(
   { t }: MobileText,
-  platform: MessagingPlatform,
+  platform: ConnectorMessagingPlatform,
   state: MessagingConnection["state"],
   host: string,
 ): string | null {
@@ -95,18 +95,18 @@ function connectionHelp(
   }
 }
 
-function isWorkspacePlatform(platform: MessagingPlatform): platform is WorkspacePlatform {
+function isWorkspacePlatform(platform: ConnectorMessagingPlatform): platform is WorkspacePlatform {
   return platform !== "telegram";
 }
 
 /**
  * Opens the platform's page that the host named. A Slack or Discord install returns to an
- * `whilo://` link with a grant that is sealed to the host; the browser session gives it back here,
+ * `openbot://` link with a grant that is sealed to the host; the browser session gives it back here,
  * and the phone sends it on. A Telegram link opens Telegram, and the chat shows when it is linked.
  * Resolves false when the user closed the browser.
  */
 async function openHostPage(
-  platform: MessagingPlatform,
+  platform: ConnectorMessagingPlatform,
   page: HostPage,
   /** Resolves false when the host refused the grant, such as after its install key expired. */
   complete: (grant: { nonce: string; grant: string }) => Promise<boolean>,
@@ -129,9 +129,9 @@ async function openHostPage(
 }
 
 /**
- * Server settings › Connectors › Slack, Discord or Telegram of a joined server. A Slack workspace or a
- * Discord server installs the one Whilo app, and its orchestrator agent receives every request.
- * Every Telegram chat adds the one Whilo bot and shares one orchestrator. No token reaches the phone.
+ * Marketplace › Apps › Slack, Discord or Telegram of a joined server. A Slack workspace or a
+ * Discord server installs the one OpenBot app, and its orchestrator agent receives every request.
+ * Every Telegram chat adds the one OpenBot bot and shares one orchestrator. No token reaches the phone.
  */
 export function MessagingConnectorPage({
   server,
@@ -140,7 +140,7 @@ export function MessagingConnectorPage({
   agents,
 }: {
   server: MobileServer;
-  platform: MessagingPlatform;
+  platform: ConnectorMessagingPlatform;
   query: UseQueryResult<MessagingOverview>;
   agents: readonly MobileAgent[];
 }) {
@@ -397,6 +397,7 @@ export function MessagingConnectorPage({
                   agentId={agent.id}
                   serverId={agent.serverId}
                   hue={agent.avatarHue}
+                  color={agent.avatarColor}
                   seed={agent.avatarSeed}
                   size={AVATAR_SIZE}
                 />

@@ -5,19 +5,24 @@ export const messages = {
   "error.messaging.notConnected": "Dieser Slack-Arbeitsbereich ist nicht verbunden.",
   "error.messaging.unsupported": "Dieser Computer kann keine Verbindung zu Slack herstellen.",
   "error.messaging.relayUnavailable":
-    "Whilo kann auf diesem Computer keine Slack-Ereignisse empfangen. Melde dich an, gib diesem Computer einen Namen und versuche es erneut.",
+    "OpenBot kann auf diesem Computer keine Slack-Ereignisse empfangen. Melde dich an, gib diesem Computer einen Namen und versuche es erneut.",
   "error.messaging.discordNotConnected": "Dieser Discord-Server ist nicht verbunden.",
   "error.messaging.discordUnsupported": "Dieser Computer kann keine Verbindung zu Discord herstellen.",
   "error.messaging.discordRelayUnavailable":
-    "Whilo kann auf diesem Computer keine Discord-Ereignisse empfangen. Melde dich an, gib diesem Computer einen Namen und versuche es erneut.",
+    "OpenBot kann auf diesem Computer keine Discord-Ereignisse empfangen. Melde dich an, gib diesem Computer einen Namen und versuche es erneut.",
   "error.messaging.discordRolesUnsupported":
-    "Whilo kann die Discord-Rollen noch nicht auflisten. Versuche es später noch einmal.",
+    "OpenBot kann die Discord-Rollen noch nicht auflisten. Versuche es später noch einmal.",
   "error.messaging.telegramNotConnected": "Dieser Telegram-Chat ist nicht verbunden.",
   "error.messaging.telegramUnsupported": "Dieser Computer kann keine Verbindung zu Telegram herstellen.",
   "error.messaging.telegramRelayUnavailable":
-    "Whilo kann Telegram auf diesem Computer nicht erreichen. Melde dich an, gib diesem Computer einen Namen und versuche es erneut.",
+    "OpenBot kann Telegram auf diesem Computer nicht erreichen. Melde dich an, gib diesem Computer einen Namen und versuche es erneut.",
   "error.messaging.telegramServiceUnavailable":
-    "Whilo kann Telegram gerade nicht verbinden. Versuche es später erneut.",
+    "OpenBot kann Telegram gerade nicht verbinden. Versuche es später erneut.",
+  "error.messaging.whatsappNotConnected": "Diese WhatsApp-Nummer ist nicht verbunden.",
+  "error.messaging.whatsappUnsupported": "Dieser Computer kann keine Verbindung zu WhatsApp herstellen.",
+  "error.messaging.whatsappTooManySenders": "Eine WhatsApp-Nummer kann bis zu 200 Kontakte und Gruppen zulassen.",
+  "error.messaging.whatsappRequestEnded":
+    "Diese Anfrage ist beendet. Bitte die Person, erneut zu schreiben, um einen neuen Code zu bekommen.",
   "error.messaging.memoryLimit":
     "Ein verbundener Arbeitsbereich kann bis zu {limit} Erinnerungen haben. Lösche zuerst eine.",
 } as const satisfies PartialTranslation<typeof source>;

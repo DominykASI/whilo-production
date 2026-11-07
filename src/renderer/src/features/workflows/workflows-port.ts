@@ -1,10 +1,15 @@
 import {
   type AgentAccessLevels,
   MESSAGING_LIMITS,
-  type WhiloDesktopApi,
+  type OpenBotDesktopApi,
   type ServerSummary,
-} from "@whilo/contracts/ipc";
-import type { WorkflowDiscordServer, WorkflowPlace } from "@whilo/ui/features/workflows/workflow-model";
+} from "@openbot/contracts/ipc";
+import type {
+  WorkflowDiscordServer,
+  WorkflowPlace,
+  WorkflowSlackWorkspace,
+  WorkflowTelegramChat,
+} from "@openbot/ui/features/workflows/workflow-model";
 import {
   type GitHubConnectorPort,
   githubConnectorPort,
@@ -12,7 +17,7 @@ import {
 } from "../connectors/github-connector-port";
 import { serverRoleCanAdminister, serverSupportsCapability } from "../servers/server-capabilities";
 
-type WorkflowsApi = WhiloDesktopApi["workflows"];
+type WorkflowsApi = OpenBotDesktopApi["workflows"];
 /** The methods that take only the server. */
 type NoInputMethod = "list" | "githubCatalog";
 /** Each method with its input only; `list` and `githubCatalog` take none. */
@@ -32,13 +37,18 @@ export interface WorkflowHost {
   workflows: BoundWorkflowsApi;
   /**
    * Calls `changed` with the workflow that changed, or null when all can be stale: the server came
-   * back, or the agent levels changed.
+   * back, or the agent levels changed. `agentId`: the agent whose tool call made or saved the
+   * workflow. Only this computer names it; a joined server does not.
    */
-  onChanged(changed: (workflowId: string | null) => void): () => void;
+  onChanged(changed: (workflowId: string | null, agentId?: string) => void): () => void;
   /** Only this computer keeps messaging places; a joined server gives none. */
   places(): Promise<WorkflowPlace[]>;
   /** Only this computer runs Discord triggers and outputs; a joined server gives none. */
   discordServers(): Promise<WorkflowDiscordServer[]>;
+  /** Only this computer runs Telegram triggers and outputs; a joined server gives none. */
+  telegramChats(): Promise<WorkflowTelegramChat[]>;
+  /** Only this computer runs Slack triggers and outputs; a joined server gives none. */
+  slackWorkspaces(): Promise<WorkflowSlackWorkspace[]>;
   /** The level of this account on each agent that it sees, or null when it manages all of them. */
   agentLevels(): Promise<AgentAccessLevels | null>;
   /**
@@ -55,11 +65,11 @@ export interface WorkflowHost {
 }
 
 /**
- * The desktop adapter for one server. `window.whilo` and `server` are read on each call: tests and
+ * The desktop adapter for one server. `window.openbot` and `server` are read on each call: tests and
  * stories replace them per case, and a role can change.
  */
 export function desktopWorkflowHost(serverId: string, server: () => ServerSummary | undefined): WorkflowHost {
-  const api = () => window.whilo.workflows;
+  const api = () => window.openbot.workflows;
   /** A server that has not loaded yet is this computer, as the page reads it. */
   const local = () => server()?.kind !== "remote";
   const githubSupported = () => serverSupportsCapability(server(), "workflows-github-v1");
@@ -91,12 +101,12 @@ export function desktopWorkflowHost(serverId: string, server: () => ServerSummar
       githubRunLastEvent: (input) => api().githubRunLastEvent(input, serverId),
     },
     onChanged(changed) {
-      const unsubscribe = window.whilo.agent.onScopedEvent((scoped) => {
+      const unsubscribe = window.openbot.agent.onScopedEvent((scoped) => {
         if (scoped.serverId !== serverId) return;
-        if (scoped.event.type === "workflows-changed") changed(scoped.event.workflowId);
+        if (scoped.event.type === "workflows-changed") changed(scoped.event.workflowId, scoped.event.agentId);
         else if (scoped.event.type === "agent-access-changed") changed(null);
       });
-      const reconnect = window.whilo.servers.onEvent((servers) => {
+      const reconnect = window.openbot.servers.onEvent((servers) => {
         if (servers.some((server) => server.id === serverId && server.state === "online")) changed(null);
       });
       return () => {
@@ -106,7 +116,7 @@ export function desktopWorkflowHost(serverId: string, server: () => ServerSummar
     },
     async places() {
       if (!local()) return [];
-      const connections = await window.whilo.routineResults.options();
+      const connections = await window.openbot.routineResults.options();
       return connections.flatMap((connection) =>
         connection.places.map((place) => ({
           connectionId: connection.connectionId,
@@ -118,8 +128,8 @@ export function desktopWorkflowHost(serverId: string, server: () => ServerSummar
     async discordServers() {
       if (!local()) return [];
       const [options, overview] = await Promise.all([
-        window.whilo.routineResults.options(),
-        window.whilo.messaging.getDiscordOverview(),
+        window.openbot.routineResults.options(),
+        window.openbot.messaging.getDiscordOverview(),
       ]);
       const discord = options.filter((option) => option.platform === "discord");
       return Promise.all(
@@ -130,7 +140,7 @@ export function desktopWorkflowHost(serverId: string, server: () => ServerSummar
           );
           const guild = guilds.length === 1 ? guilds[0] : undefined;
           const roles = guild
-            ? await window.whilo.messaging.listDiscordRoles({ workspaceId: guild.workspaceId }).then(
+            ? await window.openbot.messaging.listDiscordRoles({ workspaceId: guild.workspaceId }).then(
                 (list) => list.roles,
                 () => [],
               )
@@ -145,15 +155,34 @@ export function desktopWorkflowHost(serverId: string, server: () => ServerSummar
         }),
       );
     },
+    async telegramChats() {
+      if (!local()) return [];
+      const options = await window.openbot.routineResults.options();
+      return options
+        .filter((option) => option.platform === "telegram")
+        .map((option) => ({ connectionId: option.connectionId, name: option.connectionName }));
+    },
+    async slackWorkspaces() {
+      if (!local()) return [];
+      const options = await window.openbot.routineResults.options();
+      return options
+        .filter((option) => option.platform === "slack")
+        .map((option) => ({
+          connectionId: option.connectionId,
+          name: option.connectionName,
+          // The rows show their own "#" icon.
+          channels: option.places.map((place) => ({ id: place.id, name: place.name.replace(/^#/u, "") })),
+        }));
+    },
     async agentLevels() {
       if (local() || serverRoleCanAdminister(server())) return null;
-      return (await window.whilo.hostAdmin.getAgentAccess(serverId)).mine;
+      return (await window.openbot.hostAdmin.getAgentAccess(serverId)).mine;
     },
     githubSupported,
     get githubConnector() {
       return local() ? githubConnectorPort() : hostGitHub;
     },
     hostName: () => (local() ? undefined : server()?.name),
-    openUrl: (url) => window.whilo.openUrl(url),
+    openUrl: (url) => window.openbot.openUrl(url),
   };
 }

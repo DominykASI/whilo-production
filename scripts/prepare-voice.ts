@@ -3,11 +3,11 @@ import { createHash } from "node:crypto";
 import { copyFileSync, createReadStream, existsSync, readFileSync, writeFileSync } from "node:fs";
 import { mkdir, mkdtemp, readdir, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
-import { createWhiloLogger } from "@whilo/logging";
-import { PARAKEET_MODEL_FILES, VOICE_RUNTIME_ADDON } from "../src/main/voice-model-service";
+import { createOpenBotLogger } from "@openbot/logging";
+import { PARAKEET_MODEL_FILES, VOICE_RUNTIME_ADDON, VOICE_SESSION_CONFIGS } from "../src/main/voice-model-service";
 import { elfSearchPaths, ORIGIN_SEARCH_PATH } from "./elf-search-paths";
 
-const logger = createWhiloLogger("prepare-voice");
+const logger = createOpenBotLogger("prepare-voice");
 
 const SHERPA_ONNX_VERSION = "1.13.8";
 
@@ -49,7 +49,7 @@ const RUNTIME_PACKAGES: Readonly<Record<string, RuntimePackage>> = {
   },
 };
 
-const buildRoot = resolve(".whilo-build/voice");
+const buildRoot = resolve(".openbot-build/voice");
 const runtimeRoot = join(buildRoot, "runtime");
 const modelRoot = join(buildRoot, "model");
 // Beside the runtime, not in it: electron-builder copies the whole runtime directory.
@@ -66,6 +66,7 @@ if (!runtimePackage) {
 
 requireCommand("tar", ["--version"]);
 await prepareRuntime(runtimePackage);
+await writeSessionConfigs();
 if (!runtimeOnly) await prepareModel();
 logger.info(`Prepared voice assets in ${buildRoot}`);
 
@@ -103,6 +104,16 @@ async function prepareRuntime(runtime: RuntimePackage): Promise<void> {
   } finally {
     await rm(workRoot, { recursive: true, force: true });
   }
+}
+
+/**
+ * The ONNX Runtime session settings files that the voice hosts read. They are written on every run,
+ * so a runtime that an earlier run prepared gets the current settings.
+ */
+async function writeSessionConfigs(): Promise<void> {
+  await Promise.all(
+    Object.entries(VOICE_SESSION_CONFIGS).map(([name, content]) => writeFile(join(runtimeRoot, name), content)),
+  );
 }
 
 async function prepareModel(): Promise<void> {

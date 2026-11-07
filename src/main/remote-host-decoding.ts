@@ -1,4 +1,4 @@
-import { decodeHostReleaseStatus, type HostReleaseStatus } from "@whilo/contracts/ipc";
+import { decodeHostReleaseStatus, type HostReleaseStatus } from "@openbot/contracts/ipc";
 // What the Team API client will accept from a remote host. `packages/contracts/src/ipc-decoding.ts`
 // supplies the primitives; this family says which shapes survive them.
 //
@@ -17,7 +17,8 @@ import { decodeHostReleaseStatus, type HostReleaseStatus } from "@whilo/contract
 // already checks; the two consequences worth naming (a host older than 63b55606 omitting `avatarUrl`,
 // a browser preview that is not a bounded JPEG data URL) are covered where they are reached.
 
-import { emptyDecoder } from "@whilo/contracts/ipc-decoding";
+import { emptyDecoder } from "@openbot/contracts/ipc-decoding";
+import { isDynamicRecord } from "@openbot/contracts/runtime-values";
 
 export type ResponseDecoder<T> = (value: unknown) => T;
 
@@ -25,6 +26,9 @@ export const decodeVoid = emptyDecoder("The remote server returned data.");
 
 /** Discards the reply of a route whose team-protocol codec has already checked it. */
 export const acceptEmpty = (): undefined => undefined;
+
+/** Whether the host notifies a phone of the member. The `computer-activity-v1` codec has already checked the reply. */
+export const decodeComputerActivityReply = (value: unknown): boolean => isDynamicRecord(value) && value.phones === true;
 
 /** The web client uses the same remote boundary; the preload has its own decoder. */
 export function decodeHostReleaseStatusFromHost(value: unknown): HostReleaseStatus {

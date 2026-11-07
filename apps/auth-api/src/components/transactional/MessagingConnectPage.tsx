@@ -1,6 +1,9 @@
-import { AppLogo } from "@whilo/brand";
-import type { WebMessagingInstallPlatform } from "@whilo/contracts/web-messaging-install";
-import { DiscordMark, SlackMark } from "@whilo/ui/features/settings/brand-marks";
+import { AppLogo } from "@openbot/brand";
+import {
+  WEB_MESSAGING_INSTALL_KEY_PREFIX,
+  type WebMessagingInstallPlatform,
+} from "@openbot/contracts/web-messaging-install";
+import { DiscordMark, SlackMark } from "@openbot/ui/features/settings/brand-marks";
 import type { JSX } from "@solidjs/web";
 import { createSignal, onSettled, Show } from "solid-js";
 import { handOffToWebClient } from "../landing/web-messaging-handoff";
@@ -23,7 +26,7 @@ export type FailureKind =
 interface MessagingProvider {
   /** The provider's logo, from the shared integration settings. */
   mark: () => JSX.Element;
-  /** The `whilo://` host that takes the sealed grant. `src/main/deep-link-router.ts` owns these. */
+  /** The `openbot://` host that takes the sealed grant. `src/main/deep-link-router.ts` owns these. */
   deepLinkHost: string;
   /** The page's own code when the fragment has no grant and no error. */
   failedCode: string;
@@ -74,7 +77,7 @@ const MESSAGING_PROVIDERS: Record<WebMessagingInstallPlatform, MessagingProvider
  * nonce and the server's public key. So this page cannot start it again. "Try again" brings the
  * visitor back to the app or to the browser client, where the connect button is.
  */
-const APP_URL = "whilo://";
+const APP_URL = "openbot://";
 const WEB_CLIENT_URL = "/app";
 
 /** The code comes from the address bar, so only the map's own keys count, not `constructor` and others. */
@@ -85,13 +88,28 @@ function failureKind(provider: MessagingProvider, code: string): FailureKind {
 function deepLink(provider: MessagingProvider, fragment: URLSearchParams): string | null {
   const nonce = fragment.get("nonce");
   const grant = fragment.get("grant");
-  return nonce && grant ? `whilo://${provider.deepLinkHost}?${new URLSearchParams({ nonce, grant })}` : null;
+  return nonce && grant ? `openbot://${provider.deepLinkHost}?${new URLSearchParams({ nonce, grant })}` : null;
+}
+
+/**
+ * Puts the `openbot://` link on the "Open OpenBot" button while the page loads, before the site
+ * bundle runs. When a blocked or failed script stops the bundle, the visitor can still return the
+ * grant to the app. It builds the same link as `deepLink`, and it skips an install that a browser
+ * client tab started, as `handOffToWebClient` does. It only sets the link: the bundle opens the app.
+ * Hydration keeps the server's attributes, so the bundle does not undo it.
+ */
+function openLinkScript(actionsId: string, platform: WebMessagingInstallPlatform, provider: MessagingProvider): string {
+  const id = JSON.stringify(actionsId);
+  const host = JSON.stringify(`openbot://${provider.deepLinkHost}?`);
+  const prefix = JSON.stringify(WEB_MESSAGING_INSTALL_KEY_PREFIX);
+  // The mark test is `decodeWebMessagingInstallMark`: this platform, and not expired.
+  return `(()=>{const f=new URLSearchParams(location.hash.slice(1)),n=f.get("nonce"),g=f.get("grant"),e=document.getElementById(${id}),a=e&&e.querySelector("a");if(!a||!n||!g)return;try{const m=JSON.parse(localStorage.getItem(${prefix}+n));if(m&&m.platform===${JSON.stringify(platform)}&&m.expiresAt>Date.now())return}catch{}a.href=${host}+new URLSearchParams({nonce:n,grant:g});e.hidden=false})()`;
 }
 
 /**
  * The page that returns a Slack or Discord install to the desktop app, or to the browser client tab
  * that started it. The install callback redirects here with a sealed grant, or an error code, in the
- * fragment. The page only builds the `whilo://` link or passes the grant on: only the server can
+ * fragment. The page only builds the `openbot://` link or passes the grant on: only the server can
  * open the grant.
  */
 export function MessagingConnectPage(props: {
@@ -136,7 +154,7 @@ export function MessagingConnectPage(props: {
   );
 }
 
-/** The page's card: the link back to Whilo, or why the install did not finish and how to try again. */
+/** The page's card: the link back to OpenBot, or why the install did not finish and how to try again. */
 export function MessagingConnectView(props: {
   provider: WebMessagingInstallPlatform;
   /** The language of `text`. */
@@ -150,6 +168,7 @@ export function MessagingConnectView(props: {
   const kind = () => (props.failure ? failureKind(provider(), props.failure) : null);
   const fallback = createOpenAppFallback();
   const titleId = () => `${props.provider}-connect-title`;
+  const actionsId = () => `${props.provider}-connect-open`;
 
   return (
     <TransactionalPage titleId={titleId()} lang={props.lang}>
@@ -164,15 +183,14 @@ export function MessagingConnectView(props: {
           <>
             <h1 id={titleId()}>{props.text.title}</h1>
             <p class="join-card-copy">{props.webClient ? props.text.doneInWebClient : props.text.doneInApp}</p>
-            <Show when={props.openUrl}>
-              {(href) => (
-                <div class="join-card-actions join-card-actions-single">
-                  <Button href={href()} variant="primary" size="lg" icon="open" onClick={fallback.arm}>
-                    {props.text.openApp}
-                  </Button>
-                </div>
-              )}
-            </Show>
+            {/* The server renders the button hidden, so the script below can show it without the bundle.
+                The default link makes it a link, not a button, when it hydrates. */}
+            <div id={actionsId()} class="join-card-actions join-card-actions-single" hidden={!props.openUrl}>
+              <Button href={props.openUrl || APP_URL} variant="primary" size="lg" icon="open" onClick={fallback.arm}>
+                {props.text.openApp}
+              </Button>
+            </div>
+            <script innerHTML={openLinkScript(actionsId(), props.provider, provider())} />
           </>
         }
       >

@@ -1,6 +1,6 @@
-import type { AccountSession, AvatarImageInput } from "@whilo/contracts/ipc";
-import { isBoolean, isDynamicRecord, isNumber, isString } from "@whilo/contracts/runtime-values";
-import { currentText } from "@whilo/ui/text";
+import type { AccountSession, AvatarColor, AvatarImageInput } from "@openbot/contracts/ipc";
+import { isBoolean, isDynamicRecord, isNumber, isString } from "@openbot/contracts/runtime-values";
+import { currentText } from "@openbot/ui/text";
 
 /**
  * The desktop Settings > Profile calls for a signed-in browser. They use the
@@ -14,6 +14,8 @@ export interface WebAccountCalls {
    */
   updateAnalytics: (enabled: boolean, ageMs: number) => Promise<boolean | null>;
   updateAvatar: (image: AvatarImageInput | null) => Promise<void>;
+  /** Saves the chat color on the account. Members of each server of the user see it. */
+  setChatColor: (color: AvatarColor | null) => Promise<void>;
   listSessions: () => Promise<AccountSession[]>;
   revokeSession: (sessionId: string) => Promise<void>;
 }
@@ -39,7 +41,7 @@ export function createWebAccountCalls(
           ? {}
           : {
               "Content-Type": init.contentType ?? "application/json",
-              "X-Whilo-Browser": "1",
+              "X-OpenBot-Browser": "1",
             },
       ...(init.body === undefined ? {} : { body: init.body }),
     }).catch(() => {
@@ -67,6 +69,10 @@ export function createWebAccountCalls(
           ? { method: "PUT", body: new Uint8Array(image.bytes), contentType: image.mimeType }
           : { method: "DELETE", body: "{}" },
       );
+      await onAccountChanged();
+    },
+    async setChatColor(color) {
+      await request("v1/me/chat-color", { method: "PUT", body: JSON.stringify({ chatColor: color }) });
       await onAccountChanged();
     },
     async listSessions() {

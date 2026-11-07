@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { DatabaseSync, type SQLOutputValue } from "node:sqlite";
 import { afterEach, describe, expect, it } from "vitest";
-import { migrateWhiloDatabase } from "./whilo-database-schema";
+import { migrateOpenBotDatabase } from "./openbot-database-schema";
 
 // Failure modes: the upgrade changes or loses a row of any table; an old thread reads as a branch; a
 // failed upgrade leaves a column or the marker; a retry adds a column twice; a newer or incomplete
@@ -20,7 +20,7 @@ function databaseAt(version: number): DatabaseSync {
   db.exec(`CREATE TABLE schema_migrations(version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL);
     CREATE TEMP TRIGGER stop_at_version BEFORE INSERT ON schema_migrations WHEN new.version > ${version}
     BEGIN SELECT RAISE(ABORT, 'fixture stop'); END;`);
-  expect(() => migrateWhiloDatabase(db)).toThrow(`migration to version ${version + 1} failed`);
+  expect(() => migrateOpenBotDatabase(db)).toThrow(`migration to version ${version + 1} failed`);
   db.exec("DROP TRIGGER stop_at_version");
   return db;
 }
@@ -28,15 +28,15 @@ function databaseAt(version: number): DatabaseSync {
 /** The agent's own chat, an open thread with a message and a closed thread, in the version 47 columns. */
 function seed(db: DatabaseSync): void {
   const conversation = db.prepare("INSERT INTO projection_threads VALUES (?, 'chief', ?, NULL, ?, ?, 1)");
-  conversation.run("whilo-thread-chief", 'Chief 界"\\', "2026-10-01T07:00:00.000Z", "2026-10-01T07:00:00.000Z");
-  conversation.run("whilo-thread-open", "Billing export", "2026-10-01T08:00:00.000Z", "2026-10-01T08:00:00.000Z");
-  conversation.run("whilo-thread-closed", "Release notes", "2026-10-01T09:00:00.000Z", "2026-10-01T09:00:00.000Z");
+  conversation.run("openbot-thread-chief", 'Chief 界"\\', "2026-10-01T07:00:00.000Z", "2026-10-01T07:00:00.000Z");
+  conversation.run("openbot-thread-open", "Billing export", "2026-10-01T08:00:00.000Z", "2026-10-01T08:00:00.000Z");
+  conversation.run("openbot-thread-closed", "Release notes", "2026-10-01T09:00:00.000Z", "2026-10-01T09:00:00.000Z");
   db.exec(`INSERT INTO projection_agent_threads
     (thread_id, agent_id, legacy_task_id, origin, title, title_source, outcome, error, created_at, updated_at,
      archived_at, last_event_sequence)
-    VALUES ('whilo-thread-open', 'chief', NULL, 'user', 'Billing export 界"\\', 'user', NULL, NULL,
+    VALUES ('openbot-thread-open', 'chief', NULL, 'user', 'Billing export 界"\\', 'user', NULL, NULL,
         '2026-10-01T08:00:00.000Z', '2026-10-02T08:00:00.000Z', NULL, 4),
-      ('whilo-thread-closed', 'chief', 'agent-task-closed', 'agent', 'Release notes', 'agent', 'failed',
+      ('openbot-thread-closed', 'chief', 'agent-task-closed', 'agent', 'Release notes', 'agent', 'failed',
         'Provider said no', '2026-10-01T09:00:00.000Z', '2026-10-02T09:00:00.000Z', '2026-10-03T09:00:00.000Z', 7)`);
 }
 
@@ -62,11 +62,19 @@ function withBranchLink(
     workflow_github_actions: [],
     workflow_github_deliveries: [],
     workflow_github_runs: [],
+    // Migration 51 adds the WhatsApp allowed senders table, empty.
+    projection_messaging_allowed_senders: [],
+    projection_deleted_thread_messages: [],
+    browser_proxies: [],
+    browser_profile_proxies: [],
+    agent_usage_skill_loads: [],
     projection_agent_threads: (before.projection_agent_threads ?? []).map((row) => ({
       ...row,
       branch_source_thread_id: null,
       branch_source_message_id: null,
       branch_through_message_id: null,
+      // Migration 54 adds the routine link, null for every old thread.
+      routine_id: null,
     })),
   };
 }
@@ -79,7 +87,7 @@ function threadColumns(db: DatabaseSync): string[] {
 }
 
 function expectHealthy(db: DatabaseSync): void {
-  expect(db.prepare("SELECT MAX(version) AS version FROM schema_migrations").get()).toEqual({ version: 50 });
+  expect(db.prepare("SELECT MAX(version) AS version FROM schema_migrations").get()).toEqual({ version: 58 });
   expect(db.prepare("PRAGMA foreign_keys").get()).toEqual({ foreign_keys: 1 });
   expect(db.prepare("PRAGMA foreign_key_check").all()).toEqual([]);
   expect(db.prepare("PRAGMA integrity_check").get()).toEqual({ integrity_check: "ok" });
@@ -90,9 +98,9 @@ describe("agent thread branch migration", () => {
     const db = databaseAt(47);
     seed(db);
     const before = contents(db);
-    migrateWhiloDatabase(db);
+    migrateOpenBotDatabase(db);
     expect(contents(db)).toEqual(withBranchLink(before));
-    expect(threadColumns(db).slice(-3)).toEqual(BRANCH_COLUMNS);
+    expect(threadColumns(db).slice(-4, -1)).toEqual(BRANCH_COLUMNS);
     expectHealthy(db);
   });
 
@@ -103,13 +111,13 @@ describe("agent thread branch migration", () => {
     const columnsBefore = threadColumns(db);
     db.exec(`CREATE TEMP TRIGGER fail_marker BEFORE INSERT ON schema_migrations WHEN new.version=48
       BEGIN SELECT RAISE(ABORT, 'late failure'); END;`);
-    expect(() => migrateWhiloDatabase(db)).toThrow("migration to version 48 failed");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("migration to version 48 failed");
     expect(contents(db)).toEqual(before);
     expect(threadColumns(db)).toEqual(columnsBefore);
     expect(db.prepare("SELECT version FROM schema_migrations WHERE version=48").all()).toEqual([]);
     expect(db.prepare("PRAGMA foreign_keys").get()).toEqual({ foreign_keys: 1 });
     db.exec("DROP TRIGGER fail_marker");
-    migrateWhiloDatabase(db);
+    migrateOpenBotDatabase(db);
     expect(contents(db)).toEqual(withBranchLink(before));
     expectHealthy(db);
   });
@@ -118,9 +126,9 @@ describe("agent thread branch migration", () => {
     const db = databaseAt(47);
     seed(db);
     db.exec("ALTER TABLE projection_agent_threads ADD COLUMN branch_source_thread_id TEXT");
-    db.exec("UPDATE projection_agent_threads SET branch_source_thread_id='whilo-thread-chief' WHERE origin='user'");
-    migrateWhiloDatabase(db);
-    expect(threadColumns(db).slice(-3)).toEqual(BRANCH_COLUMNS);
+    db.exec("UPDATE projection_agent_threads SET branch_source_thread_id='openbot-thread-chief' WHERE origin='user'");
+    migrateOpenBotDatabase(db);
+    expect(threadColumns(db).slice(-4, -1)).toEqual(BRANCH_COLUMNS);
     expect(
       db
         .prepare(
@@ -130,14 +138,14 @@ describe("agent thread branch migration", () => {
         .all(),
     ).toEqual([
       {
-        thread_id: "whilo-thread-closed",
+        thread_id: "openbot-thread-closed",
         branch_source_thread_id: null,
         branch_source_message_id: null,
         branch_through_message_id: null,
       },
       {
-        thread_id: "whilo-thread-open",
-        branch_source_thread_id: "whilo-thread-chief",
+        thread_id: "openbot-thread-open",
+        branch_source_thread_id: "openbot-thread-chief",
         branch_source_message_id: null,
         branch_through_message_id: null,
       },
@@ -150,10 +158,10 @@ describe("agent thread branch migration", () => {
     seed(db);
     const before = contents(db);
     const columnsBefore = threadColumns(db);
-    db.exec("INSERT INTO schema_migrations VALUES(51,'now')");
-    expect(() => migrateWhiloDatabase(db)).toThrow("newer than this application supports");
-    db.exec("DELETE FROM schema_migrations WHERE version=51; DELETE FROM schema_migrations WHERE version=46");
-    expect(() => migrateWhiloDatabase(db)).toThrow("missing version 46");
+    db.exec("INSERT INTO schema_migrations VALUES(59,'now')");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("newer than this application supports");
+    db.exec("DELETE FROM schema_migrations WHERE version=59; DELETE FROM schema_migrations WHERE version=46");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("missing version 46");
     expect(contents(db)).toEqual(before);
     expect(threadColumns(db)).toEqual(columnsBefore);
   });
@@ -161,24 +169,24 @@ describe("agent thread branch migration", () => {
   it("refuses to open a version 48 database in an older application", () => {
     const db = databaseAt(47);
     seed(db);
-    migrateWhiloDatabase(db);
+    migrateOpenBotDatabase(db);
     const after = contents(db);
     // An application one release older knows versions up to 47: version 48 is newer than it supports.
-    db.exec("INSERT INTO schema_migrations VALUES(51,'now')");
-    expect(() => migrateWhiloDatabase(db)).toThrow("newer than this application supports");
+    db.exec("INSERT INTO schema_migrations VALUES(59,'now')");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("newer than this application supports");
     expect(contents(db)).toEqual(after);
   });
 
   it("keeps a branch when its source thread is deleted", () => {
     const db = databaseAt(47);
     seed(db);
-    migrateWhiloDatabase(db);
-    db.exec(`UPDATE projection_agent_threads SET branch_source_thread_id='whilo-thread-closed',
+    migrateOpenBotDatabase(db);
+    db.exec(`UPDATE projection_agent_threads SET branch_source_thread_id='openbot-thread-closed',
       branch_source_message_id='message-1', branch_through_message_id='message-2'
-      WHERE thread_id='whilo-thread-open'`);
-    db.exec("DELETE FROM projection_threads WHERE thread_id='whilo-thread-closed'");
+      WHERE thread_id='openbot-thread-open'`);
+    db.exec("DELETE FROM projection_threads WHERE thread_id='openbot-thread-closed'");
     expect(db.prepare("SELECT thread_id, branch_source_thread_id FROM projection_agent_threads").all()).toEqual([
-      { thread_id: "whilo-thread-open", branch_source_thread_id: "whilo-thread-closed" },
+      { thread_id: "openbot-thread-open", branch_source_thread_id: "openbot-thread-closed" },
     ]);
     expectHealthy(db);
   });

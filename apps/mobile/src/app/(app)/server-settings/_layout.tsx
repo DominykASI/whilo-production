@@ -37,20 +37,27 @@ export default function ServerSettingsLayout() {
       <Stack.Screen name="roles" options={{ title: t("mobile.server.route.roles") }} />
       {/* The page names its role in the name field. */}
       <Stack.Screen name="role" options={{ title: t("mobile.server.route.role") }} />
+      <Stack.Screen name="audit" options={{ title: t("mobile.server.route.audit") }} />
       <Stack.Screen name="timezone" options={{ title: t("mobile.server.route.timezone") }} />
-      <Stack.Screen name="connectors" options={{ title: t("mobile.server.route.connectors") }} />
       {/* The page names its connector. */}
       <Stack.Screen name="connector" options={{ title: t("mobile.server.route.connectors") }} />
       <Stack.Screen
         name="github-repositories"
         options={{ title: t("mobile.server.connectors.github.repositoriesTitle") }}
       />
+      <Stack.Screen name="whatsapp-link" options={{ title: t("mobile.server.connectors.whatsapp.linkTitle") }} />
+      <Stack.Screen name="whatsapp-contact" options={{ title: t("mobile.server.connectors.whatsapp.contactTitle") }} />
+      <Stack.Screen name="whatsapp-group" options={{ title: t("mobile.server.connectors.whatsapp.groupTitle") }} />
       <Stack.Screen name="updates" options={{ title: t("mobile.server.route.updates") }} />
       <Stack.Screen name="storage" options={{ title: t("mobile.server.route.storage") }} />
       <Stack.Screen name="storage-files" options={{ title: t("mobile.server.route.storageFiles") }} />
       <Stack.Screen name="sites" options={{ title: t("mobile.server.route.sites") }} />
       <Stack.Screen name="providers" options={{ title: t("mobile.server.route.providers") }} />
       <Stack.Screen name="provider" options={{ title: t("mobile.server.route.provider") }} />
+      {/* The page names its provider. */}
+      <Stack.Screen name="provider-models" options={{ title: t("mobile.server.route.providerModels") }} />
+      {/* The page names its provider, or says Add account. */}
+      <Stack.Screen name="provider-sign-in" options={{ title: t("mobile.server.route.provider") }} />
       {/* The page names its account. */}
       <Stack.Screen name="provider-account" options={{ title: t("mobile.server.route.provider") }} />
       <Stack.Screen name="acp-registry" options={{ title: t("mobile.server.route.acpRegistry") }} />
@@ -74,6 +81,9 @@ export default function ServerSettingsLayout() {
       {/* The page names its profile. */}
       <Stack.Screen name="browser-profile" options={{ title: t("mobile.server.route.browserProfiles") }} />
       <Stack.Screen name="browser-profile-agents" options={{ title: t("mobile.server.browserProfiles.agentsTitle") }} />
+      <Stack.Screen name="browser-profile-proxy" options={{ title: t("mobile.server.browserProxies.menu") }} />
+      {/* The page names its proxy, or says Add proxy. */}
+      <Stack.Screen name="browser-proxy" options={{ title: t("mobile.server.browserProxies.title") }} />
     </Stack>
   );
 }

@@ -1,4 +1,4 @@
-// The `whilo-transfer.json` manifest at the root of an instance transfer file. Whilo writes it
+// The `openbot-transfer.json` manifest at the root of an instance transfer file. OpenBot writes it
 // on one computer and reads it on another, so the format is a contract between app versions: add
 // optional fields only, and a change of meaning needs a new `version`. The format is described in
 // `docs/architecture/instance-transfer.md`.
@@ -6,8 +6,8 @@
 // A file with an invalid structure is refused. One invalid agent is reported and the others are
 // still offered, and invalid settings are left out with a warning.
 
-import { isAgentProvider } from "@whilo/contracts/agent-providers";
-import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import { isAgentProvider } from "@openbot/contracts/agent-providers";
+import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
 import {
   isAgentImportKey,
   isAgentTaskLimit,
@@ -18,15 +18,16 @@ import {
   isRoutineSchedule,
   ROUTINE_LIMIT_POLICIES,
   ROUTINE_MISSED_POLICIES,
-} from "@whilo/contracts/ipc";
-import { sourceText } from "@whilo/i18n/source";
+  ROUTINE_RUN_PLACES,
+} from "@openbot/contracts/ipc";
+import { sourceText } from "@openbot/i18n/source";
 import { Result, Schema } from "effect";
 import { isUnsafeArchivePath } from "./skill-package";
 
-export const INSTANCE_TRANSFER_MANIFEST = "whilo-transfer.json";
-export const INSTANCE_TRANSFER_FORMAT = "whilo-instance-transfer";
+export const INSTANCE_TRANSFER_MANIFEST = "openbot-transfer.json";
+export const INSTANCE_TRANSFER_FORMAT = "openbot-instance-transfer";
 export const INSTANCE_TRANSFER_VERSION = 1;
-/** Where the files of `~/Whilo/Shared` are in the archive. */
+/** Where the files of `~/OpenBot/Shared` are in the archive. */
 export const SHARED_FOLDER = "shared";
 
 const text = (limit: number) => Schema.String.check(Schema.isMaxLength(limit));
@@ -45,6 +46,7 @@ const Routine = Schema.Struct({
   schedule: guarded(isRoutineSchedule),
   limitPolicy: Schema.optionalKey(Schema.Literals(ROUTINE_LIMIT_POLICIES)),
   missedPolicy: Schema.optionalKey(Schema.Literals(ROUTINE_MISSED_POLICIES)),
+  runIn: Schema.optionalKey(Schema.Literals(ROUTINE_RUN_PLACES)),
 });
 
 const Memory = Schema.Struct({
@@ -60,6 +62,17 @@ const Agent = Schema.Struct({
   description: text(INPUT_LIMITS.agentDescription),
   avatarSeed: text(128),
   avatarHue: Schema.NullOr(guarded(isAvatarHue)),
+  /**
+   * Added after version 1 shipped: the exact colour, `#rrggbb`. An older app ignores it and draws
+   * `avatarHue`, which is the nearest hue. The import drops an invalid value, so that a newer colour
+   * format cannot refuse the agent.
+   */
+  avatarColor: Schema.optionalKey(Schema.String),
+  /**
+   * Added after version 1 shipped: the chat colour, `#rrggbb`. It is not the avatar colour. An older
+   * app ignores it. The import drops an invalid value, as for `avatarColor`.
+   */
+  chatColor: Schema.optionalKey(Schema.String),
   /** An archive path inside `agents/<key>/`, checked below. */
   avatar: Schema.NullOr(text(512)),
   provider: Provider,
@@ -98,6 +111,10 @@ const Settings = Schema.Struct({
           contextWindow: Schema.optionalKey(Schema.Number),
           /** Added after `contextWindow`, with the same rules. */
           maxOutput: Schema.optionalKey(Schema.Number),
+          /** Added after `maxOutput`. The import drops a list with an unknown or repeated effort. */
+          reasoningEfforts: Schema.optionalKey(Schema.Array(Schema.String).check(Schema.isMaxLength(16))),
+          /** Added after `reasoningEfforts`. The import drops a list with an unknown or repeated kind. */
+          inputs: Schema.optionalKey(Schema.Array(Schema.String).check(Schema.isMaxLength(16))),
         }),
       ).check(Schema.isMaxLength(256)),
       /** The provider had a saved key. The key itself is never in the file. */

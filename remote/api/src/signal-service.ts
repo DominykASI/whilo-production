@@ -1,22 +1,26 @@
 import { createHash, randomBytes } from "node:crypto";
-import type { DiscordDelivery } from "@whilo/contracts/signal-protocol/discord-api";
-import { DISCORD_ROUTE_TTL_SECONDS, type DiscordRouteGuild } from "@whilo/contracts/signal-protocol/discord-route";
-import type { GitHubRouteRepository } from "@whilo/contracts/signal-protocol/github-route";
+import type { DiscordDelivery } from "@openbot/contracts/signal-protocol/discord-api";
+import { DISCORD_ROUTE_TTL_SECONDS, type DiscordRouteGuild } from "@openbot/contracts/signal-protocol/discord-route";
+import type { GitHubRouteRepository } from "@openbot/contracts/signal-protocol/github-route";
 import {
   INGRESS_QUEUE_CAPABILITY,
   type IngressRoute,
   isIngressQueueKey,
   type QueuedSignalMessage,
-} from "@whilo/contracts/signal-protocol/ingress-queue";
-import { SLACK_ROUTE_TTL_SECONDS, type SlackRouteTeam } from "@whilo/contracts/signal-protocol/slack-route";
+} from "@openbot/contracts/signal-protocol/ingress-queue";
+import { SLACK_ROUTE_TTL_SECONDS, type SlackRouteTeam } from "@openbot/contracts/signal-protocol/slack-route";
 import {
   TELEGRAM_CAPABILITY,
   TELEGRAM_ROUTE_TTL_SECONDS,
   type TelegramCallResult,
   type TelegramRouteChat,
   telegramRouteChatKey,
-} from "@whilo/contracts/signal-protocol/telegram-route";
-import { WEBHOOK_ROUTE_TTL_SECONDS, type WebhookRoute } from "@whilo/contracts/signal-protocol/webhook-route";
+} from "@openbot/contracts/signal-protocol/telegram-route";
+import {
+  WEBHOOK_ROUTE_TTL_SECONDS,
+  type WebhookRoute,
+  type WebhookSignatureFormat,
+} from "@openbot/contracts/signal-protocol/webhook-route";
 import { Context, Effect, Fiber, Layer, Result, Schema } from "effect";
 import { IngressQueue, queueRouteKey, type RouteWaker } from "./ingress-queue";
 import {
@@ -95,7 +99,7 @@ export interface RemoteTokenProvider {
 }
 
 export class SignalTokens extends Context.Service<SignalTokens, RemoteTokenProvider>()(
-  "@whilo/remote-api/SignalTokens",
+  "@openbot/remote-api/SignalTokens",
 ) {
   static layer(provider: RemoteTokenProvider) {
     return Layer.succeed(SignalTokens, provider);
@@ -130,6 +134,8 @@ interface AuthenticatedPeer {
   discordSession: string | null;
   // `ingress` only: opaque generic webhook route IDs whose requests this socket receives.
   webhookRoutes: string[];
+  // `ingress` only: the signature formats that the host checks in addition to `X-OpenBot-Signature`.
+  webhookFormats: ReadonlySet<string>;
   // `ingress` only: the GitHub repositories whose events this socket receives (`githubRepositoryKey`).
   githubRepositories: string[];
   // The TURN credentials of the last `turn-refresh`, and when Signal made them.
@@ -143,6 +149,12 @@ interface ActiveConnection {
   client: SignalSocket;
   host: SignalSocket;
 }
+
+/** Every status that Signal can answer to a generic webhook request. */
+export const WEBHOOK_ANSWER_STATUSES = [200, 202, 400, 401, 404, 413, 415, 429, 503] as const;
+export type WebhookAnswerStatus = (typeof WEBHOOK_ANSWER_STATUSES)[number];
+/** A host answer slower than this counts as slow. */
+const SLOW_WEBHOOK_WAIT_MILLISECONDS = 5_000;
 
 export interface SignalMetrics {
   acceptedConnections: number;
@@ -165,6 +177,12 @@ export interface SignalMetrics {
   discordApiFailures: number;
   webhookDeliveries: number;
   webhookDeliveriesUnavailable: number;
+  /** The answers to generic webhook requests, by HTTP status. */
+  webhookAnswers: Record<WebhookAnswerStatus, number>;
+  /** The requests that Signal passed on, and the sum of the time it waited for their answers. */
+  webhookWaits: number;
+  webhookWaitMilliseconds: number;
+  webhookSlowWaits: number;
   githubDeliveries: number;
   githubDeliveriesUnavailable: number;
   // Slack, Discord and Telegram events kept for a hosted server that starts, and sent to it later.
@@ -213,9 +231,9 @@ export interface SlackDelivery {
   retryNum: number | null;
   retryReason: string | null;
   body: Uint8Array;
-  /** The request addresses Whilo: a mention, a direct message, a thread reply or a button press. */
+  /** The request addresses OpenBot: a mention, a direct message, a thread reply or a button press. */
   wakes: boolean;
-  /** A message that does not address Whilo. */
+  /** A message that does not address OpenBot. */
   chatter: boolean;
 }
 
@@ -230,9 +248,11 @@ export interface WebhookDelivery {
   deliveryId: string;
   signature: string;
   body: Uint8Array;
+  /** Absent for an `X-OpenBot-Signature` request. */
+  format?: WebhookSignatureFormat;
 }
 
-export interface WebhookDeliveryResponse {
+interface WebhookDeliveryResponse {
   status: WebhookDeliveryStatus;
 }
 
@@ -292,6 +312,8 @@ const DEFAULT_INGRESS_DELIVERY_LIMITS: IngressDeliveryLimits = {
 };
 
 const UNAVAILABLE = { status: 503 } as const;
+/** An older host refuses the signature of this format, so the request cannot authenticate. */
+const REFUSED_FORMAT = { status: 401 } as const;
 
 const MAXIMUM_RATE_WINDOWS = 100_000;
 const RATE_WINDOW_MILLISECONDS = 60_000;
@@ -404,6 +426,10 @@ export class SignalService {
     discordApiFailures: 0,
     webhookDeliveries: 0,
     webhookDeliveriesUnavailable: 0,
+    webhookAnswers: { 200: 0, 202: 0, 400: 0, 401: 0, 404: 0, 413: 0, 415: 0, 429: 0, 503: 0 },
+    webhookWaits: 0,
+    webhookWaitMilliseconds: 0,
+    webhookSlowWaits: 0,
     githubDeliveries: 0,
     githubDeliveriesUnavailable: 0,
     queuedDeliveries: 0,
@@ -767,6 +793,21 @@ export class SignalService {
     return this.#acceptRateKey(`webhook:${key}`, Date.now());
   }
 
+  /** Counts one answer to a generic webhook request. */
+  recordWebhookAnswer(status: WebhookAnswerStatus): void {
+    this.#metrics.webhookAnswers[status] += 1;
+  }
+
+  /**
+   * Counts the time from one webhook delivery frame to the host's answer, its timeout or the sender's
+   * cancel. A request that Signal did not send to a host has no wait.
+   */
+  #recordWebhookWait(waitMilliseconds: number): void {
+    this.#metrics.webhookWaits += 1;
+    this.#metrics.webhookWaitMilliseconds += Math.max(0, Math.round(waitMilliseconds));
+    if (waitMilliseconds >= SLOW_WEBHOOK_WAIT_MILLISECONDS) this.#metrics.webhookSlowWaits += 1;
+  }
+
   recordDiscordCall(succeeded: boolean): void {
     this.#metrics.discordApiCalls += 1;
     if (!succeeded) this.#metrics.discordApiFailures += 1;
@@ -790,7 +831,7 @@ export class SignalService {
    * Passes one signed Slack request to the `ingress` socket of the workspace's host and waits for
    * its answer. It resolves 503 when no host holds the workspace, the host is too busy, or it does
    * not answer in time: Slack then sends the request again. For a hosted server that sleeps it
-   * resolves 200, and keeps the request when it addresses Whilo (`IngressQueue`). Chatter for a
+   * resolves 200, and keeps the request when it addresses OpenBot (`IngressQueue`). Chatter for a
    * host with no socket resolves 200 and is lost.
    */
   readonly deliverSlack = Effect.fn("Signal.deliverSlack")((appId: string, teamId: string, delivery: SlackDelivery) => {
@@ -845,12 +886,27 @@ export class SignalService {
     return socketId !== undefined && this.#peers.has(socketId);
   }
 
+  /** Whether the host that holds this route checks signatures of `format`. An older host does not. */
+  webhookRouteAccepts(routeId: string, format: WebhookSignatureFormat): boolean {
+    const socketId = this.#webhookRoutes.get(routeId);
+    const peer = socketId === undefined ? undefined : this.#peers.get(socketId);
+    return peer?.webhookFormats.has(format) === true;
+  }
+
   /**
    * Passes one generic webhook to the host and waits for its commit acknowledgement. It resolves 503
    * in the same cases as a Slack delivery.
    */
-  readonly deliverWebhook = Effect.fn("Signal.deliverWebhook")((routeId: string, delivery: WebhookDelivery) =>
-    this.#deliver("webhook", this.#webhookRoutes.get(routeId), delivery.body, (requestId, bodyBase64) => ({
+  readonly deliverWebhook = Effect.fn("Signal.deliverWebhook")((routeId: string, delivery: WebhookDelivery) => {
+    const socketId = this.#webhookRoutes.get(routeId);
+    // The route can move to another socket while Signal reads the body. Check the socket that gets the frame.
+    if (
+      delivery.format &&
+      socketId !== undefined &&
+      this.#peers.get(socketId)?.webhookFormats.has(delivery.format) === false
+    )
+      return Effect.succeed<WebhookDeliveryResponse>(REFUSED_FORMAT);
+    return this.#deliver("webhook", socketId, delivery.body, (requestId, bodyBase64) => ({
       type: "webhook-delivery",
       version: 1,
       requestId,
@@ -859,13 +915,14 @@ export class SignalService {
       deliveryId: delivery.deliveryId,
       signature: delivery.signature,
       bodyBase64,
+      ...(delivery.format ? { format: delivery.format } : {}),
     })).pipe(
       Effect.map(
         (result): WebhookDeliveryResponse =>
           result?.type === "webhook-delivery-result" ? { status: result.status } : UNAVAILABLE,
       ),
-    ),
-  );
+    );
+  });
 
   /**
    * The rate limit of the GitHub route: by installation for a signed event, by address for a refused
@@ -935,6 +992,7 @@ export class SignalService {
           return this.#undelivered(kind);
         }
         const requestId = randomIdentifier();
+        const sentAt = performance.now();
         return yield* Effect.callback<IngressDeliveryResult | null>((resume) => {
           const resolve = (result: IngressDeliveryResult | null) => resume(Effect.succeed(result));
           const timer = setTimeout(
@@ -953,6 +1011,7 @@ export class SignalService {
                 clearTimeout(pending.timer);
                 this.#pendingDeliveries.delete(requestId);
               }
+              if (kind === "webhook") this.#recordWebhookWait(performance.now() - sentAt);
             }),
           ),
         );
@@ -1233,7 +1292,12 @@ export class SignalService {
 
   metrics(): SignalMetrics {
     this.#pruneReplayCache();
-    return { ...this.#metrics, activeSockets: this.#sockets.size, activePeerConnections: this.#connections.size };
+    return {
+      ...this.#metrics,
+      webhookAnswers: { ...this.#metrics.webhookAnswers },
+      activeSockets: this.#sockets.size,
+      activePeerConnections: this.#connections.size,
+    };
   }
 
   readonly #authenticate = Effect.fn("Signal.authenticate")(
@@ -1403,6 +1467,7 @@ export class SignalService {
           discordGuilds: discordRoute.guilds.map((guild) => guild.id),
           discordSession: null,
           webhookRoutes: webhookRoute.routes.map((route) => route.id),
+          webhookFormats: new Set(message.peer === "ingress" ? (message.webhookFormats ?? []) : []),
           githubRepositories: githubRoute.repositories.map((repository) =>
             githubRepositoryKey(repository.installationId, repository.id),
           ),
@@ -1853,13 +1918,13 @@ function slackRouteKey(appId: string, teamId: string): string {
   return `${appId}:${teamId}`;
 }
 
-/** One Whilo bot in one chat. The production and development bots can share a chat. */
+/** One OpenBot bot in one chat. The production and development bots can share a chat. */
 function telegramRouteKey(botId: string, chatId: string): string {
   return `${botId}:${chatId}`;
 }
 
 /**
- * One repository in one installation of the Whilo GitHub App. A repository that moves to another
+ * One repository in one installation of the OpenBot GitHub App. A repository that moves to another
  * account gets another installation, so a route for the old one stops.
  */
 function githubRepositoryKey(installationId: number, repositoryId: number): string {

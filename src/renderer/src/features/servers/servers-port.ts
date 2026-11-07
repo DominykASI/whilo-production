@@ -42,12 +42,15 @@ export interface ServersPort {
   host: Pick<
     WhiloDesktopApi["host"],
     | "configure"
+    | "getRemoteControlPolicy"
     | "getStatus"
     | "onEvent"
     | "recheckScreenRecording"
     | "rotateIdentityKey"
+    | "setRemoteControlPolicy"
     | "start"
     | "stop"
+    | "stopRemoteControl"
     | "updateIdentity"
   >;
   notifications: Pick<WhiloDesktopApi["notifications"], "onOpened">;

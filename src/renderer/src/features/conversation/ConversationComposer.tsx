@@ -1,46 +1,46 @@
-import { isKnownAgentProvider, providerSteersTurns } from "@whilo/contracts/agent-providers";
-import { supportedAttachmentExtensions } from "@whilo/contracts/attachment-files";
+import { isKnownAgentProvider, providerSteersTurns } from "@openbot/contracts/agent-providers";
+import { supportedAttachmentExtensions } from "@openbot/contracts/attachment-files";
 import {
   type AccountUsageLimit,
   type AgentWait,
-  accountUsageCoversModel,
   canPreviewAttachment,
   DEFAULT_PROVIDER_ACCOUNT_ID,
   type QueueSnapshot,
-  usageQuotaForModel,
-} from "@whilo/contracts/ipc";
+} from "@openbot/contracts/ipc";
 import {
+  TEAM_ANY_FILE_ATTACHMENTS_CAPABILITY,
   TEAM_EML_ATTACHMENTS_CAPABILITY,
   TEAM_MEDIA_ATTACHMENTS_CAPABILITY,
   TEAM_MP4_ATTACHMENTS_CAPABILITY,
   TEAM_SVG_ATTACHMENTS_CAPABILITY,
   TEAM_ZIP_ATTACHMENTS_CAPABILITY,
-} from "@whilo/contracts/team-protocol/current";
-import { sourceText } from "@whilo/i18n/source";
-import { Button, Input } from "@whilo/ui";
-import { AwaitingReplies } from "@whilo/ui/features/conversation/AwaitingReplies";
-import { ComposerAddMenu } from "@whilo/ui/features/conversation/ComposerAddMenu";
-import { ComposerAttachmentRow } from "@whilo/ui/features/conversation/ComposerAttachmentRow";
-import { ComposerEditor } from "@whilo/ui/features/conversation/ComposerEditor";
-import { ComposerErrorBanner } from "@whilo/ui/features/conversation/ComposerErrorBanner";
+} from "@openbot/contracts/team-protocol/current";
+import { sourceText } from "@openbot/i18n/source";
+import { spentUsageWindow } from "@openbot/team-client/plan-limits";
+import { Button, Input } from "@openbot/ui";
+import { AwaitingReplies } from "@openbot/ui/features/conversation/AwaitingReplies";
+import { ComposerAddMenu } from "@openbot/ui/features/conversation/ComposerAddMenu";
+import { ComposerAttachmentRow } from "@openbot/ui/features/conversation/ComposerAttachmentRow";
+import { ComposerEditor } from "@openbot/ui/features/conversation/ComposerEditor";
+import { ComposerErrorBanner } from "@openbot/ui/features/conversation/ComposerErrorBanner";
 import {
   ComposerNotice,
   ComposerSignInNotice,
   ComposerUpdateNotice,
   ComposerUsageLimitNotice,
-} from "@whilo/ui/features/conversation/ComposerNotice";
-import { ComposerSendControl } from "@whilo/ui/features/conversation/ComposerSendControl";
+} from "@openbot/ui/features/conversation/ComposerNotice";
+import { ComposerReplyPreview } from "@openbot/ui/features/conversation/ComposerReplyPreview";
+import { ComposerSendControl } from "@openbot/ui/features/conversation/ComposerSendControl";
 import {
   ComposerCompactionNotice,
+  ComposerNewChatButton,
   ContextUsageMeter,
   contextUsageView,
-} from "@whilo/ui/features/conversation/ContextUsage";
-import { CloseIcon } from "@whilo/ui/features/conversation/ConversationIcons";
-import { type OpenWaitItem, OpenWaits } from "@whilo/ui/features/conversation/OpenWaits";
-import { ReplyQuote } from "@whilo/ui/features/conversation/ReplyQuote";
-import { SpeakingBar } from "@whilo/ui/features/conversation/SpeakingBar";
-import { ComposerVoiceControls } from "@whilo/ui/features/conversation/VoiceRecordingMorph";
-import { useText } from "@whilo/ui/text";
+} from "@openbot/ui/features/conversation/ContextUsage";
+import { type OpenWaitItem, OpenWaits } from "@openbot/ui/features/conversation/OpenWaits";
+import { SpeakingBar } from "@openbot/ui/features/conversation/SpeakingBar";
+import { ComposerVoiceControls } from "@openbot/ui/features/conversation/VoiceRecordingMorph";
+import { useText } from "@openbot/ui/text";
 import { createEffect, createMemo, createSignal, createStore, Loading, lazy, Show } from "solid-js";
 import { reportErrorBanner, reportNotification } from "../../error-reports";
 import { deviceSendShortcut, sendShortcutAriaKey, sendShortcutHintKey } from "../../send-shortcut-preference";
@@ -62,6 +62,10 @@ export function ConversationComposer() {
     providerUpdateRequired,
     attachmentAction,
     attachmentBusy,
+    uploadFailed,
+    currentUploads,
+    removeUpload,
+    retryUpload,
     awaitingReplies,
     dismissAwaitingReplies,
     composerFocusRequest,
@@ -86,6 +90,9 @@ export function ConversationComposer() {
     props,
     quoteRequest,
     openQuote,
+    taggableBrowserTabs,
+    taggableThreads,
+    openTaggedReference,
     queuePanelVisible,
     releaseCutAttachments,
     removeAttachment,
@@ -151,7 +158,21 @@ export function ConversationComposer() {
   const openVoiceConversation = () => (voiceConversationAvailable() ? () => openSidePanelPane("voice") : undefined);
   // A pending Save keeps its exact request for retry. Block changes until retry or cancel.
   const savePending = () => Boolean(editingDeliveryId() && editingPendingSave());
-  const composerAttachmentRow = () => rowDraftAttachments().length > 0 || currentPastePreviews().length > 0;
+  // One chip for each file of each import. Only a single-file import knows the bytes of its file.
+  const uploadFiles = createMemo(() =>
+    currentUploads().flatMap((upload) =>
+      upload.files.map((file, index) => ({
+        key: `${upload.requestId}:${index}`,
+        uploadId: upload.requestId,
+        name: file.name,
+        size: file.size,
+        sent: upload.files.length === 1 ? upload.sent : null,
+        error: upload.error,
+      })),
+    ),
+  );
+  const composerAttachmentRow = () =>
+    rowDraftAttachments().length > 0 || currentPastePreviews().length > 0 || uploadFiles().length > 0;
   // A provider start, restart or server reconnect is short. Keys typed in it must not drop, so only a
   // lasting stop locks the text. Sending still waits for the agent. Without an agent, no draft keeps the text.
   const editorLocked = () =>
@@ -186,6 +207,8 @@ export function ConversationComposer() {
     props.contextState?.agentId === props.agent?.id && props.contextState?.threadId === props.agent?.threadId
       ? props.contextState
       : undefined;
+  const newChat = () =>
+    props.agent && props.onClearAgentContext ? { agent: props.agent, start: props.onClearAgentContext } : undefined;
   const compaction = () => {
     const value = context()?.compaction;
     return value && value.id !== dismissedCompactions()[currentChatConversationKey() ?? ""] ? value : null;
@@ -227,6 +250,7 @@ export function ConversationComposer() {
     voicePhase() === "idle" &&
     agentReady() &&
     !attachmentBusy() &&
+    !uploadFailed() &&
     !submitting()
       ? steerComposer
       : undefined;
@@ -254,35 +278,20 @@ export function ConversationComposer() {
   /** A reading of another account of the same provider says nothing about the quota this agent uses. */
   const agentUsageLimit = (limit: AccountUsageLimit) =>
     limit.id === props.agent?.provider && (limit.accountId ?? DEFAULT_PROVIDER_ACCOUNT_ID) === agentAccountId();
-  /**
-   * The first plan window that is spent and has not ended yet. `usedPercent` is what the provider
-   * reports, so it can pass 100 slightly. A spent plan does not say whether paid credits remain.
-   */
+  /** The first plan window that is spent and has not ended yet. It does not say whether paid credits remain. */
   const usageExhausted = createMemo(() => {
     const provider = props.agent?.provider;
     // The usage of a provider that this build does not know has no notice.
     if (!provider || !isKnownAgentProvider(provider)) return null;
-    for (const limit of props.accountUsage?.limits ?? []) {
-      if (!agentUsageLimit(limit)) continue;
-      // A provider that names quota groups limits each group apart: only the agent's model's group
-      // can stop it, and a model that no group lists has no notice.
-      const model = props.agent?.model;
-      const quota = usageQuotaForModel(limit, model);
-      if (!quota) continue;
-      for (const window of ["primary", "secondary"] as const) {
-        const plan = quota[window];
-        if (!plan || plan.usedPercent < 100) continue;
-        if (plan.resetsAt !== null && plan.resetsAt * 1_000 <= now()) continue;
-        return {
-          provider,
-          resetsAt: plan.resetsAt,
-          // A named group is the model's own quota.
-          covers: quota !== limit || accountUsageCoversModel(provider, model),
-          key: JSON.stringify([window, plan.windowDurationMins, plan.resetsAt]),
-        };
-      }
-    }
-    return null;
+    const spent = spentUsageWindow(props.accountUsage?.limits, provider, agentAccountId(), props.agent?.model, now());
+    if (!spent) return null;
+    const { slot, window, covers } = spent;
+    return {
+      provider,
+      resetsAt: window.resetsAt,
+      covers,
+      key: JSON.stringify([slot, window.windowDurationMins, window.resetsAt]),
+    };
   });
   const usageNoticeAccount = () => {
     const status = props.agentStatus.providers?.find((provider) => provider.id === props.agent?.provider);
@@ -330,12 +339,14 @@ export function ConversationComposer() {
     const server = props.server;
     const local = server?.kind !== "remote";
     const capabilities = server?.compatibility?.capabilities ?? [];
+    // A host that takes any file gets no filter, so the picker shows every file.
+    if (local || capabilities.includes(TEAM_ANY_FILE_ATTACHMENTS_CAPABILITY)) return undefined;
     return supportedAttachmentExtensions({
-      eml: local || capabilities.includes(TEAM_EML_ATTACHMENTS_CAPABILITY),
-      media: local || capabilities.includes(TEAM_MEDIA_ATTACHMENTS_CAPABILITY),
-      zip: local || capabilities.includes(TEAM_ZIP_ATTACHMENTS_CAPABILITY),
-      mp4: local || capabilities.includes(TEAM_MP4_ATTACHMENTS_CAPABILITY),
-      svg: local || capabilities.includes(TEAM_SVG_ATTACHMENTS_CAPABILITY),
+      eml: capabilities.includes(TEAM_EML_ATTACHMENTS_CAPABILITY),
+      media: capabilities.includes(TEAM_MEDIA_ATTACHMENTS_CAPABILITY),
+      zip: capabilities.includes(TEAM_ZIP_ATTACHMENTS_CAPABILITY),
+      mp4: capabilities.includes(TEAM_MP4_ATTACHMENTS_CAPABILITY),
+      svg: capabilities.includes(TEAM_SVG_ATTACHMENTS_CAPABILITY),
     })
       .map((extension) => `.${extension}`)
       .join(",");
@@ -363,6 +374,7 @@ export function ConversationComposer() {
       title={sendTitle()}
       disabled={
         attachmentBusy() ||
+        uploadFailed() ||
         submitting() ||
         !agentReady() ||
         Boolean(providerUpdateRequired()) ||
@@ -413,6 +425,7 @@ export function ConversationComposer() {
                   onOpenAgent={props.onSelectAgent}
                   // A channel's rows are its sub-tasks, not queued replies.
                   onSteer={props.activeTurnId && !channel && steers() ? props.onSteerQueuedMessage : undefined}
+                  onStop={channel && !channel.readOnly() ? channel.stopAwaitingReply : undefined}
                 />
               </Show>
               <Show when={waitsVisible() && props.onCancelWait}>
@@ -485,27 +498,13 @@ export function ConversationComposer() {
           </Show>
           <Show when={replyTarget()}>
             {(message) => (
-              <div class="composer-reply-preview">
-                <div>
-                  <span>{t(message().author === "you" ? "composer.reply.toYou" : "composer.reply.toAgent")}</span>
-                  <ReplyQuote
-                    body={message().body || t("composer.reply.attachment")}
-                    agents={props.agents}
-                    skills={installedSkills()}
-                    attachments={message().attachments}
-                    citations={message().citations}
-                  />
-                </div>
-                <Button
-                  variant="ghost"
-                  type="button"
-                  aria-label={t("composer.reply.cancel")}
-                  disabled={voicePhase() === "transcribing"}
-                  onClick={() => updateCurrentDraft({ replyToMessageId: null })}
-                >
-                  <CloseIcon />
-                </Button>
-              </div>
+              <ComposerReplyPreview
+                message={message()}
+                agents={props.agents}
+                skills={installedSkills()}
+                disabled={voicePhase() === "transcribing"}
+                onCancel={() => updateCurrentDraft({ replyToMessageId: null })}
+              />
             )}
           </Show>
           <Show when={providerUpdateRequired()}>
@@ -631,6 +630,9 @@ export function ConversationComposer() {
           <ComposerAttachmentRow
             attachments={rowDraftAttachments()}
             pending={currentPastePreviews()}
+            uploads={uploadFiles()}
+            onRemoveUpload={removeUpload}
+            onRetryUpload={retryUpload}
             removeDisabled={voicePhase() === "transcribing" || savePending()}
             onRemove={(attachment) => removeAttachment(attachment.id)}
           />
@@ -669,6 +671,9 @@ export function ConversationComposer() {
               skillPickerRequest={skillPickerRequest()}
               quoteRequest={quoteRequest()}
               onOpenQuote={openQuote}
+              browserTabs={taggableBrowserTabs()}
+              threads={taggableThreads()}
+              onOpenTag={openTaggedReference}
               onValueChange={(text) => {
                 updateCurrentDraft({ text });
                 updateTeamTyping(text);
@@ -678,7 +683,7 @@ export function ConversationComposer() {
               sendShortcut={deviceSendShortcut(props.platform)}
               onPickerOpenChange={setPickerOpen}
               dictation={{ text: voiceLiveText(), final: voicePhase() === "transcribing" }}
-              onPasteFiles={pasteFiles}
+              onPasteFiles={(files, selection, text) => pasteFiles(files, selection, undefined, text)}
               onCopyAttachments={(clipboard, text, attachments, remaining) => {
                 const copied = copyComposerSelection(clipboard, text, attachments, props.runtime?.previewAttachment);
                 if (remaining !== undefined) releaseCutAttachments(attachments, remaining, copied);
@@ -702,7 +707,7 @@ export function ConversationComposer() {
               multiple
               hidden
               tabindex={-1}
-              data-whilo-attachment-picker={props.runtime ? undefined : "true"}
+              data-openbot-attachment-picker={props.runtime ? undefined : "true"}
               onChange={(event) => {
                 if (props.runtime?.importFiles)
                   void props.runtime.importFiles(Array.from(event.currentTarget.files ?? []));
@@ -721,17 +726,22 @@ export function ConversationComposer() {
               onVoice={openVoiceConversation()}
             />
             <div class="composer-primary-actions">
-              <Show when={contextUsageView(context())}>
+              <Show
+                when={contextUsageView(context())}
+                fallback={
+                  <Show when={newChat()}>
+                    {(action) => (
+                      <ComposerNewChatButton
+                        agent={action().agent}
+                        start={action().start}
+                        disabled={context()?.compaction?.status === "running"}
+                      />
+                    )}
+                  </Show>
+                }
+              >
                 {(usage) => (
-                  <ContextUsageMeter
-                    newChat={
-                      props.agent && props.onClearAgentContext
-                        ? { agent: props.agent, start: props.onClearAgentContext }
-                        : undefined
-                    }
-                    compact={props.onCompactAgentContext}
-                    usage={usage()}
-                  />
+                  <ContextUsageMeter newChat={newChat()} compact={props.onCompactAgentContext} usage={usage()} />
                 )}
               </Show>
               <Show when={attachmentBusy() && props.runtime?.cancelImportFiles} keyed>
@@ -784,5 +794,5 @@ function openWaitItems(waits: readonly AgentWait[], queue: QueueSnapshot | undef
 }
 
 const QueuePanel = lazy(() =>
-  import("@whilo/ui/features/conversation/QueuePanel").then((module) => ({ default: module.QueuePanel })),
+  import("@openbot/ui/features/conversation/QueuePanel").then((module) => ({ default: module.QueuePanel })),
 );

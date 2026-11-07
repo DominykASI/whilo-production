@@ -1,11 +1,11 @@
-import type { RemoteAuthEvent } from "@whilo/contracts/signal-protocol/auth-events";
+import type { RemoteAuthEvent } from "@openbot/contracts/signal-protocol/auth-events";
 import {
   DISCORD_UPLOAD_BYTES_LIMIT,
   type DiscordApiErrorBody,
   type DiscordApiErrorCode,
   type DiscordApiRequest,
-} from "@whilo/contracts/signal-protocol/discord-api";
-import { DISCORD_API_PATH } from "@whilo/contracts/signal-protocol/discord-route";
+} from "@openbot/contracts/signal-protocol/discord-api";
+import { DISCORD_API_PATH } from "@openbot/contracts/signal-protocol/discord-route";
 import {
   GITHUB_DELIVERY_BODY_BYTES_LIMIT,
   GITHUB_DELIVERY_HEADER,
@@ -15,12 +15,12 @@ import {
   GITHUB_EVENTS_PATH,
   GITHUB_SIGNATURE_HEADER,
   GITHUB_SIGNATURE_PATTERN,
-} from "@whilo/contracts/signal-protocol/github-route";
+} from "@openbot/contracts/signal-protocol/github-route";
 import {
   WEBHOOK_DELIVERY_BODY_BYTES_LIMIT,
   type WebhookDeliveryStatus,
-} from "@whilo/contracts/signal-protocol/messages";
-import { SLACK_EVENTS_PATH } from "@whilo/contracts/signal-protocol/slack-route";
+} from "@openbot/contracts/signal-protocol/messages";
+import { SLACK_EVENTS_PATH } from "@openbot/contracts/signal-protocol/slack-route";
 import {
   TELEGRAM_BOT_ID_PATTERN,
   TELEGRAM_CHAT_ID_PATTERN,
@@ -31,8 +31,11 @@ import {
   TELEGRAM_UPDATES_PATH,
   TELEGRAM_UPLOADS_PATH,
   type TelegramUploadAnswer,
-} from "@whilo/contracts/signal-protocol/telegram-route";
+} from "@openbot/contracts/signal-protocol/telegram-route";
 import {
+  STANDARD_WEBHOOK_HEADER_SETS,
+  STANDARD_WEBHOOK_SIGNATURE_PATTERN,
+  STANDARD_WEBHOOKS_FORMAT,
   WEBHOOK_DELIVERY_ID_HEADER,
   WEBHOOK_DELIVERY_ID_PATTERN,
   WEBHOOK_EVENTS_PATH,
@@ -41,7 +44,8 @@ import {
   WEBHOOK_SIGNATURE_PATTERN,
   WEBHOOK_TIMESTAMP_HEADER,
   WEBHOOK_TIMESTAMP_PATTERN,
-} from "@whilo/contracts/signal-protocol/webhook-route";
+  type WebhookSignatureFormat,
+} from "@openbot/contracts/signal-protocol/webhook-route";
 import { Effect, type ManagedRuntime, Result } from "effect";
 import { Elysia } from "elysia";
 import { z } from "zod";
@@ -49,7 +53,15 @@ import type { RemoteApiConfig } from "./config";
 import { type DiscordApi, type DiscordUpload, decodeDiscordApiRequest } from "./discord-api";
 import type { SignalEntry } from "./entry";
 import { SLACK_DELIVERY_BODY_BYTES_LIMIT, type SlackDeliveryKind } from "./protocol";
-import type { SignalService, SignalSocket, SignalTokens, SlackDeliveryResponse } from "./signal-service";
+import {
+  type SignalService,
+  type SignalSocket,
+  type SignalTokens,
+  type SlackDeliveryResponse,
+  WEBHOOK_ANSWER_STATUSES,
+  type WebhookAnswerStatus,
+  type WebhookDelivery,
+} from "./signal-service";
 import { telegramFailure } from "./telegram";
 import { verifyGitHubSignature, verifySlackSignature, verifyWebhookSignature } from "./tokens";
 import type { TurnRelays } from "./turn-relays";
@@ -77,7 +89,7 @@ const slackRequestSchema = z.object({
   team_id: z.string().optional(),
   team: z.object({ id: z.string() }).nullish(),
   authorizations: z.array(z.object({ team_id: z.string() })).optional(),
-  // Only to know whether the event addresses Whilo, when a hosted server sleeps. Not the text.
+  // Only to know whether the event addresses OpenBot, when a hosted server sleeps. Not the text.
   event: z
     .object({
       type: z.string().optional(),
@@ -91,7 +103,7 @@ const slackRequestSchema = z.object({
 });
 
 // The only parts of a Telegram update that Signal reads: the chat, the callback query, the text of a
-// message, only to find a link code, and, to know whether a message can address Whilo, the chat
+// message, only to find a link code, and, to know whether a message can address OpenBot, the chat
 // type, the entity types, and whether it replies, is in a thread, or renames or leaves the chat.
 const telegramChatSchema = z.object({ id: z.int(), type: z.string().optional().catch(undefined) });
 const telegramEntitiesSchema = z
@@ -170,22 +182,22 @@ export function createRemoteApiApp(
   discordApi: () => DiscordApi | null = () => null,
 ) {
   const app = new Elysia()
-    .get("/health/live", () => ({ service: "whilo-remote-api", status: "live", commit: config.sourceCommit }))
-    .get("/health/ready", () => ({ service: "whilo-remote-api", status: "ready" }))
+    .get("/health/live", () => ({ service: "openbot-remote-api", status: "live", commit: config.sourceCommit }))
+    .get("/health/ready", () => ({ service: "openbot-remote-api", status: "ready" }))
     // For the status page: Signal can answer while the TURN relay refuses every allocation. This is the
     // relay of `TURN_HOST`; the Signal on the machine of each other relay reports that relay. The route is
     // public, so the probe result is kept for a minute (`TurnRelays`).
     .get("/health/turn", async ({ set }) => {
       const result = await runtime.runPromise(turnRelays.localProbe.pipe(Effect.result));
-      if (Result.isSuccess(result)) return { service: "whilo-turn", status: "ready" };
+      if (Result.isSuccess(result)) return { service: "openbot-turn", status: "ready" };
       set.status = 503;
       return result.failure.reason === "full"
         ? { error: { code: "turn_full", message: "The TURN relay has no free allocation." } }
         : { error: { code: "turn_unavailable", message: "The TURN relay did not allocate a relay address." } };
     })
     .post("/internal/auth-events", async ({ request, set }) => {
-      const timestamp = request.headers.get("Whilo-Timestamp") ?? "";
-      const signature = request.headers.get("Whilo-Signature") ?? "";
+      const timestamp = request.headers.get("OpenBot-Timestamp") ?? "";
+      const signature = request.headers.get("OpenBot-Signature") ?? "";
       const bytes = await readBody(request, AUTH_EVENT_BODY_BYTES_LIMIT);
       if (!bytes) {
         set.status = 413;
@@ -212,7 +224,7 @@ export function createRemoteApiApp(
       else signal.revokeSession(event.sessionId);
       return new Response(null, { status: 204 });
     })
-    // The Whilo Slack app's one request URL, for the events and button presses of every
+    // The OpenBot Slack app's one request URL, for the events and button presses of every
     // workspace. Signal checks Slack's signature, reads only the app and workspace IDs, and passes the
     // exact body to the ingress socket of the host that the app's workspace is linked to. Nothing here stores or
     // logs the body.
@@ -273,43 +285,40 @@ export function createRemoteApiApp(
     .post(
       `${WEBHOOK_EVENTS_PATH}/:routeId`,
       async ({ request, params, server }) => {
-        if (!entry.isEntry) return webhookResponse(503);
+        const answer = (status: WebhookAnswerStatus) => {
+          signal.recordWebhookAnswer(status);
+          return webhookResponse(status);
+        };
+        if (!entry.isEntry) return answer(503);
         const routeId = params.routeId;
-        if (!WEBHOOK_ROUTE_ID_PATTERN.test(routeId)) return webhookResponse(404);
+        if (!WEBHOOK_ROUTE_ID_PATTERN.test(routeId)) return answer(404);
         const declaredLength = Number(request.headers.get("content-length") ?? "0");
         if (!Number.isFinite(declaredLength) || declaredLength > WEBHOOK_DELIVERY_BODY_BYTES_LIMIT) {
-          return webhookResponse(413);
+          return answer(413);
         }
         const mediaType = request.headers.get("content-type")?.split(";", 1)[0]?.trim().toLowerCase();
-        if (mediaType !== "application/json") return webhookResponse(415);
-        const timestamp = request.headers.get(WEBHOOK_TIMESTAMP_HEADER) ?? "";
-        const deliveryId = request.headers.get(WEBHOOK_DELIVERY_ID_HEADER) ?? "";
-        const signature = request.headers.get(WEBHOOK_SIGNATURE_HEADER) ?? "";
-        if (
-          !WEBHOOK_TIMESTAMP_PATTERN.test(timestamp) ||
-          !WEBHOOK_DELIVERY_ID_PATTERN.test(deliveryId) ||
-          !WEBHOOK_SIGNATURE_PATTERN.test(signature)
-        ) {
-          return webhookResponse(401);
-        }
-        if (!signal.holdsWebhookRoute(routeId)) return webhookResponse(503);
+        if (mediaType !== "application/json") return answer(415);
+        const signed = webhookSignedHeaders(request.headers);
+        if (!signed) return answer(401);
+        if (!signal.holdsWebhookRoute(routeId)) return answer(503);
+        // An older host refuses the signature of this format, so the request cannot authenticate.
+        if (signed.format && !signal.webhookRouteAccepts(routeId, signed.format)) return answer(401);
         const address = signalClientIp(
           server?.requestIP(request)?.address,
           request.headers.get("x-forwarded-for"),
           config.trustProxy,
         );
-        if (!signal.acceptWebhookRequest(`${routeId}:${address}`)) return webhookResponse(429);
+        if (!signal.acceptWebhookRequest(`${routeId}:${address}`)) return answer(429);
         const body = await readBounded(request, WEBHOOK_DELIVERY_BODY_BYTES_LIMIT);
-        if (!body) return webhookResponse(413);
-        const result = await runtime.runPromise(
-          signal.deliverWebhook(routeId, { timestamp, deliveryId, signature, body }),
-          { signal: request.signal },
-        );
-        return webhookResponse(result.status);
+        if (!body) return answer(413);
+        const result = await runtime.runPromise(signal.deliverWebhook(routeId, { ...signed, body }), {
+          signal: request.signal,
+        });
+        return answer(result.status);
       },
       { parse: "none" },
     )
-    // The Whilo GitHub App's one webhook URL, for the events of every installation. Signal checks
+    // The OpenBot GitHub App's one webhook URL, for the events of every installation. Signal checks
     // the App's signature, reads only the installation and repository IDs, and passes the exact body
     // to the ingress socket of every host whose GitHub route names the repository. Nothing here
     // stores or logs the body.
@@ -385,7 +394,7 @@ export function createRemoteApiApp(
       },
       { parse: "none" },
     )
-    // The webhook of each Whilo Telegram bot. Signal checks the bot's secret header, reads only the
+    // The webhook of each OpenBot Telegram bot. Signal checks the bot's secret header, reads only the
     // chat, the callback query and a link code, and passes the exact body to the ingress socket of
     // the chat's host. Nothing here stores or logs the body. A signed update is always answered 200:
     // Telegram holds back the bot's other updates while one fails. A machine that is not the entry
@@ -606,6 +615,55 @@ async function readBody(request: Request, limit: number): Promise<Uint8Array<Arr
   return readBounded(request, limit);
 }
 
+interface WebhookHeaderSet {
+  deliveryId: string;
+  timestamp: string;
+  signature: string;
+  pattern: RegExp;
+  format?: WebhookSignatureFormat;
+}
+
+// The signed header sets of a generic webhook request, in order: `X-OpenBot-*`, then Standard Webhooks.
+const WEBHOOK_HEADER_SETS: readonly WebhookHeaderSet[] = [
+  {
+    deliveryId: WEBHOOK_DELIVERY_ID_HEADER,
+    timestamp: WEBHOOK_TIMESTAMP_HEADER,
+    signature: WEBHOOK_SIGNATURE_HEADER,
+    pattern: WEBHOOK_SIGNATURE_PATTERN,
+  },
+  ...STANDARD_WEBHOOK_HEADER_SETS.map(
+    (names): WebhookHeaderSet => ({
+      ...names,
+      pattern: STANDARD_WEBHOOK_SIGNATURE_PATTERN,
+      format: STANDARD_WEBHOOKS_FORMAT,
+    }),
+  ),
+];
+
+/**
+ * The three signed header values of the first header set that the request uses. Null when that set
+ * is not complete and valid. Signal does not check the signature: the host does.
+ */
+function webhookSignedHeaders(headers: Headers): Omit<WebhookDelivery, "body"> | null {
+  for (const names of WEBHOOK_HEADER_SETS) {
+    const timestamp = headers.get(names.timestamp);
+    const deliveryId = headers.get(names.deliveryId);
+    const signature = headers.get(names.signature);
+    if (timestamp === null && deliveryId === null && signature === null) continue;
+    if (
+      timestamp === null ||
+      deliveryId === null ||
+      signature === null ||
+      !WEBHOOK_TIMESTAMP_PATTERN.test(timestamp) ||
+      !WEBHOOK_DELIVERY_ID_PATTERN.test(deliveryId) ||
+      !names.pattern.test(signature)
+    )
+      return null;
+    return { timestamp, deliveryId, signature, ...(names.format ? { format: names.format } : {}) };
+  }
+  return null;
+}
+
 function webhookResponse(status: WebhookDeliveryStatus | 415): Response {
   return new Response(null, { status, headers: { "Cache-Control": "no-store" } });
 }
@@ -713,13 +771,13 @@ function telegramUpdate(
   };
 }
 
-// Entity types that can name Whilo: `@username`, a mention of a user without a username, and a
+// Entity types that can name OpenBot: `@username`, a mention of a user without a username, and a
 // command such as `/stop@bot`. Signal reads only the type, not the text, so a mention of another
 // person also counts.
 const TELEGRAM_ADDRESSING_ENTITIES = new Set(["mention", "text_mention", "bot_command"]);
 
 /**
- * True when a message can address Whilo, so it can start a hosted server that sleeps: a direct
+ * True when a message can address OpenBot, so it can start a hosted server that sleeps: a direct
  * message, a reply, a message in a thread, a message with a mention or a command, or a rename or a
  * removal that the host must see. The bot gets every group message, and the host answers none of the
  * others.
@@ -755,53 +813,63 @@ export function prometheusMetrics(signal: SignalService, turnRelays: TurnRelays,
     // 1 while this machine is the entry, 0 while another machine is. Absent without the entry rule.
     ...(entry.enabled
       ? [
-          "# TYPE whilo_remote_signal_entry gauge",
-          `whilo_remote_signal_entry${entryLabel} ${entry.isEntry ? 1 : 0}`,
+          "# TYPE openbot_remote_signal_entry gauge",
+          `openbot_remote_signal_entry${entryLabel} ${entry.isEntry ? 1 : 0}`,
         ]
       : []),
     // 1 when the last probe of the relay allocated, 0 when it failed. A relay that has no probe yet is absent.
-    "# TYPE whilo_remote_turn_relay_available gauge",
-    ...relays.map((relay) => `whilo_remote_turn_relay_available{host="${relay.host}"} ${relay.available ? 1 : 0}`),
-    "# TYPE whilo_remote_signal_sockets gauge",
-    `whilo_remote_signal_sockets ${metrics.activeSockets}`,
-    "# TYPE whilo_remote_peer_connections gauge",
-    `whilo_remote_peer_connections ${metrics.activePeerConnections}`,
-    "# TYPE whilo_remote_signal_messages_total counter",
-    `whilo_remote_signal_messages_total ${metrics.relayedMessages}`,
-    "# TYPE whilo_remote_auth_failures_total counter",
-    `whilo_remote_auth_failures_total ${metrics.authenticationFailures}`,
-    "# TYPE whilo_remote_auth_unavailable_total counter",
-    `whilo_remote_auth_unavailable_total ${metrics.authenticationUnavailable}`,
-    "# TYPE whilo_remote_protocol_failures_total counter",
-    `whilo_remote_protocol_failures_total ${metrics.protocolFailures}`,
-    "# TYPE whilo_remote_slack_deliveries_total counter",
-    `whilo_remote_slack_deliveries_total ${metrics.slackDeliveries}`,
-    "# TYPE whilo_remote_slack_deliveries_unavailable_total counter",
-    `whilo_remote_slack_deliveries_unavailable_total ${metrics.slackDeliveriesUnavailable}`,
-    "# TYPE whilo_remote_github_deliveries_total counter",
-    `whilo_remote_github_deliveries_total ${metrics.githubDeliveries}`,
-    "# TYPE whilo_remote_github_deliveries_unavailable_total counter",
-    `whilo_remote_github_deliveries_unavailable_total ${metrics.githubDeliveriesUnavailable}`,
-    "# TYPE whilo_remote_telegram_deliveries_total counter",
-    `whilo_remote_telegram_deliveries_total ${metrics.telegramDeliveries}`,
-    "# TYPE whilo_remote_telegram_deliveries_unrouted_total counter",
-    `whilo_remote_telegram_deliveries_unrouted_total ${metrics.telegramDeliveriesUnrouted}`,
-    "# TYPE whilo_remote_telegram_calls_total counter",
-    `whilo_remote_telegram_calls_total ${metrics.telegramCalls}`,
-    "# TYPE whilo_remote_telegram_calls_refused_total counter",
-    `whilo_remote_telegram_calls_refused_total ${metrics.telegramCallsRefused}`,
-    "# TYPE whilo_remote_queued_deliveries_total counter",
-    `whilo_remote_queued_deliveries_total ${metrics.queuedDeliveries}`,
-    "# TYPE whilo_remote_queued_deliveries_flushed_total counter",
-    `whilo_remote_queued_deliveries_flushed_total ${metrics.queuedDeliveriesFlushed}`,
-    "# TYPE whilo_remote_discord_deliveries_total counter",
-    `whilo_remote_discord_deliveries_total ${metrics.discordDeliveries}`,
-    "# TYPE whilo_remote_discord_deliveries_unavailable_total counter",
-    `whilo_remote_discord_deliveries_unavailable_total ${metrics.discordDeliveriesUnavailable}`,
-    "# TYPE whilo_remote_discord_api_calls_total counter",
-    `whilo_remote_discord_api_calls_total ${metrics.discordApiCalls}`,
-    "# TYPE whilo_remote_discord_api_failures_total counter",
-    `whilo_remote_discord_api_failures_total ${metrics.discordApiFailures}`,
+    "# TYPE openbot_remote_turn_relay_available gauge",
+    ...relays.map((relay) => `openbot_remote_turn_relay_available{host="${relay.host}"} ${relay.available ? 1 : 0}`),
+    "# TYPE openbot_remote_signal_sockets gauge",
+    `openbot_remote_signal_sockets ${metrics.activeSockets}`,
+    "# TYPE openbot_remote_peer_connections gauge",
+    `openbot_remote_peer_connections ${metrics.activePeerConnections}`,
+    "# TYPE openbot_remote_signal_messages_total counter",
+    `openbot_remote_signal_messages_total ${metrics.relayedMessages}`,
+    "# TYPE openbot_remote_auth_failures_total counter",
+    `openbot_remote_auth_failures_total ${metrics.authenticationFailures}`,
+    "# TYPE openbot_remote_auth_unavailable_total counter",
+    `openbot_remote_auth_unavailable_total ${metrics.authenticationUnavailable}`,
+    "# TYPE openbot_remote_protocol_failures_total counter",
+    `openbot_remote_protocol_failures_total ${metrics.protocolFailures}`,
+    "# TYPE openbot_remote_slack_deliveries_total counter",
+    `openbot_remote_slack_deliveries_total ${metrics.slackDeliveries}`,
+    "# TYPE openbot_remote_slack_deliveries_unavailable_total counter",
+    `openbot_remote_slack_deliveries_unavailable_total ${metrics.slackDeliveriesUnavailable}`,
+    "# TYPE openbot_remote_webhook_answers_total counter",
+    ...WEBHOOK_ANSWER_STATUSES.map(
+      (status) => `openbot_remote_webhook_answers_total{status="${status}"} ${metrics.webhookAnswers[status]}`,
+    ),
+    "# TYPE openbot_remote_webhook_waits_total counter",
+    `openbot_remote_webhook_waits_total ${metrics.webhookWaits}`,
+    "# TYPE openbot_remote_webhook_wait_milliseconds_total counter",
+    `openbot_remote_webhook_wait_milliseconds_total ${metrics.webhookWaitMilliseconds}`,
+    "# TYPE openbot_remote_webhook_slow_waits_total counter",
+    `openbot_remote_webhook_slow_waits_total ${metrics.webhookSlowWaits}`,
+    "# TYPE openbot_remote_github_deliveries_total counter",
+    `openbot_remote_github_deliveries_total ${metrics.githubDeliveries}`,
+    "# TYPE openbot_remote_github_deliveries_unavailable_total counter",
+    `openbot_remote_github_deliveries_unavailable_total ${metrics.githubDeliveriesUnavailable}`,
+    "# TYPE openbot_remote_telegram_deliveries_total counter",
+    `openbot_remote_telegram_deliveries_total ${metrics.telegramDeliveries}`,
+    "# TYPE openbot_remote_telegram_deliveries_unrouted_total counter",
+    `openbot_remote_telegram_deliveries_unrouted_total ${metrics.telegramDeliveriesUnrouted}`,
+    "# TYPE openbot_remote_telegram_calls_total counter",
+    `openbot_remote_telegram_calls_total ${metrics.telegramCalls}`,
+    "# TYPE openbot_remote_telegram_calls_refused_total counter",
+    `openbot_remote_telegram_calls_refused_total ${metrics.telegramCallsRefused}`,
+    "# TYPE openbot_remote_queued_deliveries_total counter",
+    `openbot_remote_queued_deliveries_total ${metrics.queuedDeliveries}`,
+    "# TYPE openbot_remote_queued_deliveries_flushed_total counter",
+    `openbot_remote_queued_deliveries_flushed_total ${metrics.queuedDeliveriesFlushed}`,
+    "# TYPE openbot_remote_discord_deliveries_total counter",
+    `openbot_remote_discord_deliveries_total ${metrics.discordDeliveries}`,
+    "# TYPE openbot_remote_discord_deliveries_unavailable_total counter",
+    `openbot_remote_discord_deliveries_unavailable_total ${metrics.discordDeliveriesUnavailable}`,
+    "# TYPE openbot_remote_discord_api_calls_total counter",
+    `openbot_remote_discord_api_calls_total ${metrics.discordApiCalls}`,
+    "# TYPE openbot_remote_discord_api_failures_total counter",
+    `openbot_remote_discord_api_failures_total ${metrics.discordApiFailures}`,
     "",
   ].join("\n");
 }

@@ -33,7 +33,7 @@ export const messages = {
   "provider.status.checking": "確認中",
   "provider.status.off": "オフ",
   "provider.gemini.hostSignIn":
-    "Gemini を接続するには、ホストで Whilo を開き、「サーバーの設定」>「プロバイダー」で「接続」を選択してください。Google へのサインインには、そのホストのブラウザーが必要です。リモートでのサインインには対応していません。",
+    "Gemini を接続するには、ホストで OpenBot を開き、「サーバーの設定」>「プロバイダー」で「接続」を選択してください。Google へのサインインには、そのホストのブラウザーが必要です。リモートでのサインインには対応していません。",
 
   "provider.key.free": "無料",
 
@@ -50,6 +50,7 @@ export const messages = {
   "provider.action.signIn": "サインイン",
   "provider.action.apiKey": "API キー",
   "provider.action.signInWithCode": "コードでログイン",
+  "provider.action.signInMainlandChina": "{site} でログイン (中国)",
   "provider.action.pasteAddress": "アドレスを貼り付け",
   "provider.aria.download": "{name} をダウンロード",
   "provider.aria.cancel": "{name} をキャンセル",
@@ -61,12 +62,12 @@ export const messages = {
   "provider.aria.apiKey": "{name} の API キー",
   "provider.connecting.browserHint": "ブラウザーのページが開いたら、サインインを完了してください。",
   "provider.connecting.cancelFailed":
-    "Whilo は {name} のサインインをキャンセルできませんでした。もう一度お試しください。",
+    "OpenBot は {name} のサインインをキャンセルできませんでした。もう一度お試しください。",
   "provider.aria.install": "{name} をインストール",
   "provider.aria.signIn": "{name} にサインイン",
   "provider.aria.codeFallback": "コードで {name} にログイン",
   "provider.aria.moreActions": "{name} のその他の操作",
-  "provider.aria.use": "Whilo で {name} を使用",
+  "provider.aria.use": "OpenBot で {name} を使用",
   "provider.use.inUseOne":
     "{agent} が {name} を使用しています。このエージェントのモデルを変更してから、{name} をオフにしてください。",
   "provider.use.inUse": {
@@ -75,7 +76,7 @@ export const messages = {
   },
 
   "provider.codeLogin.title": "コードで {name} にログイン",
-  "provider.codeLogin.description": "スマートフォンか別のブラウザーで完了してください。Whilo はここで待機します。",
+  "provider.codeLogin.description": "スマートフォンか別のブラウザーで完了してください。OpenBot はここで待機します。",
   "provider.codeLogin.starting": "{name} からコードを取得しています…",
   "provider.codeLogin.qrLabel": "{name} のログインページの QR コード",
   "provider.codeLogin.open": "開く",
@@ -97,10 +98,12 @@ export const messages = {
     "このページは {host} のブラウザーで開いています。ここでサインインしてください。",
   "provider.codeLogin.relayStarting": "{host} で {name} のサインインを開始しています…",
   "provider.codeLogin.pageOpening": "{host} で {name} のサインインページを開いています…",
-  "provider.codeLogin.linkStep": "{name} にログインします。Whilo は自動で続行します。",
-  "provider.useApp.title": "Whilo アプリで {name} に接続",
+  "provider.codeLogin.linkStep": "{name} にログインします。OpenBot は自動で続行します。",
+  "provider.codeLogin.chatgptDeviceSetting":
+    "パソコンの ChatGPT でセキュリティ設定を開き、Codex のデバイスコードによるサインインをオンにします。仕事用アカウントでは、ワークスペースの管理者がオンにします。",
+  "provider.useApp.title": "OpenBot アプリで {name} に接続",
   "provider.useApp.description":
-    "{name} のサインインは開始したコンピューターに戻るため、ブラウザーのタブでは受け取れません。Whilo アプリで {name} に接続してください。アプリがサインインを自動で完了します。",
+    "{name} のサインインは開始したコンピューターに戻るため、ブラウザーのタブでは受け取れません。OpenBot アプリで {name} に接続してください。アプリがサインインを自動で完了します。",
   "provider.useApp.download": "アプリを入手",
 
   "provider.picker.noEndpoints": "エンドポイントはまだありません",
@@ -111,16 +114,25 @@ export const messages = {
   "provider.picker.providers": "モデルプロバイダー",
   "provider.picker.downloading": "ダウンロード中 {percent}",
   "provider.picker.unavailable": "{name} は利用できません。",
-  "provider.picker.updateToUse": "{name} を使うには Whilo を更新してください",
+  "provider.picker.updateToUse": "{name} を使うには OpenBot を更新してください",
   "provider.picker.models": "{name} のモデル",
   "provider.picker.addProvider": "プロバイダーを追加",
   "provider.picker.download": "{name} のダウンロード",
   "provider.picker.search": "モデルを検索",
   "provider.picker.noMatches": "検索に一致するモデルはありません。",
+  "provider.picker.olderModels": "以前のモデル",
+  "provider.picker.olderModelsList": "{name} の以前のモデル",
   "provider.picker.noModels": "{name} で利用できるモデルはありません。",
   "provider.picker.customEmpty":
     "OpenAI 互換のエンドポイントを追加してください。このコンピューター上のモデルサーバーでも、ベース URL とキーがあるサービスでも使えます。",
+  "provider.picker.customPending":
+    "エンドポイントのモデルはまだ読み込まれていません。プロバイダーは現在のタスクが止まったあとで読み込みます。",
   "provider.picker.defaultModelLabel": "{name}、デフォルト",
+  "provider.picker.usageLimit": "使用量の上限に達しました",
+  "provider.picker.usageLimitWindow": "{window}の上限",
+  "provider.picker.usageLimitResets": "{limit} · {time} にリセット",
+  "provider.picker.usageLimitLabel": "{name}、使用量の上限に達しました",
+  "provider.picker.usageLimitResetsLabel": "{name}、使用量の上限に達しました、{time} にリセット",
   "provider.picker.effort": "推論の強さ",
   "provider.picker.effortLabel": "エージェントの推論の強さ",
   "provider.picker.effortFixed": "{effort}（{provider} が固定）",
@@ -131,6 +143,7 @@ export const messages = {
   "provider.picker.cliReady": "{cli} 準備完了",
   "provider.status.signInRequired": "サインインが必要",
   "provider.model.free": "無料",
+  "provider.model.new": "新着",
   "provider.model.default": "デフォルト",
   "provider.effort.none": "なし",
   "provider.effort.minimal": "最小",
@@ -153,15 +166,15 @@ export const messages = {
   "provider.claudeKey.label": "Anthropic API キー",
   "provider.inceptionKey.title": "Inception API キー",
   "provider.inceptionKey.description":
-    "Mercury モデルを使うには、このコンピューターに Inception API キーを保存します。Whilo はダウンロードした Pi CLI でモデルを実行します。",
+    "Mercury モデルを使うには、このコンピューターに Inception API キーを保存します。OpenBot はダウンロードした Pi CLI でモデルを実行します。",
   "provider.inceptionKey.label": "Inception API キー",
   "provider.deepseekKey.title": "DeepSeek API キー",
   "provider.deepseekKey.description":
-    "DeepSeek モデルを使うには、このコンピューターに DeepSeek API キーを保存します。Whilo はダウンロードした Pi CLI でモデルを実行します。",
+    "DeepSeek モデルを使うには、このコンピューターに DeepSeek API キーを保存します。OpenBot はダウンロードした Pi CLI でモデルを実行します。",
   "provider.deepseekKey.label": "DeepSeek API キー",
   "provider.openrouterKey.title": "OpenRouter API キー",
   "provider.openrouterKey.description":
-    "OpenRouter のモデルを使うには、このコンピューターに OpenRouter API キーを保存します。Whilo はダウンロードした Pi CLI でモデルを実行します。",
+    "OpenRouter のモデルを使うには、このコンピューターに OpenRouter API キーを保存します。OpenBot はダウンロードした Pi CLI でモデルを実行します。",
   "provider.openrouterKey.label": "OpenRouter API キー",
 
   "provider.openCodeKey.title": "OpenCode Go にサインイン",
@@ -207,10 +220,10 @@ export const messages = {
   "provider.settings.disconnectTitle": "{name} を切断しますか？",
   "provider.settings.disconnectOthers": "{provider} を再接続するまで、ほかの {provider} アカウントは待機します。",
   "provider.settings.disconnectLocal":
-    "Whilo はこのコンピュータで {provider} からサインアウトします。ターミナルの {provider} CLI もサインアウトします。",
-  "provider.settings.disconnectHost": "Whilo はサーバーで {provider} からサインアウトします。",
+    "OpenBot はこのコンピュータで {provider} からサインアウトします。ターミナルの {provider} CLI もサインアウトします。",
+  "provider.settings.disconnectHost": "OpenBot はサーバーで {provider} からサインアウトします。",
   "provider.settings.versionInstalledByUser": "{version} · 自分でインストール",
-  "provider.settings.versionDownloaded": "{version} · Whilo がダウンロード",
+  "provider.settings.versionDownloaded": "{version} · OpenBot がダウンロード",
   "provider.settings.cache": "キャッシュ",
   "provider.settings.promptCache": "プロンプトキャッシュ",
   "provider.settings.promptCacheDescription":
@@ -218,14 +231,19 @@ export const messages = {
   "provider.settings.promptCacheHour": "1 時間",
   "provider.settings.promptCacheDefault": "Claude Code の既定",
   "provider.settings.promptCacheLoadFailed": "このサーバーのプロンプトキャッシュ時間を読み込めませんでした。",
-  "provider.settings.download": "ダウンロード",
-  "provider.settings.downloadedCli": "{name} CLI",
-  "provider.settings.downloadDetail": { other: "{version} · {count} バージョン · {size}" },
-  "provider.settings.downloadVersions": { other: "{count} バージョン · {size}" },
-  "provider.settings.downloadAgain": "{name} をオンにすると、Whilo が CLI を再度ダウンロードします。",
-  "provider.settings.removeDownloadConfirm": "{size} を削除しますか？",
-  "provider.settings.removeDownloadKeeps": "アカウント、サインイン、エージェントは残ります。",
-  "provider.settings.removeDownload": "ダウンロードを削除",
-  "provider.settings.removingDownload": "削除中…",
+  "provider.settings.models": "モデル",
+  "provider.settings.modelsDescription": { other: "{count} 件中 {shown} 件のモデルがモデル選択に表示されます。" },
+  "provider.settings.modelsSearch": "モデルを検索",
+  "provider.settings.modelsHideAll": "すべて非表示",
+  "provider.settings.modelsReset": "デフォルトに戻す",
+  "provider.settings.modelsShowAll": "すべて表示",
+  "provider.settings.modelShow": "{name}（{id}）をモデル選択に表示",
+  "provider.settings.modelsNoMatch": "検索に一致するモデルはありません。",
+  "provider.settings.modelsLoadFailed": "このサーバーのモデルを読み込めませんでした。",
+  "provider.settings.deleteTitle": "{name} を削除",
+  "provider.settings.deleteOn":
+    "{name} をオフにして、OpenBot がダウンロードした CLI を削除します。アカウント、サインイン、エージェントは残ります。",
+  "provider.settings.deleteOff":
+    "OpenBot が {name} 用にダウンロードした CLI（{size}）を削除します。アカウント、サインイン、エージェントは残ります。",
   "provider.settings.removeDownloadFailed": "ダウンロードを削除できませんでした。",
 } as const satisfies PartialTranslation<typeof source>;

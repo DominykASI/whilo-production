@@ -1,4 +1,4 @@
-import type { DeleteSharedTableInput, WhiloDesktopApi, SharedTable } from "@whilo/contracts/ipc";
+import type { DeleteSharedTableInput, OpenBotDesktopApi, SharedTable } from "@openbot/contracts/ipc";
 
 /**
  * What the conversation domain reaches in main: agent and direct message pages, sends, reads,
@@ -6,13 +6,14 @@ import type { DeleteSharedTableInput, WhiloDesktopApi, SharedTable } from "@whil
  */
 export interface ConversationPort {
   agent: Pick<
-    WhiloDesktopApi["agent"],
+    OpenBotDesktopApi["agent"],
     | "readAgentSessionSettings"
     | "listAgentNotificationLevels"
     | "askSideQuestion"
     | "setAgentSessionSetting"
     | "resetAgentSessionSetting"
     | "onScopedEvent"
+    | "deleteConversationMessage"
     | "deleteTable"
     | "listMemories"
     | "listRoutines"
@@ -25,7 +26,7 @@ export interface ConversationPort {
     | "sendMessage"
   >;
   browser: Pick<
-    WhiloDesktopApi["browser"],
+    OpenBotDesktopApi["browser"],
     | "capturePreview"
     | "finishLocalSignIn"
     | "onLiveViewEvent"
@@ -35,7 +36,7 @@ export interface ConversationPort {
     | "stopLiveView"
   >;
   servers: Pick<
-    WhiloDesktopApi["servers"],
+    OpenBotDesktopApi["servers"],
     | "listDirectThreads"
     | "markDirectRead"
     | "onDirectMessage"
@@ -44,13 +45,15 @@ export interface ConversationPort {
     | "sendDirectMessage"
     | "setDirectTyping"
   >;
-  storage: Pick<WhiloDesktopApi["storage"], "openLocation">;
-  browserDock: Pick<WhiloDesktopApi["browserDock"], "publishPresentation" | "onAction" | "onShown">;
+  storage: Pick<OpenBotDesktopApi["storage"], "openLocation">;
+  /** The reader's level for each agent of a joined server, which decides what Delete offers. */
+  hostAdmin: Pick<OpenBotDesktopApi["hostAdmin"], "getAgentAccess">;
+  browserDock: Pick<OpenBotDesktopApi["browserDock"], "publishPresentation" | "onAction" | "onShown">;
 }
 
-/** Read on each call: tests and stories replace `window.whilo` per case. */
+/** Read on each call: tests and stories replace `window.openbot` per case. */
 export function conversationPort(): ConversationPort {
-  return window.whilo;
+  return window.openbot;
 }
 
 /** Cleanup can run after IPC shuts down; process shutdown also frees these in-memory pages. */

@@ -11,7 +11,8 @@ import type {
   HostStatus,
   InviteSummary,
   JoinServerInput,
-  WhiloDesktopApi,
+  OpenBotDesktopApi,
+  RemoteControlPolicy,
   RemoteDesktopSession,
   SendDirectMessageInput,
   ServerSummary,
@@ -21,8 +22,9 @@ import type {
   TeamPresenceSnapshot,
   TeamSessionSummary,
   UpdateTeamMemberInput,
-} from "@whilo/contracts/ipc";
-import { sourceText } from "@whilo/i18n/source";
+} from "@openbot/contracts/ipc";
+import { DEFAULT_REMOTE_CONTROL_POLICY } from "@openbot/contracts/ipc";
+import { sourceText } from "@openbot/i18n/source";
 import {
   STORY_DIRECT_SNAPSHOTS,
   STORY_DIRECT_THREADS,
@@ -66,6 +68,7 @@ export function createMockTeam(
   let teamMembers = clone(options.teamMembers ?? STORY_TEAM_MEMBERS);
   let invites = clone(options.invites ?? STORY_INVITES);
   let sessions = clone(options.sessions ?? STORY_SESSIONS);
+  let remoteControlPolicy: RemoteControlPolicy = { ...DEFAULT_REMOTE_CONTROL_POLICY };
   let remoteDesktopSessions = clone(options.remoteDesktopSessions ?? [STORY_REMOTE_DESKTOP_SESSION]);
   let directMessageCounter = 10;
   const serverListeners = new Set<Listener<ServerSummary[]>>();
@@ -129,7 +132,7 @@ export function createMockTeam(
     emit(remoteDesktopListeners, sessionsValue);
   }
 
-  const serversApi: WhiloDesktopApi["servers"] = {
+  const serversApi: OpenBotDesktopApi["servers"] = {
     setMuted: async ({ serverId, muted, durationMs }) => {
       if (!servers.some((server) => server.id === serverId)) throw new Error("Remote server not found.");
       const notificationsMutedUntil = muted && durationMs !== undefined ? Date.now() + durationMs : null;
@@ -342,7 +345,7 @@ export function createMockTeam(
     },
   };
 
-  const host: WhiloDesktopApi["host"] = {
+  const host: OpenBotDesktopApi["host"] = {
     getStatus: async () => clone(hostStatus),
     configure: async (input: ConfigureHostInput) => {
       hostStatus = {
@@ -399,6 +402,17 @@ export function createMockTeam(
     revokeSession: async (sessionId) => {
       sessions = sessions.filter((session) => session.id !== sessionId);
     },
+    getRemoteControlPolicy: async () => clone(remoteControlPolicy),
+    setRemoteControlPolicy: async (policy) => {
+      remoteControlPolicy = { access: policy.access, askOnHost: policy.askOnHost };
+      return clone(remoteControlPolicy);
+    },
+    // The preview's sessions end at once, as the host's do.
+    stopRemoteControl: async () => {
+      hostStatus = { ...hostStatus, remoteDesktopActiveSessions: 0 };
+      emitHostStatus(hostStatus);
+      return clone(hostStatus);
+    },
     listInvites: async () => clone(invites),
     revokeInvite: async (inviteId) => {
       invites = invites.filter((invite) => invite.id !== inviteId);
@@ -419,11 +433,11 @@ export function createMockTeam(
     },
   };
 
-  const remoteDesktop: WhiloDesktopApi["remoteDesktop"] = {
+  const remoteDesktop: OpenBotDesktopApi["remoteDesktop"] = {
     checkSetup: async () => ({
       platform: "darwin",
       hostName: "Mac mini",
-      username: "whilo",
+      username: "openbot",
       checkedAt: new Date().toISOString(),
       screenRecording: hostStatus.remoteDesktopScreenRecordingDenied ? "blocked" : "allowed",
       accessibility: "blocked",
@@ -464,7 +478,7 @@ export function createMockTeam(
     },
   };
 
-  const localServersApi: WhiloDesktopApi["localServers"] = {
+  const localServersApi: OpenBotDesktopApi["localServers"] = {
     create: async (name) => {
       const server: ServerSummary = {
         id: `local-server-${servers.length + 1}`,

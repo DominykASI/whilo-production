@@ -1,13 +1,14 @@
-import { isString } from "@whilo/contracts/runtime-values";
-import { decodeSignalServerMessage } from "@whilo/contracts/signal-protocol/decode";
+import { isString } from "@openbot/contracts/runtime-values";
+import { decodeSignalServerMessage } from "@openbot/contracts/signal-protocol/decode";
 import {
   SIGNAL_PROTOCOL_VERSION,
   SIGNAL_TURN_REFRESH_INTERVAL_MS,
   type SignalClientMessage,
   type SignalServerMessage,
-} from "@whilo/contracts/signal-protocol/messages";
-import { TEAM_PROTOCOL_V2_CHANNELS } from "@whilo/contracts/team-protocol/v2";
-import { sourceText } from "@whilo/i18n/source";
+} from "@openbot/contracts/signal-protocol/messages";
+import { BROWSER_EGRESS_CHANNEL } from "@openbot/contracts/team-protocol/browser-egress-v1";
+import { TEAM_PROTOCOL_V2_CHANNELS } from "@openbot/contracts/team-protocol/v2";
+import { sourceText } from "@openbot/i18n/source";
 import { encodeTeamWebRtcPayload, TeamWebRtcPayloadDecoder } from "./team-webrtc-framing";
 import { isPrivateNetworkCandidate, privateNetworkSdp } from "./team-webrtc-private-network";
 
@@ -22,6 +23,9 @@ export interface BridgeCommand {
     | "restart-ice"
     | "renew-host-signal"
     | "set-private-network"
+    | "open-egress"
+    | "close-egress"
+    | "send-egress"
     | "close";
   peerId: string;
   signalUrl?: string;
@@ -30,6 +34,8 @@ export interface BridgeCommand {
   iceTransportPolicy?: "all" | "relay";
   /** For a host: devices connect only over a private network, with no STUN or TURN. */
   privateNetwork?: boolean;
+  /** For a client: Signal holds the attempt while the host is offline, and sends `ready` when it connects. */
+  waitForHost?: boolean;
   channel?: "rpc" | "events" | "files" | "desktop";
   data?: string | ArrayBuffer;
 }
@@ -72,8 +78,17 @@ interface PeerState {
   iceTransportPolicy: "all" | "relay";
   /** A host and its device connections use only private network candidates and no ICE servers. */
   privateNetwork: boolean;
+  /** A client hello asks Signal to wait for an offline host. Main asks for it while a hosted server starts. */
+  waitForHost: boolean;
   channels: Partial<Record<"rpc" | "events" | "files" | "desktop", RTCDataChannel>>;
   payloadDecoders: Partial<Record<"rpc" | "events" | "files" | "desktop", TeamWebRtcPayloadDecoder>>;
+  /**
+   * The optional `browser-egress-v1` channel. It is not one of the four channels that make the
+   * connection ready, and its close never drops the connection. Its frames are sent as they are.
+   */
+  egress: RTCDataChannel | null;
+  /** Egress frames go out in the order main sends them, also while the channel waits for buffer space. */
+  egressChain: Promise<void>;
   reconnectAttempt: number;
   reconnectTimer: number | null;
   turnRefreshTimer: number | null;
@@ -128,7 +143,7 @@ const maximumIceRestarts = 10;
 let mainPort: MessagePort;
 
 const receiveMainPort = (event: MessageEvent): void => {
-  if (event.source !== window || event.data !== "whilo-team-webrtc-port") return;
+  if (event.source !== window || event.data !== "openbot-team-webrtc-port") return;
   const port = event.ports[0];
   if (!port) throw new Error("The Team WebRTC message port is missing.");
   window.removeEventListener("message", receiveMainPort);
@@ -172,8 +187,11 @@ async function handleCommand(command: BridgeCommand): Promise<void> {
         iceServers: [],
         iceTransportPolicy: command.iceTransportPolicy,
         privateNetwork: command.peer === "host" && command.privateNetwork === true,
+        waitForHost: command.peer === "client" && command.waitForHost === true,
         channels: {},
         payloadDecoders: {},
+        egress: null,
+        egressChain: Promise.resolve(),
         reconnectAttempt: 0,
         reconnectTimer: null,
         turnRefreshTimer: null,
@@ -205,6 +223,31 @@ async function handleCommand(command: BridgeCommand): Promise<void> {
       if (channel?.readyState !== "open" || command.data === undefined)
         throw new Error(sourceText("error.remote.channelNotOpen"));
       await sendChannelPayload(state, channel, command.data);
+    } else if (command.type === "open-egress") {
+      const state = requirePeer(command.peerId);
+      // Only a client opens it, and only on a connection that is up. A new connection needs a new one.
+      if (state.role !== "client" || !state.peerConnection || state.channels.rpc?.readyState !== "open")
+        throw new Error(sourceText("error.remote.channelNotOpen"));
+      // A channel that closes now does not count: its close comes later and opens nothing again.
+      if (!state.egress || state.egress.readyState === "closing" || state.egress.readyState === "closed")
+        bindEgressChannel(state, state.peerConnection.createDataChannel(BROWSER_EGRESS_CHANNEL, { ordered: true }));
+    } else if (command.type === "close-egress") {
+      const state = peers.get(command.peerId);
+      state?.egress?.close();
+    } else if (command.type === "send-egress") {
+      const state = requirePeer(command.peerId);
+      const channel = state.egress;
+      const data = command.data;
+      if (channel?.readyState !== "open" || data === undefined)
+        throw new Error(sourceText("error.remote.channelNotOpen"));
+      const sent = state.egressChain.then(async () => {
+        await waitForWritableChannel(channel);
+        if (channel.readyState !== "open") throw new Error(sourceText("error.remote.channelNotOpen"));
+        if (isString(data)) channel.send(data);
+        else channel.send(data);
+      });
+      state.egressChain = sent.catch(() => undefined);
+      await sent;
     } else if (command.type === "restart-ice") {
       await restartIce(requirePeer(command.peerId));
     } else if (command.type === "renew-host-signal") {
@@ -315,6 +358,7 @@ function connectSignal(state: PeerState, prepared: WebSocket | null = null): voi
       peer: state.role,
       token: state.resumeToken ?? state.token,
       ...(state.role === "host" ? { multiplex: true } : {}),
+      ...(state.waitForHost ? { waitForHost: true } : {}),
     };
     socket.send(JSON.stringify(hello));
   };
@@ -367,10 +411,8 @@ function connectSignal(state: PeerState, prepared: WebSocket | null = null): voi
 
 async function handleSignal(state: PeerState, message: SignalServerMessage): Promise<void> {
   // Signal sends Slack, Discord, webhook, GitHub and Telegram messages only to the main process's `ingress`
-  // socket, never to this peer. `host-waiting` answers only a hello with `waitForHost`, which this
-  // peer does not send.
+  // socket, never to this peer.
   if (
-    message.type === "host-waiting" ||
     message.type === "slack-delivery" ||
     message.type === "discord-session" ||
     message.type === "discord-delivery" ||
@@ -383,6 +425,14 @@ async function handleSignal(state: PeerState, message: SignalServerMessage): Pro
     message.type === "queued-delivery"
   )
     return;
+  // Signal holds this attempt until the host says hello, and then sends `ready` on this socket. The
+  // resume token renews the socket with no new ticket. Main then waits longer for the connection.
+  if (message.type === "host-waiting") {
+    state.reconnectAttempt = 0;
+    state.resumeToken = message.resumeToken;
+    post({ type: "host-waiting", peerId: state.id });
+    return;
+  }
   if (message.type === "account-profile-changed") {
     post({ type: "account-profile-changed", peerId: state.id });
     return;
@@ -626,6 +676,11 @@ function createPeerConnection(state: PeerState, iceServers: RTCIceServer[]): RTC
     });
   };
   connection.ondatachannel = (event) => {
+    // A host reads the egress channel of a desktop client. Main decides if it uses it.
+    if (event.channel.label === BROWSER_EGRESS_CHANNEL && state.role === "host") {
+      bindEgressChannel(state, event.channel);
+      return;
+    }
     const channel = channelKind(event.channel.label);
     if (channel) bindDataChannel(state, channel, event.channel);
   };
@@ -661,7 +716,7 @@ function createDataChannel(
   connection: RTCPeerConnection,
   channel: "rpc" | "events" | "files" | "desktop",
 ): void {
-  const label = channel === "desktop" ? "whilo.remote-desktop.signal.v1" : TEAM_PROTOCOL_V2_CHANNELS[channel];
+  const label = channel === "desktop" ? "openbot.remote-desktop.signal.v1" : TEAM_PROTOCOL_V2_CHANNELS[channel];
   bindDataChannel(state, channel, connection.createDataChannel(label, { ordered: true }));
 }
 
@@ -717,6 +772,33 @@ function bindDataChannel(
   channel.onclose = () => {
     if (state.closed || state.channels[kind] !== channel) return;
     dropConnection(state);
+  };
+}
+
+/**
+ * Binds the optional egress channel. Its open and close go to main as their own events: they do not
+ * change whether the connection is ready, and a lost egress channel leaves the connection up.
+ */
+function bindEgressChannel(state: PeerState, channel: RTCDataChannel): void {
+  const previous = state.egress;
+  state.egress = channel;
+  previous?.close();
+  channel.binaryType = "arraybuffer";
+  channel.bufferedAmountLowThreshold = 1024 * 1024;
+  const current = () => !state.closed && state.egress === channel;
+  channel.onopen = () => {
+    if (current()) post({ type: "egress-open", peerId: state.id });
+  };
+  channel.onmessage = (event) => {
+    if (!current()) return;
+    const data = egressFrame(event.data);
+    if (data !== null) post({ type: "egress-data", peerId: state.id, data });
+    else channel.close();
+  };
+  channel.onclose = () => {
+    if (state.egress !== channel) return;
+    state.egress = null;
+    if (!state.closed) post({ type: "egress-closed", peerId: state.id });
   };
 }
 
@@ -982,6 +1064,10 @@ function disconnectPeerConnection(state: PeerState): void {
     };
     socket.send(JSON.stringify(message));
   }
+  const egress = state.egress;
+  state.egress = null;
+  egress?.close();
+  if (egress && !state.closed) post({ type: "egress-closed", peerId: state.id });
   state.peerConnection?.close();
   state.peerConnection = null;
   state.connectionId = null;
@@ -1048,10 +1134,15 @@ function channelKind(label: string): "rpc" | "events" | "files" | "desktop" | nu
   if (label === TEAM_PROTOCOL_V2_CHANNELS.rpc) return "rpc";
   if (label === TEAM_PROTOCOL_V2_CHANNELS.events) return "events";
   if (label === TEAM_PROTOCOL_V2_CHANNELS.files) return "files";
-  if (label === "whilo.remote-desktop.signal.v1") return "desktop";
+  if (label === "openbot.remote-desktop.signal.v1") return "desktop";
   return null;
 }
 
 function post(message: MainBridgeMessage): void {
   mainPort.postMessage(message);
+}
+
+/** An egress frame: a control string or a binary data frame. Anything else is not one. */
+function egressFrame(data: unknown): string | ArrayBuffer | null {
+  return isString(data) || data instanceof ArrayBuffer ? data : null;
 }

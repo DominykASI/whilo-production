@@ -3,10 +3,10 @@
  * one L around the card. */
 .app-window {
   /* The frame is darker than the card, so the card comes forward. */
-  --window-frame: var(--whilo-bg-frame);
+  --window-frame: var(--openbot-bg-frame);
   /* The thin frame at the right and the bottom of the card */
-  --window-edge: var(--whilo-space-1);
-  --window-hairline-height: var(--whilo-icon-lg);
+  --window-edge: var(--openbot-space-1);
+  --window-hairline-height: var(--openbot-icon-lg);
   display: grid;
   width: 100%;
   height: 100%;
@@ -44,7 +44,7 @@
   > :is(.web-app-frame, .app-frame:not(.app-frame-platform-darwin)):not(.app-frame-with-server-rail)
   > .sidebar:not(.sidebar-compact)
   .sidebar-topbar {
-  padding-left: var(--whilo-space-3);
+  padding-inline-start: var(--openbot-space-3);
 }
 
 @media (min-width: 721px) {
@@ -54,12 +54,13 @@
   }
 
   /* The rail holds the window buttons, so the server menu needs only the part of them that is past
-   * the rail. */
+   * the rail. The window buttons are at the inline start in every language (`window-buttons.ts`).
+   * The web frame has no window buttons; the rule above sets its inset. */
   .app-window
-    > .app-frame-platform-darwin:not(.app-frame-with-server-rail)
+    > .app-frame-platform-darwin:not(.app-frame-with-server-rail, .web-app-frame)
     > .sidebar:not(.sidebar-compact)
     .sidebar-topbar {
-    padding-left: var(--whilo-space-6);
+    padding-inline-start: var(--openbot-space-6);
   }
 
   /* One card holds the sidebar, the chat and the side panel, below the top row. The frame draws the
@@ -68,23 +69,36 @@
   .app-window > .app-frame-edge {
     position: relative;
     isolation: isolate;
-    padding: 0 calc(var(--window-edge) + 1px) calc(var(--window-edge) + 1px) 0;
+    padding-block: 0 calc(var(--window-edge) + 1px);
+    padding-inline: 0 calc(var(--window-edge) + 1px);
     background: var(--window-frame);
   }
 
   .app-window > .app-frame-edge::before {
     position: absolute;
     z-index: -1;
-    inset: calc(var(--left-header-height) - 1px) var(--window-edge) var(--window-edge) 0;
-    border: 1px solid var(--whilo-border);
-    border-radius: var(--whilo-radius-card);
-    background: var(--whilo-bg-canvas);
+    inset-block: calc(var(--left-header-height) - 1px) var(--window-edge);
+    inset-inline: 0 var(--window-edge);
+    border: 1px solid var(--openbot-border);
+    border-radius: var(--openbot-radius-card);
+    background: var(--openbot-bg-canvas);
     content: "";
     pointer-events: none;
   }
 
   .app-window > .app-frame-edge.app-frame-with-server-rail::before {
-    left: var(--server-rail-width);
+    inset-inline-start: var(--server-rail-width);
+  }
+
+  /* The agent dock in the window has its column at the right edge, as wide as the dock
+   * (`DOCK_WIDTH` in `agent-dock-motion.ts`), so it does not cover the card. */
+  .app-window > .app-frame-edge.app-frame-agent-dock {
+    --agent-dock-column: calc(64px - var(--window-edge) - 1px);
+    padding-inline-end: calc(var(--window-edge) + 1px + var(--agent-dock-column));
+  }
+
+  .app-window > .app-frame-edge.app-frame-agent-dock::before {
+    inset-inline-end: calc(var(--window-edge) + var(--agent-dock-column));
   }
 
   .app-window > .app-frame-edge > .server-rail {
@@ -100,7 +114,7 @@
   /* The sidebar shows the card, and the channel title sits on the top row, so an avatar outline takes
    * the colour of the one it is on. */
   .app-window > .app-frame-edge > .sidebar {
-    --agent-avatar-outline: var(--whilo-bg-canvas);
+    --agent-avatar-outline: var(--openbot-bg-canvas);
   }
 
   .app-window > .app-frame-edge .channel-title {
@@ -114,57 +128,59 @@
   /* The line between the agent list and the chat starts at the card's top line. In the top row, a short
    * line sits above it. */
   .app-window > .app-frame-edge > .sidebar::before {
-    inset: var(--left-header-height) 0 0 auto;
+    inset-block: var(--left-header-height) 0;
+    inset-inline: auto 0;
     width: 1px;
     border: 0;
     border-radius: 0;
-    background: var(--whilo-border);
+    background: var(--openbot-border);
   }
 
   .app-window > .app-frame-edge > .sidebar:not(.sidebar-compact) .sidebar-topbar::after,
   .app-window
     > .app-frame-edge
     :is(.settings-panel, .browser-panel)
-    > :is(.settings-panel-header, .file-preview-header, .browser-preview-header)::before {
+    > :is(.settings-panel-header, .file-preview-header)::before {
     position: absolute;
     top: 50%;
     width: 1px;
     height: var(--window-hairline-height);
     translate: 0 -50%;
-    background: var(--whilo-border-strong);
+    background: var(--openbot-border-strong);
     content: "";
     pointer-events: none;
   }
 
   .app-window > .app-frame-edge > .sidebar:not(.sidebar-compact) .sidebar-topbar::after {
-    right: 0;
+    inset-inline-end: 0;
   }
 
   /* A side panel is the right part of the card. Its line to the chat starts at the card's top line. */
   .app-window > .app-frame-edge :is(.settings-panel, .browser-panel) {
-    border-left: 0;
+    border-inline-start: 0;
   }
 
   .app-window > .app-frame-edge :is(.settings-panel, .browser-panel)::before {
-    inset: calc(var(--left-header-height) - 1px) auto 0 0;
+    inset-block: calc(var(--left-header-height) - 1px) 0;
+    inset-inline: 0 auto;
     width: 1px;
     border: 0;
     border-radius: 0;
-    background: var(--whilo-border);
+    background: var(--openbot-border);
   }
 
   .app-window
     > .app-frame-edge
     :is(.settings-panel, .browser-panel)
-    > :is(.settings-panel-header, .file-preview-header, .browser-preview-header) {
+    > :is(.settings-panel-header, .file-preview-header) {
     position: relative;
   }
 
   .app-window
     > .app-frame-edge
     :is(.settings-panel, .browser-panel)
-    > :is(.settings-panel-header, .file-preview-header, .browser-preview-header)::before {
-    left: 0;
+    > :is(.settings-panel-header, .file-preview-header)::before {
+    inset-inline-start: 0;
   }
 
   /* In the side panel, the tab row is in the top row and a pane starts under it, so the pane's line to
@@ -177,47 +193,48 @@
     > .app-frame-edge
     .side-panel-docked
     > :is(.settings-panel, .browser-panel)
-    > :is(.settings-panel-header, .file-preview-header, .browser-preview-header)::before {
+    > :is(.settings-panel-header, .file-preview-header)::before {
     content: none;
   }
 
   /* A maximized pane covers the hidden chat. A chat preview frame keeps its own visibility, so the
    * pane paints the card under it. */
   .app-window > .app-frame-edge .side-panel-maximized > :is(.settings-panel, .browser-panel) {
-    border-bottom-right-radius: calc(var(--whilo-radius-card) - 1px);
-    background: var(--whilo-bg-canvas);
+    border-end-end-radius: calc(var(--openbot-radius-card) - 1px);
+    background: var(--openbot-bg-canvas);
   }
 
   /* The routine canvas fills the card, so its board follows the card's rounded corner. */
   .app-window > .app-frame-edge .diagram-view-body {
     border-top: 0;
-    border-right: 0;
-    border-radius: 0 0 calc(var(--whilo-radius-card) - 1px) 0;
+    border-inline-end: 0;
+    border-radius: 0;
+    border-end-end-radius: calc(var(--openbot-radius-card) - 1px);
   }
 
   /* The top row controls are flat: one height and one radius, with no line. A control fills on hover,
    * and an open control keeps a stronger fill. */
   .app-window > .app-frame-edge .conversation-header-actions {
-    gap: var(--whilo-space-2);
+    gap: var(--openbot-space-2);
   }
 
   .app-window
     > .app-frame-edge
     :is(.conversation-header, .tasks-page-header)
     :is(.provider-model-trigger, .header-panel-toggle) {
-    height: var(--whilo-control-sm);
+    height: var(--openbot-control-sm);
     border-color: transparent;
-    border-radius: var(--whilo-radius-md);
+    border-radius: var(--openbot-radius-md);
     background: transparent;
     box-shadow: none;
-    color: var(--whilo-text-secondary);
+    color: var(--openbot-text-secondary);
   }
 
   .app-window > .app-frame-edge :is(.conversation-header, .tasks-page-header) .header-panel-toggle {
-    width: var(--whilo-control-sm);
-    min-width: var(--whilo-control-sm);
+    width: var(--openbot-control-sm);
+    min-width: var(--openbot-control-sm);
     padding: 0;
-    color: var(--whilo-text-muted);
+    color: var(--openbot-text-muted);
   }
 
   @media (hover: hover) and (pointer: fine) {
@@ -226,8 +243,8 @@
       :is(.conversation-header, .tasks-page-header)
       :is(.provider-model-trigger, .header-panel-toggle):hover {
       border-color: transparent;
-      background: var(--whilo-bg-control-hover);
-      color: var(--whilo-text-primary);
+      background: var(--openbot-bg-control-hover);
+      color: var(--openbot-text-primary);
     }
   }
 
@@ -239,25 +256,25 @@
       .side-panel-toggle
     ) {
     border-color: transparent;
-    background: var(--whilo-bg-control-active);
-    color: var(--whilo-text-primary);
+    background: var(--openbot-bg-control-active);
+    color: var(--openbot-text-primary);
   }
 
   /* A short line between the model and the side panel button */
   .app-window > .app-frame-edge .conversation-header-actions > .side-panel-toggle {
     position: relative;
-    margin-left: calc(var(--whilo-space-2) + 1px);
+    margin-inline-start: calc(var(--openbot-space-2) + 1px);
     overflow: visible;
   }
 
   .app-window > .app-frame-edge .conversation-header-actions > .side-panel-toggle::before {
     position: absolute;
     top: 50%;
-    left: calc(-1 * var(--whilo-space-2) - 1px);
+    inset-inline-start: calc(-1 * var(--openbot-space-2) - 1px);
     width: 1px;
     height: var(--window-hairline-height);
     translate: 0 -50%;
-    background: var(--whilo-border-strong);
+    background: var(--openbot-border-strong);
     content: "";
     pointer-events: none;
   }
@@ -274,7 +291,7 @@
     flex: none;
     height: var(--left-header-height);
     flex-wrap: nowrap;
-    padding: 0 var(--whilo-space-3);
+    padding: 0 var(--openbot-space-3);
     border-bottom: 0;
     -webkit-app-region: drag;
   }
@@ -285,20 +302,20 @@
     :is(.agent-usage-header, .routine-planner-title)
     > :is(.agent-usage-identity, .agent-usage-controls, .routine-planner-identity, p) {
     flex-wrap: nowrap;
-    gap: var(--whilo-space-2);
+    gap: var(--openbot-space-2);
     -webkit-app-region: no-drag;
   }
 
   .app-window > .app-frame-edge > .window-page :is(.agent-usage-identity, .routine-planner-identity) .ui-icon-button {
-    margin-left: 0;
+    margin-inline-start: 0;
   }
 
   .app-window > .app-frame-edge > .window-page :is(.agent-usage-identity, .routine-planner-title) h2 {
-    gap: var(--whilo-space-2);
-    font-size: var(--whilo-text-md);
-    font-weight: var(--whilo-weight-medium);
+    gap: var(--openbot-space-2);
+    font-size: var(--openbot-text-md);
+    font-weight: var(--openbot-weight-medium);
     white-space: nowrap;
-    color: var(--whilo-text-primary);
+    color: var(--openbot-text-primary);
   }
 
   /* In a narrow window, the title gets shorter and the controls keep their size. */
@@ -316,16 +333,16 @@
     > .window-page
     :is(.agent-usage-header, .routine-planner-title)
     :is(.ui-select-trigger, .ui-icon-button) {
-    height: var(--whilo-control-sm);
+    height: var(--openbot-control-sm);
     border-color: transparent;
-    border-radius: var(--whilo-radius-md);
+    border-radius: var(--openbot-radius-md);
     background: transparent;
     box-shadow: none;
-    color: var(--whilo-text-secondary);
+    color: var(--openbot-text-secondary);
   }
 
   .app-window > .app-frame-edge > .window-page :is(.agent-usage-header, .routine-planner-title) .ui-icon-button {
-    width: var(--whilo-control-sm);
+    width: var(--openbot-control-sm);
   }
 
   @media (hover: hover) {
@@ -334,8 +351,8 @@
       > .window-page
       :is(.agent-usage-header, .routine-planner-title)
       :is(.ui-select-trigger, .ui-icon-button):hover {
-      background: var(--whilo-bg-control-hover);
-      color: var(--whilo-text-primary);
+      background: var(--openbot-bg-control-hover);
+      color: var(--openbot-text-primary);
     }
   }
 
@@ -356,13 +373,13 @@
   }
 
   .app-window > .app-frame-edge > .window-page .routine-planner-toolbar {
-    padding: var(--whilo-space-4) var(--whilo-space-6) 0;
+    padding: var(--openbot-space-4) var(--openbot-space-6) 0;
   }
 
   .app-window > .app-frame-edge > .window-page .routine-planner-body {
     min-height: 0;
     overflow-y: auto;
-    padding: var(--whilo-space-4) var(--whilo-space-6) var(--whilo-space-6);
+    padding: var(--openbot-space-4) var(--openbot-space-6) var(--openbot-space-6);
   }
 
   /* The empty month fills the card and clips at its bottom edge, so the pitch stays in the middle of
@@ -407,13 +424,13 @@
     right: 0;
     left: 0;
     height: var(--left-header-height);
-    padding: 0 var(--whilo-space-3);
+    padding: 0 var(--openbot-space-3);
     -webkit-app-region: drag;
   }
 
   .app-window > .app-frame-edge > .app-frame-panes .tasks-page-header h2 {
-    font-size: var(--whilo-text-md);
-    font-weight: var(--whilo-weight-medium);
+    font-size: var(--openbot-text-md);
+    font-weight: var(--openbot-weight-medium);
     white-space: nowrap;
   }
 
@@ -428,11 +445,11 @@
   }
 
   .app-window > .app-frame-edge > .app-frame-panes .tasks-page-column {
-    padding-top: var(--whilo-space-6);
+    padding-top: var(--openbot-space-6);
   }
 
   .app-window > .app-frame-edge > .app-frame-panes .tasks-page-side {
-    border-bottom-right-radius: calc(var(--whilo-radius-card) - 1px);
+    border-end-end-radius: calc(var(--openbot-radius-card) - 1px);
   }
 
   /* The Tasks page opens with the agent list hidden. Its header button shows the list. Until then the
@@ -458,7 +475,7 @@
   }
 
   .app-window > .app-frame-edge.app-frame-sidebar-hidden > .app-frame-panes .tasks-page-header {
-    left: var(--left-panel-width);
+    inset-inline-start: var(--left-panel-width);
   }
 
   .app-window > .app-frame-edge.app-frame-sidebar-hidden > .app-frame-panes :is(.tasks-page-scroll, .tasks-page-side) {
@@ -474,20 +491,51 @@
     position: absolute;
     grid-row: 1 / -1;
     grid-column: 1 / -1;
-    inset: 0 0 0 1px;
+    inset-block: 0;
+    inset-inline: 1px 0;
   }
 
-  /* The settings page starts below the top row. The schedule, usage and Marketplace titles go in the
+  /* The schedule, usage and Marketplace titles, and the path to an open settings detail page, go in the
    * top row, after the server menu, and the rest of the top row lets clicks through to that menu. The
-   * rail is the way back, so these titles have no Back button and no server name. */
+   * rail is the way back, so these titles have no Back button and no server name. The section list and
+   * the panel of a settings page start below the top row. The page covers the server menu and inherits
+   * `-webkit-app-region`, so the frame must not drag: a drag region over the menu takes its clicks. */
   .app-frame-edge[data-window-page-kind="settings"] > .window-page {
-    top: var(--left-header-height);
+    pointer-events: none;
+  }
+
+  .app-frame-edge[data-window-page-kind="settings"] > .window-page > .settings-page {
+    grid-template-rows: var(--left-header-height) minmax(0, 1fr);
+  }
+
+  .app-frame-edge[data-window-page-kind="settings"] > .window-page > .settings-page > .settings-page-nav {
+    grid-row: 2;
+  }
+
+  .app-frame-edge[data-window-page-kind="settings"]
+    > .window-page
+    > .settings-page
+    :is(.settings-page-nav, .settings-page-content, .settings-page-path) {
+    pointer-events: auto;
     -webkit-app-region: no-drag;
   }
 
-  /* The hidden chat header no longer moves the window, so the empty top row of the settings page does. */
-  .app-frame-edge[data-window-page-kind="settings"] {
+  .app-frame-edge[data-window-page-kind="settings"] > .window-page > .settings-page > .settings-page-path-row {
+    padding: 0 var(--openbot-space-3);
     -webkit-app-region: drag;
+  }
+
+  .app-frame-edge[data-window-page-kind="settings"]
+    > .window-page
+    > .settings-page
+    > .settings-page-path-row
+    > .settings-page-path {
+    /* Only the path text stops the drag, so the rest of the top row still moves the window. */
+    width: auto;
+    flex: 0 1 auto;
+    max-width: none;
+    margin-inline: 0;
+    padding-inline: 0;
   }
 
   .app-frame-edge[data-window-page-kind="titled"] > .window-page {
@@ -495,7 +543,7 @@
   }
 
   .app-frame-edge.app-frame-with-server-rail:not([data-window-page-kind="agents"]) > .window-page {
-    left: calc(var(--server-rail-width) + 1px);
+    inset-inline-start: calc(var(--server-rail-width) + 1px);
   }
 
   .app-frame-edge:not([data-window-page-kind="agents"]) > .sidebar > :not(.sidebar-topbar),
@@ -517,7 +565,7 @@
     > .app-frame-edge[data-window-page-kind="titled"]
     > .window-page
     :is(.agent-usage-header, .routine-planner-title, .skills-marketplace-topbar) {
-    margin-left: var(--left-panel-width);
+    margin-inline-start: var(--left-panel-width);
   }
 
   .app-frame-edge[data-window-page-kind="titled"]
@@ -545,7 +593,7 @@
 
   .app-window > .app-frame-edge > .window-page .skills-marketplace-topbar {
     min-height: 0;
-    padding: 0 var(--whilo-space-3);
+    padding: 0 var(--openbot-space-3);
     border-bottom: 0;
     -webkit-app-region: drag;
   }
@@ -556,8 +604,8 @@
   }
 
   .app-window > .app-frame-edge > .window-page .skills-marketplace-topbar .marketplace-title {
-    font-size: var(--whilo-text-md);
-    font-weight: var(--whilo-weight-medium);
+    font-size: var(--openbot-text-md);
+    font-weight: var(--openbot-weight-medium);
     white-space: nowrap;
   }
 
@@ -571,24 +619,47 @@
   }
 }
 
-/* The settings page: the nav at the width of the sidebar. */
+/* The settings page: the nav at the width of the sidebar, and the path to an open detail page above the panel. */
 .settings-page {
   display: grid;
   width: 100%;
   height: 100%;
   min-height: 0;
   grid-template-columns: max(var(--left-panel-width, 280px), 220px) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.settings-page-path-row {
+  display: flex;
+  min-width: 0;
+  grid-column: 2;
+  grid-row: 1;
+  align-items: center;
+  padding: var(--openbot-space-4) 0 0;
+}
+
+.settings-page-path-row:empty {
+  display: none;
+}
+
+/* Below the top row, the path takes the column and the inline padding of the panel, so both start on one edge. */
+.settings-page-path-row > .settings-page-path {
+  width: 100%;
+  max-width: 784px;
+  margin-inline: auto;
+  padding-inline: var(--openbot-space-8);
 }
 
 .settings-page-nav {
   display: flex;
+  grid-row: 1 / -1;
   min-width: 0;
   min-height: 0;
   flex-direction: column;
-  gap: var(--whilo-space-1);
+  gap: var(--openbot-space-1);
   overflow: hidden;
-  border-right: 1px solid var(--whilo-border);
-  padding: var(--whilo-space-4) var(--whilo-space-3) 0;
+  border-inline-end: 1px solid var(--openbot-border);
+  padding: var(--openbot-space-4) var(--openbot-space-3) 0;
 }
 
 /* The title and the search stay at the top. The list below them scrolls. */
@@ -597,16 +668,16 @@
   min-height: 0;
   flex: 1 1 auto;
   overflow-y: auto;
-  padding-bottom: var(--whilo-space-3);
+  padding-bottom: var(--openbot-space-3);
 }
 
 .settings-page-title {
-  margin: 0 0 var(--whilo-space-3);
-  padding: 0 var(--whilo-space-2);
-  color: var(--whilo-text-primary);
-  font-size: var(--whilo-text-lg);
-  font-weight: var(--whilo-weight-semibold);
-  line-height: var(--whilo-leading-lg);
+  margin: 0 0 var(--openbot-space-3);
+  padding: 0 var(--openbot-space-2);
+  color: var(--openbot-text-primary);
+  font-size: var(--openbot-text-lg);
+  font-weight: var(--openbot-weight-semibold);
+  line-height: var(--openbot-leading-lg);
 }
 
 /* The heading takes the focus when the page opens, only so a screen reader reads it. */
@@ -617,14 +688,14 @@
 /* A capsule search field */
 .settings-page-search {
   flex: none;
-  border-radius: var(--whilo-radius-pill);
-  padding: 0 var(--whilo-space-3);
+  border-radius: var(--openbot-radius-pill);
+  padding: 0 var(--openbot-space-3);
 }
 
 .settings-page-search > svg {
   flex: none;
-  width: var(--whilo-icon-sm);
-  height: var(--whilo-icon-sm);
+  width: var(--openbot-icon-sm);
+  height: var(--openbot-icon-sm);
 }
 
 .settings-page-search input {
@@ -638,10 +709,10 @@
 
 /* The text that shows when no setting matches the search */
 .settings-page-empty {
-  margin: var(--whilo-space-4) 0 var(--whilo-space-1);
-  padding: 0 var(--whilo-space-2);
-  color: var(--whilo-text-muted);
-  font-size: var(--whilo-text-sm);
+  margin: var(--openbot-space-4) 0 var(--openbot-space-1);
+  padding: 0 var(--openbot-space-2);
+  color: var(--openbot-text-muted);
+  font-size: var(--openbot-text-sm);
 }
 
 /* The server mark and name, as the server menu shows them */
@@ -649,30 +720,30 @@
   display: flex;
   min-width: 0;
   align-items: center;
-  gap: var(--whilo-space-2);
+  gap: var(--openbot-space-2);
 }
 
 .settings-page-server .server-menu-mark {
-  width: var(--whilo-icon-md);
-  height: var(--whilo-icon-md);
+  width: var(--openbot-icon-md);
+  height: var(--openbot-icon-md);
 }
 
 .settings-page-nav-group .settings-modal-nav-item {
-  padding-inline: var(--whilo-space-3);
+  padding-inline: var(--openbot-space-3);
 }
 
 .settings-page-nav-group .settings-modal-nav-item[data-selected] {
-  background: var(--whilo-bg-control-hover);
-  color: var(--whilo-text-primary);
-  font-weight: var(--whilo-weight-medium);
+  background: var(--openbot-bg-control-hover);
+  color: var(--openbot-text-primary);
+  font-weight: var(--openbot-weight-medium);
 }
 
 /* A search result: the section with its icon, and below it the matching row title */
 .settings-page-results {
   display: flex;
   flex-direction: column;
-  gap: var(--whilo-space-0-5);
-  margin: var(--whilo-space-2) 0 0;
+  gap: var(--openbot-space-0-5);
+  margin: var(--openbot-space-2) 0 0;
   padding-inline: 0;
   list-style: none;
 }
@@ -683,51 +754,53 @@
   height: auto;
   flex-direction: column;
   align-items: stretch;
-  gap: var(--whilo-space-0-5);
+  gap: var(--openbot-space-0-5);
   border: 0;
-  border-radius: var(--whilo-radius-md);
+  border-radius: var(--openbot-radius-md);
   background: transparent;
-  padding: var(--whilo-space-1-5) var(--whilo-space-2);
-  color: var(--whilo-text-primary);
+  padding: var(--openbot-space-1-5) var(--openbot-space-2);
+  color: var(--openbot-text-primary);
   font: inherit;
-  text-align: left;
+  text-align: start;
   cursor: pointer;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .settings-page-result:hover {
-    background: var(--whilo-bg-control-hover);
+    background: var(--openbot-bg-control-hover);
   }
 }
 
 .settings-page-result:focus-visible {
   outline: 0;
-  box-shadow: var(--whilo-focus-ring);
+  box-shadow: var(--openbot-focus-ring);
 }
 
 .settings-page-result-section {
   display: flex;
   align-items: center;
-  gap: var(--whilo-space-2);
-  color: var(--whilo-text-muted);
-  font-size: var(--whilo-text-sm);
+  gap: var(--openbot-space-2);
+  color: var(--openbot-text-muted);
+  font-size: var(--openbot-text-sm);
 }
 
 .settings-page-result-section svg {
-  width: var(--whilo-icon-sm);
-  height: var(--whilo-icon-sm);
+  width: var(--openbot-icon-sm);
+  height: var(--openbot-icon-sm);
 }
 
 .settings-page-result-title {
   overflow: hidden;
-  padding-left: calc(var(--whilo-icon-sm) + var(--whilo-space-2));
-  font-size: var(--whilo-text-md);
+  padding-inline-start: calc(var(--openbot-icon-sm) + var(--openbot-space-2));
+  font-size: var(--openbot-text-md);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .settings-page-content {
   position: relative;
+  grid-column: 2;
+  grid-row: 2;
   min-width: 0;
   min-height: 0;
 }
@@ -749,7 +822,7 @@
   background: transparent;
 }
 
-.settings-page-content > .settings-modal-page :is(.settings-modal-header, .settings-modal-content) {
+.settings-page-content > .settings-modal-page .settings-modal-content {
   width: 100%;
   max-width: 784px;
   margin-inline: auto;
@@ -757,31 +830,48 @@
 
 /* The row that a search result opened */
 .settings-page-content [data-search-match] {
-  border-radius: var(--whilo-radius-md);
-  background: var(--whilo-bg-control-active);
+  border-radius: var(--openbot-radius-md);
+  background: var(--openbot-bg-control-active);
 }
 
 /* A narrow window stacks the page: the heading and the sections above the panel. */
 @media (max-width: 720px) {
   .settings-page {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
+  }
+
+  /* The path of an open detail page is between the sections and the panel. */
+  .settings-page-path-row {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .settings-page-path-row > .settings-page-path {
+    padding-inline: var(--openbot-space-4);
+  }
+
+  .settings-page-content {
+    grid-column: 1;
+    grid-row: 3;
   }
 
   .settings-page-nav {
-    border-right: 0;
-    border-bottom: 1px solid var(--whilo-border);
-    padding: var(--whilo-space-3) var(--whilo-space-3) 0;
+    grid-column: 1;
+    grid-row: 1;
+    border-inline-end: 0;
+    border-bottom: 1px solid var(--openbot-border);
+    padding: var(--openbot-space-3) var(--openbot-space-3) 0;
   }
 
   .settings-page-title {
-    margin-bottom: var(--whilo-space-2);
+    margin-bottom: var(--openbot-space-2);
   }
 
   .settings-page-sections,
   .settings-page-results {
     max-height: 40dvh;
-    padding-bottom: var(--whilo-space-2);
+    padding-bottom: var(--openbot-space-2);
   }
 }
 
@@ -796,7 +886,7 @@
 }
 
 .app-frame-chat-window.app-frame-platform-darwin .conversation-header {
-  padding-left: 76px;
+  padding-inline-start: 76px;
 }
 
 /* The hint that one press of Cmd + Q does not quit. The window behind it is dimmed and blurred, as
@@ -806,23 +896,64 @@
 .quit-shortcut-backdrop {
   position: fixed;
   inset: 0;
-  z-index: var(--whilo-layer-tooltip);
+  z-index: var(--openbot-layer-tooltip);
   display: grid;
   place-items: center;
-  background: var(--whilo-dialog-overlay);
-  backdrop-filter: blur(var(--whilo-space-2));
+  background: var(--openbot-dialog-overlay);
+  backdrop-filter: blur(var(--openbot-space-2));
   pointer-events: none;
-  animation: quit-shortcut-in var(--whilo-duration-fast) var(--whilo-ease-out);
+  animation: quit-shortcut-in var(--openbot-duration-fast) var(--openbot-ease-out);
 }
 
+/* The hint names the agents that the quit stops, beside their working faces. */
 .quit-shortcut-hint {
-  padding: var(--whilo-space-3) var(--whilo-space-6);
-  border: 1px solid var(--whilo-border-strong);
-  border-radius: var(--whilo-radius-pill);
-  background: var(--whilo-bg-surface-raised);
-  color: var(--whilo-text-primary);
-  font-size: var(--whilo-text-lg);
+  --agent-avatar-outline: var(--openbot-bg-surface-raised);
+
+  display: flex;
+  align-items: center;
+  gap: var(--openbot-space-4);
+  max-width: calc(100vw - 2 * var(--openbot-space-4));
+  padding: var(--openbot-space-3) var(--openbot-space-8) var(--openbot-space-3) var(--openbot-space-3);
+  border: 1px solid var(--openbot-border-strong);
+  border-radius: var(--openbot-radius-pill);
+  background: var(--openbot-bg-surface-raised);
+  color: var(--openbot-text-primary);
+}
+
+.quit-shortcut-avatars {
+  display: flex;
+  flex: none;
+  align-items: center;
+}
+
+/* The plush sits low in its box, as in a sidebar row, so the same optical offset centres it. */
+.quit-shortcut-avatars .agent-avatar {
+  --agent-avatar-optical-offset: -5px;
+
+  width: 40px;
+  height: 40px;
+}
+
+.quit-shortcut-avatars .agent-avatar + .agent-avatar {
+  margin-inline-start: calc(-1 * var(--openbot-space-2));
+}
+
+.quit-shortcut-copy {
+  display: grid;
+  gap: var(--openbot-space-0-5);
+  min-width: 0;
+}
+
+.quit-shortcut-agents {
+  font-size: var(--openbot-text-xl);
   font-weight: 500;
+  line-height: var(--openbot-leading-xl);
+  text-wrap: balance;
+}
+
+.quit-shortcut-instruction {
+  font-size: var(--openbot-text-lg);
+  line-height: var(--openbot-leading-lg);
   white-space: nowrap;
 }
 

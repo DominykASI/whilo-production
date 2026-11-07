@@ -6,14 +6,14 @@
   position: absolute;
   z-index: 16;
   top: 0;
-  right: 0;
+  inset-inline-end: 0;
   display: flex;
   align-items: center;
-  gap: var(--whilo-space-1);
+  gap: var(--openbot-space-1);
   width: var(--side-panel-width, 380px);
   height: var(--left-header-height, 38px);
   min-width: 0;
-  padding: 0 var(--whilo-space-2);
+  padding: 0 var(--openbot-space-2);
   container: side-panel-header / inline-size;
 }
 
@@ -21,11 +21,11 @@
 .side-panel-header::before {
   position: absolute;
   top: 50%;
-  left: 0;
+  inset-inline-start: 0;
   width: 1px;
-  height: var(--whilo-icon-lg);
+  height: var(--openbot-icon-lg);
   translate: 0 -50%;
-  background: var(--whilo-border-strong);
+  background: var(--openbot-border-strong);
   content: "";
   pointer-events: none;
 }
@@ -34,21 +34,24 @@
   display: flex;
   flex: 1;
   align-items: center;
-  gap: var(--whilo-space-1);
+  gap: var(--openbot-space-1);
   min-width: 0;
+  /* A tab drag measures `offsetLeft` from the left edge (`SidePanel.tsx`, `BrowserTabStrip.tsx`), so
+     the tabs keep the left-to-right order in every language. */
+  direction: ltr;
 }
 
 .side-panel-actions {
   display: flex;
   flex: none;
   align-items: center;
-  gap: var(--whilo-space-0-5);
-  color: var(--whilo-text-muted);
+  gap: var(--openbot-space-0-5);
+  color: var(--openbot-text-muted);
 }
 
 .side-panel-actions svg {
-  width: var(--whilo-icon-sm);
-  height: var(--whilo-icon-sm);
+  width: var(--openbot-icon-sm);
+  height: var(--openbot-icon-sm);
 }
 
 /* A tab is the same chip as the other controls of the top row. */
@@ -57,33 +60,34 @@
   display: flex;
   flex: 0 1 auto;
   align-items: center;
-  gap: var(--whilo-space-1-5);
+  gap: var(--openbot-space-1-5);
   min-width: 0;
-  height: var(--whilo-control-sm);
-  padding: 0 var(--whilo-space-2) 0 var(--whilo-space-1-5);
-  border-radius: var(--whilo-radius-md);
-  color: var(--whilo-text-secondary);
+  height: var(--openbot-control-sm);
+  padding-block: 0;
+  padding-inline: var(--openbot-space-1-5) var(--openbot-space-2);
+  border-radius: var(--openbot-radius-md);
+  color: var(--openbot-text-secondary);
 }
 
 .side-panel-tab:hover {
-  background: var(--whilo-bg-control-hover);
-  color: var(--whilo-text-primary);
+  background: var(--openbot-bg-control-hover);
+  color: var(--openbot-text-primary);
 }
 
 .side-panel-tab[data-selected] {
-  background: var(--whilo-bg-control-active);
-  color: var(--whilo-text-primary);
+  background: var(--openbot-bg-control-active);
+  color: var(--openbot-text-primary);
 }
 
 /* Between two tabs, in the middle of their gap. It hides next to the selected or hovered tab. */
 .side-panel-tab + .side-panel-tab::before {
   position: absolute;
   top: 50%;
-  left: calc(var(--whilo-space-1) / -2 - 0.5px);
+  inset-inline-start: calc(var(--openbot-space-1) / -2 - 0.5px);
   width: 1px;
-  height: var(--whilo-icon-lg);
+  height: var(--openbot-icon-lg);
   translate: 0 -50%;
-  background: var(--whilo-border-strong);
+  background: var(--openbot-border-strong);
   content: "";
   pointer-events: none;
 }
@@ -103,7 +107,7 @@
   background: transparent;
   color: inherit;
   font: inherit;
-  font-size: var(--whilo-text-sm);
+  font-size: var(--openbot-text-sm);
   text-overflow: ellipsis;
   white-space: nowrap;
   border-radius: 0;
@@ -122,14 +126,20 @@
   display: grid;
   flex: none;
   place-items: center;
-  width: var(--whilo-icon-md);
-  height: var(--whilo-icon-md);
+  width: var(--openbot-icon-md);
+  height: var(--openbot-icon-md);
   padding: 0;
   border: 0;
-  border-radius: var(--whilo-radius-pill);
+  border-radius: var(--openbot-radius-pill);
   background: transparent;
   color: inherit;
   cursor: pointer;
+}
+
+/* A file-type badge of three or four letters is wider than a tab icon, so the slot grows to hold it. */
+.side-panel-file-tab .side-panel-tab-close {
+  width: auto;
+  min-width: var(--openbot-icon-md);
 }
 
 .side-panel-tab-icon,
@@ -144,8 +154,8 @@
 
 .side-panel-tab-icon svg,
 .side-panel-tab-x {
-  width: var(--whilo-icon-sm);
-  height: var(--whilo-icon-sm);
+  width: var(--openbot-icon-sm);
+  height: var(--openbot-icon-sm);
 }
 
 .side-panel-tab-x {
@@ -153,7 +163,7 @@
 }
 
 .side-panel-tab:is(:hover, :focus-within) .side-panel-tab-close {
-  background: var(--whilo-bg-control-hover);
+  background: var(--openbot-bg-control-hover);
 }
 
 .side-panel-tab:is(:hover, :focus-within) .side-panel-tab-icon {
@@ -165,12 +175,12 @@
 }
 
 .side-panel-tab-close:hover:not(:disabled):not([data-disabled]) {
-  background: var(--whilo-bg-control-active);
-  color: var(--whilo-text-primary);
+  background: var(--openbot-bg-control-active);
+  color: var(--openbot-text-primary);
 }
 
 .side-panel-tab-select:focus-visible {
-  box-shadow: var(--whilo-focus-ring);
+  box-shadow: var(--openbot-focus-ring);
   outline: none;
 }
 
@@ -193,7 +203,7 @@
   .side-panel-tab:not([data-selected]) {
     width: auto;
     min-width: 0;
-    padding: 0 var(--whilo-space-1-5);
+    padding: 0 var(--openbot-space-1-5);
   }
 
   .side-panel-tab:not([data-selected]) .side-panel-tab-select {
@@ -252,16 +262,16 @@
 .side-panel-launcher {
   display: flex;
   flex-direction: column;
-  gap: var(--whilo-space-1-5);
+  gap: var(--openbot-space-1-5);
   width: 100%;
   max-width: 320px;
   margin: 0 auto;
-  padding: var(--whilo-space-6);
+  padding: var(--openbot-space-6);
 }
 
 .side-panel-launch {
   justify-content: flex-start;
-  gap: var(--whilo-space-3);
+  gap: var(--openbot-space-3);
 }
 
 /* A maximized dock covers the chat and its header. */
@@ -281,18 +291,52 @@
 /* Pane icons have the size of the other menu and row icons. */
 :is(.side-panel-launch, .side-panel-menu-item) svg {
   flex: none;
-  width: var(--whilo-icon-sm);
-  height: var(--whilo-icon-sm);
-  color: var(--whilo-text-muted);
+  width: var(--openbot-icon-sm);
+  height: var(--openbot-icon-sm);
+  color: var(--openbot-text-muted);
+}
+
+/* A file tab shows the file-type badge of a file link at its size in the chat. A file name is longer
+ * than a pane name, so it shrinks and ends in an ellipsis. A file tab slides when it drags, as a thread
+ * tab does. */
+.side-panel-file-tab {
+  transition: transform var(--openbot-duration-normal) var(--openbot-ease-out);
+}
+
+.side-panel-file-badge {
+  display: inline-flex;
+}
+
+.side-panel-file-badge > .attachment-reference-visual > svg {
+  width: 12px;
+  height: 12px;
+}
+
+.side-panel-file-tab .side-panel-tab-select {
+  flex: 0 1 auto;
+}
+
+/* In the dock, the file tab names the file. The title keeps its place, so the file actions stay at
+ * the end of the toolbar. The file comes in with its tab, as the other panes do, without a slide. */
+.side-panel-docked .file-preview-header > .file-preview-file-icon {
+  display: none;
+}
+
+.side-panel-docked .file-preview-header > h2 {
+  visibility: hidden;
+}
+
+.side-panel-docked > .file-preview-panel.t-panel-slide {
+  transition: none;
 }
 
 /* A thread tab: the state badge of the thread takes the icon slot at its own size, and the X shows
  * over it on hover. A thread that needs the user wears the tint of its badge, as in the chat header. */
 .side-panel-tab-close:has(.agent-threads-state) {
   width: auto;
-  min-width: var(--whilo-icon-md);
+  min-width: var(--openbot-icon-md);
   height: auto;
-  min-height: var(--whilo-icon-md);
+  min-height: var(--openbot-icon-md);
 }
 
 .side-panel-tab:not(:hover, :focus-within) .side-panel-tab-icon:has(.agent-threads-state) {
@@ -310,7 +354,7 @@
   flex: 0 1 auto;
   width: 140px;
   min-width: 96px;
-  transition: transform var(--whilo-duration-normal) var(--whilo-ease-out);
+  transition: transform var(--openbot-duration-normal) var(--openbot-ease-out);
 }
 
 .side-panel-thread-tab .side-panel-tab-select {
@@ -318,7 +362,7 @@
   text-align: start;
 }
 
-/* A thread tab that the pointer moves follows the pointer and wears the selection fill, so it covers
+/* A thread or file tab that the pointer moves follows the pointer and wears the selection fill, so it covers
  * the tabs that it passes. The dividers and the X hide until the drop. Over the chat, the tab goes
  * back to its place, faded, and a copy follows the pointer. */
 .side-panel-tabs[data-dragging],
@@ -327,10 +371,10 @@
   user-select: none;
 }
 
-.side-panel-tabs[data-dragging] > .side-panel-thread-tab[data-dragged=""] {
+.side-panel-tabs[data-dragging] > :is(.side-panel-thread-tab, .side-panel-file-tab)[data-dragged=""] {
   z-index: 2;
-  background-color: var(--whilo-bg-control-active);
-  color: var(--whilo-text-primary);
+  background-color: var(--openbot-bg-control-active);
+  color: var(--openbot-text-primary);
   transition: none;
 }
 
@@ -361,16 +405,16 @@
   z-index: 1000;
   max-width: 140px;
   white-space: nowrap;
-  border: 1px solid var(--whilo-border);
-  background: var(--whilo-bg-control-active);
-  color: var(--whilo-text-primary);
+  border: 1px solid var(--openbot-border);
+  background: var(--openbot-bg-control-active);
+  color: var(--openbot-text-primary);
   pointer-events: none;
   translate: -50% -50%;
 }
 
 .thread-tab-ghost .side-panel-tab-label {
   overflow: hidden;
-  font-size: var(--whilo-text-sm);
+  font-size: var(--openbot-text-sm);
   text-overflow: ellipsis;
 }
 
@@ -378,23 +422,24 @@
 .side-panel-drop {
   position: absolute;
   z-index: 17;
-  top: calc(var(--left-header-height, 38px) + var(--whilo-space-2));
-  right: var(--whilo-space-2);
-  bottom: var(--whilo-space-2);
+  top: calc(var(--left-header-height, 38px) + var(--openbot-space-2));
+  inset-inline-end: var(--openbot-space-2);
+  bottom: var(--openbot-space-2);
   display: grid;
-  width: calc(var(--side-panel-width, 380px) - 2 * var(--whilo-space-2));
+  width: calc(var(--side-panel-width, 380px) - 2 * var(--openbot-space-2));
   place-items: start center;
-  padding-top: var(--whilo-space-6);
-  border: 1px dashed var(--whilo-text-secondary);
-  border-radius: var(--whilo-radius-lg);
-  background: var(--whilo-bg-control-hover);
-  color: var(--whilo-text-primary);
-  font-size: var(--whilo-text-sm);
+  padding-top: var(--openbot-space-6);
+  border: 1px dashed var(--openbot-text-secondary);
+  border-radius: var(--openbot-radius-lg);
+  background: var(--openbot-bg-control-hover);
+  color: var(--openbot-text-primary);
+  font-size: var(--openbot-text-sm);
   pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .side-panel-thread-tab {
+  .side-panel-thread-tab,
+  .side-panel-file-tab {
     transition: none;
   }
 }

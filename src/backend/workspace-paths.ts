@@ -1,16 +1,16 @@
 import { readdir, realpath, stat } from "node:fs/promises";
 import { homedir } from "node:os";
 import { basename, dirname, isAbsolute, join, relative, sep } from "node:path";
-import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
 import {
   type AgentSummary,
   WORKSPACE_DIRECTORY_LIMIT,
   type WorkspaceDirectory,
   type WorkspaceDirectoryEntry,
-} from "@whilo/contracts/ipc";
-import { legacyAgentId } from "@whilo/contracts/validation";
-import { sourceText } from "@whilo/i18n/source";
-import { Effect } from "effect";
+} from "@openbot/contracts/ipc";
+import { legacyAgentId } from "@openbot/contracts/validation";
+import { sourceText } from "@openbot/i18n/source";
+import { Effect, Result } from "effect";
 import { type AttachmentOperationError, attachmentCall, attachmentFailure } from "./attachment-effects";
 import { isRecord } from "./protocol";
 
@@ -29,7 +29,7 @@ const LOCATION_SUFFIX = /(?::\d+(?::\d+)?|#L\d+(?:C\d+)?(?:-L?\d+(?:C\d+)?)?)$/u
 
 export function sharedPathFromInput(sharedRoot: string, inputPath: string): string {
   const normalized = inputPath.replaceAll("\\", "/");
-  for (const prefix of ["~/Whilo/Shared/", "Whilo/Shared/", "Shared/"]) {
+  for (const prefix of ["~/OpenBot/Shared/", "OpenBot/Shared/", "Shared/"]) {
     if (normalized.startsWith(prefix)) return join(sharedRoot, normalized.slice(prefix.length));
   }
   return isAbsolute(inputPath) ? inputPath : join(sharedRoot, normalized);
@@ -37,7 +37,7 @@ export function sharedPathFromInput(sharedRoot: string, inputPath: string): stri
 
 /**
  * The two `Bots` prefixes are permanent. This function reads paths the model writes and paths quoted in
- * messages, and the workspace root was `~/Whilo/Bots/bot-<uuid>` in every release before the
+ * messages, and the workspace root was `~/OpenBot/Bots/bot-<uuid>` in every release before the
  * bot-to-agent rename. A database restored from the user's own copy of the file never ran migration v13,
  * so it still spells both the id and the path that way; and a cross-device root legitimately leaves a
  * workspace under the old name even after v13. Dropping the prefix does not fail loudly -- the path just
@@ -48,10 +48,10 @@ export function workspacePathFromInput(workspaceRoot: string, agentId: string, i
   const normalized = decoded.replaceAll("\\", "/");
   const legacyId = legacyAgentId(agentId);
   for (const prefix of [
-    `~/Whilo/Agents/${agentId}/`,
-    `Whilo/Agents/${agentId}/`,
-    `~/Whilo/Bots/${legacyId}/`,
-    `Whilo/Bots/${legacyId}/`,
+    `~/OpenBot/Agents/${agentId}/`,
+    `OpenBot/Agents/${agentId}/`,
+    `~/OpenBot/Bots/${legacyId}/`,
+    `OpenBot/Bots/${legacyId}/`,
   ]) {
     if (normalized.startsWith(prefix)) return join(workspaceRoot, normalized.slice(prefix.length));
   }
@@ -172,10 +172,20 @@ const resolveWorkspacePath = Effect.fn("Workspace.resolveWorkspacePath")(functio
       if (isAbsolute(requestedPath) || requestedPath.replaceAll("\\", "/").startsWith("~/")) return Effect.fail(error);
       const name = basename(candidatePath);
       const withoutLocation = name.replace(LOCATION_SUFFIX, "");
-      const historyPath =
-        options.fileHistory?.findLast((path) => basename(path) === name) ??
-        options.fileHistory?.findLast((path) => basename(path) === withoutLocation);
-      return historyPath ? attachmentCall(() => realpath(historyPath)) : Effect.fail(error);
+      const history = [...(options.fileHistory ?? [])].reverse();
+      // The newest file with the name goes first; a file that is gone does not hide an older one.
+      const historyPaths = new Set([
+        ...history.filter((path) => basename(path) === name),
+        ...history.filter((path) => basename(path) === withoutLocation),
+      ]);
+      return Effect.gen(function* () {
+        for (const historyPath of historyPaths) {
+          const found = yield* Effect.result(attachmentCall(() => realpath(historyPath)));
+          if (Result.isSuccess(found)) return found.success;
+          if (!isMissing(found.failure)) return yield* Effect.fail(found.failure);
+        }
+        return yield* Effect.fail(error);
+      });
     }),
     Effect.catch((error) =>
       isMissing(error)

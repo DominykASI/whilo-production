@@ -1,15 +1,16 @@
-import { CHANNEL_CHATS_CAPABILITY } from "@whilo/contracts/ipc";
-import { ROUTINE_FLOWS_CAPABILITY } from "@whilo/contracts/team-protocol/routine-flows-v1";
+import { CHANNEL_CHATS_CAPABILITY } from "@openbot/contracts/ipc";
+import { MESSAGE_DELETE_CAPABILITY } from "@openbot/contracts/team-protocol/message-delete-v1";
+import { ROUTINE_FLOWS_CAPABILITY } from "@openbot/contracts/team-protocol/routine-flows-v1";
 import type { WebRuntimeFactory } from "../features/web-client/web-client-context";
 import type { WebRuntimeEvents, WebWorkspaceRuntime } from "../features/web-client/web-runtime";
-import { createMockWhilo, type MockWhiloControls } from "./mock-whilo";
+import { createMockOpenBot, type MockOpenBotControls } from "./mock-openbot";
 
 /** Use the desktop preview's data and actions for the browser composition too. */
 export const createMockWebRuntime: WebRuntimeFactory = (_accountId, events) =>
-  mockWebRuntimeFor(createMockWhilo(), events);
+  mockWebRuntimeFor(createMockOpenBot(), events);
 
 /** The browser composition over a given mock host, for a fixture that also drives that host. */
-export function mockWebRuntimeFor(mock: MockWhiloControls, events: WebRuntimeEvents): WebWorkspaceRuntime {
+export function mockWebRuntimeFor(mock: MockOpenBotControls, events: WebRuntimeEvents): WebWorkspaceRuntime {
   const agent = mock.api.agent;
   const host = {
     hostId: "preview-host",
@@ -59,6 +60,7 @@ export function mockWebRuntimeFor(mock: MockWhiloControls, events: WebRuntimeEve
         "sidebar-layout",
         CHANNEL_CHATS_CAPABILITY,
         ROUTINE_FLOWS_CAPABILITY,
+        MESSAGE_DELETE_CAPABILITY,
       ];
     },
     disconnect: async () => {
@@ -75,6 +77,10 @@ export function mockWebRuntimeFor(mock: MockWhiloControls, events: WebRuntimeEve
       agent.readConversationPage({ agentId, limit: 50, anchor: { type: "around", messageId } }),
     markRead: (agentId, throughMessageId) => agent.markConversationRead({ agentId, throughMessageId }),
     conversationReads: () => agent.listConversationReads(),
+    deleteMessage: (input) =>
+      input.kind === "agent"
+        ? agent.deleteConversationMessage({ agentId: input.agentId, messageId: input.messageId })
+        : agent.deleteChannelMessage({ channelId: input.channelId, messageId: input.messageId }),
     // The preview host is not a hosted server.
     focusUse: async () => undefined,
     send: async (agentId, text, attachmentDraftIds, replyToMessageId, clientMessageId) => {
@@ -102,9 +108,9 @@ export function mockWebRuntimeFor(mock: MockWhiloControls, events: WebRuntimeEve
     },
     cancelUpload: async () => {},
     discard: (id) => agent.discardDraftAttachment(id),
-    download: async () => ({ name: "preview.txt", mimeType: "text/plain", base64: btoa("Whilo file preview") }),
-    sharedFile: async () => ({ name: "preview.txt", mimeType: "text/plain", base64: btoa("Whilo file preview") }),
-    workspaceFile: async () => ({ name: "preview.txt", mimeType: "text/plain", base64: btoa("Whilo file preview") }),
+    download: async () => ({ name: "preview.txt", mimeType: "text/plain", base64: btoa("OpenBot file preview") }),
+    sharedFile: async () => ({ name: "preview.txt", mimeType: "text/plain", base64: btoa("OpenBot file preview") }),
+    workspaceFile: async () => ({ name: "preview.txt", mimeType: "text/plain", base64: btoa("OpenBot file preview") }),
     workspaceDirectory: (agentId, path) => agent.listWorkspaceDirectory({ agentId, path }),
     routineFlows: mock.api.routineFlows,
     updateRoutine: (input) => agent.updateRoutine(input),

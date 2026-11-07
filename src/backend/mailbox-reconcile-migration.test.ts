@@ -3,11 +3,11 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { DatabaseSync, type StatementSync } from "node:sqlite";
-import type { AgentSummary, ConversationMessage } from "@whilo/contracts/ipc";
+import type { AgentSummary, ConversationMessage } from "@openbot/contracts/ipc";
 import { afterEach, describe, expect, it } from "vitest";
 import { runCauseEffect } from "./effect-boundary";
-import { WhiloDatabase } from "./whilo-database";
-import { migrateWhiloDatabase } from "./whilo-database-schema";
+import { OpenBotDatabase } from "./openbot-database";
+import { migrateOpenBotDatabase } from "./openbot-database-schema";
 
 // Failure modes: the upgrade deletes a reconcile event that is not a repeat, or the last event of a run,
 // or an event of another type or thread; it leaves the activity or receipt of a deleted event; it changes
@@ -33,7 +33,7 @@ function databaseAt(version: number): DatabaseSync {
 function migrateUpTo(db: DatabaseSync, version: number): void {
   db.exec(`CREATE TEMP TRIGGER stop_at_version BEFORE INSERT ON schema_migrations WHEN new.version > ${version}
     BEGIN SELECT RAISE(ABORT, 'fixture stop'); END;`);
-  expect(() => migrateWhiloDatabase(db)).toThrow(`migration to version ${version + 1} failed`);
+  expect(() => migrateOpenBotDatabase(db)).toThrow(`migration to version ${version + 1} failed`);
   db.exec("DROP TRIGGER stop_at_version");
 }
 
@@ -44,20 +44,20 @@ function migrateUpTo(db: DatabaseSync, version: number): void {
  */
 function seed(db: DatabaseSync): void {
   const thread = db.prepare("INSERT INTO projection_threads VALUES (?, ?, ?, NULL, ?, ?, 1)");
-  thread.run("whilo-thread-chief", "chief", 'Chief 界"\\', "2026-10-01T07:00:00.000Z", "2026-10-01T07:00:00.000Z");
-  thread.run("whilo-thread-other", "other", "Other", "2026-10-01T07:00:00.000Z", "2026-10-01T07:00:00.000Z");
+  thread.run("openbot-thread-chief", "chief", 'Chief 界"\\', "2026-10-01T07:00:00.000Z", "2026-10-01T07:00:00.000Z");
+  thread.run("openbot-thread-other", "other", "Other", "2026-10-01T07:00:00.000Z", "2026-10-01T07:00:00.000Z");
   const first = JSON.stringify({ detail: { messageCount: 1 }, changedMessages: [{ id: "a", text: "界" }] });
   const second = JSON.stringify({ detail: { messageCount: 1 }, changedMessages: [{ id: "a", text: "b" }] });
   const events: Array<[string, string, string]> = [
-    ["whilo-thread-chief", RECONCILED, first],
-    ["whilo-thread-chief", RECONCILED, first],
-    ["whilo-thread-other", RECONCILED, first],
-    ["whilo-thread-chief", RECONCILED, first],
-    ["whilo-thread-chief", "conversation.updated", first],
-    ["whilo-thread-chief", RECONCILED, first],
-    ["whilo-thread-other", RECONCILED, second],
-    ["whilo-thread-chief", RECONCILED, second],
-    ["whilo-thread-chief", RECONCILED, second],
+    ["openbot-thread-chief", RECONCILED, first],
+    ["openbot-thread-chief", RECONCILED, first],
+    ["openbot-thread-other", RECONCILED, first],
+    ["openbot-thread-chief", RECONCILED, first],
+    ["openbot-thread-chief", "conversation.updated", first],
+    ["openbot-thread-chief", RECONCILED, first],
+    ["openbot-thread-other", RECONCILED, second],
+    ["openbot-thread-chief", RECONCILED, second],
+    ["openbot-thread-chief", RECONCILED, second],
   ];
   const event = db.prepare(`INSERT INTO orchestration_events
     (event_id, command_id, aggregate_type, aggregate_id, event_type, occurred_at, payload_json)
@@ -119,6 +119,11 @@ function withoutRepeats(rows: Rows): Rows {
     workflow_versions: [],
     workflow_webhook_receipts: [],
     workflows: [],
+    projection_messaging_allowed_senders: [],
+    projection_deleted_thread_messages: [],
+    browser_proxies: [],
+    browser_profile_proxies: [],
+    agent_usage_skill_loads: [],
   };
 }
 
@@ -131,9 +136,9 @@ describe("mailbox reconcile cleanup migration", () => {
       // The earlier migrations run first; the rows after them are what v39 must keep.
       if (version < 38) migrateUpTo(db, 38);
       const before = contents(db);
-      migrateWhiloDatabase(db);
+      migrateOpenBotDatabase(db);
       expect(contents(db)).toEqual(withoutRepeats(before));
-      expect(db.prepare("SELECT MAX(version) AS version FROM schema_migrations").get()).toEqual({ version: 50 });
+      expect(db.prepare("SELECT MAX(version) AS version FROM schema_migrations").get()).toEqual({ version: 58 });
       expect(db.prepare("SELECT name FROM sqlite_temp_master").all()).toEqual([]);
       expect(db.prepare("PRAGMA foreign_keys").get()).toEqual({ foreign_keys: 1 });
       expect(db.prepare("PRAGMA foreign_key_check").all()).toEqual([]);
@@ -147,12 +152,12 @@ describe("mailbox reconcile cleanup migration", () => {
     const before = contents(db);
     db.exec(`CREATE TEMP TRIGGER fail_marker BEFORE INSERT ON schema_migrations WHEN new.version=39
       BEGIN SELECT RAISE(ABORT, 'late failure'); END;`);
-    expect(() => migrateWhiloDatabase(db)).toThrow("migration to version 39 failed");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("migration to version 39 failed");
     expect(contents(db)).toEqual(before);
     expect(db.prepare("SELECT version FROM schema_migrations WHERE version=39").all()).toEqual([]);
     expect(db.prepare("PRAGMA foreign_keys").get()).toEqual({ foreign_keys: 1 });
     db.exec("DROP TRIGGER fail_marker");
-    migrateWhiloDatabase(db);
+    migrateOpenBotDatabase(db);
     expect(contents(db)).toEqual(withoutRepeats(before));
   });
 
@@ -160,24 +165,24 @@ describe("mailbox reconcile cleanup migration", () => {
     const db = databaseAt(38);
     seed(db);
     const before = contents(db);
-    db.exec("INSERT INTO schema_migrations VALUES(51,'now')");
-    expect(() => migrateWhiloDatabase(db)).toThrow("newer than this application supports");
-    db.exec("DELETE FROM schema_migrations WHERE version=51; DELETE FROM schema_migrations WHERE version=20");
-    expect(() => migrateWhiloDatabase(db)).toThrow("missing version 20");
+    db.exec("INSERT INTO schema_migrations VALUES(59,'now')");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("newer than this application supports");
+    db.exec("DELETE FROM schema_migrations WHERE version=59; DELETE FROM schema_migrations WHERE version=20");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("missing version 20");
     expect(contents(db)).toEqual(before);
   });
 
   it("keeps the messages and what a replay rebuilds from the writes of a page read", async () => {
-    const root = await mkdtemp(join(tmpdir(), "whilo-db-mailbox-reconcile-"));
+    const root = await mkdtemp(join(tmpdir(), "openbot-db-mailbox-reconcile-"));
     roots.push(root);
-    const database = new WhiloDatabase(root);
+    const database = new OpenBotDatabase(root);
     await runCauseEffect(database.initialize());
     const agent = testAgent();
     database.replaceAgents("mailbox-reconcile-agents", [agent], "agents.imported");
     const write = (eventType: string, messages: ConversationMessage[]) =>
       database.persistConversationChanges({
         agentId: agent.id,
-        threadId: "whilo-thread-chief",
+        threadId: "openbot-thread-chief",
         activeTurnId: null,
         changedMessages: messages,
         eventType,
@@ -189,7 +194,7 @@ describe("mailbox reconcile cleanup migration", () => {
     for (let index = 0; index < 3; index++) write(RECONCILED, [question]);
     write("conversation.updated", [message("answer", "assistant", "Final")]);
     write(RECONCILED, [question]);
-    const replayed = database.rebuildThreadProjection("whilo-thread-chief");
+    const replayed = database.rebuildThreadProjection("openbot-thread-chief");
     const rows = database.connection.prepare("SELECT * FROM projection_thread_messages ORDER BY ordinal").all();
     const events = database.connection
       .prepare(
@@ -201,9 +206,11 @@ describe("mailbox reconcile cleanup migration", () => {
 
     const legacy = new DatabaseSync(path);
     // From 38 on: migration 47 reads the task table that 38 creates.
-    legacy.exec("DELETE FROM schema_migrations WHERE version IN (38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50)");
+    legacy.exec(
+      "DELETE FROM schema_migrations WHERE version IN (38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58)",
+    );
     legacy.close();
-    const migrated = new WhiloDatabase(root);
+    const migrated = new OpenBotDatabase(root);
     await runCauseEffect(migrated.initialize());
     expect(migrated.connection.prepare("SELECT * FROM projection_thread_messages ORDER BY ordinal").all()).toEqual(
       rows,
@@ -215,9 +222,9 @@ describe("mailbox reconcile cleanup migration", () => {
       .all();
     const reconciled = events.filter((event) => event.event_type === RECONCILED);
     expect(kept).toEqual(events.filter((event) => !reconciled.slice(0, 2).includes(event)));
-    expect(migrated.rebuildThreadProjection("whilo-thread-chief")).toEqual(replayed);
+    expect(migrated.rebuildThreadProjection("openbot-thread-chief")).toEqual(replayed);
     expect(migrated.connection.prepare("SELECT MAX(version) AS version FROM schema_migrations").get()).toEqual({
-      version: 50,
+      version: 58,
     });
     migrated.close();
   });
@@ -237,8 +244,8 @@ function testAgent(): AgentSummary {
     notifications: true,
     model: "gpt-5.6-luna",
     reasoningEffort: "medium",
-    threadId: "whilo-thread-chief",
-    workspacePath: "/tmp/whilo-chief",
+    threadId: "openbot-thread-chief",
+    workspacePath: "/tmp/openbot-chief",
     preview: "42",
     updatedAt: "2026-08-18T10:00:01.000Z",
     avatarSeed: "chief",

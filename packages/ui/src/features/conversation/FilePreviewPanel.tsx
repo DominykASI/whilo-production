@@ -1,4 +1,4 @@
-import type { FilePreview, WorkspaceDirectory, WorkspaceDirectoryEntry } from "@whilo/contracts/ipc";
+import type { FilePreview, WorkspaceDirectory, WorkspaceDirectoryEntry } from "@openbot/contracts/ipc";
 import {
   ArrowLeft,
   Button,
@@ -13,14 +13,15 @@ import {
   LabelTooltipTrigger,
   WrapText,
   X,
-} from "@whilo/ui";
-import { PanelResizer } from "@whilo/ui/components/PanelResizer";
-import type { AgentProfile } from "@whilo/ui/data";
-import { ChatVisual } from "@whilo/ui/features/conversation/ChatVisual";
-import { type CodeToken, fileCodeLanguage, highlightedCodeLines } from "@whilo/ui/features/conversation/CodeBlock";
-import { MarkdownFilePreview } from "@whilo/ui/features/conversation/MarkdownFilePreview";
-import { SpreadsheetFilePreview } from "@whilo/ui/features/conversation/SpreadsheetFilePreview";
-import { useText } from "@whilo/ui/text";
+} from "@openbot/ui";
+import { PanelResizer } from "@openbot/ui/components/PanelResizer";
+import type { AgentProfile } from "@openbot/ui/data";
+import { ChatVisual } from "@openbot/ui/features/conversation/ChatVisual";
+import { type CodeToken, fileCodeLanguage, highlightedCodeLines } from "@openbot/ui/features/conversation/CodeBlock";
+import { MarkdownFilePreview } from "@openbot/ui/features/conversation/MarkdownFilePreview";
+import { SpreadsheetFilePreview } from "@openbot/ui/features/conversation/SpreadsheetFilePreview";
+import { useText } from "@openbot/ui/text";
+import { holdFlag } from "@openbot/ui/utils";
 import type { JSX } from "@solidjs/web";
 import { createEffect, createMemo, createSignal, For, onCleanup, onSettled, Show, untrack } from "solid-js";
 
@@ -174,7 +175,15 @@ export default function FilePreviewPanel(props: FilePreviewPanelProps) {
     if (revealFrame !== undefined) cancelAnimationFrame(revealFrame);
   });
 
-  const revealPanel = () => {
+  let panel!: HTMLElement;
+  // The chat beside the panel makes room for it (`panel-layout.css`).
+  onSettled(() => {
+    const conversation = panel.closest(".conversation-panel");
+    return conversation ? holdFlag(conversation, "file-preview-panel") : undefined;
+  });
+
+  const revealPanel = (element: HTMLElement) => {
+    panel = element;
     revealFrame = requestAnimationFrame(() => {
       revealFrame = requestAnimationFrame(() => {
         setRevealed(true);
@@ -284,7 +293,13 @@ export default function FilePreviewPanel(props: FilePreviewPanelProps) {
             </HeaderButton>
           )}
         </Show>
-        <HeaderButton label={t("preview.panel.close")} data-cuelume-tap="close" onClick={props.onClose}>
+        {/* In the side panel, the file tab closes the file, so this button hides there. */}
+        <HeaderButton
+          label={t("preview.panel.close")}
+          class="side-panel-pane-close"
+          data-cuelume-tap="close"
+          onClick={props.onClose}
+        >
           <X class="browser-toolbar-icon" />
         </HeaderButton>
       </header>
@@ -405,6 +420,7 @@ export default function FilePreviewPanel(props: FilePreviewPanelProps) {
 /** An icon-only header button. Its label names it for a screen reader and in a tooltip. */
 function HeaderButton(props: {
   label: string;
+  class?: string;
   pressed?: boolean;
   onClick: () => void;
   "data-cuelume-tap"?: string;
@@ -417,7 +433,7 @@ function HeaderButton(props: {
         as={Button}
         variant="ghost"
         type="button"
-        class="browser-toolbar-button"
+        class={["browser-toolbar-button", props.class]}
         aria-label={props.label}
         aria-pressed={pressed()}
         data-cuelume-tap={props["data-cuelume-tap"]}

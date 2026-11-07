@@ -7,13 +7,15 @@
 // - a stop of a prompt that ignores `session/cancel` ends the turn as interrupted;
 // - OpenCode answer text streams before the prompt answers;
 // - Antigravity, whose prompt stays open for background tasks, is not ended as stalled;
-// - an agent that cannot load a session keeps it after a stop that Whilo ends.
-// `bun run test:acp-turn-stall`. Writes .whilo-build/acp-turn-stall-e2e/report.json.
+// - an Antigravity prompt that gets no update at all is sent again once on a resumed session, a second
+//   silent prompt fails the turn, and a prompt that is quiet after its first update goes on (#4846);
+// - an agent that cannot load a session keeps it after a stop that OpenBot ends.
+// `bun run test:acp-turn-stall`. Writes .openbot-build/acp-turn-stall-e2e/report.json.
 import assert from "node:assert/strict";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { sourceText } from "@whilo/i18n/source";
+import { sourceText } from "@openbot/i18n/source";
 import { AcpAgentClient } from "../src/backend/acp-client";
 import { type AcpCustomEndpoint, type AcpFlavor, DEFAULT_ACP_FLAVOR } from "../src/backend/acp-flavor";
 import { ANTIGRAVITY_ACP_FLAVOR } from "../src/backend/acp-flavor-antigravity";
@@ -23,10 +25,11 @@ import { runCauseEffect } from "../src/backend/effect-boundary";
 import type { AppServerNotification } from "../src/backend/protocol";
 import { installFakeAgent, readJsonl, runTurn, startThread, stopClients } from "./provider-fakes/host";
 
-const OUT = resolve(import.meta.dirname, "../.whilo-build/acp-turn-stall-e2e");
+const OUT = resolve(import.meta.dirname, "../.openbot-build/acp-turn-stall-e2e");
 const STALL_MS = 1_500;
 const TOOL_MS = STALL_MS * 3;
 const CHUNK_GAP_MS = 500;
+const FIRST_UPDATE_MS = 1_000;
 
 interface LogEntry {
   event: string;
@@ -43,12 +46,15 @@ interface Report {
   stop?: { status: string | null; elapsedMs: number; next: string | null };
   stream?: { deltaBeforeCompletion: boolean; reply: string };
   antigravity?: { stalled: boolean; stopStatus: string | null };
+  lostPrompt?: { status: string | null; reply: string; prompts: number; cancels: number; resumes: number };
+  lostTwice?: { status: string | null; error: string | null; elapsedMs: number; next: string | null };
+  quiet?: { status: string | null; reply: string; prompts: number };
   /** `sessionsOpened` counts only the sessions opened after the stop. */
   noLoad?: { stopStatus: string | null; next: string | null; sessionsOpened: number; loads: number };
   failure?: string;
 }
 
-const root = await mkdtemp(join(tmpdir(), "whilo-acp-turn-stall-e2e-"));
+const root = await mkdtemp(join(tmpdir(), "openbot-acp-turn-stall-e2e-"));
 const report: Report = { passed: false };
 const clients: AgentClient[] = [];
 
@@ -58,6 +64,7 @@ async function open(
   log: string,
   env: Readonly<Record<string, string>> = {},
   customEndpoint?: (modelId: string | null) => AcpCustomEndpoint | null,
+  firstUpdateMs?: number,
 ): Promise<AgentClient> {
   const executable = join(root, provider, "bin", provider);
   await installFakeAgent(executable, "stall", {
@@ -74,6 +81,7 @@ async function open(
     signInMessage: "Sign in to the fake agent.",
     turnStallMs: STALL_MS,
     ...(customEndpoint ? { customEndpoint } : {}),
+    ...(firstUpdateMs ? { firstUpdateMs } : {}),
   });
   clients.push(client);
   client.start();
@@ -200,7 +208,69 @@ try {
   assert.equal(antigravityStalled, false, "A silent Antigravity prompt is not ended as stalled.");
   assert.equal(antigravityStop.status, "interrupted", "A stop still ends the Antigravity turn.");
 
-  // An agent with no session/load or resume cannot give a session back. A stop that Whilo ends
+  // An Antigravity prompt that gets no update at all is lost, not a background task. It is sent again
+  // once, after `session/cancel` and a `session/resume` that rebuilds the harness, as a stop does.
+  const firstLog = join(root, "antigravity-first.jsonl");
+  const first = await open(
+    "antigravity",
+    ANTIGRAVITY_ACP_FLAVOR,
+    firstLog,
+    { FAKE_RESUME: "1", FAKE_QUIET_MS: String(FIRST_UPDATE_MS * 3) },
+    undefined,
+    FIRST_UPDATE_MS,
+  );
+  const lostThread = await startThread(first, { cwd: workspace });
+  const lostSession = lostThread.split(":").at(-1);
+  const lost = await runTurn(first, lostThread, { text: "hang-once", timeoutMs: FIRST_UPDATE_MS * 10 });
+  const lostEntries = (await readJsonl<LogEntry>(firstLog)).filter((entry) => entry.sessionId === lostSession);
+  report.lostPrompt = {
+    status: lost.status,
+    reply: lost.reply,
+    prompts: lostEntries.filter((entry) => entry.event === "prompt").length,
+    cancels: lostEntries.filter((entry) => entry.event === "cancel").length,
+    resumes: lostEntries.filter((entry) => entry.event === "session/resume").length,
+  };
+  assert.equal(lost.status, "completed", "A lost Antigravity prompt completes when it is sent again.");
+  assert.equal(lost.reply, "ok", "The answer to the prompt sent again is the turn's answer.");
+  assert.equal(report.lostPrompt.prompts, 2, "The lost prompt is sent again once.");
+  assert.equal(report.lostPrompt.cancels, 1, "The lost prompt is cancelled before it is sent again.");
+  assert.equal(report.lostPrompt.resumes, 1, "The session is resumed before the prompt is sent again.");
+
+  // A prompt that is silent again fails the turn, and the next prompt works.
+  const twiceThread = await startThread(first, { cwd: workspace });
+  const twice = await timed(() => runTurn(first, twiceThread, { text: "hang", timeoutMs: FIRST_UPDATE_MS * 20 }));
+  const afterTwice = await runTurn(first, twiceThread);
+  report.lostTwice = {
+    status: twice.value.status,
+    error: twice.value.error,
+    elapsedMs: twice.elapsedMs,
+    next: afterTwice.status,
+  };
+  assert.equal(twice.value.status, "failed", "A prompt that is silent twice fails the turn.");
+  assert.equal(
+    twice.value.error,
+    sourceText("error.agent.turnStalled", { provider: "Gemini" }),
+    "The failure tells the user to send the message again.",
+  );
+  assert.ok(twice.elapsedMs >= FIRST_UPDATE_MS * 2, "Each prompt gets the whole limit.");
+  assert.equal(afterTwice.status, "completed", "The next prompt after the failure completes.");
+
+  // A prompt that sent its first update and is quiet longer than the limit is working, not lost.
+  const quietThread = await startThread(first, { cwd: workspace });
+  const quietSession = quietThread.split(":").at(-1);
+  const quiet = await runTurn(first, quietThread, { text: "quiet", timeoutMs: FIRST_UPDATE_MS * 20 });
+  report.quiet = {
+    status: quiet.status,
+    reply: quiet.reply,
+    prompts: (await readJsonl<LogEntry>(firstLog)).filter(
+      (entry) => entry.event === "prompt" && entry.sessionId === quietSession,
+    ).length,
+  };
+  assert.equal(quiet.status, "completed", "A quiet prompt after its first update completes.");
+  assert.equal(quiet.reply, "working, done", "The quiet prompt's answer is whole.");
+  assert.equal(report.quiet.prompts, 1, "A quiet prompt is not sent again.");
+
+  // An agent with no session/load or resume cannot give a session back. A stop that OpenBot ends
   // keeps the session, so the next turn does not replace it and lose its context.
   const noLoadLog = join(root, "no-load.jsonl");
   const noLoad = await open("cline", DEFAULT_ACP_FLAVOR, noLoadLog, { FAKE_NO_LOAD: "1" });
@@ -221,7 +291,7 @@ try {
   assert.equal(noLoadStop.status, "interrupted", "A stop ends the turn of an agent that cannot load sessions.");
   assert.equal(noLoadNext.status, "completed", "The next turn of that agent completes.");
   assert.equal(report.noLoad.sessionsOpened, 0, "The agent keeps its session.");
-  assert.equal(report.noLoad.loads, 0, "Whilo does not try to open the session again.");
+  assert.equal(report.noLoad.loads, 0, "OpenBot does not try to open the session again.");
 
   report.passed = true;
 } catch (error) {

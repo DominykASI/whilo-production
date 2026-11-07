@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, describe, expect, it } from "vitest";
-import { migrateWhiloDatabase } from "./whilo-database-schema";
+import { migrateOpenBotDatabase } from "./openbot-database-schema";
 
 // Failure modes: an upgrade loses or changes an event or a receipt; a partial migration survives a failure;
 // a retry fails on the index that the failed run left; a newer or incomplete history is changed.
@@ -16,7 +16,7 @@ function databaseAt(version: number): DatabaseSync {
   db.exec(`CREATE TABLE schema_migrations(version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL);
     CREATE TEMP TRIGGER stop_at_version BEFORE INSERT ON schema_migrations WHEN new.version > ${version}
     BEGIN SELECT RAISE(ABORT, 'fixture stop'); END;`);
-  expect(() => migrateWhiloDatabase(db)).toThrow(`migration to version ${version + 1} failed`);
+  expect(() => migrateOpenBotDatabase(db)).toThrow(`migration to version ${version + 1} failed`);
   db.exec("DROP TRIGGER stop_at_version");
   return db;
 }
@@ -26,11 +26,11 @@ function seedEvents(db: DatabaseSync): void {
   db.exec(`INSERT INTO orchestration_events
       (event_id, command_id, aggregate_type, aggregate_id, event_type, occurred_at, payload_json)
     VALUES
-      ('event-1', 'command-1', 'thread', 'whilo-thread-chief', 'conversation.snapshot',
+      ('event-1', 'command-1', 'thread', 'openbot-thread-chief', 'conversation.snapshot',
         '2026-10-01T10:00:00.000Z', '{"snapshot":{"messages":[]}}'),
-      ('event-2', 'command-2', 'thread', 'whilo-thread-chief', 'conversation.message-streamed',
+      ('event-2', 'command-2', 'thread', 'openbot-thread-chief', 'conversation.message-streamed',
         '2026-10-01T10:00:01.000Z', '{"streamedMessage":{"id":"message-1","text":"Hel"}}'),
-      ('event-3', 'command-3', 'thread', 'whilo-thread-chief', 'conversation.message-streamed',
+      ('event-3', 'command-3', 'thread', 'openbot-thread-chief', 'conversation.message-streamed',
         '2026-10-01T10:00:02.000Z', '{"streamedMessage":{"id":"message-1","text":"Hello"}}'),
       ('event-4', 'command-4', 'hosted-site-operation', 'site-1', 'hosted-site.active',
         '2026-10-01T10:00:03.000Z', '{"siteId":"site-1"}');
@@ -55,7 +55,7 @@ function typeIndexColumns(db: DatabaseSync) {
 const TYPE_INDEX_COLUMNS = ["aggregate_id", "event_type", "sequence"];
 
 function expectHealthy(db: DatabaseSync): void {
-  expect(db.prepare("SELECT MAX(version) AS version FROM schema_migrations").get()).toEqual({ version: 50 });
+  expect(db.prepare("SELECT MAX(version) AS version FROM schema_migrations").get()).toEqual({ version: 58 });
   expect(db.prepare("PRAGMA foreign_keys").get()).toEqual({ foreign_keys: 1 });
   expect(db.prepare("PRAGMA foreign_key_check").all()).toEqual([]);
   expect(db.prepare("PRAGMA integrity_check").get()).toEqual({ integrity_check: "ok" });
@@ -67,7 +67,7 @@ describe("event type index migration", () => {
     const db = databaseAt(version);
     seedEvents(db);
     const before = contents(db);
-    migrateWhiloDatabase(db);
+    migrateOpenBotDatabase(db);
     expect(contents(db)).toEqual(before);
     expect(typeIndexColumns(db)).toEqual(TYPE_INDEX_COLUMNS);
     expectHealthy(db);
@@ -79,12 +79,12 @@ describe("event type index migration", () => {
     const before = contents(db);
     db.exec(`CREATE TEMP TRIGGER fail_marker BEFORE INSERT ON schema_migrations WHEN new.version = 43
       BEGIN SELECT RAISE(ABORT, 'late failure'); END;`);
-    expect(() => migrateWhiloDatabase(db)).toThrow("migration to version 43 failed");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("migration to version 43 failed");
     expect(typeIndexColumns(db)).toEqual([]);
     expect(contents(db)).toEqual(before);
     expect(db.prepare("SELECT version FROM schema_migrations WHERE version = 43").all()).toEqual([]);
     db.exec("DROP TRIGGER fail_marker");
-    migrateWhiloDatabase(db);
+    migrateOpenBotDatabase(db);
     expect(contents(db)).toEqual(before);
     expect(typeIndexColumns(db)).toEqual(TYPE_INDEX_COLUMNS);
     expectHealthy(db);
@@ -96,11 +96,11 @@ describe("event type index migration", () => {
     const before = contents(db);
     // SQLite refuses an index whose name a table holds, even with IF NOT EXISTS.
     db.exec("CREATE TABLE orchestration_events_thread_type (conflict TEXT)");
-    expect(() => migrateWhiloDatabase(db)).toThrow("migration to version 43 failed");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("migration to version 43 failed");
     expect(db.prepare("SELECT version FROM schema_migrations WHERE version = 43").all()).toEqual([]);
     expect(contents(db)).toEqual(before);
     db.exec("DROP TABLE orchestration_events_thread_type");
-    migrateWhiloDatabase(db);
+    migrateOpenBotDatabase(db);
     expect(contents(db)).toEqual(before);
     expect(typeIndexColumns(db)).toEqual(TYPE_INDEX_COLUMNS);
     expectHealthy(db);
@@ -110,10 +110,10 @@ describe("event type index migration", () => {
     const db = databaseAt(42);
     seedEvents(db);
     const before = contents(db);
-    db.exec("INSERT INTO schema_migrations VALUES(51, 'now')");
-    expect(() => migrateWhiloDatabase(db)).toThrow("newer than this application supports");
-    db.exec("DELETE FROM schema_migrations WHERE version = 51; DELETE FROM schema_migrations WHERE version = 20");
-    expect(() => migrateWhiloDatabase(db)).toThrow("missing version 20");
+    db.exec("INSERT INTO schema_migrations VALUES(59, 'now')");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("newer than this application supports");
+    db.exec("DELETE FROM schema_migrations WHERE version = 59; DELETE FROM schema_migrations WHERE version = 20");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("missing version 20");
     expect(contents(db)).toEqual(before);
     expect(typeIndexColumns(db)).toEqual([]);
   });

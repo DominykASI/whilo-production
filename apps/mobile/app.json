@@ -2,8 +2,8 @@
   "expo": {
     "name": "Whilo",
     "slug": "whilo",
-    "platforms": ["ios", "android", "web"],
-    "version": "1.4.5",
+    "platforms": ["ios", "android"],
+    "version": "1.4.7",
     "orientation": "portrait",
     "icon": "./assets/icons/app-icon.png",
     "scheme": "whilo",

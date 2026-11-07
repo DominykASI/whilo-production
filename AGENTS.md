@@ -40,10 +40,10 @@ adding a module or moving ownership between workspaces.
 ## Product constraints
 
 - Workspaces, conversations, attachments, browser data, and team data stay on the computer that
-  runs Whilo. Providers, visited pages, and plugins can use the network. Exception: a signed-in
-  phone keeps an encrypted, read-only copy of the agents, sections and recent chats of its servers
-  (`apps/mobile/src/features/workspace/model/workspace-cache.ts`). The copy stays on that phone,
-  the host stays the source of truth, and sign-out, session expiry and server removal delete it.
+  runs OpenBot. Providers, visited pages, and plugins can use the network. Exception: a signed-in
+  phone keeps an encrypted, read-only copy of the agents, sections, recent chats, channels and drawer
+  values of its servers (`apps/mobile/src/features/workspace/model/workspace-cache.ts`). The copy stays
+  on that phone, the host stays the source of truth, and sign-out, session expiry and server removal delete it.
 - Cloudflare holds accounts, avatars, host configuration, memberships, invitations, and logical
   sessions; it does not hold chats, files, or commands.
 - The user's SQLite database is the source of truth, not a remote cache.
@@ -77,13 +77,13 @@ adding a module or moving ownership between workspaces.
 
 ## Shared UI
 
-`packages/ui` (`@whilo/ui`) owns shared SolidJS controls and feature components used by
+`packages/ui` (`@openbot/ui`) owns shared SolidJS controls and feature components used by
 desktop, public web, and Storybook. Reuse these components before adding UI. Import primitives
-from `@whilo/ui` and feature components from explicit subpaths such as
-`@whilo/ui/features/sidebar/Sidebar`. Do not copy them back into an app.
+from `@openbot/ui` and feature components from explicit subpaths such as
+`@openbot/ui/features/sidebar/Sidebar`. Do not copy them back into an app.
 
 Keep shared components independent of application contexts, desktop storage, host connections,
-and `window.whilo`. Pass data and actions through typed props. Platform adapters and the main
+and `window.openbot`. Pass data and actions through typed props. Platform adapters and the main
 conversation controller stay in the renderer. Component extraction must preserve the existing
 UI, styles, and behavior unless the user requests a design change. Native mobile shares brand
 tokens and contracts; it does not render SolidJS DOM components.
@@ -92,7 +92,7 @@ Read [packages/ui/AGENTS.md](packages/ui/AGENTS.md) before changing shared UI.
 
 ## Interface text
 
-Text that a user reads comes from `@whilo/i18n` catalog keys, on desktop, web and mobile. Do not
+Text that a user reads comes from `@openbot/i18n` catalog keys, on desktop, web and mobile. Do not
 write a literal. Errors that the main process, backend or team client send use `sourceText(key)`.
 Read [docs/i18n.md](docs/i18n.md) before adding a key or a language.
 
@@ -135,7 +135,7 @@ State which surfaces a change touches. Check all affected consumers and reverse 
 - Desktop renderer (`src/renderer`), mobile (`apps/mobile`), public web (`apps/auth-api`; no separate
   landing app), hosted-site routing (`apps/site-router`), and Signal (`remote/api`).
 - IPC contracts (`packages/contracts`) and their preview implementation
-  (`src/renderer/src/preview/mock-whilo.ts`).
+  (`src/renderer/src/preview/mock-openbot.ts`).
 - Reverse actions: snooze/unsnooze, pause/resume, revoke/reconnect, mute/unmute.
 - Migrations and the separate latest schema for new databases.
 - Documentation: `README.md` commands, `docs/architecture/`, and `PRIVACY.md` when outbound data
@@ -152,7 +152,7 @@ State which surfaces a change touches. Check all affected consumers and reverse 
 - Use the development loader. It reads the development key from the shell; without the key,
   local development must work with generated defaults. Commands that need external secrets must
   stop before remote changes when those secrets are missing. An invalid key must fail safely.
-- Keep generated identity and saved local overrides in ignored `.whilo/dev-state.json`.
+- Keep generated identity and saved local overrides in ignored `.openbot/dev-state.json`.
   New manual overrides use shell variables. Do not add `.env.local` or `.env.generated`.
 - `.env.keys` stores decryption keys, not service settings. Keep it ignored. Preserve existing
   production key handling and CI/GitHub secrets unless the developer requests a change.
@@ -160,7 +160,7 @@ State which surfaces a change touches. Check all affected consumers and reverse 
   `DOTENV_PRIVATE_KEY_DEV`. Every encrypted env file, `remote/.env.production` included, uses one of
   them. Never make a new key pair. Pass `-fk` with the root `.env.keys` so Dotenvx does not make one.
 - For direct Cloudflare changes, `apps/auth-api/.env.production` holds `CLOUDFLARE_API_TOKEN`
-  (write access to all resources in the Whilo account) and `CLOUDFLARE_ACCOUNT_ID`. Load them
+  (write access to all resources in the OpenBot account) and `CLOUDFLARE_ACCOUNT_ID`. Load them
   with `bunx dotenvx run -f apps/auth-api/.env.production -fk <root>/.env.keys -- <command>`. A worktree
   has no `.env.keys`; use the one in the main checkout. Never print the token: do not use
   `dotenvx get` or `echo`. Ask before a change that deletes data or affects production users.
@@ -181,7 +181,7 @@ See [account service setup](apps/auth-api/README.md) for loading and deployment 
   when it cannot confirm a PID's identity; resolve the process, then `bun run dev:forget`. Dead
   records do not reserve ports.
 - Reuse a running dev instance. `bun run dev` opens a profile tied to this worktree; `--shared`
-  opens the shared `Whilo Dev` profile. Use the ports the stack reports rather than a fixed port.
+  opens the shared `OpenBot Dev` profile. Use the ports the stack reports rather than a fixed port.
 
 See [README.md — Commands](README.md#commands) for the flags these commands take, and
 [docs/architecture/change-rules.md](docs/architecture/change-rules.md#change-rules) for why the registry works this way, when a dev command
@@ -190,7 +190,7 @@ does not behave as expected.
 ## Terms
 
 - **bot** is not for new product code. Released names stay: Team API v1-v3 `bot`/`botId`,
-  `bots.json`, `legacy-import:bots:v1`, and `~/Whilo/Bots` path prefixes.
+  `bots.json`, `legacy-import:bots:v1`, and `~/OpenBot/Bots` path prefixes.
 - **teammate** and **group** are prompt and UI words, never types.
 
 Use [docs/glossary.md](docs/glossary.md) when naming a new type, table, IPC channel or product
@@ -229,7 +229,7 @@ risks since the last release.
 - Use E2E tests only. Do not add unit tests. An E2E test is a script under `scripts/` (such as
   `scripts/*-e2e.ts` or `scripts/*-smoke.ts`) that drives the real app, process or service. At the
   end, it writes a verifiable and repeatable artifact, such as a JSON report or a screenshot under
-  `.whilo-build/`.
+  `.openbot-build/`.
 - Vitest files are permitted only for these protected areas:
   - Database migrations: data-preservation fixtures for every affected released schema, plus the
     failure and rollback cases that [src/backend/AGENTS.md](src/backend/AGENTS.md) lists. A
@@ -263,10 +263,9 @@ They describe the enforced syntax, fixture behavior, and reasons for removed rul
 ## Pull requests
 
 - Open a PR only when asked.
-- Write the PR body from `.github/PULL_REQUEST_TEMPLATE.md`. Do not add the Contributor Assignment
-  Agreement box: organization members and users with write access do not sign. The `CLA` workflow
-  adds the box only for an author who must sign. Only the human author can sign it: tick that box
-  only after their explicit approval in this conversation.
+- Write the PR body from `.github/PULL_REQUEST_TEMPLATE.md`. Organization members and users with
+  write access do not sign the Contributor License Agreement. An author who must sign sends a signed
+  PDF by email. Never sign, fill in, or send the agreement for the author.
 - For UI changes, show before and after. State the model and harness in the PR body.
   Do not commit screenshots or other PR review image assets to the repository.
 - Do not run wider checks locally before a PR. Report focused checks and leave broad checks to CI.

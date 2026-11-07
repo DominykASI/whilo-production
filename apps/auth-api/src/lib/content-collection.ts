@@ -8,7 +8,7 @@
 // graph would make the build depend on the UI it is only illustrating. Article
 // bodies live in src/content and are wired up separately.
 
-import { WHILO_SITE_URL } from "./site-metadata";
+import { OPENBOT_SITE_URL, type PageSocialImage } from "./site-metadata";
 
 export type CollectionId = "news" | "guides" | "compare" | "providers";
 /** The collections whose articles are prose, drawn by the article page. */
@@ -41,6 +41,8 @@ export interface ContentCollection<Id extends CollectionId = CollectionId> {
   /** The `<title>` of the index page. */
   indexTitle: string;
   indexDescription: string;
+  /** The index page's own social card. Without it, the index shows the site's card. */
+  indexSocialImage?: PageSocialImage;
   /** Names the RSS feed, in the feed itself and in `<link rel="alternate">`. */
   feedTitle: string;
   /** The link back to the index from inside an article. */
@@ -81,16 +83,16 @@ export function reportedArticlePath(collection: ContentCollection, slug: string)
 // that served the page (see `servingSiteUrl`); the feed and the sitemap keep
 // openbot.run.
 
-export function articleUrl(collection: ContentCollection, slug: string, siteUrl = WHILO_SITE_URL): string {
+export function articleUrl(collection: ContentCollection, slug: string, siteUrl = OPENBOT_SITE_URL): string {
   return new URL(articlePath(collection, slug), siteUrl).toString();
 }
 
 /** The article's text as Markdown, which `src/server/page-markdown.ts` serves. */
-export function articleMarkdownUrl(collection: ContentCollection, slug: string, siteUrl = WHILO_SITE_URL): string {
+export function articleMarkdownUrl(collection: ContentCollection, slug: string, siteUrl = OPENBOT_SITE_URL): string {
   return new URL(`${articlePath(collection, slug)}.md`, siteUrl).toString();
 }
 
-export function collectionIndexUrl(collection: ContentCollection, siteUrl = WHILO_SITE_URL): string {
+export function collectionIndexUrl(collection: ContentCollection, siteUrl = OPENBOT_SITE_URL): string {
   return new URL(collection.indexRoute, siteUrl).toString();
 }
 
@@ -98,12 +100,12 @@ function collectionFeedPath(collection: ContentCollection): string {
   return `${collection.indexRoute}/rss.xml`;
 }
 
-export function collectionFeedUrl(collection: ContentCollection, siteUrl = WHILO_SITE_URL): string {
+export function collectionFeedUrl(collection: ContentCollection, siteUrl = OPENBOT_SITE_URL): string {
   return new URL(collectionFeedPath(collection), siteUrl).toString();
 }
 
 /** The 1200x630 social card, with the title baked in. Drawn by `bun run api:images`. */
-export function articleOgImageUrl(collection: ContentCollection, slug: string, siteUrl = WHILO_SITE_URL): string {
+export function articleOgImageUrl(collection: ContentCollection, slug: string, siteUrl = OPENBOT_SITE_URL): string {
   return new URL(`/${collection.id}/og/${slug}.png`, siteUrl).toString();
 }
 

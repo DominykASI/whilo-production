@@ -32,8 +32,8 @@
   align-items: center;
   justify-content: center;
   min-width: 0;
-  color: var(--whilo-text-muted);
-  font-size: var(--whilo-text-xs);
+  color: var(--openbot-text-muted);
+  font-size: var(--openbot-text-xs);
 }
 
 /*
@@ -80,11 +80,11 @@
   place-items: center;
   margin: 0;
   border: 0;
-  padding: var(--whilo-space-6);
-  background: var(--whilo-dialog-overlay);
+  padding: var(--openbot-space-6);
+  background: var(--openbot-dialog-overlay);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  color: var(--whilo-text-primary);
+  color: var(--openbot-text-primary);
   -webkit-app-region: no-drag;
 }
 
@@ -98,29 +98,29 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: var(--whilo-radius-xl);
-  background: var(--whilo-bg-control);
-  box-shadow: 0 0 0 1px var(--whilo-dialog-ring);
+  border-radius: var(--openbot-radius-xl);
+  background: var(--openbot-bg-control);
+  box-shadow: 0 0 0 1px var(--openbot-dialog-ring);
 }
 
 .chat-visual-box:popover-open .chat-visual-frame {
   min-height: 0;
   flex: 1;
-  background: var(--whilo-bg-sidebar);
+  background: var(--openbot-bg-sidebar);
 }
 
 /* The expand button shows when the pointer or the focus is on the page. */
 :where(.ui-button).chat-visual-expand {
   position: absolute;
-  top: var(--whilo-space-2);
-  right: var(--whilo-space-2);
+  top: var(--openbot-space-2);
+  inset-inline-end: var(--openbot-space-2);
   opacity: 0;
-  transition: opacity var(--whilo-duration-hover) var(--whilo-ease-out);
+  transition: opacity var(--openbot-duration-hover) var(--openbot-ease-out);
 }
 
 .chat-visual-expand svg {
-  width: var(--whilo-icon-xs);
-  height: var(--whilo-icon-xs);
+  width: var(--openbot-icon-xs);
+  height: var(--openbot-icon-xs);
 }
 
 .chat-visual-box:popover-open > .chat-visual-expand {

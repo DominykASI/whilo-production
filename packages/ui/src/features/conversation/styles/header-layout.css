@@ -5,7 +5,8 @@
   align-items: center;
   justify-content: space-between;
   border-bottom: 0;
-  padding: 0 12px 0 8px;
+  padding-block: 0;
+  padding-inline: 8px 12px;
   background: transparent;
 }
 
@@ -20,36 +21,36 @@
   position: absolute;
   z-index: 13;
   top: 19px;
-  right: 16px;
+  inset-inline-end: 16px;
   display: flex;
   width: min(308px, calc(100% - 32px));
   height: 34px;
   align-items: center;
-  border: 1px solid var(--whilo-border-strong);
-  border-radius: var(--whilo-radius-lg);
-  background: var(--whilo-bg-control);
-  box-shadow: var(--whilo-shadow-raised);
-  color: var(--whilo-text-muted);
+  border: 1px solid var(--openbot-border-strong);
+  border-radius: var(--openbot-radius-lg);
+  background: var(--openbot-bg-control);
+  box-shadow: var(--openbot-shadow-raised);
+  color: var(--openbot-text-muted);
 }
 
 .chat-search-icon {
-  width: var(--whilo-icon-md);
-  height: var(--whilo-icon-md);
+  width: var(--openbot-icon-md);
+  height: var(--openbot-icon-md);
   flex: 0 0 auto;
-  margin-left: 11px;
-  stroke-width: var(--whilo-icon-stroke);
+  margin-inline-start: 11px;
+  stroke-width: var(--openbot-icon-stroke);
 }
 
 .chat-search .chat-search-input {
   min-width: 0;
-  height: var(--whilo-control-md);
+  height: var(--openbot-control-md);
   flex: 1;
   border: 0;
   background: transparent;
   padding: 0 8px;
   box-shadow: none;
-  color: var(--whilo-text-primary);
-  font-size: var(--whilo-text-lg);
+  color: var(--openbot-text-primary);
+  font-size: var(--openbot-text-lg);
 }
 
 .chat-search .chat-search-input:focus {
@@ -64,8 +65,8 @@
 
 .chat-search-position {
   min-width: 38px;
-  color: var(--whilo-text-muted);
-  font-size: var(--whilo-text-md);
+  color: var(--openbot-text-muted);
+  font-size: var(--openbot-text-md);
   font-variant-numeric: tabular-nums;
   text-align: center;
 }
@@ -74,12 +75,12 @@
   width: 1px;
   height: 20px;
   flex: 0 0 auto;
-  background: var(--whilo-border);
+  background: var(--openbot-border);
 }
 
 .chat-search .chat-search-button {
   width: 26px;
-  height: var(--whilo-control-md);
+  height: var(--openbot-control-md);
   flex: 0 0 auto;
   border: 0;
   border-radius: inherit;
@@ -87,41 +88,41 @@
 }
 
 .chat-search-button svg {
-  width: var(--whilo-icon-md);
-  height: var(--whilo-icon-md);
-  stroke-width: var(--whilo-icon-stroke);
+  width: var(--openbot-icon-md);
+  height: var(--openbot-icon-md);
+  stroke-width: var(--openbot-icon-stroke);
 }
 
 .chat-search .chat-search-close {
-  margin-right: 3px;
+  margin-inline-end: 3px;
 }
 
-::highlight(whilo-chat-search-results) {
-  background: var(--whilo-accent-soft);
+::highlight(openbot-chat-search-results) {
+  background: var(--openbot-accent-soft);
 }
 
-::highlight(whilo-chat-search-current) {
-  background: var(--whilo-warning);
-  color: var(--whilo-paper-text);
+::highlight(openbot-chat-search-current) {
+  background: var(--openbot-warning);
+  color: var(--openbot-paper-text);
 }
 
 .conversation-title[aria-label="View agent settings"]:hover {
-  color: var(--whilo-text-primary);
+  color: var(--openbot-text-primary);
 }
 
 .browser-panel {
   position: absolute;
   z-index: 14;
   top: 0;
-  right: 0;
+  inset-inline-end: 0;
   bottom: 0;
   display: flex;
   width: var(--browser-panel-width, 380px);
   flex-direction: column;
-  border-left: 1px solid var(--whilo-border);
-  background: var(--whilo-bg-canvas);
-  color: var(--whilo-text-primary);
+  border-inline-start: 1px solid var(--openbot-border);
+  background: var(--openbot-bg-canvas);
+  color: var(--openbot-text-primary);
   transition:
-    border-color var(--whilo-duration-slow) ease,
-    box-shadow var(--whilo-duration-slow) ease;
+    border-color var(--openbot-duration-slow) ease,
+    box-shadow var(--openbot-duration-slow) ease;
 }

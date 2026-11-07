@@ -3,7 +3,7 @@ import ExpoModulesCore
 import SherpaOnnxC
 import UIKit
 
-/// The files of the Supertonic 3 export, as `@whilo/contracts/speech-models` downloads them.
+/// The files of the Supertonic 3 export, as `@openbot/contracts/speech-models` downloads them.
 private let supertonicFiles = (
   durationPredictor: "duration_predictor.int8.onnx",
   textEncoder: "text_encoder.int8.onnx",
@@ -82,7 +82,7 @@ private enum SpeechError: Error {
   case modelLoadFailed
 }
 
-/// The files of the Parakeet TDT 0.6B v3 export, as `@whilo/contracts/speech-models` downloads them.
+/// The files of the Parakeet TDT 0.6B v3 export, as `@openbot/contracts/speech-models` downloads them.
 private let parakeetFiles = (
   encoder: "encoder.int8.onnx",
   decoder: "decoder.int8.onnx",
@@ -178,11 +178,13 @@ private let interimFrames = 10
 /// The microphone, converted to 16 kHz mono. In `transcribe` mode it cuts the speech into segments
 /// at the user's pauses and recognizes each one with Parakeet; in `stream` mode it sends the audio.
 private final class SpeechCapture {
-  let queue = DispatchQueue(label: "run.whilo.speech.capture", qos: .userInitiated)
-  /// Its own engine: the playback engine changes its configuration when a reply starts.
-  let engine = AVAudioEngine()
+  let queue = DispatchQueue(label: "run.openbot.speech.capture", qos: .userInitiated)
+  /// Its own engine: the playback engine changes its configuration when a reply starts. Each capture
+  /// makes a new one. An engine keeps the microphone format of the route it first saw, and a reply
+  /// or a new route between two captures changes that format: the old engine then cannot start.
+  /// Only `queue` reads and writes it.
+  private(set) var engine = AVAudioEngine()
   private let target = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: captureSampleRate, channels: 1, interleaved: false)!
-  private var converter: AVAudioConverter?
   private var meter = LoudnessMeter()
   private var pending: [Float] = []
   private var segment: [Float] = []
@@ -216,18 +218,27 @@ private final class SpeechCapture {
     guard audio.recordPermission == .granted else { throw CaptureError.permission }
     try audio.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetoothHFP, .allowBluetoothA2DP])
     try audio.setActive(true)
+    allowHapticsWhileRecording()
+    engine = AVAudioEngine()
     let input = engine.inputNode
-    let format = input.outputFormat(forBus: 0)
-    guard format.sampleRate > 0, format.channelCount > 0, let converter = AVAudioConverter(from: format, to: target) else {
-      throw CaptureError.noMicrophone
-    }
-    self.converter = converter
+    let hardware = input.inputFormat(forBus: 0)
+    guard hardware.sampleRate > 0, hardware.channelCount > 0 else { throw CaptureError.noMicrophone }
     let own = session
-    input.installTap(onBus: 0, bufferSize: 4_096, format: format) { [weak self] buffer, _ in
-      guard let self, let samples = self.convert(buffer) else { return }
-      self.queue.async {
-        guard own == self.session else { return }
-        self.receive(samples)
+    // A reply that plays, or a new route, changes the session between two captures, and the input
+    // node can still report the format of the route before. A tap with a format that differs from
+    // the hardware raises an Objective-C exception. So the tap takes the format of the node itself,
+    // and the converter follows the buffers it gets. A route that changes during the start can
+    // still make the tap raise; caught, the start fails and the app continues.
+    var converter: AVAudioConverter?
+    try EXUtilities.catchException {
+      input.installTap(onBus: 0, bufferSize: 4_096, format: nil) { [weak self] buffer, _ in
+        guard let self else { return }
+        if converter?.inputFormat != buffer.format { converter = AVAudioConverter(from: buffer.format, to: self.target) }
+        guard let converter, let samples = self.convert(buffer, with: converter) else { return }
+        self.queue.async {
+          guard own == self.session else { return }
+          self.receive(samples)
+        }
       }
     }
     engine.prepare()
@@ -293,12 +304,10 @@ private final class SpeechCapture {
   private func stopEngine() {
     if engine.isRunning { engine.stop() }
     engine.inputNode.removeTap(onBus: 0)
-    converter = nil
   }
 
   /// Runs on the tap's thread, one buffer after another, so the converter keeps its state.
-  private func convert(_ buffer: AVAudioPCMBuffer) -> [Float]? {
-    guard let converter else { return nil }
+  private func convert(_ buffer: AVAudioPCMBuffer, with converter: AVAudioConverter) -> [Float]? {
     let capacity = AVAudioFrameCount(Double(buffer.frameLength) * captureSampleRate / buffer.format.sampleRate) + 1
     guard let output = AVAudioPCMBuffer(pcmFormat: target, frameCapacity: capacity) else { return nil }
     var consumed = false
@@ -410,17 +419,25 @@ private enum CaptureError: Error {
 private final class SpeechPlayer {
   private let engine = AVAudioEngine()
   private let node = AVAudioPlayerNode()
+  /// Changes the speed of the parts and keeps their pitch.
+  private let timePitch = AVAudioUnitTimePitch()
   private var format: AVAudioFormat?
   /// The parts that are scheduled, in order. The first one plays.
   private var scheduled: [String] = []
   private let onStart: (String) -> Void
   private let onDone: (String) -> Void
-  let queue = DispatchQueue(label: "run.whilo.speech.playback")
+  let queue = DispatchQueue(label: "run.openbot.speech.playback")
 
   init(onStart: @escaping (String) -> Void, onDone: @escaping (String) -> Void) {
     self.onStart = onStart
     self.onDone = onDone
     engine.attach(node)
+    engine.attach(timePitch)
+  }
+
+  /// Runs on `queue`. Applies at once, also to the part that plays now.
+  func setSpeed(_ speed: Float) {
+    timePitch.rate = speed
   }
 
   /// Runs on `queue`. A part of a stopped reply is dropped by its caller.
@@ -467,23 +484,28 @@ private final class SpeechPlayer {
       // A new sample rate, such as a reply of the other voice engine, needs a new connection.
       node.stop()
       engine.disconnectNodeOutput(node)
-      engine.connect(node, to: engine.mainMixerNode, format: format)
+      engine.disconnectNodeOutput(timePitch)
+      engine.connect(node, to: timePitch, format: format)
+      engine.connect(timePitch, to: engine.mainMixerNode, format: format)
       self.format = format
     }
     if !engine.isRunning {
       engine.prepare()
       try engine.start()
     }
-    if !node.isPlaying { node.play() }
+    // A session change, such as a capture that starts during a voice conversation, can stop the
+    // engine after the check above. The play then raises an Objective-C exception, which stops the
+    // app; caught, it fails only this part.
+    if !node.isPlaying { try EXUtilities.catchException { self.node.play() } }
   }
 }
 
 public class SpeechModule: Module {
-  private let synthesis = DispatchQueue(label: "run.whilo.speech.synthesis", qos: .userInitiated)
+  private let synthesis = DispatchQueue(label: "run.openbot.speech.synthesis", qos: .userInitiated)
   private var voice: SupertonicVoice?
   /// Only `recognitionQueue` reads and writes it.
   private var recognizer: ParakeetRecognizer?
-  private let recognitionQueue = DispatchQueue(label: "run.whilo.speech.recognition", qos: .userInitiated)
+  private let recognitionQueue = DispatchQueue(label: "run.openbot.speech.recognition", qos: .userInitiated)
   private var observers: [NSObjectProtocol] = []
   private lazy var capture = SpeechCapture(
     recognition: recognitionQueue,
@@ -517,7 +539,7 @@ public class SpeechModule: Module {
   }
 
   public func definition() -> ModuleDefinition {
-    Name("WhiloSpeech")
+    Name("OpenBotSpeech")
 
     Events("onSpeechStart", "onSpeechDone", "onSpeechError", "onCaptureLevel", "onCaptureAudio", "onCaptureText", "onCaptureEnd")
 
@@ -534,9 +556,13 @@ public class SpeechModule: Module {
           let type = (notification.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt).flatMap(AVAudioSession.InterruptionType.init)
           if type == .began { stopped(notification) }
         },
-        // The notice can also come for the change that the start itself made; only a stopped engine ends it.
-        center.addObserver(forName: .AVAudioEngineConfigurationChange, object: capture.engine, queue: nil) { _ in
-          capture.queue.async { if !capture.engine.isRunning { capture.fail("interrupted") } }
+        // The notice can also come for the change that the start itself made; only a stopped engine
+        // ends it. Each capture has a new engine, so the notice names the engine of the capture.
+        center.addObserver(forName: .AVAudioEngineConfigurationChange, object: nil, queue: nil) { notification in
+          let changed = notification.object as AnyObject?
+          capture.queue.async {
+            if changed === capture.engine && !capture.engine.isRunning { capture.fail("interrupted") }
+          }
         },
         // About 1 GB that the next session can load again.
         center.addObserver(forName: UIApplication.didReceiveMemoryWarningNotification, object: nil, queue: nil) { [weak self] _ in
@@ -590,6 +616,12 @@ public class SpeechModule: Module {
           promise.reject("ERR_CAPTURE", "The microphone could not start.")
         }
       }
+    }
+
+    /// Lets haptics play while the microphone records. The phone recognizer opens its own session,
+    /// which iOS starts with haptics silenced, so JavaScript calls this when that recognizer listens.
+    Function("allowHapticsWhileRecording") {
+      allowHapticsWhileRecording()
     }
 
     /// Closes the microphone, sends the text of the speech that is left, then `onCaptureEnd`.
@@ -675,6 +707,12 @@ public class SpeechModule: Module {
       self.enqueue(SpeechPart(id: id, samples: samples, sampleRate: Double(sampleRate)), generation: own)
     }
 
+    /// Plays every part at this speed, also the part that plays now. 1 is normal speed.
+    Function("setSpeed") { (speed: Double) in
+      let player = self.player
+      player.queue.async { player.setSpeed(Float(speed)) }
+    }
+
     /// Stops the part that plays and drops the parts that wait.
     Function("stop") {
       self.lock.lock()
@@ -697,4 +735,11 @@ public class SpeechModule: Module {
       self.recognitionQueue.sync { self.recognizer = nil }
     }
   }
+}
+
+/// iOS silences haptics while an audio session records, so the detents of a hold on the mic and the
+/// tick of the lock would not play while the user speaks. A failure keeps the silence; nothing else
+/// depends on it.
+func allowHapticsWhileRecording() {
+  try? AVAudioSession.sharedInstance().setAllowHapticsAndSystemSoundsDuringRecording(true)
 }

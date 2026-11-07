@@ -5,14 +5,17 @@
   grid-row: 1;
   min-width: 0;
   flex-direction: column;
-  background: var(--whilo-bg-canvas);
-  transition: padding-right var(--panel-resize-duration, var(--whilo-duration-overlay)) cubic-bezier(0.22, 1, 0.36, 1);
-  --conversation-column-width: 1440px;
+  background: var(--openbot-bg-canvas);
+  transition: padding-inline-end var(--panel-resize-duration, var(--openbot-duration-overlay))
+    cubic-bezier(0.22, 1, 0.36, 1);
+  --conversation-column-width: clamp(1440px, 65vw, 1920px);
 }
 
 /*
  * On a very wide screen the chat stops at a column and centers in the pane, so a reply and the
- * user's message stay near each other. A laptop window is narrower than the column and shows the
+ * user's message stay near each other. The column grows with the window from 1440px to 1920px. It
+ * uses the window width, not a percentage, because a percentage refers to a different box in the
+ * message list and in the composer padding. A laptop window is narrower than the column and shows the
  * chat at full width. The scroll area and the composer keep the pane width, so the scroll bar stays
  * at the pane edge. The live content under the messages, such as the working row and a pending
  * question, stays in the same column.
@@ -28,12 +31,12 @@
  * padding is relative to the panel, so the settings panel width is subtracted where it shows.
  */
 .conversation-panel > .composer-wrap {
-  padding-inline: max(var(--whilo-space-1-5), calc((100% - var(--conversation-column-width) - 12px) / 2));
+  padding-inline: max(var(--openbot-space-1-5), calc((100% - var(--conversation-column-width) - 12px) / 2));
 }
 
-.conversation-panel:has(.settings-panel) > .composer-wrap {
+.conversation-panel[data-settings-panel] > .composer-wrap {
   padding-inline: max(
-    var(--whilo-space-1-5),
+    var(--openbot-space-1-5),
     calc((100% - var(--settings-panel-width, 360px) - var(--conversation-column-width) - 12px) / 2)
   );
 }
@@ -69,7 +72,7 @@
  */
 .conversation-panel > .composer-wrap .mention-picker {
   --mention-picker-side-inset: max(
-    calc(var(--whilo-space-1-5) + 12px),
+    calc(var(--openbot-space-1-5) + 12px),
     calc((100% - var(--conversation-column-width) + 12px) / 2)
   );
 }
@@ -82,8 +85,8 @@
   grid-column: 3;
   grid-row: 1;
   flex-direction: column;
-  background: var(--whilo-bg-canvas);
-  color: var(--whilo-text-primary);
+  background: var(--openbot-bg-canvas);
+  color: var(--openbot-text-primary);
 }
 
 .app-frame-with-server-rail .direct-conversation {
@@ -96,7 +99,7 @@
   flex: 0 0 auto;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid var(--whilo-hover);
+  border-bottom: 1px solid var(--openbot-hover);
   padding: 0 14px;
 }
 
@@ -112,14 +115,14 @@
 
   width: 30px;
   height: 30px;
-  border-radius: var(--whilo-radius-md);
+  border-radius: var(--openbot-radius-md);
 }
 
 .direct-conversation-person h1 {
   overflow: hidden;
   margin: 0;
-  color: var(--whilo-text-primary);
-  font-size: var(--whilo-text-md);
+  color: var(--openbot-text-primary);
+  font-size: var(--openbot-text-md);
   font-weight: 560;
   line-height: 17px;
   text-overflow: ellipsis;
@@ -130,32 +133,32 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  color: var(--whilo-text-muted);
-  font-size: var(--whilo-text-sm);
+  color: var(--openbot-text-muted);
+  font-size: var(--openbot-text-sm);
   line-height: 11px;
 }
 
 .direct-conversation-person div > span i {
   width: 5px;
   height: 5px;
-  border-radius: var(--whilo-radius-pill);
-  background: var(--whilo-bg-control-hover);
+  border-radius: var(--openbot-radius-pill);
+  background: var(--openbot-bg-control-hover);
 }
 
 .direct-conversation-person div > span.online {
-  color: var(--whilo-success);
+  color: var(--openbot-success);
 }
 
 .direct-conversation-person div > span.online i {
-  background: var(--whilo-success);
+  background: var(--openbot-success);
 }
 
 .direct-private-label {
   display: flex;
   align-items: center;
   gap: 5px;
-  color: var(--whilo-text-readable);
-  font-size: var(--whilo-text-sm);
+  color: var(--openbot-text-readable);
+  font-size: var(--openbot-text-sm);
 }
 
 .direct-private-label svg {
@@ -165,7 +168,7 @@
   stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: var(--whilo-icon-stroke);
+  stroke-width: var(--openbot-icon-stroke);
 }
 
 .direct-message-list {
@@ -181,21 +184,21 @@
   min-height: 100%;
   place-content: center;
   justify-items: center;
-  color: var(--whilo-text-muted);
+  color: var(--openbot-text-muted);
   text-align: center;
 }
 
 .direct-conversation-empty h2 {
   margin: 14px 0 4px;
-  color: var(--whilo-text-primary);
-  font-size: var(--whilo-text-xl);
+  color: var(--openbot-text-primary);
+  font-size: var(--openbot-text-xl);
   font-weight: 560;
 }
 
 .direct-conversation-empty p {
   max-width: 290px;
   margin: 0;
-  font-size: var(--whilo-text-sm);
+  font-size: var(--openbot-text-sm);
   line-height: 17px;
 }
 
@@ -212,14 +215,14 @@
 }
 
 .direct-message .ui-bubble-content {
-  font-size: var(--whilo-text-md);
+  font-size: var(--openbot-text-md);
   line-height: 19px;
   white-space: pre-wrap;
 }
 
 .direct-message time {
-  color: var(--whilo-text-readable);
-  font-size: var(--whilo-text-sm);
+  color: var(--openbot-text-readable);
+  font-size: var(--openbot-text-sm);
 }
 
 .direct-message .ui-message-footer {
@@ -237,14 +240,14 @@
   align-items: center;
   gap: 7px;
   padding: 0 10px 4px;
-  color: var(--whilo-text-muted);
-  font-size: var(--whilo-text-sm);
+  color: var(--openbot-text-muted);
+  font-size: var(--openbot-text-sm);
 }
 
 .direct-message-error {
   margin: 0 8px 6px;
-  color: var(--whilo-danger);
-  font-size: var(--whilo-text-sm);
+  color: var(--openbot-danger);
+  font-size: var(--openbot-text-sm);
 }
 
 .direct-composer {
@@ -252,15 +255,16 @@
   min-height: 46px;
   align-items: flex-end;
   gap: 8px;
-  border: 1px solid var(--whilo-border);
-  border-radius: var(--whilo-radius-lg);
-  background: var(--whilo-bg-control);
-  padding: 6px 7px 6px 13px;
-  box-shadow: 0 8px 25px var(--whilo-shadow-popover-ambient);
+  border: 1px solid var(--openbot-border);
+  border-radius: var(--openbot-radius-lg);
+  background: var(--openbot-bg-control);
+  padding-block: 6px;
+  padding-inline: 13px 7px;
+  box-shadow: 0 8px 25px var(--openbot-shadow-popover-ambient);
 }
 
 .direct-composer:focus-within {
-  border-color: var(--whilo-border-strong);
+  border-color: var(--openbot-border-strong);
 }
 
 .direct-composer textarea {
@@ -273,14 +277,14 @@
   outline: 0;
   background: transparent;
   padding: 6px 0;
-  color: var(--whilo-text-primary);
+  color: var(--openbot-text-primary);
   font: inherit;
-  font-size: var(--whilo-text-md);
+  font-size: var(--openbot-text-md);
   line-height: 20px;
 }
 
 .direct-composer textarea::placeholder {
-  color: var(--whilo-text-muted);
+  color: var(--openbot-text-muted);
 }
 
 .direct-composer > button {
@@ -290,16 +294,16 @@
   flex: 0 0 auto;
   place-items: center;
   border: 0;
-  border-radius: var(--whilo-radius-md);
-  background: var(--whilo-success);
-  color: var(--whilo-success);
-  font-size: var(--whilo-text-xl);
+  border-radius: var(--openbot-radius-md);
+  background: var(--openbot-success);
+  color: var(--openbot-success);
+  font-size: var(--openbot-text-xl);
   font-weight: 650;
 }
 
 .direct-composer > button:disabled {
-  background: var(--whilo-border);
-  color: var(--whilo-text-dim);
+  background: var(--openbot-border);
+  color: var(--openbot-text-dim);
 }
 
 .app-frame-with-server-rail .conversation-panel {

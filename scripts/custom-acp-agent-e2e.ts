@@ -3,22 +3,23 @@
 // stdio and give the same session id, so the router must keep them apart. A usage prompt goes to the
 // model list process of its agent, and its answer comes back redacted. A fake cipher replaces the
 // operating system's secret storage, which exists only in Electron.
-// `bun scripts/custom-acp-agent-e2e.ts`. Writes .whilo-build/custom-acp-agent-e2e/report.json.
+// `bun scripts/custom-acp-agent-e2e.ts`. Writes .openbot-build/custom-acp-agent-e2e/report.json.
 import assert from "node:assert/strict";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { CUSTOM_AGENT_DEFAULT_MODEL } from "@whilo/contracts/ipc";
+import { CUSTOM_AGENT_DEFAULT_MODEL, isAgentModel } from "@openbot/contracts/ipc";
 import { Effect } from "effect";
 import { checkAcpAgent } from "../src/backend/acp-agent-check";
 import { isMissingProviderSessionError } from "../src/backend/agent/thread-items";
 import type { AgentClient } from "../src/backend/agent-client";
 import { runCauseEffect } from "../src/backend/effect-boundary";
+import { decodeModelListResponse } from "../src/backend/protocol";
 import { requireProviderDriver } from "../src/backend/provider-drivers";
 import { CustomAgentStore } from "../src/main/custom-agent-store";
 import { installFakeAgent, readJsonl, runTurn, startThread, stopClients, xorCipher } from "./provider-fakes/host";
 
-const OUT = resolve(import.meta.dirname, "../.whilo-build/custom-acp-agent-e2e");
+const OUT = resolve(import.meta.dirname, "../.openbot-build/custom-acp-agent-e2e");
 const SECRET = "sk-e2e-agent-secret";
 // A routed thread id is `<agent>:<folder tag>:<session>`; the folder tag is 12 hex digits.
 const ROUTED_THREAD = (agent: string) => new RegExp(`^${agent}:[0-9a-f]{12}:s-\\d+$`);
@@ -29,6 +30,7 @@ interface LogEntry {
   event: "start" | "request";
   method?: string;
   sessionId?: string | null;
+  modelId?: string | null;
 }
 
 interface Report {
@@ -38,13 +40,14 @@ interface Report {
   checkModels?: { models: string[]; requests: string[]; stopped: boolean; signInModels: string[] };
   crashMasked?: { message: string };
   turns?: { models: string[]; alphaThread: string; betaThread: string; alphaReply: string; betaReply: string };
+  quotedModel?: { id: string; agentModel: string | null | undefined; reply: string };
   usage?: { answer: string | null; threadProcesses: number; usageProcess: number };
   restart?: { processesStopped: number; loadedSession: string | null | undefined; resumedReply: string };
   switch?: { missingSession: boolean };
   delete?: { refused: string };
 }
 
-const root = await mkdtemp(join(tmpdir(), "whilo-custom-agent-e2e-"));
+const root = await mkdtemp(join(tmpdir(), "openbot-custom-agent-e2e-"));
 const report: Report = { passed: false };
 const clients: AgentClient[] = [];
 
@@ -169,7 +172,7 @@ try {
       listModels: true,
     }),
   );
-  assert.deepEqual(listed.models, ["Fast", "Deep"]);
+  assert.deepEqual(listed.models, ["Fast", "Deep", "Deep v2"]);
   const modelsEntries = await readJsonl<LogEntry>(modelsLog);
   const modelsRequests = modelsEntries.filter((entry) => entry.event === "request").map((entry) => entry.method ?? "");
   assert.deepEqual(modelsRequests, ["initialize", "session/new"]);
@@ -202,7 +205,7 @@ try {
     return client;
   };
   let client = open();
-  const models = await runCauseEffect(client.request("model/list", {}, (value) => value));
+  const models = await runCauseEffect(client.request("model/list", {}, decodeModelListResponse));
   const modelIds = JSON.stringify(models);
   for (const id of ["alpha/fast", "alpha/deep", "beta/default"]) assert.ok(modelIds.includes(`"${id}"`), id);
 
@@ -222,6 +225,17 @@ try {
     "The agent process gets its env value.",
   );
   assert.equal((await readJsonl<LogEntry>(betaLog)).find((entry) => entry.event === "start")?.token, null);
+
+  // 3b. A model value with quotes is listed under an id in the contract charset, and the agent gets
+  // its own value back (#5026).
+  const quotedId = models.data.find((entry) => entry.displayName === "Alpha/Deep v2")?.model;
+  assert.ok(quotedId && isAgentModel(quotedId), `The quoted model is listed: ${quotedId}`);
+  const quotedReply = await reply(client, alphaThread, quotedId, "hello quoted");
+  const quotedModel = (await readJsonl<LogEntry>(alphaLog)).findLast(
+    (entry) => entry.method === "session/set_model",
+  )?.modelId;
+  assert.equal(quotedModel, '["deep","v2"]', "The agent gets its own model value.");
+  report.quotedModel = { id: quotedId, agentModel: quotedModel, reply: quotedReply };
   report.turns = {
     models: ["alpha/fast", "alpha/deep", "beta/default"],
     alphaThread,

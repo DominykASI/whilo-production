@@ -1,74 +1,92 @@
 import {
   HOST_MEMBER_UPDATE_CAPABILITY,
   memberUpdateRoute,
-} from "@whilo/contracts/team-protocol/host-member-update-v1";
-import { HOST_RELEASE_CAPABILITY, HOST_RELEASE_ROUTES } from "@whilo/contracts/team-protocol/host-release-v1";
+} from "@openbot/contracts/team-protocol/host-member-update-v1";
+import { HOST_RELEASE_CAPABILITY, HOST_RELEASE_ROUTES } from "@openbot/contracts/team-protocol/host-release-v1";
 import { Effect, Result } from "effect";
 import type { RemoteWorkflowError } from "../remote-service-effects";
-// The server name, logo, timezone, agent memory limit, memory review, prompt cache time and app
-// update of one server's host. On a joined server the request goes to the host. Identity, timezone,
-// memory limit, memory review, prompt cache time, settings, cancellation, and forced restarts require
-// an owner or admin.
+// The server name, logo, timezone, agent memory limit, memory review, prompt cache time, model list
+// and app update of one server's host. On a joined server the request goes to the host. Identity,
+// timezone, memory limit, memory review, prompt cache time, model list, settings, cancellation, and
+// forced restarts require an owner or admin.
 // Ordinary members can check and request an idle update through host-member-update-v1.
 
 import {
   type AgentAccessChange,
   type AgentAccessSnapshot,
+  type AgentProviderRef,
   decodeAgentAccessSnapshot,
   decodeHostAgentMemoryLimit,
   decodeHostMemoryReview,
+  decodeHostPersonality,
   decodeHostTimezoneSettings,
   decodeHostUpdateStatus,
   decodeMachineAlertSettings,
   decodePromptCacheTtlSetting,
+  decodeProviderModelVisibility,
   decodeServerAuditLog,
+  type HostPersonality,
   type HostUpdateSettingsChange,
   type HostUpdateStatus,
   hostAgentMemoryLimit,
   hostMemoryReview,
   isPromptCacheTtl,
+  LEGACY_RESPONSE_STYLE,
   LOCAL_SERVER_ID,
   type MachineAlertSettings,
   type PromptCacheTtl,
+  type ProviderModelVisibilityChange,
   parseAgentAccessChange,
+  parseProviderModelVisibilityChange,
+  parseProviderModelVisibilityProvider,
   type ServerAuditLog,
   type ServerAuditName,
   type ServerSummary,
   UPDATE_RESTART_MODES,
   type UpdateHostIdentityInput,
   type UpdateRestartMode,
-} from "@whilo/contracts/ipc";
-import { isOneOf } from "@whilo/contracts/runtime-values";
-import { AGENT_ACCESS_CAPABILITY, AGENT_ACCESS_ROUTES } from "@whilo/contracts/team-protocol/agent-access-v1";
+} from "@openbot/contracts/ipc";
+import { isOneOf } from "@openbot/contracts/runtime-values";
+import { AGENT_ACCESS_CAPABILITY, AGENT_ACCESS_ROUTES } from "@openbot/contracts/team-protocol/agent-access-v1";
 import {
   AGENT_MEMORY_LIMIT_CAPABILITY,
   AGENT_MEMORY_LIMIT_ROUTES,
-} from "@whilo/contracts/team-protocol/agent-memory-limit-v1";
-import type { TeamCurrentCapability } from "@whilo/contracts/team-protocol/current";
-import { HOST_ADMIN_CAPABILITY, HOST_ADMIN_ROUTES } from "@whilo/contracts/team-protocol/host-admin-v1";
-import { HOST_TIMEZONE_CAPABILITY, HOST_TIMEZONE_ROUTES } from "@whilo/contracts/team-protocol/host-timezone-v1";
-import { HOST_UPDATE_CAPABILITY, HOST_UPDATE_ROUTES } from "@whilo/contracts/team-protocol/host-update-v1";
+} from "@openbot/contracts/team-protocol/agent-memory-limit-v1";
+import type { TeamCurrentCapability } from "@openbot/contracts/team-protocol/current";
+import { HOST_ADMIN_CAPABILITY, HOST_ADMIN_ROUTES } from "@openbot/contracts/team-protocol/host-admin-v1";
+import {
+  HOST_PERSONALITY_CAPABILITY,
+  HOST_PERSONALITY_ROUTES,
+} from "@openbot/contracts/team-protocol/host-personality-v1";
+import { HOST_TIMEZONE_CAPABILITY, HOST_TIMEZONE_ROUTES } from "@openbot/contracts/team-protocol/host-timezone-v1";
+import { HOST_UPDATE_CAPABILITY, HOST_UPDATE_ROUTES } from "@openbot/contracts/team-protocol/host-update-v1";
 import {
   MACHINE_RESOURCES_CAPABILITY,
   MACHINE_RESOURCES_ROUTES,
-} from "@whilo/contracts/team-protocol/machine-resources-v1";
-import { MEMORY_REVIEW_CAPABILITY, MEMORY_REVIEW_ROUTES } from "@whilo/contracts/team-protocol/memory-review-v1";
+} from "@openbot/contracts/team-protocol/machine-resources-v1";
+import { MEMORY_REVIEW_CAPABILITY, MEMORY_REVIEW_ROUTES } from "@openbot/contracts/team-protocol/memory-review-v1";
+import {
+  MODEL_VISIBILITY_CAPABILITY,
+  MODEL_VISIBILITY_ROUTES,
+} from "@openbot/contracts/team-protocol/model-visibility-v1";
 import {
   PROMPT_CACHE_TTL_CAPABILITY,
   PROMPT_CACHE_TTL_ROUTES,
-} from "@whilo/contracts/team-protocol/prompt-cache-ttl-v1";
-import { SERVER_AUDIT_CAPABILITY, SERVER_AUDIT_ROUTES } from "@whilo/contracts/team-protocol/server-audit-v1";
-import { sourceText } from "@whilo/i18n/source";
+} from "@openbot/contracts/team-protocol/prompt-cache-ttl-v1";
+import { SERVER_AUDIT_CAPABILITY, SERVER_AUDIT_ROUTES } from "@openbot/contracts/team-protocol/server-audit-v1";
+import { sourceText } from "@openbot/i18n/source";
 import { runCauseEffect } from "../../backend/effect-boundary";
 import { type AgentAccessStore, agentAccessSnapshot } from "../agent-access-store";
 import type { AgentMemoryLimitSetting } from "../agent-memory-limit-preference-store";
 import type { HostService } from "../host-service";
 import type { MachineAlertMonitor } from "../machine-alerts";
 import type { MemoryReviewPreferenceStore } from "../memory-review-preference-store";
+import type { ModelVisibility } from "../model-visibility";
 import type { PromptCacheTtlPreferenceStore } from "../prompt-cache-ttl-preference-store";
 import { acceptEmpty, decodeHostReleaseStatusFromHost, type ResponseDecoder } from "../remote-host-decoding";
 import type { RemoteRequestInit } from "../remote-server-client";
 import type { ServerAuditStore } from "../server-audit-store";
+import { parseServerPersonality, type ServerPersonalityPreferenceStore } from "../server-personality-preference-store";
 import { parseServerTimezone, type ServerTimezonePreferenceStore } from "../server-timezone-preference-store";
 import { parseAgentMemoryLimitPreference, parseHostUpdateSettings, parseMemoryReviewPreference } from "./app-inputs";
 import type { IpcGroupHandlers } from "./define-ipc-group";
@@ -92,10 +110,12 @@ interface HostAdminIpcDependencies {
   host: Pick<HostService, "updateIdentity">;
   remoteServers: HostAdminRemoteServers;
   serverTimezone: Pick<ServerTimezonePreferenceStore, "get" | "set">;
+  serverPersonality: Pick<ServerPersonalityPreferenceStore, "get" | "set">;
   agentMemoryLimit: AgentMemoryLimitSetting;
   memoryReview: MemoryReviewPreferenceStore;
   machineAlerts: Pick<MachineAlertMonitor, "alerts" | "setAlerts" | "canBeResponsible">;
   promptCacheTtl: Pick<PromptCacheTtlPreferenceStore, "get" | "set">;
+  modelVisibility: Pick<ModelVisibility, "settings" | "set">;
   agentAccess: Pick<AgentAccessStore, "levels" | "set">;
   serverAudit: Pick<ServerAuditStore, "read">;
   /** The server ID of this computer's host, when it has one. Roles are stored by it. */
@@ -115,10 +135,12 @@ export function hostAdminIpcHandlers({
   host,
   remoteServers,
   serverTimezone,
+  serverPersonality,
   agentMemoryLimit,
   memoryReview,
   machineAlerts,
   promptCacheTtl,
+  modelVisibility,
   agentAccess,
   serverAudit,
   localServerId,
@@ -142,6 +164,9 @@ export function hostAdminIpcHandlers({
       throw new Error(sourceText("error.team.hostTimezoneUnsupported"));
     return runCauseEffect(remoteServers.request(serverId, route, decodeHostTimezoneSettings, { method: "POST", body }));
   }
+  function remotePersonality(serverId: string, route: string, body: Record<string, never> | HostPersonality) {
+    return runCauseEffect(remoteServers.request(serverId, route, decodeHostPersonality, { method: "POST", body }));
+  }
   function remoteMemoryLimit(serverId: string, route: string, body: { limit?: number }) {
     if (!remoteServers.supportsCapability(serverId, AGENT_MEMORY_LIMIT_CAPABILITY))
       throw new Error(sourceText("error.team.agentMemoryLimitUnsupported"));
@@ -162,6 +187,17 @@ export function hostAdminIpcHandlers({
       throw new Error(sourceText("error.team.promptCacheTtlUnsupported"));
     return runCauseEffect(
       remoteServers.request(serverId, route, decodePromptCacheTtlSetting, { method: "POST", body }),
+    );
+  }
+  function remoteModelVisibility(
+    serverId: string,
+    route: string,
+    body: { provider: AgentProviderRef } | ProviderModelVisibilityChange,
+  ) {
+    if (!remoteServers.supportsCapability(serverId, MODEL_VISIBILITY_CAPABILITY))
+      throw new Error(sourceText("error.team.modelVisibilityUnsupported"));
+    return runCauseEffect(
+      remoteServers.request(serverId, route, decodeProviderModelVisibility, { method: "POST", body }),
     );
   }
   function localAccessServerId(): string {
@@ -258,6 +294,22 @@ export function hostAdminIpcHandlers({
         local: (timezone) => runCauseEffect(serverTimezone.set(timezone)),
         remote: (timezone, serverId) => remoteTimezone(serverId, HOST_TIMEZONE_ROUTES.update, { timezone }),
       }),
+      // A host before host-personality-v1 uses the classic prompt.
+      getPersonality: scopedQueryHandler({
+        local: () => serverPersonality.get(),
+        remote: async (serverId) =>
+          remoteServers.supportsCapability(serverId, HOST_PERSONALITY_CAPABILITY)
+            ? remotePersonality(serverId, HOST_PERSONALITY_ROUTES.settings, {})
+            : { responseStyle: LEGACY_RESPONSE_STYLE },
+      }),
+      setPersonality: scopedHandler(parseServerPersonality, {
+        local: (personality) => runCauseEffect(serverPersonality.set(personality)),
+        remote: (personality, serverId) => {
+          if (!remoteServers.supportsCapability(serverId, HOST_PERSONALITY_CAPABILITY))
+            throw new Error(sourceText("error.team.hostPersonalityUnsupported"));
+          return remotePersonality(serverId, HOST_PERSONALITY_ROUTES.update, personality);
+        },
+      }),
       getAgentMemoryLimit: scopedQueryHandler({
         local: () => hostAgentMemoryLimit(agentMemoryLimit.get()),
         remote: (serverId) => remoteMemoryLimit(serverId, AGENT_MEMORY_LIMIT_ROUTES.settings, {}),
@@ -298,6 +350,14 @@ export function hostAdminIpcHandlers({
       setPromptCacheTtl: scopedHandler(parsePromptCacheTtl, {
         local: (ttl) => runCauseEffect(promptCacheTtl.set(ttl)),
         remote: (ttl, serverId) => remotePromptCacheTtl(serverId, PROMPT_CACHE_TTL_ROUTES.update, { ttl }),
+      }),
+      getModelVisibility: scopedHandler(parseProviderModelVisibilityProvider, {
+        local: (provider) => runCauseEffect(modelVisibility.settings(provider)),
+        remote: (provider, serverId) => remoteModelVisibility(serverId, MODEL_VISIBILITY_ROUTES.settings, { provider }),
+      }),
+      setModelVisibility: scopedHandler(parseProviderModelVisibilityChange, {
+        local: (change) => runCauseEffect(modelVisibility.set(change)),
+        remote: (change, serverId) => remoteModelVisibility(serverId, MODEL_VISIBILITY_ROUTES.update, change),
       }),
       getAgentAccess: scopedQueryHandler({
         local: () => {

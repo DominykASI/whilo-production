@@ -1,7 +1,7 @@
-import type { ChannelCommand, ChannelPage, ChannelSummary } from "@whilo/contracts/ipc";
-import type { AppTextKey } from "@whilo/i18n";
-import type { AgentProfile } from "@whilo/ui/data";
-import { currentText } from "@whilo/ui/text";
+import type { AvatarImageInput, ChannelCommand, ChannelPage, ChannelSummary } from "@openbot/contracts/ipc";
+import type { AppTextKey } from "@openbot/i18n";
+import type { AgentProfile } from "@openbot/ui/data";
+import { currentText } from "@openbot/ui/text";
 import { createEffect, createStore, flush, onSettled, reconcile, untrack } from "solid-js";
 import { actionToast } from "../../action-toast";
 import { type DesktopAnalyticsProperties, desktopAnalytics } from "../../analytics";
@@ -53,8 +53,26 @@ export interface ChannelsEnvironment {
   supported: () => boolean;
   /** Whether this reader may delete a channel; `supported()` is checked as well. */
   deletionSupported: () => boolean;
+  /** Whether the host deletes a message (`message-delete-v1`); `supported()` is checked as well. */
+  messageDeletionSupported: () => boolean;
+  /**
+   * Whether this reader may delete the messages of other senders: this computer, or an admin of the
+   * server. Every reader may delete a message that they sent. The host checks it again.
+   */
+  deletesAnyMessage: () => boolean;
   /** Whether the host takes `cancel` (`channel-task-cancel-v1`); `supported()` is checked as well. */
   taskCancelSupported: () => boolean;
+  /**
+   * Whether the host reads and keeps "Keep memories in this channel" (`channel-isolation-v1`);
+   * `supported()` is checked as well. An older joined server drops the setting on the wire, so its
+   * switch would always show off and never save.
+   */
+  isolationSupported: () => boolean;
+  /**
+   * Whether this reader can change the picture of a channel. Only this computer keeps a channel
+   * picture: the Team API does not carry it, so a joined server and the browser client cannot.
+   */
+  pictureSupported: () => boolean;
   /** Clears whatever else covers the workspace, because a channel is about to cover it. */
   beforeOpen: () => void;
   /** Whether a message that arrives now is in front of the reader. */
@@ -438,6 +456,23 @@ export function createChannelsController(env: ChannelsEnvironment) {
       }
     });
   }
+  const messageDeletionSupported = () =>
+    supported() && env.messageDeletionSupported() && env.port().agent.deleteChannelMessage !== undefined;
+  /**
+   * Deletes one message of a channel, and removes it from the open page at once. The host also
+   * announces the change. A failure throws to the dialog that asked, not to the channel error.
+   */
+  async function deleteMessage(channelId: string, messageId: string): Promise<void> {
+    const remove = env.port().agent.deleteChannelMessage;
+    if (!remove || !messageDeletionSupported()) throw new Error(currentText().t("error.team.messageDeleteUnsupported"));
+    const account = env.scopeKey();
+    await remove({ channelId, messageId });
+    if (disposed || account !== env.scopeKey()) return;
+    setState((state) => {
+      if (state.page?.channel.id !== channelId) return;
+      state.page.messages = state.page.messages.filter((message) => message.id !== messageId);
+    });
+  }
   return {
     state,
     port: env.port,
@@ -447,6 +482,18 @@ export function createChannelsController(env: ChannelsEnvironment) {
     supported,
     deletionSupported: () => supported() && env.deletionSupported(),
     taskCancelSupported: () => supported() && env.taskCancelSupported(),
+    isolationSupported: () => supported() && env.isolationSupported(),
+    messageDeletionSupported,
+    deletesAnyMessage: env.deletesAnyMessage,
+    deleteMessage,
+    pictureSupported: () => supported() && env.pictureSupported() && env.port().agent.setChannelImage !== undefined,
+    /** Saves or removes the uploaded image of a channel; a failure shows as the channel error. */
+    setImage: (channelId: string, image: AvatarImageInput | null) =>
+      perform(async () => {
+        const setChannelImage = env.port().agent.setChannelImage;
+        if (!setChannelImage) throw new Error(currentText().t("channel.error.update"));
+        await setChannelImage({ channelId, image });
+      }),
     refresh,
     retry: async (onAccepted?: (accepted: ChannelCommand) => void) => {
       const previous = failedCommand;

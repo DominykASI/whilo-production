@@ -82,7 +82,7 @@ const Turns = createSimpleContext({
     const seed = dynamicIslandCoordinator.serverState(scopeServerId);
     const [activeTurns, setActiveTurns] = createSignal<Record<string, string | null>>(seed?.activeTurns ?? {});
     const [turnProgress, setTurnProgress] = createSignal<
-      Record<string, { turnId: string; detail: string } | undefined>
+      Record<string, { turnId: string; detail: string; running?: boolean; activity?: string } | undefined>
     >(seed?.turnProgress ?? {});
     // Every progress line of the newest turns, by turn, for the steps under the activity line.
     const [turnStepLines, setTurnStepLines] = createSignal<TurnStepLines>({});
@@ -92,6 +92,8 @@ const Turns = createSimpleContext({
     // The context of each side thread, by thread id. Only a runtime snapshot of the local host carries it.
     const [threadContextStates, setThreadContextStates] = createSignal<Record<string, AgentContextState>>({});
     const [usageLimits, setUsageLimits] = createSignal<Record<string, number | null>>({});
+    // The turn of each agent whose subagents still run, also after the turn ended. Only a runtime snapshot of the local host carries it.
+    const [subagentTurns, setSubagentTurns] = createSignal<Record<string, string>>({});
     // Each provider account and model that a usage limit holds, also with no agent on it.
     const [usageLimitedModels, setUsageLimitedModels] = createSignal<AgentModelChoice[]>([]);
     // The holds whose ask card the user closed with "Wait", by agent, with the reset of that hold.
@@ -527,6 +529,8 @@ const Turns = createSimpleContext({
       setThreadContextStates,
       usageLimits,
       setUsageLimits,
+      subagentTurns,
+      setSubagentTurns,
       usageLimitedModels,
       setUsageLimitedModels,
       waitedUsageLimits,

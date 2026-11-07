@@ -1,6 +1,7 @@
 import { AGENT_MEMORY_CONTEXT_BUDGET_BYTES, essentialMemoryBytes } from "@whilo/contracts/agent-memory-context";
 import type {
   AcpRegistryEntry,
+  AgentProviderRef,
   AgentSessionSettings,
   HiddenAgentsSnapshot,
   McpSignInApp,
@@ -55,7 +56,9 @@ import {
   agentTaskLimit,
   type BackgroundProcess,
   type BrowserProfileSummary,
+  type BrowserProxySummary,
   type BusyMessageModePreference,
+  browserProxyAddressText,
   type CentralAuthState,
   type ClientAgentModelOption,
   type ClientAgentSummary,
@@ -125,7 +128,10 @@ import {
   type PromptCacheTtlSetting,
   type ProviderAccountStatus,
   type ProviderDetectionSettings,
+  type ProviderModelVisibility,
   parseAgentAccessChange,
+  parseBrowserProxyAddress,
+  parseProviderModelVisibilityChange,
   type QueueDelivery,
   type QueuedMessageReceipt,
   type QueueSnapshot,
@@ -203,6 +209,7 @@ import { createMockBrowser, type MockBrowserOptions } from "./mock-browser";
 import { createMockChannels, type MockChannelSeed } from "./mock-channels";
 import { createMockEvents } from "./mock-events";
 import { createMockGitHubConnector } from "./mock-github-connector";
+import { createMockHostPersonality } from "./mock-host-personality";
 import { createMockHostTimezone } from "./mock-host-timezone";
 import { createMockHostUpdate, type MockHostUpdateOptions } from "./mock-host-update";
 import { createMockHostedServers } from "./mock-hosted-servers";
@@ -210,6 +217,7 @@ import { createMockLicense } from "./mock-license";
 import { createMockLinkAccount } from "./mock-link-account";
 import { createMockMessaging } from "./mock-messaging";
 import { createMockOnePasswordConnector } from "./mock-onepassword-connector";
+import { createMockPasswordManagers } from "./mock-password-managers";
 import { createMockProviderRuntimes, type MockProviderRuntimeOptions } from "./mock-provider-runtimes";
 import { mockRoutineCalendar } from "./mock-routine-calendar";
 import { createMockRoutineFeed } from "./mock-routine-feed";
@@ -250,6 +258,8 @@ export interface MockWhiloOptions
   tasks?: Record<string, AgentTask[]>;
   /** The conversation of each task, keyed by task id. */
   taskConversations?: Record<string, ConversationSnapshot>;
+  /** The agent messages of each task that the user has not read, keyed by task id. A task without one is read. */
+  taskUnread?: Record<string, number>;
   updateStatus?: UpdateStatus;
   memories?: Record<string, AgentMemory[]>;
   tables?: SharedTable[];
@@ -323,14 +333,19 @@ function mockTurnTrace(turnId: string, endedAt: Date): ConversationTurnTrace {
 
 /** Custom models compose as `<provider>/<model>`; preview builds `listModels()` from these. */
 function mockCustomProviderModels(provider: CustomProviderSummary): ClientAgentModelOption[] {
-  return provider.models.map((model) => ({
-    provider: provider.harness ?? DEFAULT_CUSTOM_PROVIDER_HARNESS,
-    id: composedCustomModelId(provider.id, model.id),
-    name: `${provider.name}/${model.name}`,
-    description: `Served by ${provider.baseUrl}.`,
-    defaultReasoningEffort: "medium",
-    supportedReasoningEfforts: ["low", "medium", "high"],
-  }));
+  const harness = provider.harness ?? DEFAULT_CUSTOM_PROVIDER_HARNESS;
+  return provider.models.map((model) => {
+    // As the harnesses do: saved efforts replace OpenCode's Low, Medium and High, and Pi has none without them.
+    const efforts = model.reasoningEfforts ?? (harness === "pi" ? [] : (["low", "medium", "high"] as const));
+    return {
+      provider: harness,
+      id: composedCustomModelId(provider.id, model.id),
+      name: `${provider.name}/${model.name}`,
+      description: `Served by ${provider.baseUrl}.`,
+      defaultReasoningEffort: efforts.includes("medium") ? "medium" : (efforts[0] ?? "medium"),
+      supportedReasoningEfforts: [...efforts],
+    };
+  });
 }
 
 export interface MockWhiloControls {
@@ -458,6 +473,8 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
   // The disk level is below the preview disk use (82%), so Storage shows a passed level.
   let machineAlerts: MachineAlertSettings = { ...DEFAULT_MACHINE_ALERT_SETTINGS, diskPercent: 80 };
   let promptCacheTtl: PromptCacheTtlSetting = { ...DEFAULT_PROMPT_CACHE_TTL };
+  /** The models each provider's picker shows, after the user changed the list. Unchanged providers show all. */
+  const shownModels = new Map<string, readonly string[]>();
   let agentAccess: AgentAccessChange = { revision: 0, everyone: {}, roles: [] };
   let serverAudit: ServerAuditEntry[] = clone(STORY_SERVER_AUDIT_ENTRIES);
   const agentMemoryLimitListeners = new Set<(preference: AgentMemoryLimitPreference) => void>();
@@ -478,6 +495,8 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
   let appearancePreference: AppAppearancePreference = {
     appearance: DEFAULT_APP_APPEARANCE,
     transparentWindow: DEFAULT_TRANSPARENT_WINDOW,
+    palette: null,
+    palettes: [],
   };
   const appearanceListeners = new Set<(preference: AppAppearancePreference) => void>();
   let interfaceSizePreference: AppInterfaceSizePreference = { percent: DEFAULT_APP_INTERFACE_SIZE };
@@ -552,6 +571,24 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
       browserProfiles.some((profile) => profile.id !== profileId && profile.name.toLowerCase() === name.toLowerCase())
     )
       throw new Error(sourceText("error.backend.browserProfileNameTaken"));
+  };
+  // One saved proxy that "Client A" uses, so the menu shows a choice.
+  let browserProxies: BrowserProxySummary[] = [
+    {
+      id: "1b2c3d4e5f60718293a4b5c6d7e8f90a",
+      scheme: "socks5",
+      host: "proxy.example.net",
+      port: 1080,
+      username: null,
+      hasPassword: false,
+      profileIds: ["0a1b2c3d4e5f60718293a4b5c6d7e8f9"],
+      failure: null,
+    },
+  ];
+  const requireBrowserProxy = (proxyId: string) => {
+    const proxy = browserProxies.find((candidate) => candidate.id === proxyId);
+    if (!proxy) throw new Error(sourceText("error.backend.browserProxyNotFound"));
+    return proxy;
   };
   const sessionSettings = new Map<string, AgentSessionSettings>();
   function previewSessionSettings(agentId: string): AgentSessionSettings {
@@ -817,6 +854,24 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
     return { outcome: "added", path, replaced, list: mockAgentFolders(agentId) };
   }
 
+  /** Every model the preview providers list, before the picker's model list. */
+  function allModels() {
+    return [...models, ...customProviders.flatMap(mockCustomProviderModels)].filter(
+      (model) => !agentStatus.providers?.some((row) => row.id === model.provider && row.off),
+    );
+  }
+
+  function modelVisibility(provider: AgentProviderRef): ProviderModelVisibility {
+    const listed = allModels().filter((model) => model.provider === provider);
+    const shown = shownModels.get(provider);
+    return clone({
+      provider,
+      models: listed.map((model) => ({ id: model.id, name: model.name })),
+      shown: listed.filter((model) => !shown || shown.includes(model.id)).map((model) => model.id),
+      changed: shown !== undefined,
+    });
+  }
+
   function emitAgentEvent(event: AgentEvent): void {
     emit(agentListeners, event);
   }
@@ -825,6 +880,7 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
   const taskConversations = new Map<string, ConversationSnapshot>(
     Object.entries(clone(options.taskConversations ?? {})),
   );
+  const taskUnread = new Map<string, number>(Object.entries(options.taskUnread ?? {}));
   /** The branch of each `branchTask` request id, so a retry returns the same branch. */
   const branches = new Map<string, AgentTask>();
 
@@ -907,8 +963,29 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
     return task;
   }
 
+  /** The side thread where a routine runs, made on its first run, as the host does. */
+  function routineTask(agentId: string, routine: { id: string; name: string }): AgentTask {
+    const listed = tasks.get(agentId) ?? [];
+    const existing = listed.find((task) => task.routineId === routine.id);
+    if (existing && !existing.closedAt) return existing;
+    const now = new Date().toISOString();
+    if (existing) {
+      Object.assign(existing, { state: "idle", closedAt: null, updatedAt: now });
+      emitTasks(agentId);
+      return existing;
+    }
+    const task: AgentTask = {
+      ...createTask(agentId, routine.name),
+      origin: "agent",
+      routineId: routine.id,
+    };
+    tasks.set(agentId, [task, ...listed]);
+    emitTasks(agentId);
+    return task;
+  }
+
   /** Runs one mock turn in a task: the user message, a progress line, then a short answer. */
-  function runTaskTurn(task: AgentTask, text: string): QueuedMessageReceipt {
+  function runTaskTurn(task: AgentTask, text: string, replyToMessageId: string | null = null): QueuedMessageReceipt {
     if (task.closedAt) throw new Error(sourceText("error.backend.threadArchived"));
     const deliveryId = `mock-delivery-${messageCounter++}`;
     const turnId = `mock-turn-${messageCounter++}`;
@@ -921,6 +998,7 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
         author: "user",
         source: "user",
         text,
+        replyToMessageId,
         createdAt: new Date().toISOString(),
         status: "completed",
       },
@@ -1053,6 +1131,7 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
     schedule: RoutineSchedule;
     limitPolicy?: Routine["limitPolicy"];
     missedPolicy?: Routine["missedPolicy"];
+    runIn?: Routine["runIn"];
   }): Routine {
     const now = new Date().toISOString();
     const routineId = crypto.randomUUID();
@@ -1065,6 +1144,7 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
       timezone: input.timezone,
       limitPolicy: input.limitPolicy ?? "wait",
       missedPolicy: input.missedPolicy ?? "skip",
+      runIn: input.runIn ?? "chat",
       trigger: {
         id: crypto.randomUUID(),
         routineId,
@@ -1113,6 +1193,7 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
       return clone(analyticsPreference);
     },
     onAnalyticsPreference: () => () => undefined,
+    reportRendererTiming: async () => undefined,
     getApprovalAutomation: async () => clone(approvalAutomation),
     onApprovalAutomation: (listener) => {
       approvalAutomationListeners.add(listener);
@@ -1183,7 +1264,10 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
     // The Storybook toolbar sets the colors of a story.
     getAppAppearancePreference: async () => clone(appearancePreference),
     setAppAppearancePreference: async (change) => {
-      appearancePreference = { ...appearancePreference, ...change };
+      const next = { ...appearancePreference, ...change };
+      // As main does, a palette id shows only while that palette is listed.
+      const listed = next.palettes.some((palette) => palette.id === next.palette);
+      appearancePreference = { ...next, palette: listed ? next.palette : null };
       for (const listener of appearanceListeners) listener(clone(appearancePreference));
       return clone(appearancePreference);
     },
@@ -1228,6 +1312,18 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
       onAction: () => () => undefined,
       setFrame: async () => undefined,
       onShown: () => () => undefined,
+    },
+    agentDock: {
+      publishPresentation: async () => undefined,
+      getPresentation: async () => null,
+      onPresentation: () => () => undefined,
+      performAction: async () => undefined,
+      onAction: () => () => undefined,
+      setInteractive: async () => undefined,
+      onCloseChat: () => () => undefined,
+      listDisplays: async () => [{ id: 1, label: "Built-in Retina Display", primary: true, internal: true }],
+      drag: async () => undefined,
+      onMoved: () => () => undefined,
     },
     dynamicIsland: {
       getPreference: async () => clone(dynamicIslandPreference),
@@ -1279,7 +1375,10 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
       onHighlightPlacement: () => () => undefined,
     },
     openExternal: async () => undefined,
+    // A preview user who has used OpenBot for a while, so the social toast can show.
+    getSentMessageStats: async () => ({ firstSentAt: "2026-10-01T09:00:00.000Z", sentCount: 40 }),
     connectProvider: async () => clone(agentStatus),
+    connectProviderInMainlandChina: async () => clone(agentStatus),
     updateProviderCli: async () => clone(agentStatus),
     refreshAgentProviders: async () => clone(agentStatus),
     // The preview runs no provider process, so a restart has nothing to wait for.
@@ -1487,6 +1586,7 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
     linkAccount: createMockLinkAccount(),
     onePasswordConnector: createMockOnePasswordConnector(),
     bitwardenConnector: createMockBitwardenConnector(),
+    passwordManagers: createMockPasswordManagers(),
     vault: createMockVault(),
     billing: createMockBilling(billingPlans),
     license: createMockLicense(),
@@ -1673,6 +1773,15 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
       },
       removeAccount: async (input) => {
         await api.removeProviderAccount(input);
+      },
+      // The preview host's default is the one of this computer.
+      hostDefaultProvider: async () => ({
+        preferredProvider: setupState.preferredProvider,
+        preferredModel: setupState.preferredModel,
+      }),
+      setHostDefaultProvider: async (input) => {
+        const { preferredProvider, preferredModel } = await api.saveSetup(input);
+        return { preferredProvider, preferredModel };
       },
       usageResets: (provider) => api.providerUsageResets(provider),
       resetUsage: (input) => api.resetProviderUsage(input),
@@ -1913,9 +2022,14 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
       // respawned OpenCode would: it lists what its config names and nothing else.
       listModels: async (serverId) =>
         clone([
-          ...[...models, ...customProviders.flatMap(mockCustomProviderModels)].filter(
-            (model) => !agentStatus.providers?.some((row) => row.id === model.provider && row.off),
-          ),
+          ...allModels().filter((model) => {
+            const shown = shownModels.get(model.provider);
+            return (
+              !shown ||
+              shown.includes(model.id) ||
+              agents.some((agent) => agent.provider === model.provider && agent.model === model.id)
+            );
+          }),
           ...(serverId === storyForeignServerId ? [STORY_FOREIGN_MODEL] : []),
         ]),
       listAgents: async (serverId) =>
@@ -2138,6 +2252,57 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
         emitAgentEvent({ type: "browser-profiles-changed" });
         return api.agent.getAgentBrowserProfile(agentId);
       },
+      // The preview has no joined server, so no member shares a computer with it.
+      listBrowserProxies: async () => ({ proxies: browserProxies, computers: [] }),
+      getBrowserComputerSharing: async () => null,
+      setBrowserComputerSharing: async () => {
+        throw new Error(sourceText("error.team.agentSettingsUnsupported"));
+      },
+      saveBrowserProxy: async ({ proxyId, previousAddress, keepPassword, address }) => {
+        const parsed = parseBrowserProxyAddress(address);
+        if (parsed === null) throw new Error(sourceText("error.backend.browserProxyAddressInvalid"));
+        const { scheme, host, port, username, password } = parsed;
+        const existing = proxyId === undefined ? undefined : requireBrowserProxy(proxyId);
+        if (existing && browserProxyAddressText(existing) !== previousAddress)
+          throw new Error(sourceText("error.backend.browserProxyChanged"));
+        const saved: BrowserProxySummary = {
+          id: existing?.id ?? crypto.randomUUID().replaceAll("-", ""),
+          scheme,
+          host,
+          port,
+          username,
+          hasPassword: password !== null || (existing?.hasPassword === true && keepPassword === true),
+          profileIds: existing?.profileIds ?? [],
+          failure: null,
+        };
+        browserProxies = existing
+          ? browserProxies.map((proxy) => (proxy.id === saved.id ? saved : proxy))
+          : [...browserProxies, saved];
+        emitAgentEvent({ type: "browser-profiles-changed" });
+        return saved;
+      },
+      deleteBrowserProxy: async ({ proxyId, profileIds }) => {
+        const existing = requireBrowserProxy(proxyId);
+        if (
+          existing.profileIds.length !== profileIds.length ||
+          existing.profileIds.some((id) => !profileIds.includes(id))
+        )
+          throw new Error(sourceText("error.backend.browserProxyChanged"));
+        browserProxies = browserProxies.filter((proxy) => proxy.id !== proxyId);
+        emitAgentEvent({ type: "browser-profiles-changed" });
+      },
+      setBrowserProfileProxy: async ({ profileId, proxyId }) => {
+        requireBrowserProfile(profileId);
+        if (proxyId !== null) requireBrowserProxy(proxyId);
+        browserProxies = browserProxies.map((proxy) => ({
+          ...proxy,
+          profileIds: [
+            ...proxy.profileIds.filter((id) => id !== profileId),
+            ...(proxy.id === proxyId ? [profileId] : []),
+          ],
+        }));
+        emitAgentEvent({ type: "browser-profiles-changed" });
+      },
       listBrowserTabProfiles: async () => [],
       updateAgentAdminSettings: async ({ agentId, access, autoApprove }) => {
         const agent = agents.find((candidate) => candidate.id === agentId);
@@ -2299,6 +2464,7 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
           ...(input.model === undefined ? {} : { model: input.model }),
           ...(input.reasoningEffort === undefined ? {} : { reasoningEffort: input.reasoningEffort }),
         });
+        if (input.provider && input.model && input.providerAccountId) agent.providerAccountId = input.providerAccountId;
         agents = [...agents, agent];
         queues.set(agent.id, emptyQueue(agent.id));
         emitAgentEvent({ type: "agents-changed", agents });
@@ -2389,6 +2555,7 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
           allowAutomation,
           allowNewChat,
           quickAcknowledgement,
+          chatColor,
           ...updates
         } = input;
         const updated: ClientAgentSummary = { ...current, ...updates };
@@ -2408,6 +2575,8 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
         else if (busyMessageMode) updated.busyMessageMode = busyMessageMode;
         if (taskLimit === null) delete updated.taskLimit;
         else if (taskLimit) updated.taskLimit = taskLimit;
+        if (chatColor === null) delete updated.chatColor;
+        else if (chatColor) updated.chatColor = chatColor;
         agents = agents.map((agent) => (agent.id === updated.id ? updated : agent));
         emitAgentEvent({ type: "agents-changed", agents });
         emitTasks(updated.id);
@@ -2546,6 +2715,7 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
           ...(input.active === undefined ? {} : { active: input.active }),
           ...(input.limitPolicy === undefined ? {} : { limitPolicy: input.limitPolicy }),
           ...(input.missedPolicy === undefined ? {} : { missedPolicy: input.missedPolicy }),
+          ...(input.runIn === undefined ? {} : { runIn: input.runIn }),
           ...(input.schedule === undefined
             ? {}
             : {
@@ -2572,6 +2742,11 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
           input.agentId,
           (routines.get(input.agentId) ?? []).filter((routine) => routine.id !== input.routineId),
         );
+        const thread = tasks.get(input.agentId)?.find((task) => task.routineId === input.routineId);
+        if (thread && !thread.closedAt) {
+          Object.assign(thread, { state: "closed", closedAt: new Date().toISOString() });
+          emitTasks(input.agentId);
+        }
         emitAgentEvent({ type: "routines-changed", agentId: input.agentId });
       },
       testRoutine: async (input) => {
@@ -2594,6 +2769,7 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
           updatedAt: now,
         };
         routineRuns.set(routine.id, [run, ...(routineRuns.get(routine.id) ?? [])]);
+        routineTask(input.agentId, routine);
         emitAgentEvent({ type: "routines-changed", agentId: input.agentId });
         return clone(run);
       },
@@ -2674,6 +2850,23 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
         emitAgentEvent({ type: "conversation-invalidated", agentId: input.agentId, revision });
         return clone(conversationReadState(input.agentId));
       },
+      deleteConversationMessage: async (input) => {
+        if (input.taskId !== undefined) {
+          const task = findTask(input.agentId, input.taskId);
+          const conversation = taskConversation(task);
+          if (!conversation.messages.some((message) => message.id === input.messageId))
+            throw new Error(sourceText("error.backend.messageDeleteNotFound"));
+          conversation.messages = conversation.messages.filter((message) => message.id !== input.messageId);
+          conversation.revision += 1;
+          emitAgentEvent({ type: "agent-task-conversation", taskId: task.id, snapshot: clone(conversation) });
+          return;
+        }
+        if (!getSnapshot(input.agentId).messages.some((message) => message.id === input.messageId))
+          throw new Error(sourceText("error.backend.messageDeleteNotFound"));
+        updateSnapshot(input.agentId, (snapshot) => {
+          snapshot.messages = snapshot.messages.filter((message) => message.id !== input.messageId);
+        });
+      },
       chooseAttachments: async (_input) => [],
       importAttachmentData: async (data) =>
         data.map((file) => ({
@@ -2689,11 +2882,17 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
         attachmentListeners.add(listener);
         return () => attachmentListeners.delete(listener);
       },
+      // The preview imports no files from a drop or a pick, so no import fails and waits for a retry.
+      retryAttachmentImport: () => undefined,
+      discardAttachmentImport: () => undefined,
       discardDraftAttachment: async () => undefined,
       downloadAttachments: async () => {
         throw new Error("ZIP downloads are available in the desktop app.");
       },
       openAttachment: async (_input: OpenAttachmentInput) => undefined,
+      // The preview has no joined server, so no download reports its bytes.
+      stopAttachmentDownload: async () => undefined,
+      onAttachmentDownload: () => () => undefined,
       openSharedFile: async (_input: OpenSharedFileInput) => undefined,
       openWorkspaceFile: async (_input: OpenWorkspaceFileInput) => undefined,
       previewSharedFile: async (input: OpenSharedFileInput) => mockFilePreview(input.path, "shared-file"),
@@ -2707,7 +2906,8 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
       sendMessage: async (input: SendMessageInput) => {
         if (agents.some((agent) => agent.id === input.agentId && agent.hiddenAt !== undefined))
           throw new Error(sourceText("error.backend.recipientHidden"));
-        if (input.taskId) return runTaskTurn(findTask(input.agentId, input.taskId), input.text);
+        if (input.taskId)
+          return runTaskTurn(findTask(input.agentId, input.taskId), input.text, input.replyToMessageId ?? null);
         // As on a host, a repeated client id answers with the first receipt and stores nothing.
         const repeated = input.clientMessageId ? sentReceipts.get(input.clientMessageId) : undefined;
         if (repeated) return repeated;
@@ -2768,6 +2968,7 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
           threadId: getSnapshot(input.agentId).threadId ?? `thread-${input.agentId}`,
           turnId,
           detail: "Reviewing your request…",
+          activity: "reading",
         });
         emitAgentEvent({
           type: "turn-progress",
@@ -2881,7 +3082,20 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
       listWaits: async (agentId) => ({ agentId, waits: [] }),
       cancelWait: async () => undefined,
       listTasks: async (agentId) => taskList(agentId),
-      readTask: async (input) => clone(taskConversation(findTask(input.agentId, input.taskId))),
+      // As the host: the read has the newest 100 messages, and the page route the ones before.
+      readTask: async (input) => {
+        const conversation = taskConversation(findTask(input.agentId, input.taskId));
+        return clone({ ...conversation, messages: conversation.messages.slice(-100) });
+      },
+      readTaskPage: async (input) => {
+        const conversation = taskConversation(findTask(input.agentId, input.taskId));
+        const index = conversation.messages.findIndex((message) => message.id === input.beforeMessageId);
+        const start = Math.max(0, index - input.limit);
+        return clone({
+          conversation: { ...conversation, messages: index > 0 ? conversation.messages.slice(start, index) : [] },
+          hasOlder: start > 0,
+        });
+      },
       startTask: async (input) => {
         const task = createTask(input.agentId, input.text);
         runTaskTurn(task, input.text);
@@ -2987,8 +3201,18 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
         taskConversations.delete(input.taskId);
         emitTasks(input.agentId);
       },
+      listTaskReads: async (agentId) =>
+        (tasks.get(agentId) ?? [])
+          .filter((task) => task.state !== "closed")
+          .map((task) => ({
+            taskId: task.id,
+            unreadCount: taskUnread.get(task.id) ?? 0,
+            firstUnreadMessageId: null,
+            throughMessageId: null,
+          })),
       markTaskRead: async (input) => {
         findTask(input.agentId, input.taskId);
+        taskUnread.delete(input.taskId);
         return {
           taskId: input.taskId,
           unreadCount: 0,
@@ -3213,6 +3437,7 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
       },
       ...createMockHostUpdate(options),
       ...createMockHostTimezone(),
+      ...createMockHostPersonality(),
       // Preview has one host, so every server shares one limit. Main tells the window, as here.
       getAgentMemoryLimit: async () => hostAgentMemoryLimit(agentMemoryLimit),
       setAgentMemoryLimit: async (limit) => {
@@ -3239,6 +3464,16 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
         if (!isPromptCacheTtl(ttl)) throw new Error("Prompt cache time is required.");
         promptCacheTtl = { ttl };
         return clone(promptCacheTtl);
+      },
+      // Preview has one host, so every server shares one model list.
+      getModelVisibility: async (provider) => modelVisibility(provider),
+      setModelVisibility: async (input) => {
+        const change = parseProviderModelVisibilityChange(input);
+        // Preview shows every model by default, so a reset forgets the list.
+        if (change.shown === null) shownModels.delete(change.provider);
+        else shownModels.set(change.provider, change.shown);
+        emitAgentEvent({ type: "status", status: clone(agentStatus) });
+        return modelVisibility(change.provider);
       },
       // Preview has one host, and its user owns it, so `mine` gives every agent.
       getAgentAccess: async () => ({

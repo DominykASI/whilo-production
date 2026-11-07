@@ -1,6 +1,7 @@
-import type { FirstTouch } from "@whilo/contracts/first-touch";
-import type { MobileConnectHostBinding } from "@whilo/contracts/mobile-connect";
-import { type DynamicRecord, isBoolean, isNumber, isString } from "@whilo/contracts/runtime-values";
+import type { FirstTouch } from "@openbot/contracts/first-touch";
+import { type AvatarColor, isAvatarColor } from "@openbot/contracts/ipc";
+import type { MobileConnectHostBinding } from "@openbot/contracts/mobile-connect";
+import { type DynamicRecord, isBoolean, isNumber, isString } from "@openbot/contracts/runtime-values";
 import {
   isUuidV4,
   normalizeEmailAddress,
@@ -8,7 +9,7 @@ import {
   ONE_TIME_CODE_ALPHABET,
   ONE_TIME_CODE_LENGTH,
   validateProfileName,
-} from "@whilo/contracts/validation";
+} from "@openbot/contracts/validation";
 import { Context, Effect, Layer, Result, Schema } from "effect";
 import { type AccountAnalytics, type AccountSurface, NO_ACCOUNT_ANALYTICS } from "./account-analytics";
 import type { AccountAttribution } from "./account-attribution";
@@ -55,6 +56,8 @@ interface AuthServiceOptions {
   analytics?: AccountAnalytics;
   /** Saves the first website visit that a sign-in on the web sends. */
   attribution?: AccountAttribution;
+  /** True when the email's domain signs in at its company provider, which then replaces email codes. */
+  usesCompanySignIn?: (email: string) => Effect.Effect<boolean, AuthOperationError>;
 }
 
 export interface EmailSignInStart {
@@ -82,8 +85,9 @@ class AuthDependencies extends Context.Service<
     profileChanged: (userId: string) => Effect.Effect<void, RemoteFailure>;
     analytics: AccountAnalytics;
     attribution: AccountAttribution | null;
+    usesCompanySignIn: (email: string) => Effect.Effect<boolean, AuthOperationError>;
   }
->()("@whilo/auth-api/AuthDependencies") {}
+>()("@openbot/auth-api/AuthDependencies") {}
 
 export interface AnalyticsAnswer {
   enabled: boolean;
@@ -97,6 +101,15 @@ export function readAnalyticsAnswer(body: DynamicRecord): AnalyticsAnswer | null
   return isNumber(body.ageMs) && Number.isSafeInteger(body.ageMs) && body.ageMs >= 0
     ? { enabled: body.enabled, ageMs: body.ageMs }
     : null;
+}
+
+/**
+ * The chat color in a `PUT /v1/me/chat-color` body: a lower-case `#rrggbb`, or null for no color.
+ * Returns undefined when the body has no valid value.
+ */
+export function readChatColor(body: DynamicRecord): AvatarColor | null | undefined {
+  if (body.chatColor === null) return null;
+  return isAvatarColor(body.chatColor) ? body.chatColor : undefined;
 }
 
 export class AuthService {
@@ -114,6 +127,7 @@ export class AuthService {
       profileChanged: options.profileChanged ?? (() => Effect.void),
       analytics: options.analytics ?? NO_ACCOUNT_ANALYTICS,
       attribution: options.attribution ?? null,
+      usesCompanySignIn: options.usesCompanySignIn ?? (() => Effect.succeed(false)),
     });
   }
 
@@ -137,6 +151,13 @@ export class AuthService {
         );
       }
       const email = yield* authValidate(() => normalizeEmail(emailInput));
+      if (yield* dependencies.usesCompanySignIn(email)) {
+        return yield* new AuthServiceError(
+          409,
+          "company_sign_in_required",
+          "This email signs in with your company account.",
+        );
+      }
       const now = dependencies.now();
       if (idempotencyKey !== undefined && !isUuidV4(idempotencyKey)) {
         return yield* new AuthServiceError(
@@ -206,12 +227,12 @@ export class AuthService {
           return yield* new AuthServiceError(
             409,
             "email_delivery_pending",
-            "Whilo could not confirm delivery. Check again when the countdown ends.",
+            "OpenBot could not confirm delivery. Check again when the countdown ends.",
             retryAfterSeconds,
           );
         }
         yield* dependencies.repository.completeEmailChallengeDelivery(challengeHash, "failed", dependencies.now());
-        return yield* emailDeliveryFailure(deliveryError, "Whilo could not send the sign-in code.");
+        return yield* emailDeliveryFailure(deliveryError, "OpenBot could not send the sign-in code.");
       }
       yield* dependencies.repository.completeEmailChallengeDelivery(challengeHash, "sent", dependencies.now());
 
@@ -241,7 +262,7 @@ export class AuthService {
       );
     }
     if (challenge.deliveryState === "failed") {
-      return yield* new AuthServiceError(502, "email_delivery_failed", "Whilo could not send the sign-in code.");
+      return yield* new AuthServiceError(502, "email_delivery_failed", "OpenBot could not send the sign-in code.");
     }
     if (challenge.deliveryState === "pending") {
       const remainingMs = challenge.createdAt + EMAIL_CODE_DELIVERY_BUDGET_MS - now;
@@ -250,7 +271,7 @@ export class AuthService {
         return yield* new AuthServiceError(
           409,
           "email_delivery_pending",
-          "Whilo is still confirming delivery. Check again when the countdown ends.",
+          "OpenBot is still confirming delivery. Check again when the countdown ends.",
           retryAfterSeconds,
         );
       }
@@ -424,6 +445,27 @@ export class AuthService {
         now,
       );
       if (user.analyticsEnabled !== updated.analyticsEnabled) {
+        yield* dependencies.profileChanged(user.id).pipe(Effect.catch(() => Effect.void));
+      }
+      return updated;
+    },
+    (operation) => operation.pipe(Effect.mapError(authFailure), Effect.provide(this.#layer)),
+  ).bind(this);
+
+  /** Saves the tint of the user's own chat bubbles. Each server of the user shows it to its members. */
+  readonly updateChatColor = Effect.fn("AuthService.updateChatColor")(
+    function* (
+      this: AuthService,
+      sessionToken: string,
+      chatColor: AvatarColor | null,
+    ): Effect.fn.Return<AuthUser, AuthWorkflowFailure, AuthDependencies> {
+      const dependencies = yield* AuthDependencies;
+      const user = yield* this.authenticate(sessionToken);
+      if (!user) return yield* new AuthServiceError(401, "unauthorized", "The session is invalid.");
+      const now = dependencies.now();
+      yield* this.#enforceRateLimit(`profile:user:${user.id}`, 20, now);
+      const updated = yield* dependencies.repository.updateUserChatColor(user.id, chatColor, now);
+      if (user.chatColor !== updated.chatColor) {
         yield* dependencies.profileChanged(user.id).pipe(Effect.catch(() => Effect.void));
       }
       return updated;
@@ -882,7 +924,7 @@ export function emailDeliveryFailure(deliveryError: string, permanentMessage: st
     return new AuthServiceError(
       429,
       "email_delivery_rate_limited",
-      "Whilo cannot send more email right now. Try again when the countdown ends.",
+      "OpenBot cannot send more email right now. Try again when the countdown ends.",
       DELIVERY_RATE_LIMIT_RETRY_SECONDS,
     );
   }

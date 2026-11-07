@@ -1,3 +1,4 @@
+import { ATTACHMENT_LIMITS, INPUT_LIMITS } from "@openbot/contracts/input-limits";
 import {
   type AgentIpcRequest,
   type AttachmentImportEvent,
@@ -20,6 +21,7 @@ import {
   decodeAgentTaskLimitSettings,
   decodeBrowserProfileList,
   decodeBrowserProfileSummary,
+  decodeBrowserProxySummary,
   decodeBrowserTabProfiles,
   decodeChannel,
   decodeChannelMemories,
@@ -30,10 +32,13 @@ import {
   decodeChannelRoutineRuns,
   decodeChannelRoutines,
   decodeChannelSummaries,
+  decodeCompanySignInScimToken,
+  decodeCompanySignInSettings,
   decodeHermesImportPreview,
   decodeHermesImportResult,
   decodeHostAgentMemoryLimit,
   decodeHostMemoryReview,
+  decodeHostPersonality,
   decodeHostTimezoneSettings,
   decodeHostUpdateStatus,
   decodeInstanceExportResult,
@@ -47,11 +52,14 @@ import {
   decodeMcpSignInRelayPage,
   decodeMcpSignInStates,
   decodeMcpTestResult,
+  decodeOptionalBrowserComputerSharing,
+  decodeOptionalBrowserProxyList,
   decodeOptionalMachineMetrics,
   decodeOptionalStorageDisk,
   decodeOptionalStorageUsage,
   decodePromptCacheTtlSetting,
   decodeProviderHostSignInStatus,
+  decodeProviderModelVisibility,
   decodeProviderRelaySignInStatus,
   decodeProviderRuntimeDownload,
   decodeRegistryEntries,
@@ -61,6 +69,7 @@ import {
   decodeRemovableRuntimes,
   decodeSaveAgentProfileResult,
   decodeServerAuditLog,
+  decodeTestCompanySignInResult,
   decodeWorkspaceDirectory,
   type EventEndpoint,
   type GroupApi,
@@ -100,6 +109,7 @@ import {
   decodeDuplicateAgentResultFromMain,
   decodeHiddenAgentsFromMain,
   decodeHostAnalyticsFromMain,
+  decodeHostDefaultProviderFromMain,
   decodeHostProviderAccountsFromMain,
   decodeMemories,
   decodeMemory,
@@ -120,6 +130,12 @@ import {
   decodeSideQuestionAnswer,
   decodeTables,
 } from "./agent-decoding";
+import {
+  decodeAgentDockAction,
+  decodeAgentDockDisplays,
+  decodeAgentDockOffset,
+  decodeAgentDockPresentation,
+} from "./agent-dock-decoding";
 import { decodeScopedAgentEvent } from "./agent-event-decoding";
 import {
   decodeAccountSessions,
@@ -175,16 +191,18 @@ import {
   decodePendingListing,
   decodePendingMarketplaceListing,
   decodeProviderDetectionSettings,
-  decodeQuitShortcutHint,
   decodeRemoteDesktopSetupFromMain,
   decodeRemoteDesktopTestFromMain,
   decodeRemoteNetworkRouteState,
   decodeRemoteSessionReusePreference,
+  decodeSentMessageStats,
   decodeSpeechAudio,
   decodeSpeechModelStatus,
   decodeSpeechSettings,
   decodeUpdatePreference,
   decodeUpdateStatus,
+  decodeVoiceLiveEvent,
+  decodeVoiceLiveSession,
   decodeVoiceModelStatus,
   decodeVoiceModelStatuses,
   decodeVoiceServerProbe,
@@ -222,8 +240,11 @@ import {
 import {
   decodeAgentTask,
   decodeAgentTaskReadState,
+  decodeAgentTaskReadStates,
   decodeAgentTasks,
   decodeAttachment,
+  decodeAttachmentDownloadProgress,
+  decodeAttachmentImportProgress,
   decodeAttachments,
   decodeConversation,
   decodeConversationFileSearchPage,
@@ -235,6 +256,7 @@ import {
   decodeReadStates,
   decodeReceipt,
   decodeTaskConversation,
+  decodeTaskPage,
   decodeWaits,
 } from "./conversation-decoding";
 import {
@@ -251,7 +273,15 @@ import {
   decodeDiscordRolesReply,
   decodeMessagingOverviewReply,
   decodeTelegramOverviewReply,
+  decodeWhatsAppGroupsReply,
+  decodeWhatsAppLinkStateReply,
+  decodeWhatsAppOverviewReply,
 } from "./messaging-decoding";
+import {
+  decodePasswordManagerChange,
+  decodePasswordManagerResponse,
+  decodePasswordManagerResponses,
+} from "./password-manager-decoding";
 import { decodeProviderRuntimeSnapshot } from "./provider-runtime";
 import { decodeRoutineFlowCanvas, decodeRoutineFlowLink } from "./routine-flow-decoding";
 import {
@@ -289,6 +319,7 @@ import {
   decodeInviteSummary,
   decodeInviteUrl,
   decodePendingInvite,
+  decodeRemoteControlPolicy,
   decodeRemoteDesktopConnectResult,
   decodeRemoteDesktopSessions,
   decodeScopedDirectMessage,
@@ -440,19 +471,67 @@ function emitAttachmentImport(event: AttachmentImportEvent): void {
   for (const listener of attachmentImportListeners) listener(event);
 }
 
+/**
+ * The files of each import that this window started, by request id, until the import lands. A
+ * failed import keeps its files for `retryAttachmentImport` until the renderer discards it.
+ */
+const attachmentImportFiles = new Map<string, { serverId: string; files: NamedFile[] }>();
+
+/** A file and the name that the chip and the server show. A retry keeps the name. */
+interface NamedFile {
+  file: File;
+  name: string;
+}
+
+listen(IPC_ENDPOINTS.attachmentImports.importProgress, (value) => {
+  const progress = decodeAttachmentImportProgress(value);
+  if (attachmentImportFiles.has(progress.requestId)) emitAttachmentImport({ type: "progress", ...progress });
+});
+
+/**
+ * Each file is its own import, so a failed file does not drop the others and can be sent again. A
+ * set over the count or size limit stays one import, so main refuses it whole, as before.
+ */
 async function importFiles(files: File[]): Promise<void> {
   if (files.length === 0) return;
-  const requestId = crypto.randomUUID();
   const serverId = selectedServerId;
-  emitAttachmentImport({ type: "started", requestId, serverId });
+  const overLimit =
+    files.length > INPUT_LIMITS.attachments ||
+    files.reduce((sum, file) => sum + file.size, 0) > ATTACHMENT_LIMITS.totalBytes;
+  // A pasted image has no name. It gets one here, so the chip and the server show the same name.
+  const named = files.map((file) => ({ file, name: file.name || `pasted-${Date.now()}.png` }));
+  if (overLimit) {
+    await runAttachmentImport(crypto.randomUUID(), serverId, named, false);
+    return;
+  }
+  await Promise.all(named.map((file) => runAttachmentImport(crypto.randomUUID(), serverId, [file], true)));
+}
+
+/**
+ * `retryable` imports name their files, so the composer shows a chip for each, and keep them for a
+ * retry. A set over a limit names none: a retry cannot pass, and the banner says why.
+ */
+async function runAttachmentImport(
+  requestId: string,
+  serverId: string,
+  named: NamedFile[],
+  retryable: boolean,
+): Promise<void> {
+  if (retryable) attachmentImportFiles.set(requestId, { serverId, files: named });
+  emitAttachmentImport({
+    type: "started",
+    requestId,
+    serverId,
+    files: retryable ? named.map(({ file, name }) => ({ name, size: file.size })) : [],
+  });
   try {
-    const input: ImportAttachmentsInput = { paths: [], data: [] };
-    for (const file of files) {
+    const input: ImportAttachmentsInput = { paths: [], data: [], requestId };
+    for (const { file, name } of named) {
       const path = webUtils.getPathForFile(file);
       if (path) input.paths.push(path);
       else {
         input.data.push({
-          name: file.name || `pasted-${Date.now()}.png`,
+          name,
           mimeType: file.type,
           bytes: new Uint8Array(await file.arrayBuffer()),
         });
@@ -464,6 +543,7 @@ async function importFiles(files: File[]): Promise<void> {
       input,
       decodeAttachments,
     );
+    attachmentImportFiles.delete(requestId);
     emitAttachmentImport({ type: "completed", requestId, serverId, attachments });
   } catch (error) {
     emitAttachmentImport({
@@ -527,6 +607,8 @@ const agentGroup = bridgeGroup(IPC_ENDPOINTS.agent, {
   readChannel: decodeChannelPage,
   channelCommand: decodeChannel,
   deleteChannel: decodeVoid,
+  deleteChannelMessage: decodeVoid,
+  setChannelImage: decodeChannel,
   getSidebarLayout: decodeSidebarLayout,
   mutateSidebarLayout: decodeSidebarLayout,
   getSidebarPins: decodeSidebarPinsFromMain,
@@ -552,11 +634,13 @@ const agentGroup = bridgeGroup(IPC_ENDPOINTS.agent, {
   markConversationUnread: decodeReadState,
   sendMessage: decodeReceipt,
   setMessageReaction: decodeVoid,
+  deleteConversationMessage: decodeVoid,
   listQueue: decodeQueue,
   listWaits: decodeWaits,
   cancelWait: decodeVoid,
   listTasks: decodeAgentTasks,
   readTask: decodeTaskConversation,
+  readTaskPage: decodeTaskPage,
   startTask: decodeAgentTask,
   runQueuedMessageAsTask: decodeAgentTask,
   branchTask: decodeAgentTask,
@@ -565,6 +649,7 @@ const agentGroup = bridgeGroup(IPC_ENDPOINTS.agent, {
   reopenTask: decodeVoid,
   renameTask: decodeVoid,
   deleteTask: decodeVoid,
+  listTaskReads: decodeAgentTaskReadStates,
   markTaskRead: decodeAgentTaskReadState,
   acknowledgeFailedTurn: decodeVoid,
   cancelQueuedMessage: decodeVoid,
@@ -647,6 +732,7 @@ const whiloApi: WhiloDesktopApi = {
     getAnalyticsDefault: decodeAnalyticsPreference,
     analyticsPreference: decodeAnalyticsPreference,
     setAnalyticsPreference: decodeAnalyticsPreference,
+    reportRendererTiming: decodeVoid,
     getApprovalAutomation: decodeApprovalAutomationPreference,
     approvalAutomation: decodeApprovalAutomationPreference,
     getBusyMessageModePreference: decodeBusyMessageModePreference,
@@ -679,6 +765,7 @@ const whiloApi: WhiloDesktopApi = {
     openSettings: decodeVoid,
     openUpdateSettings: decodeVoid,
     openExternal: decodeVoid,
+    getSentMessageStats: decodeSentMessageStats,
     openUrl: decodeVoid,
     getExternalLinkPreference: decodeExternalLinkPreference,
     setExternalLinkPreference: decodeExternalLinkPreference,
@@ -688,10 +775,11 @@ const whiloApi: WhiloDesktopApi = {
     openChatWindow: decodeVoid,
     getChatWindows: decodeChatWindowTargets,
     chatWindows: decodeChatWindowTargets,
-    quitShortcutHint: decodeQuitShortcutHint,
+    quitShortcutHint: decodeAgents,
   }),
   ...bridgeGroup(IPC_ENDPOINTS.providers, {
     connectProvider: decodeAgentStatusFromMain,
+    connectProviderInMainlandChina: decodeAgentStatusFromMain,
     cancelProviderSignIn: decodeAgentStatusFromMain,
     refreshAgentProviders: decodeAgentStatusFromMain,
     setProviderOn: decodeAgentStatusFromMain,
@@ -719,6 +807,18 @@ const whiloApi: WhiloDesktopApi = {
     action: decodeBrowserDockAction,
     setFrame: decodeVoid,
     shown: decodeBrowserDockShown,
+  }),
+  agentDock: bridgeGroup(IPC_ENDPOINTS.agentDock, {
+    publishPresentation: decodeVoid,
+    getPresentation: decodeAgentDockPresentation,
+    presentation: decodeAgentDockPresentation,
+    performAction: decodeVoid,
+    action: decodeAgentDockAction,
+    setInteractive: decodeVoid,
+    closeChat: decodeVoid,
+    listDisplays: decodeAgentDockDisplays,
+    drag: decodeVoid,
+    moved: decodeAgentDockOffset,
   }),
   dynamicIsland: bridgeGroup(IPC_ENDPOINTS.dynamicIsland, {
     getPreference: decodeDynamicIslandPreference,
@@ -829,6 +929,9 @@ const whiloApi: WhiloDesktopApi = {
     probeServer: decodeVoiceServerProbe,
     setServer: decodeVoiceServerSettings,
     serverSettings: decodeVoiceServerSettings,
+    startLive: decodeVoiceLiveSession,
+    stopLive: decodeVoid,
+    liveEvent: decodeVoiceLiveEvent,
   }),
   auth: bridgeGroup(IPC_ENDPOINTS.auth, {
     getState: decodeCentralAuthState,
@@ -837,6 +940,7 @@ const whiloApi: WhiloDesktopApi = {
     verifyEmailCode: decodeCentralAuthState,
     updateName: decodeCentralAuthState,
     updateAvatar: decodeCentralAuthState,
+    updateChatColor: decodeCentralAuthState,
     createMobileConnect: decodeMobileConnectTicket,
     cancelMobileConnect: decodeVoid,
     getMobileConnectLink: (value) => (value === null ? null : decodeMobileConnectLink(value)),
@@ -847,6 +951,14 @@ const whiloApi: WhiloDesktopApi = {
     revokeAccountSession: decodeVoid,
     revokeMobileConnectedDevice: decodeVoid,
     logout: decodeCentralAuthState,
+    openCompanySignIn: decodeCentralAuthState,
+    getCompanySignIn: decodeCompanySignInSettings,
+    testCompanySignIn: decodeTestCompanySignInResult,
+    cancelCompanySignInTest: decodeVoid,
+    setCompanySignInEnabled: decodeCompanySignInSettings,
+    removeCompanySignIn: decodeCompanySignInSettings,
+    createCompanySignInScimToken: decodeCompanySignInScimToken,
+    revokeCompanySignInScimToken: decodeCompanySignInSettings,
     event: decodeCentralAuthState,
   }),
   skills: bridgeGroup(IPC_ENDPOINTS.skills, {
@@ -898,6 +1010,21 @@ const whiloApi: WhiloDesktopApi = {
     cancel: decodeLinkAccountStatus,
     disconnect: decodeLinkAccountStatus,
     changed: decodeLinkAccountStatus,
+  }),
+  // A status never holds a key or a password. A `changed` event for a manager that this build does
+  // not know is dropped.
+  passwordManagers: bridgeGroup(IPC_ENDPOINTS.passwordManagers, {
+    list: decodePasswordManagerResponses,
+    connect: decodePasswordManagerResponse,
+    cancel: decodePasswordManagerResponse,
+    disconnect: decodePasswordManagerResponse,
+    openSignIn: decodeVoid,
+    changed: dropInvalid(decodePasswordManagerChange),
+    hostList: decodePasswordManagerResponses,
+    hostConnect: decodePasswordManagerResponse,
+    hostCancel: decodePasswordManagerResponse,
+    hostDisconnect: decodePasswordManagerResponse,
+    hostOpenSignIn: decodeVoid,
   }),
   bitwardenConnector: bridgeGroup(IPC_ENDPOINTS.bitwardenConnector, {
     status: decodeBitwardenConnectorStatus,
@@ -1011,6 +1138,8 @@ const whiloApi: WhiloDesktopApi = {
     cancelAccountSignIn: decodeVoid,
     renameAccount: decodeVoid,
     removeAccount: decodeVoid,
+    hostDefaultProvider: decodeHostDefaultProviderFromMain,
+    setHostDefaultProvider: decodeHostDefaultProviderFromMain,
     usageResets: decodeProviderUsageResetsFromMain,
     resetUsage: decodeProviderUsageResetOutcomeFromMain,
     signOut: decodeVoid,
@@ -1053,6 +1182,19 @@ const whiloApi: WhiloDesktopApi = {
     reconnectTelegramChat: decodeVoid,
     setTelegramEnabled: decodeVoid,
     addTelegramOrchestrator: decodeAddOrchestratorReply,
+    getWhatsAppOverview: decodeWhatsAppOverviewReply,
+    startWhatsAppLink: decodeWhatsAppLinkStateReply,
+    getWhatsAppLinkState: decodeWhatsAppLinkStateReply,
+    cancelWhatsAppLink: decodeVoid,
+    disconnectWhatsAppNumber: decodeVoid,
+    reconnectWhatsAppNumber: decodeVoid,
+    setWhatsAppEnabled: decodeVoid,
+    addWhatsAppOrchestrator: decodeAddOrchestratorReply,
+    listWhatsAppGroups: decodeWhatsAppGroupsReply,
+    addWhatsAppSender: decodeVoid,
+    removeWhatsAppSender: decodeVoid,
+    answerWhatsAppRequest: decodeVoid,
+    setWhatsAppOwnNumber: decodeVoid,
     // A joined server can list up to the Telegram limit; main has already read its states.
     hostOverview: decodeTelegramOverviewReply,
     hostConnect: decodeVoid,
@@ -1063,6 +1205,19 @@ const whiloApi: WhiloDesktopApi = {
     hostGetDiscordAccess: decodeDiscordAccessReply,
     hostListDiscordRoles: decodeDiscordRolesReply,
     hostSetDiscordAccess: decodeDiscordAccessReply,
+    hostGetWhatsAppOverview: decodeWhatsAppOverviewReply,
+    hostStartWhatsAppLink: decodeWhatsAppLinkStateReply,
+    hostGetWhatsAppLinkState: decodeWhatsAppLinkStateReply,
+    hostCancelWhatsAppLink: decodeVoid,
+    hostDisconnectWhatsAppNumber: decodeVoid,
+    hostReconnectWhatsAppNumber: decodeVoid,
+    hostSetWhatsAppEnabled: decodeVoid,
+    hostAddWhatsAppOrchestrator: decodeAddOrchestratorReply,
+    hostListWhatsAppGroups: decodeWhatsAppGroupsReply,
+    hostAddWhatsAppSender: decodeVoid,
+    hostRemoveWhatsAppSender: decodeVoid,
+    hostAnswerWhatsAppRequest: decodeVoid,
+    hostSetWhatsAppOwnNumber: decodeVoid,
   }),
   hostAdmin: bridgeGroup(IPC_ENDPOINTS.hostAdmin, {
     updateIdentity: decodeServer,
@@ -1075,6 +1230,8 @@ const whiloApi: WhiloDesktopApi = {
     setUpdateSettings: decodeHostUpdateStatus,
     getTimezone: decodeHostTimezoneSettings,
     setTimezone: decodeHostTimezoneSettings,
+    getPersonality: decodeHostPersonality,
+    setPersonality: decodeHostPersonality,
     getAgentMemoryLimit: decodeHostAgentMemoryLimit,
     setAgentMemoryLimit: decodeHostAgentMemoryLimit,
     getMemoryReview: decodeHostMemoryReview,
@@ -1083,6 +1240,8 @@ const whiloApi: WhiloDesktopApi = {
     setMachineAlerts: decodeMachineAlertSettings,
     getPromptCacheTtl: decodePromptCacheTtlSetting,
     setPromptCacheTtl: decodePromptCacheTtlSetting,
+    getModelVisibility: decodeProviderModelVisibility,
+    setModelVisibility: decodeProviderModelVisibility,
     getAgentAccess: decodeAgentAccessSnapshot,
     setAgentAccess: decodeAgentAccessSnapshot,
     getAuditLog: decodeServerAuditLog,
@@ -1206,6 +1365,12 @@ const whiloApi: WhiloDesktopApi = {
       deleteBrowserProfile: decodeVoid,
       getAgentBrowserProfile: decodeAgentBrowserProfile,
       updateAgentBrowserProfile: decodeAgentBrowserProfile,
+      listBrowserProxies: decodeOptionalBrowserProxyList,
+      saveBrowserProxy: decodeBrowserProxySummary,
+      deleteBrowserProxy: decodeVoid,
+      setBrowserProfileProxy: decodeVoid,
+      getBrowserComputerSharing: decodeOptionalBrowserComputerSharing,
+      setBrowserComputerSharing: decodeVoid,
       listBrowserTabProfiles: decodeBrowserTabProfiles,
       updateAgentAdminSettings: decodeAgentAdminSettings,
       listAgentSkills: decodeInstalledSkillsFromMain,
@@ -1221,6 +1386,8 @@ const whiloApi: WhiloDesktopApi = {
       discardDraftAttachment: decodeVoid,
       downloadAttachments: decodeVoid,
       openAttachment: decodeVoid,
+      stopAttachmentDownload: decodeVoid,
+      attachmentDownload: decodeAttachmentDownloadProgress,
       openSharedFile: decodeVoid,
       openWorkspaceFile: decodeVoid,
       previewSharedFile: decodeFilePreview,
@@ -1250,6 +1417,13 @@ const whiloApi: WhiloDesktopApi = {
     onAttachmentImport: (listener) => {
       attachmentImportListeners.add(listener);
       return () => attachmentImportListeners.delete(listener);
+    },
+    retryAttachmentImport: (requestId) => {
+      const entry = attachmentImportFiles.get(requestId);
+      if (entry) void runAttachmentImport(requestId, entry.serverId, entry.files, true);
+    },
+    discardAttachmentImport: (requestId) => {
+      attachmentImportFiles.delete(requestId);
     },
     onEvent: (listener) =>
       agentGroup.onScopedEvent((scoped) => {
@@ -1356,6 +1530,9 @@ const whiloApi: WhiloDesktopApi = {
     removeMember: decodeVoid,
     listSessions: decodeTeamSessions,
     revokeSession: decodeVoid,
+    getRemoteControlPolicy: decodeRemoteControlPolicy,
+    setRemoteControlPolicy: decodeRemoteControlPolicy,
+    stopRemoteControl: decodeHostStatus,
     listInvites: decodeTeamInvites,
     revokeInvite: decodeVoid,
     createInvite: decodeInviteSummary,
@@ -1370,6 +1547,7 @@ const whiloApi: WhiloDesktopApi = {
     deleteRoutine: decodeVoid,
     testRoutine: decodeVoid,
     rotateSecret: decodeWebhookSecret,
+    setSecret: decodeVoid,
     sendTestEvent: decodeWebhookTestResult,
     listActivity: decodeEventActivity,
     listRoutineRuns: decodeEventRoutineRuns,

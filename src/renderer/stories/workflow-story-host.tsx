@@ -14,15 +14,16 @@ import {
   WORKFLOW_TRIGGER_TYPES,
   type WorkflowRunPage,
   type WorkflowVersion,
-} from "@whilo/contracts/ipc";
-import { accountUsageProviderRows } from "@whilo/ui/features/account/account-usage-view";
-import { Sidebar } from "@whilo/ui/features/sidebar/Sidebar";
-import type { SidebarView } from "@whilo/ui/features/sidebar/sidebar-types";
-import { HelpMenu } from "@whilo/ui/features/updates/HelpMenu";
-import { PageRail, type PageRailPage } from "@whilo/ui/features/window/PageRail";
-import { WorkflowCanvas } from "@whilo/ui/features/workflows/WorkflowCanvas";
-import { WORKFLOW_FEATURES_V1, type WorkflowFeatures } from "@whilo/ui/features/workflows/workflow-model";
-import type { WorkflowRunView } from "@whilo/ui/features/workflows/workflow-run-view";
+} from "@openbot/contracts/ipc";
+import { accountUsageProviderRows } from "@openbot/ui/features/account/account-usage-view";
+import { Sidebar } from "@openbot/ui/features/sidebar/Sidebar";
+import type { SidebarView } from "@openbot/ui/features/sidebar/sidebar-types";
+import { HelpMenu } from "@openbot/ui/features/updates/HelpMenu";
+import { PageRail, type PageRailPage } from "@openbot/ui/features/window/PageRail";
+import { WorkflowCanvas } from "@openbot/ui/features/workflows/WorkflowCanvas";
+import { WORKFLOW_FEATURES_V1, type WorkflowFeatures } from "@openbot/ui/features/workflows/workflow-model";
+import type { WorkflowPresence } from "@openbot/ui/features/workflows/workflow-presence";
+import type { WorkflowRunView } from "@openbot/ui/features/workflows/workflow-run-view";
 import { createSignal, Show, untrack } from "solid-js";
 import { fn } from "storybook/test";
 import { defaultSidebarLayout } from "../src/features/sidebar/sidebar-sections";
@@ -150,6 +151,8 @@ function storyWorkflowHost(workflows: readonly StoryWorkflow[]): WorkflowHost {
     },
     places: async () => [...STORY_CATALOGS.places],
     discordServers: async () => [],
+    telegramChats: async () => [],
+    slackWorkspaces: async () => [],
     agentLevels: async () => null,
     githubSupported: () => true,
     githubConnector: createMockGitHubConnector(),
@@ -160,7 +163,11 @@ function storyWorkflowHost(workflows: readonly StoryWorkflow[]): WorkflowHost {
 }
 
 /** A canvas over the preview mock that opens the first of `workflows`. */
-export function WorkflowStory(props: { workflows: readonly StoryWorkflow[]; features?: WorkflowFeatures }) {
+export function WorkflowStory(props: {
+  workflows: readonly StoryWorkflow[];
+  features?: WorkflowFeatures;
+  presence?: WorkflowPresence;
+}) {
   const story = createWorkflowsController(storyWorkflowHost(untrack(() => props.workflows)));
   const features = () => props.features ?? WORKFLOW_FEATURES_V1;
   return (
@@ -171,6 +178,7 @@ export function WorkflowStory(props: { workflows: readonly StoryWorkflow[]; feat
           features={features()}
           catalogs={STORY_CATALOGS}
           github={story.github}
+          presence={props.presence}
           {...story.props}
         />
       )}

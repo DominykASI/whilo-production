@@ -1,4 +1,5 @@
-import { VoicePanel } from "@whilo/ui/features/conversation/VoicePanel";
+import { nextSpeechSpeed } from "@openbot/contracts/ipc";
+import { VoicePanel } from "@openbot/ui/features/conversation/VoicePanel";
 import { createSignal, untrack } from "solid-js";
 import { fn } from "storybook/test";
 import type { Meta, StoryObj } from "storybook-solidjs-vite";
@@ -26,10 +27,13 @@ const meta = {
     onToggleMute: fn(),
     onInterrupt: fn(),
     onEnd: fn(),
+    speed: 1,
+    onCycleSpeed: fn(),
   },
-  // Mute is local here; in the app the voice conversation holds it.
+  // Mute and speed are local here; in the app the voice conversation and the saved speed hold them.
   render: (args) => {
     const [muted, setMuted] = createSignal(untrack(() => args.muted));
+    const [speed, setSpeed] = createSignal(untrack(() => args.speed ?? 1));
     return (
       <div class="conversation-panel" style="height: 100vh; --browser-panel-width: 380px">
         <VoicePanel
@@ -38,6 +42,11 @@ const meta = {
           onToggleMute={() => {
             setMuted(!muted());
             args.onToggleMute();
+          }}
+          speed={speed()}
+          onCycleSpeed={() => {
+            setSpeed(nextSpeechSpeed(speed()));
+            args.onCycleSpeed?.();
           }}
         />
       </div>
@@ -68,7 +77,7 @@ export const Speaking: Story = {
 };
 
 export const MicrophoneBlocked: Story = {
-  args: { muted: true, error: "Whilo cannot use the microphone. Allow it in System Settings." },
+  args: { muted: true, error: "OpenBot cannot use the microphone. Allow it in System Settings." },
 };
 
 export const ServerOffline: Story = {

@@ -1,6 +1,7 @@
 import { installPointerFocusGuard } from "@whilo/ui/pointer-focus";
 import { render } from "@solidjs/web";
 import { syncAppearance } from "./appearance-choice";
+import { AgentDockSurface } from "./features/agent-dock/AgentDockSurface";
 import { BrowserDockSurface } from "./features/browser/BrowserDockSurface";
 import { ComputerUseHighlightSurface } from "./features/computer-use/ComputerUseHighlightSurface";
 import { ComputerUsePermissionHelp, permissionFromQuery } from "./features/computer-use/ComputerUsePermissionHelp";
@@ -23,6 +24,9 @@ installPointerFocusGuard();
 
 const query = new URLSearchParams(window.location.search);
 const surface = query.get("surface");
+// The surface styles size the page by this attribute. A `:has()` rule on the page root would restyle the
+// whole page on each change, and the main window loads the same styles.
+if (surface) document.documentElement.dataset.surface = surface;
 // The Dynamic Island imitates the camera housing, so it stays dark in the light theme.
 if (surface !== "dynamic-island") syncAppearance();
 syncLogoColor();
@@ -41,6 +45,12 @@ render(() => {
     return (
       <I18nProvider>
         <BrowserDockSurface />
+      </I18nProvider>
+    );
+  if (surface === "agent-dock")
+    return (
+      <I18nProvider>
+        <AgentDockSurface />
       </I18nProvider>
     );
   if (surface === "computer-use-highlight")

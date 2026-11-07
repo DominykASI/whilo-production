@@ -135,6 +135,13 @@ export const messages = {
   },
   // Kullanıcının birini silebileceği, hesabın barındırılan sunucular listesini açar.
   "server.add.limit.manage": "Sunucuları yönet",
+  "server.upgrade.title": "Ajanlarınızın alanı tükeniyor",
+  "server.upgrade.description":
+    "{server} üzerinde az boş alan kaldı. Ajanlarınızın kesintisiz çalışmaya devam etmesi için planınızı yükseltin.",
+  "server.upgrade.used": "{total} alanın {used} kadarı kullanılıyor",
+  "server.upgrade.current": "{plan} (şu anki)",
+  "server.upgrade.price": "Fiyat",
+  "server.upgrade.action": "{plan} planına yükselt",
   "server.hosted.progressTitle": "{name} kuruluyor",
   // Kurulum tarayıcıdaki Stripe sayfasında ilk ödemeyi bekler.
   "server.hosted.paymentTitle": "Ödemeyi tarayıcınızda tamamlayın",
@@ -302,6 +309,7 @@ export const messages = {
   "server.settings.addLogo": "Sunucu logosu ekle",
   "server.settings.removeLogo": "Sunucu logosunu kaldır",
   "server.settings.access": "Erişim",
+  "server.companySignIn.desktopOnly": "Çoklu oturum açmayı OpenBot masaüstü uygulamasında ayarlayın.",
   "server.settings.publish": "Bu sunucuyu yayımla",
   "server.settings.published": "Sunucu yayımlandı",
   "server.settings.setUpDesktopTitle": "Uzak masaüstünü ayarlayın",
@@ -450,8 +458,8 @@ export const messages = {
   "server.invite.revokeTitle": "Bu davet iptal edilsin mi?",
   "server.invite.revokeDescription": "Davet artık çalışmaz. Bu davetle katılanlar üye olarak kalır.",
   "server.desktop.accessTitle": "Uzak masaüstü erişimi",
-  "server.desktop.gatewayDescription":
-    "Her etkin sunucu üyesi bu ana makineyi kontrol edebilir. Ayrı bir uzak masaüstü şifresi yoktur.",
+  "server.desktop.gatewayPolicyDescription":
+    "Uzak masaüstü için ayrı bir parola yok. Bu bilgisayarı kimin kontrol edebileceğini aşağıdaki ayarlar belirler.",
   "server.desktop.componentInstalled": "Ana makine bileşeni yüklendi",
   "server.desktop.componentNotInstalled": "Ana makine bileşeni yüklenmedi",
   "server.desktop.sessions": "Katılımsız: {unattended} · Etkin oturumlar: {active}/{max}",
@@ -464,12 +472,25 @@ export const messages = {
   "server.desktop.hostOfflineDescription": "Masaüstünü açmadan önce ana makineye yeniden bağlanın.",
   "server.desktop.hostUpdateDescription": "Uzaktan kontrolü kullanmak için ana makinedeki Whilo'u güncelleyin.",
   "server.desktop.serviceAvailable": "Hizmet kullanılabilir",
-  "server.desktop.serviceAvailableDescription": "WebRTC kontrolü tüm etkin üyeler için kullanılabilir.",
   "server.desktop.serviceNotReady": "Hizmet hazır değil",
   "server.desktop.serviceNotReadyDescription":
     "Ana makine bileşenlerini ve izinlerini kontrol etmek için Uzaktan kontrolü başlatın. Ana makine her türlü kurulum hatasını bildirecektir.",
   "server.desktop.remoteControl": "Uzaktan kontrol",
   "server.desktop.startHint": "Sunucu başlığındaki monitör düğmesinden Uzaktan kontrolü başlatın.",
+  "server.desktop.accessLabel": "Bu bilgisayarı kim kontrol edebilir",
+  "server.desktop.accessDescription": "Bu bilgisayarın masaüstünü başka bir cihazdan açabilen üyeler.",
+  "server.desktop.accessOwner": "Yalnızca sahip",
+  "server.desktop.accessAdmins": "Sahip ve yöneticiler",
+  "server.desktop.accessMembers": "Tüm üyeler",
+  "server.desktop.askLabel": "Bu bilgisayarda sor",
+  "server.desktop.askDescription":
+    "Her oturum, bu bilgisayarın başındaki bir kişi izin verene kadar bekler. 30 saniye içinde yanıt gelmezse OpenBot oturumu reddeder.",
+  "server.desktop.activeTitle": "Etkin uzak masaüstü oturumları: {active}",
+  "server.desktop.activeDescription": "Her oturumu hemen sonlandırır. Üyeler yeniden isteyebilir.",
+  "server.desktop.stopAll": "Tüm uzaktan kontrolü durdur",
+  "server.desktop.policyLoadFailed": "Uzaktan kontrol ayarları yüklenemedi.",
+  "server.desktop.policySaveFailed": "Uzaktan kontrol ayarları kaydedilemedi.",
+  "server.desktop.stopFailed": "Uzaktan kontrol durdurulamadı.",
   "server.settings.providersTitle": "Sağlayıcılar",
   "server.settings.providersDescription": "Bu sunucuyu çalıştıran bilgisayarın yapay zeka sağlayıcılarını yönetin.",
   "server.settings.providersSwitchNote": "Yapay zeka sağlayıcılarını yönetmek için {name} sunucusuna geçin.",
@@ -600,4 +621,12 @@ export const messages = {
   "server.restartNotice.restartingTitle": "{name}, güncellemeyi yüklemek için yeniden başlatılıyor",
   "server.restartNotice.restartingDescription": "{name} geri geldiğinde Whilo otomatik olarak tekrar bağlanır.",
   "server.restartNotice.backTitle": "{name} tekrar çevrim içi",
+  "server.settings.personalityTitle": "Kişilik",
+  "server.settings.personalityDescription": "Bu sunucudaki ajanların sizinle nasıl konuşacağını seçin.",
+  "server.settings.responseStyle": "Yanıt stili",
+  "server.settings.responseStyleDescription":
+    "Doğal: ajanlar çalışırken kısa güncellemeler gönderir ve sohbet bunları gösterir. Klasik: ajanlar bitirdiklerinde bir kez yanıt verir.",
+  "server.settings.responseStyleNatural": "Doğal",
+  "server.settings.responseStyleClassic": "Klasik",
+  "server.settings.personalityLoadFailed": "Sunucu kişiliği yüklenemedi.",
 } as const satisfies PartialTranslation<typeof source>;

@@ -1,7 +1,7 @@
 // @vitest-environment node
-import { DatabaseSync } from "node:sqlite";
+import { DatabaseSync, type SQLOutputValue } from "node:sqlite";
 import { afterEach, describe, expect, it } from "vitest";
-import { migrateWhiloDatabase } from "./whilo-database-schema";
+import { migrateOpenBotDatabase } from "./openbot-database-schema";
 
 // Failure modes: the upgrade changes or loses a row of any table; a failed upgrade leaves a table or its
 // marker; a newer or incomplete history is accepted; a destination or a delivery can point to no routine,
@@ -32,6 +32,11 @@ const RESULT_TABLES = {
   workflow_versions: [],
   workflow_webhook_receipts: [],
   workflows: [],
+  projection_messaging_allowed_senders: [],
+  projection_deleted_thread_messages: [],
+  browser_proxies: [],
+  browser_profile_proxies: [],
+  agent_usage_skill_loads: [],
 };
 
 function databaseAt(version: number): DatabaseSync {
@@ -45,7 +50,7 @@ function databaseAt(version: number): DatabaseSync {
 function migrateUpTo(db: DatabaseSync, version: number): void {
   db.exec(`CREATE TEMP TRIGGER stop_at_version BEFORE INSERT ON schema_migrations WHEN new.version > ${version}
     BEGIN SELECT RAISE(ABORT, 'fixture stop'); END;`);
-  expect(() => migrateWhiloDatabase(db)).toThrow(`migration to version ${version + 1} failed`);
+  expect(() => migrateOpenBotDatabase(db)).toThrow(`migration to version ${version + 1} failed`);
   db.exec("DROP TRIGGER stop_at_version");
 }
 
@@ -74,8 +79,10 @@ function seed(db: DatabaseSync, version: number): void {
   if (version >= 25) seedConnection(db);
 }
 
+type Contents = Record<string, Record<string, SQLOutputValue>[]>;
+
 /** Every row of every table, by table name. */
-function contents(db: DatabaseSync): Record<string, unknown[]> {
+function contents(db: DatabaseSync): Contents {
   const tables = db
     .prepare(
       `SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'
@@ -84,6 +91,14 @@ function contents(db: DatabaseSync): Record<string, unknown[]> {
     .all()
     .map((row) => String(row.name));
   return Object.fromEntries(tables.map((table) => [table, db.prepare(`SELECT * FROM "${table}"`).all()]));
+}
+
+/** Migration 57 gives each agent routine the chat as the place where it runs. */
+function withChatRunPlace(tables: Contents): Contents {
+  const routines = tables.projection_agent_routines;
+  return routines
+    ? { ...tables, projection_agent_routines: routines.map((row) => ({ ...row, run_in: "chat" })) }
+    : tables;
 }
 
 function resultTables(db: DatabaseSync) {
@@ -119,9 +134,9 @@ describe("routine result migration", () => {
       if (version < 36) migrateUpTo(db, 36);
       if (version < 25) seedConnection(db);
       const before = contents(db);
-      migrateWhiloDatabase(db);
-      expect(contents(db)).toEqual({ ...before, ...RESULT_TABLES });
-      expect(db.prepare("SELECT MAX(version) AS version FROM schema_migrations").get()).toEqual({ version: 50 });
+      migrateOpenBotDatabase(db);
+      expect(contents(db)).toEqual({ ...withChatRunPlace(before), ...RESULT_TABLES });
+      expect(db.prepare("SELECT MAX(version) AS version FROM schema_migrations").get()).toEqual({ version: 58 });
       expect(db.prepare("PRAGMA foreign_keys").get()).toEqual({ foreign_keys: 1 });
       expect(db.prepare("PRAGMA foreign_key_check").all()).toEqual([]);
       expect(db.prepare("PRAGMA integrity_check").get()).toEqual({ integrity_check: "ok" });
@@ -133,30 +148,30 @@ describe("routine result migration", () => {
     const before = contents(db);
     db.exec(`CREATE TEMP TRIGGER fail_marker BEFORE INSERT ON schema_migrations WHEN new.version=37
       BEGIN SELECT RAISE(ABORT, 'late failure'); END;`);
-    expect(() => migrateWhiloDatabase(db)).toThrow("migration to version 37 failed");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("migration to version 37 failed");
     expect(contents(db)).toEqual(before);
     expect(resultTables(db)).toEqual([]);
     expect(db.prepare("SELECT version FROM schema_migrations WHERE version=37").all()).toEqual([]);
     expect(db.prepare("PRAGMA foreign_keys").get()).toEqual({ foreign_keys: 1 });
     db.exec("DROP TRIGGER fail_marker");
-    migrateWhiloDatabase(db);
-    expect(contents(db)).toEqual({ ...before, ...RESULT_TABLES });
+    migrateOpenBotDatabase(db);
+    expect(contents(db)).toEqual({ ...withChatRunPlace(before), ...RESULT_TABLES });
   });
 
   it("rejects newer and incomplete migration histories before it creates the tables", () => {
     const db = databaseAtWithSeed(36);
     const before = contents(db);
-    db.exec("INSERT INTO schema_migrations VALUES(51,'now')");
-    expect(() => migrateWhiloDatabase(db)).toThrow("newer than this application supports");
-    db.exec("DELETE FROM schema_migrations WHERE version=51; DELETE FROM schema_migrations WHERE version=20");
-    expect(() => migrateWhiloDatabase(db)).toThrow("missing version 20");
+    db.exec("INSERT INTO schema_migrations VALUES(59,'now')");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("newer than this application supports");
+    db.exec("DELETE FROM schema_migrations WHERE version=59; DELETE FROM schema_migrations WHERE version=20");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("missing version 20");
     expect(contents(db)).toEqual(before);
     expect(resultTables(db)).toEqual([]);
   });
 
   it("refuses rows of no routine, run or connection, and keeps a connection that has a destination", () => {
     const db = databaseAtWithSeed(36);
-    migrateWhiloDatabase(db);
+    migrateOpenBotDatabase(db);
     expect(() => insertDestination(db, "routine-unknown", "connection-1")).toThrow("FOREIGN KEY constraint failed");
     expect(() => insertDestination(db, "routine-1", "connection-unknown")).toThrow("FOREIGN KEY constraint failed");
     expect(() => insertDelivery(db, "run-unknown", "pending")).toThrow("FOREIGN KEY constraint failed");
@@ -173,7 +188,7 @@ describe("routine result migration", () => {
 
   it("deletes the deliveries of a deleted run and the destination of a deleted routine", () => {
     const db = databaseAtWithSeed(36);
-    migrateWhiloDatabase(db);
+    migrateOpenBotDatabase(db);
     insertDestination(db, "routine-1", "connection-1");
     insertDelivery(db, "run-1", "sent");
     db.prepare("DELETE FROM projection_routine_runs WHERE run_id='run-1'").run();

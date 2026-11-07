@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, describe, expect, it } from "vitest";
-import { migrateWhiloDatabase } from "./whilo-database-schema";
+import { migrateOpenBotDatabase } from "./openbot-database-schema";
 
 // Failure modes: a migration commits a database with a broken foreign key that it made; a broken foreign key from
 // before the upgrade stops a migration that does not touch it, or the upgrade deletes or changes its row; a failed
@@ -17,7 +17,7 @@ function databaseAt(version: number): DatabaseSync {
   db.exec(`CREATE TABLE schema_migrations(version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL);
     CREATE TEMP TRIGGER stop_at_version BEFORE INSERT ON schema_migrations WHEN new.version > ${version}
     BEGIN SELECT RAISE(ABORT, 'fixture stop'); END;`);
-  expect(() => migrateWhiloDatabase(db)).toThrow(`migration to version ${version + 1} failed`);
+  expect(() => migrateOpenBotDatabase(db)).toThrow(`migration to version ${version + 1} failed`);
   db.exec("DROP TRIGGER stop_at_version");
   return db;
 }
@@ -25,7 +25,7 @@ function databaseAt(version: number): DatabaseSync {
 function latestDatabase(): DatabaseSync {
   const db = new DatabaseSync(":memory:");
   databases.push(db);
-  migrateWhiloDatabase(db);
+  migrateOpenBotDatabase(db);
   return db;
 }
 
@@ -36,14 +36,14 @@ function seedOrphans(db: DatabaseSync): void {
   db.exec(`
     INSERT INTO projection_thread_messages (thread_id, message_id, turn_id, author, status, item_type, created_at,
       ordinal, message_json, last_event_sequence)
-    VALUES ('whilo-thread-gone', 'message-1', NULL, 'user', 'completed', NULL, '2026-10-01T10:00:00.000Z', 0,
+    VALUES ('openbot-thread-gone', 'message-1', NULL, 'user', 'completed', NULL, '2026-10-01T10:00:00.000Z', 0,
       '{"id":"message-1","text":"Still here."}', 1);
     INSERT INTO projection_threads
       (thread_id, agent_id, title, active_turn_id, created_at, updated_at, last_event_sequence)
-    VALUES ('whilo-thread-chief', 'chief', 'Chief', NULL, '2026-10-01T09:00:00.000Z', '2026-10-01T09:00:00.000Z', 1);
+    VALUES ('openbot-thread-chief', 'chief', 'Chief', NULL, '2026-10-01T09:00:00.000Z', '2026-10-01T09:00:00.000Z', 1);
     INSERT INTO projection_turns
       (turn_id, thread_id, provider_session_id, status, started_at, completed_at, last_event_sequence)
-    VALUES ('turn-1', 'whilo-thread-chief', 'session-gone', 'completed', '2026-10-01T09:00:00.000Z', NULL, 1);`);
+    VALUES ('turn-1', 'openbot-thread-chief', 'session-gone', 'completed', '2026-10-01T09:00:00.000Z', NULL, 1);`);
   db.exec("PRAGMA foreign_keys = ON");
 }
 
@@ -67,7 +67,7 @@ function range(from: number, to: number): number[] {
 
 describe("migration guards", () => {
   // Migrations 13, 17, 19, 22 to 24, 26 and 28 turn foreign keys off for their rebuilds, and the others do not.
-  it.each([9, 13, 17, 19, 22, 23, 24, 26, 28, 39, 40, 43, 44, 45, 46, 47, 49, 50])(
+  it.each([9, 13, 17, 19, 22, 23, 24, 26, 28, 39, 40, 43, 44, 45, 46, 47, 49, 50, 51, 52])(
     "runs migration %i past broken foreign keys from before the upgrade",
     (version) => {
       const db = databaseAt(version - 1);
@@ -76,9 +76,9 @@ describe("migration guards", () => {
       const violationsBefore = db.prepare("PRAGMA foreign_key_check").all();
       expect(violationsBefore).toHaveLength(2);
 
-      migrateWhiloDatabase(db);
+      migrateOpenBotDatabase(db);
 
-      expect(versions(db)).toEqual(range(8, 50));
+      expect(versions(db)).toEqual(range(8, 58));
       // Migration 40 adds order columns to the message; every column the row had keeps its value.
       expect(contents(db)).toMatchObject(before);
       // A rebuild moves its table in the schema, which changes only the order of the rows.
@@ -96,17 +96,17 @@ describe("migration guards", () => {
     // Migration 28 runs with foreign keys off. Its transaction deletes the thread of the turn, so the turn gets a
     // second broken reference that the migration made.
     db.exec(`CREATE TEMP TRIGGER break_reference AFTER INSERT ON schema_migrations WHEN new.version = 28
-      BEGIN DELETE FROM projection_threads WHERE thread_id = 'whilo-thread-chief'; END;`);
+      BEGIN DELETE FROM projection_threads WHERE thread_id = 'openbot-thread-chief'; END;`);
     const before = contents(db);
     const threadsBefore = db.prepare("SELECT * FROM projection_threads").all();
     const schemaBefore = db.prepare("SELECT type, name, sql FROM sqlite_master ORDER BY type, name").all();
 
-    expect(() => migrateWhiloDatabase(db)).toThrow(
+    expect(() => migrateOpenBotDatabase(db)).toThrow(
       expect.objectContaining({
-        message: "Whilo database migration to version 28 failed.",
+        message: "OpenBot database migration to version 28 failed.",
         cause: expect.objectContaining({
           message:
-            "Whilo database migration produced 1 foreign-key violation(s) in projection_turns -> projection_threads.",
+            "OpenBot database migration produced 1 foreign-key violation(s) in projection_turns -> projection_threads.",
         }),
       }),
     );
@@ -117,24 +117,24 @@ describe("migration guards", () => {
     expect(db.prepare("PRAGMA foreign_keys").get()).toEqual({ foreign_keys: 1 });
 
     // The next start meets the same rows and stops again. It deletes nothing to get past them.
-    expect(() => migrateWhiloDatabase(db)).toThrow("migration to version 28 failed");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("migration to version 28 failed");
     expect(contents(db)).toEqual(before);
 
     db.exec("DROP TRIGGER break_reference");
-    migrateWhiloDatabase(db);
-    expect(versions(db)).toEqual(range(8, 50));
+    migrateOpenBotDatabase(db);
+    expect(versions(db)).toEqual(range(8, 58));
     expect(contents(db)).toMatchObject(before);
   });
 
-  it.each(range(8, 46))("rejects a history that is missing version %i and changes nothing", (missing) => {
+  it.each(range(8, 47))("rejects a history that is missing version %i and changes nothing", (missing) => {
     const db = latestDatabase();
     db.prepare("DELETE FROM schema_migrations WHERE version = ?").run(missing);
     const schemaBefore = db.prepare("SELECT type, name, sql FROM sqlite_master ORDER BY type, name").all();
 
-    expect(() => migrateWhiloDatabase(db)).toThrow(
-      `Whilo database migration history is missing version ${missing}.`,
+    expect(() => migrateOpenBotDatabase(db)).toThrow(
+      `OpenBot database migration history is missing version ${missing}.`,
     );
-    expect(versions(db)).toEqual(range(8, 50).filter((version) => version !== missing));
+    expect(versions(db)).toEqual(range(8, 58).filter((version) => version !== missing));
     expect(db.prepare("SELECT type, name, sql FROM sqlite_master ORDER BY type, name").all()).toEqual(schemaBefore);
   });
 });

@@ -6,19 +6,20 @@ import {
   isManagedRuntimeProvider,
   LOCAL_SERVER_ID,
   type ProviderRuntimeDownload,
-} from "@whilo/contracts/ipc";
-import { CLAUDE_API_KEY_CAPABILITY } from "@whilo/contracts/team-protocol/claude-api-key-v1";
+} from "@openbot/contracts/ipc";
+import { CLAUDE_API_KEY_CAPABILITY } from "@openbot/contracts/team-protocol/claude-api-key-v1";
+import { CODEX_API_KEY_CAPABILITY } from "@openbot/contracts/team-protocol/codex-api-key-v1";
 import {
   type ProviderAccountRelay,
   providerAccountRelay,
-} from "@whilo/contracts/team-protocol/provider-account-relays";
-import { PROVIDER_ACCOUNTS_CAPABILITY } from "@whilo/contracts/team-protocol/provider-accounts-v1";
-import { PROVIDER_SIGN_OUT_CAPABILITY } from "@whilo/contracts/team-protocol/provider-sign-out-v1";
-import { PROVIDER_USAGE_RESET_CAPABILITY } from "@whilo/contracts/team-protocol/provider-usage-reset-v1";
-import { classifyFailure } from "@whilo/telemetry";
-import { toast } from "@whilo/ui";
-import type { ProviderAccountActions } from "@whilo/ui/components/provider-accounts";
-import { currentText } from "@whilo/ui/text";
+} from "@openbot/contracts/team-protocol/provider-account-relays";
+import { PROVIDER_ACCOUNTS_CAPABILITY } from "@openbot/contracts/team-protocol/provider-accounts-v1";
+import { PROVIDER_SIGN_OUT_CAPABILITY } from "@openbot/contracts/team-protocol/provider-sign-out-v1";
+import { PROVIDER_USAGE_RESET_CAPABILITY } from "@openbot/contracts/team-protocol/provider-usage-reset-v1";
+import { classifyFailure } from "@openbot/telemetry";
+import { toast } from "@openbot/ui";
+import type { ProviderAccountActions } from "@openbot/ui/components/provider-accounts";
+import { currentText } from "@openbot/ui/text";
 import { createEffect, createMemo, createSignal, flush, onSettled } from "solid-js";
 import { type DesktopAnalyticsProperties, desktopAnalytics } from "./analytics";
 import { appPort } from "./app-port";
@@ -80,6 +81,7 @@ const Providers = createSimpleContext({
     );
     // A boolean, so that a server-list update that keeps the capability does not rebuild the keys.
     const hostReadsClaudeKey = createMemo(() => serverSupportsCapability(activeServer(), CLAUDE_API_KEY_CAPABILITY));
+    const hostReadsCodexKey = createMemo(() => serverSupportsCapability(activeServer(), CODEX_API_KEY_CAPABILITY));
     /** The provider keys of the computer the providers run on. A saved key is recorded, never its value. */
     const providerKeys = createMemo(() => {
       const serverId = providerAdminServerId();
@@ -87,6 +89,7 @@ const Providers = createSimpleContext({
       return {
         ...api,
         readsClaudeKey: !serverId || hostReadsClaudeKey(),
+        readsCodexKey: !serverId || hostReadsCodexKey(),
         setProviderApiKey: async (input: { provider: AgentProviderId; key: string }) => {
           const analytics = desktopAnalytics.scope();
           const tracked = { provider: input.provider, action: "api_key_saved", method: "api_key" } as const;
@@ -173,11 +176,20 @@ const Providers = createSimpleContext({
      * entry point calls this - the composer notice, the model picker, onboarding and settings - so
      * none of them leaves the user to read a documentation page and sign in in a terminal.
      */
-    async function connectProvider(provider: AgentProviderId): Promise<void> {
+    function connectProvider(provider: AgentProviderId): Promise<void> {
+      return startBrowserSignIn(provider, () => providersPort().connectProvider(provider));
+    }
+
+    /** Signs in on the provider's mainland China site, such as kimi.com, from the row's ⋯ menu. */
+    function connectProviderInMainlandChina(provider: AgentProviderId): Promise<void> {
+      return startBrowserSignIn(provider, () => providersPort().connectProviderInMainlandChina(provider));
+    }
+
+    async function startBrowserSignIn(provider: AgentProviderId, start: () => Promise<AgentStatus>): Promise<void> {
       if (refreshingProviders()) return;
       const analytics = beginProviderConnection(provider, "browser");
       try {
-        const status = await providersPort().connectProvider(provider);
+        const status = await start();
         flush(() => applyAgentStatus(status));
       } catch (error) {
         endFailedProviderConnection(provider, analytics, "browser");
@@ -233,7 +245,7 @@ const Providers = createSimpleContext({
       });
     }
 
-    /** `automatic`: the app asks, not the user, so a provider Whilo stopped starting stays stopped. */
+    /** `automatic`: the app asks, not the user, so a provider OpenBot stopped starting stays stopped. */
     async function refreshAgentProviders(options = { automatic: false }): Promise<void> {
       if (refreshingProviders() || agentStatus().phase === "starting" || agentStatus().phase === "restarting") {
         return;
@@ -487,6 +499,7 @@ const Providers = createSimpleContext({
             ? null
             : { kind: "computer", platform: appInfo()?.platform },
       connectInBrowser: connectProvider,
+      connectInMainlandChina: connectProviderInMainlandChina,
       openVerificationUrl: (url) => void appPort().openUrl(url),
       analytics: {
         begin: (provider) => {

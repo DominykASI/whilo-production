@@ -1,5 +1,5 @@
-import { AppLogo } from "@whilo/brand";
-import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import { AppLogo } from "@openbot/brand";
+import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
 import type {
   AppVariant,
   DynamicIslandAction,
@@ -9,14 +9,14 @@ import type {
   DynamicIslandPresentation,
   DynamicIslandPromptItem,
   DynamicIslandTakeoverItem,
-} from "@whilo/contracts/ipc";
+} from "@openbot/contracts/ipc";
 import {
   DEFAULT_DYNAMIC_ISLAND_PREFERENCE,
   DYNAMIC_ISLAND_DEFAULT_COMPACT_HEIGHT,
   DYNAMIC_ISLAND_SIZE_LIMITS,
   dynamicIslandCompactHeight,
-} from "@whilo/contracts/ipc";
-import type { AppTextKey, AppTranslate } from "@whilo/i18n";
+} from "@openbot/contracts/ipc";
+import type { AppTextKey, AppTranslate } from "@openbot/i18n";
 import {
   ArrowUp,
   Badge,
@@ -37,10 +37,10 @@ import {
   Monitor,
   OctagonX,
   Spinner,
-} from "@whilo/ui";
-import { useText } from "@whilo/ui/text";
-import { prefersReducedMotion } from "@whilo/ui/utils";
-import type { UserErrorDetails } from "@whilo/user-errors";
+} from "@openbot/ui";
+import { useText } from "@openbot/ui/text";
+import { prefersReducedMotion } from "@openbot/ui/utils";
+import type { UserErrorDetails } from "@openbot/user-errors";
 import { Dynamic, type JSX } from "@solidjs/web";
 import {
   createEffect,
@@ -71,9 +71,9 @@ import {
   primeCompactModeLayerPositions,
   restoreModeTransitionFocus,
   waitForAnimations,
-} from "./whilo-dynamic-island-motion";
+} from "./openbot-dynamic-island-motion";
 
-export interface WhiloDynamicIslandProps {
+export interface OpenBotDynamicIslandProps {
   presentation: DynamicIslandPresentation;
   state: DynamicIslandViewState;
   displayMode?: "notch" | "island";
@@ -123,7 +123,7 @@ const QUESTION_SWAP_EXIT_DURATION = 200;
 const QUESTION_SWAP_ENTER_DURATION = 320;
 const QUESTION_SWAP_BLUR = 6;
 const QUESTION_SWAP_MIDPOINT_OPACITY = 0.55;
-const WHILO_COMPACT_HOVER_MOTION = {
+const OPENBOT_COMPACT_HOVER_MOTION = {
   leadingScale: 1.22,
   trailingScale: 1.08,
   outwardTranslateX: 10,
@@ -178,7 +178,7 @@ type StatusMode = Extract<
   "working" | "message" | "question" | "approval" | "takeover" | "failed"
 >;
 
-interface WhiloIslandModeConfig {
+interface OpenBotIslandModeConfig {
   label: AppTextKey;
   ariaLive?: "polite";
   badge?: {
@@ -204,7 +204,7 @@ const STATUS_SHARED_TRAILING: SharedLeadingMotion = {
   island: { x: 124, y: 51, scale: 1.08 },
 };
 
-const WHILO_ISLAND_MODE_CONFIG: Record<DynamicIslandPresentation["mode"], WhiloIslandModeConfig> = {
+const OPENBOT_ISLAND_MODE_CONFIG: Record<DynamicIslandPresentation["mode"], OpenBotIslandModeConfig> = {
   idle: {
     label: "island.label.idle",
   },
@@ -302,7 +302,7 @@ function compactStatusGeometry(
     presentation.mode === "working" ? Math.min(COMPACT_INDICES.length, presentation.working.length) : 0;
   if (!agent && workingAvatarCount === 0) return undefined;
 
-  const badge = WHILO_ISLAND_MODE_CONFIG[mode].badge;
+  const badge = OPENBOT_ISLAND_MODE_CONFIG[mode].badge;
   if (!badge) return undefined;
   const badgeWidth = Math.ceil(measureCompactText(t(badge.label), 600) + STATUS_COMPACT_BADGE_CHROME_WIDTH);
   const measuredNameWidth = agent ? measureCompactText(agent.name, 600) : 0;
@@ -371,7 +371,7 @@ function scaleCompactWidth(width: number, floor: number, percent: number, minimu
  * The idle compact width for a width setting, or undefined for the default width. The Settings
  * preview reads it to scale the widest setting into its frame.
  */
-export function whiloIdleCompactWidth(
+export function openBotIdleCompactWidth(
   displayMode: "notch" | "island" | undefined,
   notchSize: DynamicIslandNotchSize | undefined,
   percent: number,
@@ -439,14 +439,15 @@ function measureCompactText(text: string, weight: number): number {
   }, 0);
 }
 
-export function WhiloDynamicIsland(props: WhiloDynamicIslandProps): JSX.Element {
+export function OpenBotDynamicIsland(props: OpenBotDynamicIslandProps): JSX.Element {
   const { t } = useText();
   const initialPresentation = untrack(() => props.presentation);
   const [visiblePresentation, setVisiblePresentation] = createSignal(initialPresentation);
-  const config = () => WHILO_ISLAND_MODE_CONFIG[visiblePresentation().mode];
+  const config = () => OPENBOT_ISLAND_MODE_CONFIG[visiblePresentation().mode];
   const [compactLayoutPresentation, setCompactLayoutPresentation] = createSignal(initialPresentation);
   const [outgoingPresentation, setOutgoingPresentation] = createSignal<DynamicIslandPresentation>();
   const [modeTransitioning, setModeTransitioning] = createSignal(false);
+  const [hovered, setHovered] = createSignal(false);
   let transitionRoot: HTMLDivElement | undefined;
   let modeAnimations: Animation[] = [];
   let modeTransitionVersion = 0;
@@ -488,7 +489,7 @@ export function WhiloDynamicIsland(props: WhiloDynamicIslandProps): JSX.Element 
   const compactWidth = () => {
     const geometry = compactGeometry();
     if (geometry) return props.displayMode === "island" ? geometry.island.width : geometry.notch.width;
-    return whiloIdleCompactWidth(props.displayMode, props.notchSize, widthPercent());
+    return openBotIdleCompactWidth(props.displayMode, props.notchSize, widthPercent());
   };
   const compactHeight = () => {
     const percent = heightPercent();
@@ -623,7 +624,7 @@ export function WhiloDynamicIsland(props: WhiloDynamicIslandProps): JSX.Element 
   return (
     <div
       ref={transitionRoot}
-      class="whilo-dynamic-island-transition-root"
+      class="openbot-dynamic-island-transition-root"
       data-mode-transitioning={modeTransitioning() ? "true" : undefined}
     >
       <DynamicIsland
@@ -648,10 +649,11 @@ export function WhiloDynamicIsland(props: WhiloDynamicIslandProps): JSX.Element 
           trailing: sharedTrailing()?.[props.displayMode === "island" ? "island" : "notch"],
         }}
         hoverBehavior={config().badge ? "expand" : "grow"}
-        hoverContentMotion={WHILO_COMPACT_HOVER_MOTION}
+        hoverContentMotion={OPENBOT_COMPACT_HOVER_MOTION}
+        onHoverChange={setHovered}
         pointerToggle={config().badge ? false : undefined}
         class={[
-          "whilo-dynamic-island",
+          "openbot-dynamic-island",
           `dynamic-island-${visiblePresentation().mode === "message" ? "message-first" : visiblePresentation().mode}`,
           config().badge ? "dynamic-island-status" : undefined,
           visiblePresentation().mode !== "idle" && visiblePresentation().mode !== "working"
@@ -681,9 +683,9 @@ export function WhiloDynamicIsland(props: WhiloDynamicIslandProps): JSX.Element 
             slot="compact-trailing"
             presentation={visiblePresentation()}
             outgoingPresentation={outgoingPresentation()}
-            renderOutgoing={(presentation) => <CompactTrailing presentation={presentation} />}
+            renderOutgoing={(presentation) => <CompactTrailing presentation={presentation} hovered={hovered()} />}
           >
-            <CompactTrailing presentation={visiblePresentation()} />
+            <CompactTrailing presentation={visiblePresentation()} hovered={hovered()} />
           </IslandModeSwap>
         }
         expandedContent={
@@ -802,13 +804,13 @@ function CompactLeading(props: {
   );
 }
 
-function CompactTrailing(props: { presentation: DynamicIslandPresentation }): JSX.Element {
+function CompactTrailing(props: { presentation: DynamicIslandPresentation; hovered: boolean }): JSX.Element {
   return (
     <IslandContentSwap contentKey={props.presentation.mode} class="dynamic-island-surface-compact-swap">
       <Switch>
         <Match when={statusMode(props.presentation.mode)}>{(mode) => <CompactStatusBadge mode={mode()} />}</Match>
         <Match when={props.presentation.mode === "idle"}>
-          <IdleGreetingEmoji />
+          <IdleGreetingEmoji moving={props.hovered} />
         </Match>
       </Switch>
     </IslandContentSwap>
@@ -847,7 +849,7 @@ function CompactAgentName(props: { name: string; displayMode?: "notch" | "island
 
 function CompactStatusBadge(props: { mode: StatusMode }): JSX.Element {
   const { t } = useText();
-  const config = () => WHILO_ISLAND_MODE_CONFIG[props.mode].badge;
+  const config = () => OPENBOT_ISLAND_MODE_CONFIG[props.mode].badge;
   return (
     <Show when={config()}>
       {(badge) => (
@@ -896,7 +898,12 @@ function IdleGreetingCard(props: { emoji: IdleGreetingEmoji }): JSX.Element {
   );
 }
 
-function IdleGreetingEmoji(): JSX.Element {
+/**
+ * The greetings change every few seconds, and each one moves only while a pointer is on the island. A
+ * motion makes the island window draw a frame on every display refresh, and the island is on screen
+ * all day: moving at rest cost about a fifth of a core, in the renderers and the GPU process.
+ */
+function IdleGreetingEmoji(props: { moving: boolean }): JSX.Element {
   const [index, setIndex] = createSignal(0);
   const [activeSlot, setActiveSlot] = createSignal<0 | 1>(0);
   const [firstEmoji, setFirstEmoji] = createSignal<IdleGreetingEmoji>(IDLE_GREETING_EMOJIS[0]);
@@ -906,16 +913,28 @@ function IdleGreetingEmoji(): JSX.Element {
   // Each layer keeps its motion until it shows again, so the one that fades out keeps its last pose.
   const motions: [Animation[], Animation[]] = [[], []];
 
-  function playMotion(slot: 0 | 1, emoji: IdleGreetingEmoji): void {
+  function playMotion(slot: 0 | 1, emoji: IdleGreetingEmoji, moving: boolean): void {
     for (const motion of motions[slot]) motion.cancel();
     motions[slot] = [];
     const layer = layers[slot];
-    if (!layer || prefersReducedMotion()) return;
+    if (!layer || !moving || prefersReducedMotion()) return;
     motions[slot] = playIdleGreetingMotion(IDLE_GREETING_NAMES[emoji], layer);
   }
 
+  // A pointer that reaches the island starts the motion of the greeting on show, unless it still moves.
+  // A pointer that leaves lets a motion end, so the greeting does not jump to rest.
+  createEffect(
+    () => props.moving,
+    (moving) => {
+      // A pending greeting change starts its own motion on the next frame.
+      if (!moving || animationFrame !== undefined) return;
+      const slot = untrack(activeSlot);
+      if (motions[slot].some((motion) => motion.playState === "running")) return;
+      playMotion(slot, untrack(slot === 0 ? firstEmoji : secondEmoji), true);
+    },
+  );
+
   onSettled(() => {
-    playMotion(0, IDLE_GREETING_EMOJIS[0]);
     const timer = setInterval(() => {
       const nextIndex = (index() + 1) % IDLE_GREETING_EMOJIS.length;
       const nextEmoji = IDLE_GREETING_EMOJIS[nextIndex] ?? IDLE_GREETING_EMOJIS[0];
@@ -923,9 +942,10 @@ function IdleGreetingEmoji(): JSX.Element {
       if (nextSlot === 0) setFirstEmoji(nextEmoji);
       else setSecondEmoji(nextEmoji);
       animationFrame = requestAnimationFrame(() => {
+        animationFrame = undefined;
         setIndex(nextIndex);
         setActiveSlot(nextSlot);
-        playMotion(nextSlot, nextEmoji);
+        playMotion(nextSlot, nextEmoji, props.moving);
       });
     }, IDLE_GREETING_INTERVAL);
     return () => {
@@ -1251,7 +1271,7 @@ export function ApprovalContent(props: {
   onAction: (action: DynamicIslandAction) => Promise<boolean> | undefined;
 }): JSX.Element {
   const { t, sourceText } = useText();
-  const openInWhilo = () =>
+  const openInOpenBot = () =>
     props.onAction({
       type: "review-attention",
       serverId: props.serverId,
@@ -1287,8 +1307,8 @@ export function ApprovalContent(props: {
       <div class="dynamic-island-surface-actions" data-island-motion-content>
         <IslandActionError message={props.actionError} />
         <Show when={props.allowDesktopReview !== false}>
-          <Button size="sm" variant="ghost" onClick={openInWhilo}>
-            {t("island.action.reviewInWhilo")}
+          <Button size="sm" variant="ghost" onClick={openInOpenBot}>
+            {t("island.action.reviewInOpenBot")}
           </Button>
         </Show>
         <Show when={props.allowDesktopReview === false && props.item.truncated}>
@@ -1359,7 +1379,7 @@ function QuestionContent(props: {
       : undefined;
   };
   const questionText = () => currentQuestion()?.question ?? props.item.detail ?? props.item.title;
-  const openInWhilo = () =>
+  const openInOpenBot = () =>
     props.onAction({
       type: "review-attention",
       serverId: props.serverId,
@@ -1500,8 +1520,8 @@ function QuestionContent(props: {
         <Button size="sm" variant="ghost" onClick={props.onClose}>
           {t("island.action.later")}
         </Button>
-        <Button size="sm" onClick={openInWhilo}>
-          {t("island.action.answerInWhilo")}
+        <Button size="sm" onClick={openInOpenBot}>
+          {t("island.action.answerInOpenBot")}
         </Button>
       </div>
     </div>

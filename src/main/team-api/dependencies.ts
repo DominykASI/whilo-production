@@ -19,6 +19,7 @@ import type { HostReleaseService } from "../host-release-service";
 import type { HostService } from "../host-service";
 import type { MachineAlertMonitor } from "../machine-alerts";
 import type { MemoryReviewPreferenceStore } from "../memory-review-preference-store";
+import type { ModelVisibility } from "../model-visibility";
 import type { PreferenceFileFailure } from "../preference-file";
 import type { PromptCacheTtlPreferenceStore } from "../prompt-cache-ttl-preference-store";
 import type { ProviderCredentialStore } from "../provider-credential-store";
@@ -26,6 +27,7 @@ import type { ProviderRuntimeManager } from "../provider-runtime-manager";
 import type { RemoteWorkflowError } from "../remote-service-effects";
 import type { RequestedUpdate } from "../requested-update";
 import type { ServerAuditStore } from "../server-audit-store";
+import type { ServerPersonalityPreferenceStore } from "../server-personality-preference-store";
 import type { ServerTimezonePreferenceStore } from "../server-timezone-preference-store";
 import type { SkillMarketplaceService } from "../skill-marketplace-service";
 // What `TeamApiServer` needs from the rest of the main process, and nothing else.
@@ -44,6 +46,7 @@ import type {
   CentralAuthUser,
   DirectMessageRealtimeEvent,
   DirectTypingRealtimeEvent,
+  RemoteControlAccess,
   RoutineResultConnectionOption,
   RoutineResultDestination,
   RoutineResultRoutineInput,
@@ -77,6 +80,7 @@ import type { McpToolRuntimePreparation } from "../ipc/mcp-server-handlers";
 import type { LiveActivityPushService } from "../live-activity-push";
 import type { McpHostSignIns } from "../mcp-host-sign-ins";
 import type { OnePasswordConnectorService } from "../onepassword-connector-service";
+import type { PasswordManagersService } from "../password-managers/password-managers-service";
 import type { ProviderAccountsHost } from "../provider-accounts-host";
 import type { ProviderHostSignIns } from "../provider-host-sign-ins";
 import type { PushNotificationService } from "../push-notifications";
@@ -144,11 +148,13 @@ type TeamApiAgentMethods = Pick<
   | "discardDraftAttachment"
   | "resolveSharedFile"
   | "resolveWorkspaceFile"
+  | "resolveLocalWorkspaceFile"
   | "listWorkspaceDirectory"
   | "sendMessage"
   | "listQueue"
   | "acknowledgeFailedTurn"
   | "setMessageReaction"
+  | "deleteConversationMessage"
   | "cancelQueuedMessage"
   | "steerQueuedMessage"
   | "updateQueuedMessage"
@@ -166,8 +172,9 @@ type TeamApiAgentMethods = Pick<
 >;
 
 export type TeamApiAgents = TeamApiAgentMethods & {
-  on: (event: "event", listener: (event: AgentEvent) => void) => void;
-  off: (event: "event", listener: (event: AgentEvent) => void) => void;
+  /** With `memberId`, the event is only for the connections of that member. */
+  on: (event: "event", listener: (event: AgentEvent, memberId?: string) => void) => void;
+  off: (event: "event", listener: (event: AgentEvent, memberId?: string) => void) => void;
 };
 
 /**
@@ -185,7 +192,10 @@ export type TeamApiMcpSignIns = Pick<
   "start" | "status" | "cancel" | "signOut" | "list" | "app" | "saveApp" | "removeApp"
 >;
 
-/** `connectors-v1`: the GitHub connection and the messaging connections of this host. */
+/**
+ * `connectors-v1`: the GitHub connection and the messaging connections of this host. The WhatsApp
+ * methods serve `whatsapp-connector-v1`.
+ */
 export interface TeamApiConnectors {
   github: Pick<GitHubConnectorService, "status" | "pages" | "connect" | "cancel" | "disconnect" | "repositories">;
   messaging: Pick<
@@ -208,6 +218,17 @@ export interface TeamApiConnectors {
     | "discordAccess"
     | "listDiscordRoles"
     | "setDiscordAccess"
+    | "whatsappOverview"
+    | "whatsappLinkState"
+    | "startWhatsAppLink"
+    | "cancelWhatsAppLink"
+    | "disconnectWhatsAppNumber"
+    | "addWhatsAppOrchestrator"
+    | "listWhatsAppGroups"
+    | "addWhatsAppSender"
+    | "removeWhatsAppSender"
+    | "answerWhatsAppRequest"
+    | "setWhatsAppOwnNumber"
   >;
 }
 
@@ -251,6 +272,9 @@ export type TeamApiHostedSites = Pick<HostedSiteDesktopService, "listServerSites
 /** Its presence is what `#protocolSupport` advertises `agent-hidden-v1` on. Any member can use it. */
 export type TeamApiHiddenAgents = Pick<AgentService, "listHiddenAgents" | "setAgentHidden">;
 
+/** `routine-run-place-v1`: the routine records of each agent, of every trigger kind. */
+export type TeamApiRoutineRunPlaces = Pick<AgentService["routineRecords"], "list" | "get" | "save">;
+
 /**
  * `agent-notification-levels-v1`: the level that each member chose for this server and for each agent.
  * The host keeps the levels of the owner under one key, so its desktop app and its phones read the
@@ -293,6 +317,7 @@ export type TeamApiAgentTasks = Pick<
   | "listAgents"
   | "listTasks"
   | "readTask"
+  | "readTaskPage"
   | "startTask"
   | "sendMessage"
   | "stopTask"
@@ -376,6 +401,19 @@ export interface ProviderDefaultSetting {
   model: AgentModelId | null;
 }
 
+/** A server on this computer, as `local-servers-v1` sends it. */
+interface TeamApiLocalServer {
+  serverId: string;
+  name: string;
+  /** Registered for the owner's account, so the owner's devices list it. */
+  published: boolean;
+}
+
+interface TeamApiLocalServerList {
+  servers: TeamApiLocalServer[];
+  limit: number;
+}
+
 /**
  * The admin routes, one member per optional capability. A member's presence is what
  * `#protocolSupport` advertises its capability on; every route behind it requires an owner or admin.
@@ -427,14 +465,28 @@ export interface TeamApiAdmin {
   update?: Pick<RequestedUpdate, "snapshot" | "check" | "start" | "requestWhenIdle" | "cancel" | "changeSettings">;
   /** `host-timezone-v1`: the server timezone. */
   timezone?: Pick<ServerTimezonePreferenceStore, "get" | "set">;
+  /** `host-personality-v1`: how the server's agents talk while they work. Any member reads it. */
+  personality?: Pick<ServerPersonalityPreferenceStore, "get" | "set">;
   /** `host-key-rotation-v1`: the owner changes this host's key. Resolves with the new public key. */
   hostKey?: { rotate(): Effect.Effect<{ publicKey: string }, RemoteWorkflowError> };
+  /**
+   * `local-servers-v1`: the servers that the desktop app runs on this computer. Only the desktop app's
+   * own server has it, not a server on this computer, a hosted server or a server mode host.
+   */
+  localServers?: {
+    list(): Effect.Effect<TeamApiLocalServerList, RemoteWorkflowError>;
+    create(name: string): Effect.Effect<TeamApiLocalServer, RemoteWorkflowError>;
+    /** Moves the server's data to the Trash and removes it from the account. */
+    delete(serverId: string): Effect.Effect<void, RemoteWorkflowError>;
+  };
   /** `agent-memory-limit-v1`: how many memories each agent of this computer can keep. */
   memoryLimit?: AgentMemoryLimitSetting;
   /** `memory-review-v1`: how often this computer's agents review their memories in the background. */
   memoryReview?: MemoryReviewPreferenceStore;
   /** `prompt-cache-ttl-v1`: how long the provider keeps the prompt cache of this computer's agents. */
   promptCacheTtl?: Pick<PromptCacheTtlPreferenceStore, "get" | "set">;
+  /** `model-visibility-v1`: which models the model picker of this computer shows, for each provider. */
+  modelVisibility?: Pick<ModelVisibility, "settings" | "set" | "picker" | "listings">;
   /** `provider-default-v1`: the provider and model that a new agent of this computer starts on. */
   defaultProvider?: TeamApiDefaultProvider;
   /** `routine-results-v1`: the place where an agent routine sends its answers. */
@@ -464,6 +516,8 @@ interface TeamApiProviders {
     | "cancelProviderCodeLogin"
     | "changeProviderCredential"
     | "clearProviderCredential"
+    | "signInCodexWithApiKey"
+    | "getStatus"
   >;
   credentials: Pick<ProviderCredentialStore, "status" | "set" | "clear">;
   runtimes: Pick<
@@ -543,6 +597,12 @@ export type TeamApiOnePasswordConnector = Pick<
 /** `bitwarden-connector-v1`: the Bitwarden connection of this host, by an API key and the master password. */
 export type TeamApiBitwardenConnector = Pick<BitwardenConnectorService, "status" | "connectWithApiKey" | "disconnect">;
 
+/** `password-managers-v1`: the password managers of this host, such as Proton Pass. */
+export type TeamApiPasswordManagers = Pick<
+  PasswordManagersService,
+  "list" | "refusal" | "connect" | "cancel" | "disconnect"
+>;
+
 /** `vault-v1`: the Vault of this host, for an owner or admin. The route uses no CSV import. */
 export type TeamApiVault = VaultService;
 
@@ -559,6 +619,7 @@ export interface TeamApiOptions {
   connectors?: TeamApiConnectors | undefined;
   onePasswordConnector?: TeamApiOnePasswordConnector | undefined;
   bitwardenConnector?: TeamApiBitwardenConnector | undefined;
+  passwordManagers?: TeamApiPasswordManagers | undefined;
   vault?: TeamApiVault | undefined;
   providerHostSignIns?: TeamApiProviderHostSignIns | undefined;
   providerAccounts?: TeamApiProviderAccounts | undefined;
@@ -574,6 +635,7 @@ export interface TeamApiOptions {
   routineFlows?: TeamApiRoutineFlows;
   workflows?: TeamApiWorkflows;
   hiddenAgents?: TeamApiHiddenAgents;
+  routineRunPlaces?: TeamApiRoutineRunPlaces;
   agentNotificationLevels?: TeamApiAgentNotificationLevels;
   sidebarPins?: TeamApiSidebarPins;
   /** `agent-access-v1`: the roles that limit what a member can do with each agent. */
@@ -598,6 +660,8 @@ export interface TeamApiOptions {
   browser: TeamApiBrowser;
   browserView?: TeamApiBrowserView | undefined;
   remoteScreen?: TeamApiRemoteScreen | undefined;
+  /** The roles that may control this computer through remote desktop. Every member when not set. */
+  remoteControlAccess?: (() => RemoteControlAccess) | undefined;
   redeemCentralTicket?: (
     ticket: string,
     serverId: string,

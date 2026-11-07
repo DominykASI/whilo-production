@@ -1,12 +1,13 @@
-import type { MarketplaceListingLink } from "@whilo/contracts/marketplace-links";
-import { ConfirmDialog } from "@whilo/ui";
-import { Marketplace } from "@whilo/ui/features/marketplace/Marketplace";
-import type { MarketplaceApp } from "@whilo/ui/features/marketplace/marketplace-model";
-import { createMarketplaceNavigation } from "@whilo/ui/features/marketplace/marketplace-view";
-import { McpConnectDialog } from "@whilo/ui/features/settings/McpConnectDialog";
-import { McpSignInRelayDialog } from "@whilo/ui/features/settings/McpSignInPage";
-import { PluginUninstallDialog } from "@whilo/ui/features/settings/PluginUninstallDialog";
-import { useText } from "@whilo/ui/text";
+import type { MarketplaceListingLink } from "@openbot/contracts/marketplace-links";
+import { ConfirmDialog } from "@openbot/ui";
+import { AgentUpdateDialog } from "@openbot/ui/features/marketplace/AgentUpdateDialog";
+import { Marketplace } from "@openbot/ui/features/marketplace/Marketplace";
+import type { MarketplaceApp } from "@openbot/ui/features/marketplace/marketplace-model";
+import { createMarketplaceNavigation } from "@openbot/ui/features/marketplace/marketplace-view";
+import { McpConnectDialog } from "@openbot/ui/features/settings/McpConnectDialog";
+import { McpSignInRelayDialog } from "@openbot/ui/features/settings/McpSignInPage";
+import { PluginUninstallDialog } from "@openbot/ui/features/settings/PluginUninstallDialog";
+import { useText } from "@openbot/ui/text";
 import { createEffect, createSignal, Show, untrack } from "solid-js";
 import {
   createMarketplaceController,
@@ -16,7 +17,7 @@ import {
 
 export interface MarketplaceModalProps extends MarketplaceControllerProps {
   /**
-   * The listing an `whilo://plugins/<slug>` link or a chat suggestion asked for. It opens the app
+   * The listing an `openbot://plugins/<slug>` link or a chat suggestion asked for. It opens the app
    * page; a link never connects, so what a link can do is show a user a listing they then decide
    * about.
    */
@@ -144,7 +145,7 @@ export function MarketplaceModal(props: MarketplaceModalProps) {
       untrack(() => startConnect(slug));
     },
   );
-  // Slack, Discord and Telegram change with no event from main, so each available connector is
+  // Slack, Discord, Telegram and WhatsApp change with no event from main, so each available connector is
   // followed while the window is open.
   createEffect(
     () => (props.open ? props.connectors?.available() : undefined),
@@ -192,6 +193,17 @@ export function MarketplaceModal(props: MarketplaceModalProps) {
             tone={skillConfirmTone(confirm)}
             confirmLabel={skillConfirmLabel(confirm)}
             initialFocus="cancel"
+          />
+        )}
+      </Show>
+      <Show when={controller.agentUpdate()} keyed>
+        {(pending) => (
+          <AgentUpdateDialog
+            agentName={pending.agentName}
+            changed={pending.changed}
+            othersCount={pending.othersCount}
+            onCancel={() => pending.settle(null)}
+            onConfirm={(replaceSkillIds) => pending.settle(replaceSkillIds)}
           />
         )}
       </Show>

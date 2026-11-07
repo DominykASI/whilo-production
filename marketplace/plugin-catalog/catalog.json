@@ -10,12 +10,16 @@
     "obsidian",
     "atlassian",
     "todoist",
+    "ticktick",
     "trello",
     "cobrain",
     "figma",
     "paper",
+    "higgsfield",
+    "elevenlabs",
     "apple-apps",
     "sentry",
+    "gitlab",
     "vercel",
     "cloudflare",
     "supabase",
@@ -27,15 +31,24 @@
     "context7",
     "huggingface",
     "stripe",
+    "revenuecat",
     "posthog",
     "airtable",
     "firecrawl",
     "brave-search",
     "resend",
+    "omnisend",
     "composio",
     "clickup",
+    "coinbase",
+    "robinhood",
     "computer-use",
     "world-legal-desk"
   ],
-  "featured": ["aave", "canva", "notion", "figma"]
+  "featured": [
+    "aave",
+    "canva",
+    "notion",
+    "figma"
+  ]
 }

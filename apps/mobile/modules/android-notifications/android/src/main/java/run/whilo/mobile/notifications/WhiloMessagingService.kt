@@ -1,4 +1,4 @@
-package run.whilo.mobile.notifications
+package run.openbot.mobile.notifications
 
 import android.net.Uri
 import com.google.firebase.messaging.RemoteMessage
@@ -13,8 +13,8 @@ import java.util.Date
 import java.util.UUID
 
 /**
- * Receives the notifications of Whilo hosts from Firebase Cloud Messaging, also while the app does
- * not run. A host sends the agent name and the text through the Whilo relay and Google, sealed with
+ * Receives the notifications of OpenBot hosts from Firebase Cloud Messaging, also while the app does
+ * not run. A host sends the agent name and the text through the OpenBot relay and Google, sealed with
  * keys that only this phone and the host know, so the relay and Google see the app name only. This
  * service opens the seal (`SealedNotification`) and gives the notification to `expo-notifications`,
  * which shows it, or asks the app first when the app is on screen. A tap then reaches the app as on
@@ -24,7 +24,7 @@ import java.util.UUID
  * The relay sends a data message with `sealed` and, unless the notification is silent, `sound`
  * (`android-notification-relay.ts` in the account service). Other messages go to `expo-notifications`.
  */
-class WhiloMessagingService : ExpoFirebaseMessagingService() {
+class OpenBotMessagingService : ExpoFirebaseMessagingService() {
   override fun onMessageReceived(remoteMessage: RemoteMessage) {
     val sealed = remoteMessage.data["sealed"]
     if (sealed == null) {
@@ -63,22 +63,22 @@ class WhiloMessagingService : ExpoFirebaseMessagingService() {
 
   companion object {
     /** The title until the app opens the seal. A brand name, so it is the same in every language. */
-    private const val APP_NAME = "Whilo"
+    private const val APP_NAME = "OpenBot"
 
     /** The sounds of `NOTIFICATION_SOUND_FILES`, as `with-notification-sounds.js` names their copies. */
     private val SOUND_RESOURCES = mapOf(
-      "whilo" to "whilo_task",
-      "warm" to "whilo_warm",
-      "mech" to "whilo_mech",
-      "bubble" to "whilo_bubble",
-      "press" to "whilo_press",
+      "openbot" to "openbot_task",
+      "warm" to "openbot_warm",
+      "mech" to "openbot_mech",
+      "bubble" to "openbot_bubble",
+      "press" to "openbot_press",
     )
 
     /** The channel of each sound, which the app creates (`android-notification-channels.ts`). */
     private fun channelId(sound: String?): String = when {
-      sound == null -> "whilo.sound.none"
-      SOUND_RESOURCES.containsKey(sound) -> "whilo.sound.$sound"
-      else -> "whilo.sound.default"
+      sound == null -> "openbot.sound.none"
+      SOUND_RESOURCES.containsKey(sound) -> "openbot.sound.$sound.v2"
+      else -> "openbot.sound.default"
     }
   }
 }

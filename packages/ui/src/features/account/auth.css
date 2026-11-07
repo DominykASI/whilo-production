@@ -1,7 +1,7 @@
 .account-login-screen,
 .initial-setup-screen {
   position: absolute;
-  z-index: var(--whilo-layer-dialog);
+  z-index: var(--openbot-layer-dialog);
   inset: 0;
   min-height: 100vh;
   display: grid;
@@ -12,12 +12,12 @@
 
 .account-login-screen {
   padding: 32px 24px;
-  background: var(--whilo-bg-canvas);
+  background: var(--openbot-bg-canvas);
 }
 
 .initial-setup-screen {
   padding: 52px 24px 32px;
-  background: radial-gradient(circle at 50% 18%, var(--whilo-hover), transparent 34%), var(--whilo-bg-canvas);
+  background: radial-gradient(circle at 50% 18%, var(--openbot-hover), transparent 34%), var(--openbot-bg-canvas);
 }
 
 .account-login-shell {
@@ -42,11 +42,11 @@
 }
 
 .account-login-wordmark {
-  color: var(--whilo-text-primary);
-  font-size: var(--whilo-text-display);
+  color: var(--openbot-text-primary);
+  font-size: var(--openbot-text-display);
   font-weight: 620;
   letter-spacing: -0.015em;
-  line-height: var(--whilo-leading-display);
+  line-height: var(--openbot-leading-display);
 }
 
 .account-login {
@@ -59,8 +59,8 @@
 
 .account-login h1 {
   margin: 0;
-  color: var(--whilo-text-primary);
-  font-size: var(--whilo-text-3xl);
+  color: var(--openbot-text-primary);
+  font-size: var(--openbot-text-3xl);
   font-weight: 580;
   letter-spacing: -0.035em;
   line-height: 30px;
@@ -68,22 +68,22 @@
 
 .account-login-description {
   margin: 8px 0 0;
-  color: var(--whilo-text-secondary);
-  font-size: var(--whilo-text-lg);
+  color: var(--openbot-text-secondary);
+  font-size: var(--openbot-text-lg);
   line-height: 21px;
 }
 
 .account-login-description strong {
-  color: var(--whilo-text-primary);
+  color: var(--openbot-text-primary);
   font-weight: 560;
 }
 
 .account-login-error {
   margin: 0;
-  color: var(--whilo-danger);
-  font-size: var(--whilo-text-sm);
+  color: var(--openbot-danger);
+  font-size: var(--openbot-text-sm);
   line-height: 17px;
-  text-align: left;
+  text-align: start;
 }
 
 .account-login > .account-login-error {
@@ -97,8 +97,8 @@
   justify-content: center;
   gap: 9px;
   margin-top: 28px;
-  color: var(--whilo-text-muted);
-  font-size: var(--whilo-text-md);
+  color: var(--openbot-text-muted);
+  font-size: var(--openbot-text-md);
 }
 
 .account-login-spinner,
@@ -106,9 +106,9 @@
   width: 14px;
   height: 14px;
   flex: 0 0 auto;
-  border: 1.5px solid var(--whilo-border-strong);
+  border: 1.5px solid var(--openbot-border-strong);
   border-top-color: currentColor;
-  border-radius: var(--whilo-radius-pill);
+  border-radius: var(--openbot-radius-pill);
   animation: account-login-spin 900ms linear infinite;
 }
 
@@ -124,16 +124,16 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: 1px solid var(--whilo-border-strong);
-  border-radius: var(--whilo-radius-md);
-  background: var(--whilo-surface-light);
-  color: var(--whilo-text-on-light);
-  font-size: var(--whilo-text-md);
+  border: 1px solid var(--openbot-border-strong);
+  border-radius: var(--openbot-radius-md);
+  background: var(--openbot-surface-light);
+  color: var(--openbot-text-on-light);
+  font-size: var(--openbot-text-md);
   font-weight: 650;
   transition:
-    background-color var(--whilo-duration-hover) ease,
-    border-color var(--whilo-duration-hover) ease,
-    transform var(--whilo-duration-fast) cubic-bezier(0.23, 1, 0.32, 1);
+    background-color var(--openbot-duration-hover) ease,
+    border-color var(--openbot-duration-hover) ease,
+    transform var(--openbot-duration-fast) cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .account-login > .account-login-primary {
@@ -161,8 +161,8 @@
 
 .account-login-local-data {
   margin: 4px 0 0;
-  color: var(--whilo-text-muted);
-  font-size: var(--whilo-text-sm);
+  color: var(--openbot-text-muted);
+  font-size: var(--openbot-text-sm);
   line-height: 17px;
   text-align: center;
   text-wrap: balance;
@@ -171,7 +171,7 @@
 /* Inline, so the lock stays beside the first word when the sentence wraps. */
 .account-login-local-data svg {
   display: inline-block;
-  margin-right: 6px;
+  margin-inline-end: 6px;
   vertical-align: -2px;
 }
 
@@ -183,46 +183,46 @@
 .account-login-form input:not(.otp-input-native) {
   width: 100%;
   height: 44px;
-  border: 1px solid var(--whilo-border-strong);
-  border-radius: var(--whilo-radius-md);
+  border: 1px solid var(--openbot-border-strong);
+  border-radius: var(--openbot-radius-md);
   outline: 0;
-  background: var(--whilo-bg-control);
+  background: var(--openbot-bg-control);
   padding: 0 12px;
-  color: var(--whilo-text-primary);
-  font-size: var(--whilo-text-lg);
+  color: var(--openbot-text-primary);
+  font-size: var(--openbot-text-lg);
   transition:
-    border-color var(--whilo-duration-hover) ease,
-    background-color var(--whilo-duration-hover) ease,
-    box-shadow var(--whilo-duration-hover) ease;
+    border-color var(--openbot-duration-hover) ease,
+    background-color var(--openbot-duration-hover) ease,
+    box-shadow var(--openbot-duration-hover) ease;
 }
 
 .account-login-form input:not(.otp-input-native):focus {
-  border-color: var(--whilo-border-focus);
-  background: var(--whilo-bg-surface);
+  border-color: var(--openbot-border-focus);
+  background: var(--openbot-bg-surface);
 }
 
 .account-login-form input:not(.otp-input-native)[aria-invalid="true"] {
-  border-color: var(--whilo-danger);
+  border-color: var(--openbot-danger);
 }
 
 .account-login-form input:not(.otp-input-native)::placeholder {
-  color: var(--whilo-text-placeholder);
+  color: var(--openbot-text-placeholder);
 }
 
 .account-login-field-error {
   height: 16px;
   overflow: hidden;
   margin: -2px 0 0;
-  color: var(--whilo-danger);
-  font-size: var(--whilo-text-sm);
+  color: var(--openbot-danger);
+  font-size: var(--openbot-text-sm);
   line-height: 16px;
-  text-align: left;
+  text-align: start;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .account-login-form input:not(.otp-input-native).t-input.is-error {
-  border-color: var(--whilo-danger);
+  border-color: var(--openbot-danger);
 }
 
 .account-login-primary:disabled,
@@ -235,7 +235,7 @@
 
 .account-login-code-actions {
   width: 100%;
-  min-height: var(--whilo-control-sm);
+  min-height: var(--openbot-control-sm);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -257,27 +257,27 @@
 .account-login-language {
   align-self: center;
   width: auto;
-  margin-top: var(--whilo-space-6);
-  color: var(--whilo-text-muted);
+  margin-top: var(--openbot-space-6);
+  color: var(--openbot-text-muted);
 }
 
 .account-login-development-code {
   margin: 0;
-  color: var(--whilo-warning);
+  color: var(--openbot-warning);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: var(--whilo-text-sm);
+  font-size: var(--openbot-text-sm);
   line-height: 16px;
-  text-align: left;
+  text-align: start;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .account-login-primary:hover:not(:disabled, [aria-disabled="true"]) {
-    background: var(--whilo-text-primary);
+    background: var(--openbot-text-primary);
   }
 
   .account-login-form input:not(.otp-input-native):hover:not(:focus) {
-    border-color: var(--whilo-border-strong);
-    background: var(--whilo-bg-surface);
+    border-color: var(--openbot-border-strong);
+    background: var(--openbot-bg-surface);
   }
 }
 
@@ -290,7 +290,7 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  text-align: left;
+  text-align: start;
   -webkit-app-region: no-drag;
 }
 
@@ -312,8 +312,8 @@
   align-items: center;
   gap: 7px;
   overflow: hidden;
-  color: var(--whilo-text-muted);
-  font-size: var(--whilo-text-sm);
+  color: var(--openbot-text-muted);
+  font-size: var(--openbot-text-sm);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -322,27 +322,27 @@
   width: 6px;
   height: 6px;
   flex: 0 0 auto;
-  border-radius: var(--whilo-radius-pill);
-  background: var(--whilo-success);
-  box-shadow: 0 0 0 3px var(--whilo-success-soft);
+  border-radius: var(--openbot-radius-pill);
+  background: var(--openbot-success);
+  box-shadow: 0 0 0 3px var(--openbot-success-soft);
 }
 
 .initial-setup-signout,
 .initial-setup-back {
   border: 0;
   background: transparent;
-  color: var(--whilo-text-muted);
+  color: var(--openbot-text-muted);
 }
 
 .initial-setup-signout {
-  margin-left: 2px;
+  margin-inline-start: 2px;
   padding: 5px 7px;
-  font-size: var(--whilo-text-sm);
+  font-size: var(--openbot-text-sm);
 }
 
 .initial-setup-signout:hover,
 .initial-setup-back:hover {
-  color: var(--whilo-text-secondary);
+  color: var(--openbot-text-secondary);
 }
 
 .initial-setup-back {
@@ -350,13 +350,13 @@
   height: 28px;
   display: grid;
   place-items: center;
-  margin-right: 3px;
-  border-radius: var(--whilo-radius-pill);
+  margin-inline-end: 3px;
+  border-radius: var(--openbot-radius-pill);
   padding: 0;
 }
 
 .initial-setup-back:hover {
-  background: var(--whilo-hover);
+  background: var(--openbot-hover);
 }
 
 .initial-setup-back svg {
@@ -365,13 +365,13 @@
   stroke: currentcolor;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: var(--whilo-icon-stroke);
+  stroke-width: var(--openbot-icon-stroke-lg);
 }
 
 .initial-setup-eyebrow {
   margin: 0 0 9px;
   color: var(--text-muted);
-  font-size: var(--whilo-text-sm);
+  font-size: var(--openbot-text-sm);
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -380,7 +380,7 @@
 .initial-setup h1 {
   margin: 0;
   color: var(--text-primary);
-  font-size: var(--whilo-text-display);
+  font-size: var(--openbot-text-display);
   font-weight: 560;
   letter-spacing: -0.035em;
   line-height: 1.1;
@@ -390,7 +390,7 @@
   max-width: 540px;
   margin: 12px 0 0;
   color: var(--text-secondary);
-  font-size: var(--whilo-text-lg);
+  font-size: var(--openbot-text-lg);
   line-height: 1.55;
 }
 
@@ -409,27 +409,27 @@
   grid-template-columns: 48px minmax(0, 1fr) 20px;
   align-items: center;
   gap: 15px;
-  border: 1px solid var(--whilo-border);
-  border-radius: var(--whilo-radius-lg);
-  background: var(--whilo-bg-canvas);
+  border: 1px solid var(--openbot-border);
+  border-radius: var(--openbot-radius-lg);
+  background: var(--openbot-bg-canvas);
   padding: 15px 17px;
-  color: var(--whilo-text-primary);
-  text-align: left;
+  color: var(--openbot-text-primary);
+  text-align: start;
   transition:
-    border-color var(--whilo-duration-hover) ease,
-    background-color var(--whilo-duration-hover) ease,
-    transform var(--whilo-duration-hover) ease;
+    border-color var(--openbot-duration-hover) ease,
+    background-color var(--openbot-duration-hover) ease,
+    transform var(--openbot-duration-hover) ease;
 }
 
 .setup-route-button:hover {
-  border-color: var(--whilo-text-dim);
-  background: var(--whilo-bg-sidebar);
+  border-color: var(--openbot-text-dim);
+  background: var(--openbot-bg-sidebar);
   transform: translateY(-1px);
 }
 
 .setup-route-button:active {
   transform: translateY(0);
-  transition-duration: var(--whilo-duration-hover), var(--whilo-duration-hover), var(--whilo-duration-fast);
+  transition-duration: var(--openbot-duration-hover), var(--openbot-duration-hover), var(--openbot-duration-fast);
 }
 
 .setup-route-icon {
@@ -438,10 +438,10 @@
   height: 46px;
   display: grid;
   place-items: center;
-  border: 1px solid var(--whilo-border);
-  border-radius: var(--whilo-radius-lg);
-  background: var(--whilo-hover);
-  color: var(--whilo-text-secondary);
+  border: 1px solid var(--openbot-border);
+  border-radius: var(--openbot-radius-lg);
+  background: var(--openbot-hover);
+  color: var(--openbot-text-secondary);
 }
 
 .setup-route-icon svg {
@@ -450,7 +450,7 @@
   stroke: currentcolor;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: var(--whilo-icon-stroke);
+  stroke-width: var(--openbot-icon-stroke-lg);
 }
 
 .setup-route-icon i {
@@ -459,13 +459,13 @@
   bottom: -2px;
   width: 9px;
   height: 9px;
-  border: 2px solid var(--whilo-bg-canvas);
-  border-radius: var(--whilo-radius-pill);
-  background: var(--whilo-accent);
+  border: 2px solid var(--openbot-bg-canvas);
+  border-radius: var(--openbot-radius-pill);
+  background: var(--openbot-accent);
 }
 
 .setup-route-icon-local i {
-  background: var(--whilo-success);
+  background: var(--openbot-success);
 }
 
 .setup-route-copy {
@@ -474,27 +474,32 @@
 }
 
 .setup-route-copy strong {
-  font-size: var(--whilo-text-lg);
+  font-size: var(--openbot-text-lg);
   font-weight: 600;
 }
 
 .setup-route-copy small {
-  color: var(--whilo-text-muted);
-  font-size: var(--whilo-text-sm);
+  color: var(--openbot-text-muted);
+  font-size: var(--openbot-text-sm);
   line-height: 17px;
 }
 
 .setup-route-arrow {
   width: 19px;
   fill: none;
-  stroke: var(--whilo-text-muted);
+  stroke: var(--openbot-text-muted);
   stroke-linecap: round;
   stroke-linejoin: round;
-  transition: transform var(--whilo-duration-hover) ease;
+  transition: transform var(--openbot-duration-hover) ease;
 }
 
 .setup-route-button:hover .setup-route-arrow {
   transform: translateX(2px);
+}
+
+/* Right to left, the onboarding styles mirror the arrow, so the hover nudge keeps the mirror. */
+.setup-route-button:hover .setup-route-arrow:dir(rtl) {
+  transform: translateX(-2px) scaleX(-1);
 }
 
 .setup-local-content {
@@ -510,21 +515,21 @@
 .setup-remote-form label {
   display: grid;
   gap: 7px;
-  color: var(--whilo-text-secondary);
-  font-size: var(--whilo-text-sm);
+  color: var(--openbot-text-secondary);
+  font-size: var(--openbot-text-sm);
   font-weight: 560;
 }
 
 .setup-remote-form input,
 .setup-remote-form textarea {
   width: 100%;
-  border: 1px solid var(--whilo-border);
-  border-radius: var(--whilo-radius-lg);
+  border: 1px solid var(--openbot-border);
+  border-radius: var(--openbot-radius-lg);
   outline: 0;
-  background: var(--whilo-bg-canvas);
+  background: var(--openbot-bg-canvas);
   padding: 11px 12px;
-  color: var(--whilo-text-primary);
-  font-size: var(--whilo-text-md);
+  color: var(--openbot-text-primary);
+  font-size: var(--openbot-text-md);
   line-height: 18px;
   resize: none;
 }
@@ -535,19 +540,19 @@
 
 .setup-remote-form input:focus,
 .setup-remote-form textarea:focus {
-  border-color: var(--whilo-text-dim);
-  background: var(--whilo-bg-sidebar);
+  border-color: var(--openbot-text-dim);
+  background: var(--openbot-bg-sidebar);
 }
 
 .setup-remote-form input::placeholder,
 .setup-remote-form textarea::placeholder {
-  color: var(--whilo-text-dim);
+  color: var(--openbot-text-dim);
 }
 
 .setup-remote-note {
   margin: -2px 1px 0;
-  color: var(--whilo-text-muted);
-  font-size: var(--whilo-text-sm);
+  color: var(--openbot-text-muted);
+  font-size: var(--openbot-text-sm);
   line-height: 16px;
 }
 
@@ -556,12 +561,12 @@
   border: 0;
   background: transparent;
   padding: 0;
-  color: var(--whilo-text-muted);
-  font-size: var(--whilo-text-sm);
+  color: var(--openbot-text-muted);
+  font-size: var(--openbot-text-sm);
 }
 
 .setup-remote-change:hover:not(:disabled) {
-  color: var(--whilo-text-secondary);
+  color: var(--openbot-text-secondary);
 }
 
 .provider-picker {
@@ -583,7 +588,7 @@
   margin-bottom: 7px;
   padding: 0;
   color: var(--text-secondary);
-  font-size: var(--whilo-text-sm);
+  font-size: var(--openbot-text-sm);
   font-weight: 560;
 }
 
@@ -592,7 +597,7 @@
   min-height: 25px;
   align-items: center;
   justify-content: space-between;
-  gap: var(--whilo-space-2);
+  gap: var(--openbot-space-2);
   margin-bottom: 7px;
 }
 
@@ -602,21 +607,21 @@
 
 .ui-button.provider-picker-refresh {
   min-height: 25px;
-  gap: var(--whilo-space-1);
-  border-radius: var(--whilo-radius-md);
-  color: var(--whilo-text-muted);
-  padding-inline: var(--whilo-space-2);
+  gap: var(--openbot-space-1);
+  border-radius: var(--openbot-radius-md);
+  color: var(--openbot-text-muted);
+  padding-inline: var(--openbot-space-2);
 }
 
 .ui-button.provider-picker-refresh:hover:not(:disabled, [aria-disabled="true"]) {
-  color: var(--whilo-text-primary);
+  color: var(--openbot-text-primary);
 }
 
 .provider-picker-list {
   overflow: hidden;
-  border: 1px solid var(--whilo-border-strong);
-  border-radius: var(--whilo-radius-md);
-  background: var(--whilo-bg-sidebar);
+  border: 1px solid var(--openbot-border-strong);
+  border-radius: var(--openbot-radius-md);
+  background: var(--openbot-bg-sidebar);
 }
 
 .provider-picker-option {
@@ -635,27 +640,28 @@
   grid-template-columns: 16px 18px minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
-  padding: 8px 0 8px 12px;
+  padding-block: 8px;
+  padding-inline: 12px 0;
   cursor: pointer;
 }
 
 /* The custom row follows the radio group rather than a radio, so the sibling rule cannot reach it. */
 .provider-picker-option + .provider-picker-option,
 .provider-picker-option-custom {
-  border-top: 1px solid var(--whilo-border);
+  border-top: 1px solid var(--openbot-border);
 }
 
 .provider-picker-option:hover:not(.provider-picker-option-unavailable),
 .provider-picker-option:focus-within {
-  background: var(--whilo-hover);
+  background: var(--openbot-hover);
 }
 
 .provider-picker-option-selected {
-  background: var(--whilo-hover);
+  background: var(--openbot-hover);
 }
 
 .provider-picker-option-unavailable {
-  color: var(--whilo-text-muted);
+  color: var(--openbot-text-muted);
 }
 
 .provider-picker-option-unavailable .provider-picker-option-selection {
@@ -667,14 +673,14 @@
 }
 
 .provider-picker-option-selectable-unavailable:hover {
-  background: var(--whilo-hover);
+  background: var(--openbot-hover);
 }
 
 .provider-picker-option input {
   width: 14px;
   height: 14px;
   margin: 0;
-  accent-color: var(--whilo-text-primary);
+  accent-color: var(--openbot-text-primary);
 }
 
 /* The actions share the grid cell the row reserves for them. In this variant the buttons carry
@@ -687,19 +693,19 @@
 .ui-button.provider-picker-install {
   min-width: 58px;
   min-height: 28px;
-  margin-right: 8px;
-  border-radius: var(--whilo-radius-md);
+  margin-inline-end: 8px;
+  border-radius: var(--openbot-radius-md);
   padding-inline: 9px;
 }
 
 .ui-button.provider-picker-connect {
-  background: var(--whilo-accent);
-  color: var(--whilo-text-primary);
+  background: var(--openbot-accent);
+  color: var(--openbot-text-primary);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .ui-button.provider-picker-connect:hover:not(:disabled):not([data-disabled]) {
-    background: var(--whilo-accent-hover);
+    background: var(--openbot-accent-hover);
   }
 }
 
@@ -707,7 +713,7 @@
   width: 18px;
   height: 18px;
   overflow: visible;
-  fill: var(--whilo-provider-current);
+  fill: var(--openbot-provider-current);
 }
 
 /* A custom endpoint has no brand mark, so a stroke icon takes the logo column. Until an endpoint
@@ -716,8 +722,8 @@
   width: 18px;
   height: 18px;
   grid-column: 2;
-  color: var(--whilo-text-secondary);
-  stroke-width: var(--whilo-icon-stroke);
+  color: var(--openbot-text-secondary);
+  stroke-width: var(--openbot-icon-stroke-lg);
 }
 
 .provider-picker-option-unavailable .provider-picker-logo,
@@ -726,7 +732,7 @@
 }
 
 .provider-picker-option-runtime {
-  color: var(--whilo-text-primary);
+  color: var(--openbot-text-primary);
 }
 
 .provider-picker-option-runtime .provider-picker-logo {
@@ -746,21 +752,21 @@
 }
 
 .provider-picker-name {
-  font-size: var(--whilo-text-md);
+  font-size: var(--openbot-text-md);
   font-weight: 530;
   line-height: 18px;
 }
 
 .provider-picker-email {
   color: var(--text-muted);
-  font-size: var(--whilo-text-sm);
+  font-size: var(--openbot-text-sm);
   line-height: 15px;
 }
 
 .provider-picker-check-error {
   overflow: hidden;
-  color: var(--whilo-warning);
-  font-size: var(--whilo-text-sm);
+  color: var(--openbot-warning);
+  font-size: var(--openbot-text-sm);
   line-height: 15px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -779,19 +785,20 @@
   grid-column: 1 / -1;
   overflow: visible;
   margin-top: -6px;
-  padding: 0 0 8px 66px;
+  padding-block: 0 8px;
+  padding-inline: 66px 0;
   white-space: normal;
 }
 
 .provider-picker-option-selected .provider-picker-email {
-  color: var(--whilo-text-readable);
+  color: var(--openbot-text-readable);
 }
 
 /* The same icon size as the other small buttons of the row. */
 .provider-picker-add-account svg {
-  width: var(--whilo-icon-sm);
-  height: var(--whilo-icon-sm);
-  stroke-width: var(--whilo-icon-stroke);
+  width: var(--openbot-icon-sm);
+  height: var(--openbot-icon-sm);
+  stroke-width: var(--openbot-icon-stroke);
 }
 
 /* The accounts of a provider, on lines of their own below its row and in line with its name. */
@@ -800,7 +807,8 @@
   display: grid;
   gap: 4px;
   margin-top: -6px;
-  padding: 0 0 8px 66px;
+  padding-block: 0 8px;
+  padding-inline: 66px 0;
 }
 
 .provider-picker-account-list {
@@ -819,7 +827,7 @@
 }
 
 .provider-picker-account + .provider-picker-account {
-  border-top: 1px solid var(--whilo-border);
+  border-top: 1px solid var(--openbot-border);
 }
 
 .provider-picker-account-copy {
@@ -853,7 +861,7 @@
 .provider-picker-version {
   overflow: hidden;
   color: var(--text-muted);
-  font-size: var(--whilo-text-sm);
+  font-size: var(--openbot-text-sm);
   font-variant-numeric: tabular-nums;
   line-height: 16px;
   text-overflow: ellipsis;
@@ -861,7 +869,7 @@
 }
 
 .provider-picker-option-selected .provider-picker-version {
-  color: var(--whilo-text-readable);
+  color: var(--openbot-text-readable);
 }
 
 .provider-picker-status {
@@ -869,7 +877,7 @@
   align-items: center;
   gap: 6px;
   color: var(--text-muted);
-  font-size: var(--whilo-text-sm);
+  font-size: var(--openbot-text-sm);
   line-height: 16px;
   white-space: nowrap;
 }
@@ -878,7 +886,7 @@
    sits in the same cell and answers the same kind of question, but it reports no state. */
 .provider-picker-custom-count {
   color: var(--text-muted);
-  font-size: var(--whilo-text-sm);
+  font-size: var(--openbot-text-sm);
   line-height: 16px;
   white-space: nowrap;
 }
@@ -887,69 +895,69 @@
    and sits with the row's other actions, so it needs their margin and the button's own specificity. */
 .ui-button.provider-picker-custom-count {
   min-height: 28px;
-  margin-right: 8px;
-  border-radius: var(--whilo-radius-md);
+  margin-inline-end: 8px;
+  border-radius: var(--openbot-radius-md);
   padding-inline: 9px;
   color: var(--text-muted);
-  font-size: var(--whilo-text-sm);
+  font-size: var(--openbot-text-sm);
 }
 
 .provider-picker-status-available {
-  color: var(--whilo-success);
+  color: var(--openbot-success);
 }
 
 .provider-picker-status-sign-in-required,
 .provider-picker-status-outdated,
 .provider-picker-status-update-available {
-  color: var(--whilo-warning);
+  color: var(--openbot-warning);
 }
 
 .provider-picker-status-ready {
-  color: var(--whilo-success);
+  color: var(--openbot-success);
 }
 
 .provider-picker-status-download-error {
-  color: var(--whilo-danger);
+  color: var(--openbot-danger);
 }
 
 .provider-picker-status-finishing {
-  color: var(--whilo-warning);
+  color: var(--openbot-warning);
 }
 
 .provider-picker-status-not-installed,
 .provider-picker-status-checking,
 .provider-picker-status-error {
-  color: var(--whilo-text-muted);
+  color: var(--openbot-text-muted);
 }
 
 .provider-picker-status i {
   width: 5px;
   height: 5px;
   flex: 0 0 auto;
-  border-radius: var(--whilo-radius-pill);
-  background: var(--whilo-text-dim);
+  border-radius: var(--openbot-radius-pill);
+  background: var(--openbot-text-dim);
 }
 
 .provider-picker-status-available i {
-  background: var(--whilo-success);
+  background: var(--openbot-success);
 }
 
 .provider-picker-status-sign-in-required i,
 .provider-picker-status-outdated i,
 .provider-picker-status-update-available i {
-  background: var(--whilo-warning);
+  background: var(--openbot-warning);
 }
 
 .provider-picker-status-not-installed i,
 .provider-picker-status-checking i,
 .provider-picker-status-error i {
-  background: var(--whilo-text-dim);
+  background: var(--openbot-text-dim);
 }
 
 .provider-picker-hint {
   margin: 7px 0 0;
   color: var(--text-muted);
-  font-size: var(--whilo-text-sm);
+  font-size: var(--openbot-text-sm);
   line-height: 16px;
 }
 
@@ -960,7 +968,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--whilo-space-2);
+  gap: var(--openbot-space-2);
   margin-top: 7px;
 }
 
@@ -970,9 +978,9 @@
 
 .ui-button.provider-picker-more {
   flex: 0 0 auto;
-  gap: var(--whilo-space-1-5);
+  gap: var(--openbot-space-1-5);
   margin-inline-start: auto;
-  margin-inline-end: calc(var(--whilo-space-2) * -1);
+  margin-inline-end: calc(var(--openbot-space-2) * -1);
 }
 
 .provider-picker-logo-stack {
@@ -987,9 +995,9 @@
   height: 20px;
   display: grid;
   place-items: center;
-  border-radius: var(--whilo-radius-pill);
-  background: var(--whilo-bg-control-active);
-  box-shadow: 0 0 0 2px var(--whilo-bg-canvas);
+  border-radius: var(--openbot-radius-pill);
+  background: var(--openbot-bg-control-active);
+  box-shadow: 0 0 0 2px var(--openbot-bg-canvas);
 }
 
 .provider-picker-logo-stack-mark + .provider-picker-logo-stack-mark {
@@ -1011,26 +1019,27 @@
 
 .custom-provider-dialog.provider-more-dialog {
   width: min(400px, 100%);
-  max-height: min(600px, calc(100dvh - min(14vh, 120px) - var(--whilo-space-6)));
-  padding: var(--whilo-space-2);
+  max-height: min(600px, calc(100dvh - min(14vh, 120px) - var(--openbot-space-6)));
+  padding: var(--openbot-space-2);
 }
 
 .provider-more-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--whilo-space-1) var(--whilo-space-1) var(--whilo-space-1) var(--whilo-space-3);
+  padding-block: var(--openbot-space-1);
+  padding-inline: var(--openbot-space-3) var(--openbot-space-1);
 }
 
 .provider-more-title {
   margin: 0;
-  font-size: var(--whilo-text-lg);
-  font-weight: var(--whilo-weight-semibold);
+  font-size: var(--openbot-text-lg);
+  font-weight: var(--openbot-weight-semibold);
 }
 
 .ui-input.provider-more-search {
   flex-shrink: 0;
-  margin: var(--whilo-space-1) 0 var(--whilo-space-2);
+  margin: var(--openbot-space-1) 0 var(--openbot-space-2);
 }
 
 .provider-more-search::-webkit-search-cancel-button {
@@ -1050,19 +1059,19 @@
   grid-template-columns: 18px minmax(0, 1fr);
   justify-content: stretch;
   align-items: center;
-  gap: var(--whilo-space-3);
-  padding: var(--whilo-space-2) var(--whilo-space-3);
+  gap: var(--openbot-space-3);
+  padding: var(--openbot-space-2) var(--openbot-space-3);
   border: 0;
-  border-radius: var(--whilo-radius-md);
+  border-radius: var(--openbot-radius-md);
   color: inherit;
   font: inherit;
   line-height: normal;
-  text-align: left;
+  text-align: start;
   white-space: normal;
 }
 
 .ui-button.provider-more-row:focus-visible {
-  outline: 2px solid var(--whilo-border-focus);
+  outline: 2px solid var(--openbot-border-focus);
   outline-offset: -2px;
 }
 
@@ -1072,22 +1081,22 @@
 
 .provider-more-divider {
   height: 1px;
-  margin: var(--whilo-space-1) var(--whilo-space-3);
+  margin: var(--openbot-space-1) var(--openbot-space-3);
   border: 0;
-  background: var(--whilo-border);
+  background: var(--openbot-border);
 }
 
 .provider-more-empty {
   margin: 0;
-  padding: var(--whilo-space-2) var(--whilo-space-3);
-  color: var(--whilo-text-muted);
-  font-size: var(--whilo-text-sm);
+  padding: var(--openbot-space-2) var(--openbot-space-3);
+  color: var(--openbot-text-muted);
+  font-size: var(--openbot-text-sm);
 }
 
 .initial-setup-error {
   margin: 12px 2px 0;
-  color: var(--whilo-danger);
-  font-size: var(--whilo-text-md);
+  color: var(--openbot-danger);
+  font-size: var(--openbot-text-md);
   line-height: 1.45;
 }
 
@@ -1100,24 +1109,24 @@
 
 .initial-setup-save {
   min-height: 40px;
-  border: 1px solid var(--whilo-border-strong);
-  border-radius: var(--whilo-radius-md);
+  border: 1px solid var(--openbot-border-strong);
+  border-radius: var(--openbot-radius-md);
   padding: 12px 18px;
-  font-size: var(--whilo-text-md);
+  font-size: var(--openbot-text-md);
   font-weight: 620;
 }
 
 .initial-setup-save {
   min-width: 180px;
-  background: var(--whilo-text-primary);
-  color: var(--whilo-bg-sidebar);
+  background: var(--openbot-text-primary);
+  color: var(--openbot-bg-sidebar);
   transition:
-    transform var(--whilo-duration-normal) ease,
-    background var(--whilo-duration-hover) ease;
+    transform var(--openbot-duration-normal) ease,
+    background var(--openbot-duration-hover) ease;
 }
 
 .initial-setup-save:hover:not(:disabled) {
-  background: var(--whilo-text-primary);
+  background: var(--openbot-text-primary);
 }
 
 .initial-setup-save:disabled {
@@ -1177,29 +1186,47 @@
 @media (prefers-reduced-motion: no-preference) {
   .account-login,
   .initial-setup {
-    animation: setup-enter var(--whilo-duration-overlay) cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    animation: setup-enter var(--openbot-duration-overlay) cubic-bezier(0.2, 0.8, 0.2, 1) both;
   }
 
   .account-login[data-transition="forward"] .account-login-title,
   .account-login[data-transition="forward"] .account-login-description {
-    animation: account-login-copy-forward var(--whilo-duration-overlay) var(--whilo-ease-out) both;
+    animation: account-login-copy-forward var(--openbot-duration-overlay) var(--openbot-ease-out) both;
   }
 
   .account-login[data-transition="back"] .account-login-title,
   .account-login[data-transition="back"] .account-login-description {
-    animation: account-login-copy-back var(--whilo-duration-overlay) var(--whilo-ease-out) both;
+    animation: account-login-copy-back var(--openbot-duration-overlay) var(--openbot-ease-out) both;
   }
 
   .account-login[data-transition] .account-login-description {
     animation-delay: 18ms;
   }
 
-  .account-login[data-transition="forward"] .account-login-form[data-auth-panel="code"] {
-    animation: account-login-panel-forward var(--whilo-duration-overlay) 32ms var(--whilo-ease-out) both;
+  .account-login[data-transition="forward"]
+    .account-login-form:is([data-auth-panel="code"], [data-auth-panel="company"]) {
+    animation: account-login-panel-forward var(--openbot-duration-overlay) 32ms var(--openbot-ease-out) both;
   }
 
   .account-login[data-transition="back"] .account-login-form[data-auth-panel="email"] {
-    animation: account-login-panel-back var(--whilo-duration-overlay) 32ms var(--whilo-ease-out) both;
+    animation: account-login-panel-back var(--openbot-duration-overlay) 32ms var(--openbot-ease-out) both;
+  }
+
+  /* A right-to-left page moves forward to the left. */
+  .account-login:dir(rtl)[data-transition="forward"] :is(.account-login-title, .account-login-description) {
+    animation-name: account-login-copy-back;
+  }
+
+  .account-login:dir(rtl)[data-transition="back"] :is(.account-login-title, .account-login-description) {
+    animation-name: account-login-copy-forward;
+  }
+
+  .account-login:dir(rtl)[data-transition="forward"] .account-login-form[data-auth-panel="code"] {
+    animation-name: account-login-panel-back;
+  }
+
+  .account-login:dir(rtl)[data-transition="back"] .account-login-form[data-auth-panel="email"] {
+    animation-name: account-login-panel-forward;
   }
 
   @keyframes setup-enter {
@@ -1262,12 +1289,12 @@ button {
 button:not(.ui-button):focus-visible,
 input:not(.ui-input):focus-visible,
 textarea:not(.ui-textarea):focus-visible {
-  outline: 2px solid var(--whilo-border-focus);
+  outline: 2px solid var(--openbot-border-focus);
   outline-offset: 2px;
 }
 
 ::selection {
-  background: var(--whilo-accent-strong);
+  background: var(--openbot-accent-strong);
 }
 
 /* No vertical scroll bar: the wheel, the trackpad and the keyboard still scroll. Horizontal bars
@@ -1282,8 +1309,8 @@ textarea:not(.ui-textarea):focus-visible {
 
 ::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
-  border-radius: var(--whilo-radius-pill);
-  background: var(--whilo-border-strong);
+  border-radius: var(--openbot-radius-pill);
+  background: var(--openbot-border-strong);
   background-clip: padding-box;
 }
 
@@ -1291,28 +1318,28 @@ textarea:not(.ui-textarea):focus-visible {
   -webkit-mask-image: linear-gradient(
     to bottom,
     transparent 0,
-    var(--whilo-text-primary) 18px,
-    var(--whilo-text-primary) 100%
+    var(--openbot-text-primary) 18px,
+    var(--openbot-text-primary) 100%
   );
   mask-image: linear-gradient(
     to bottom,
     transparent 0,
-    var(--whilo-text-primary) 18px,
-    var(--whilo-text-primary) 100%
+    var(--openbot-text-primary) 18px,
+    var(--openbot-text-primary) 100%
   );
 }
 
 .scroll-fade-bottom:not(.scroll-fade-top) {
   -webkit-mask-image: linear-gradient(
     to bottom,
-    var(--whilo-text-primary) 0,
-    var(--whilo-text-primary) calc(100% - 18px),
+    var(--openbot-text-primary) 0,
+    var(--openbot-text-primary) calc(100% - 18px),
     transparent 100%
   );
   mask-image: linear-gradient(
     to bottom,
-    var(--whilo-text-primary) 0,
-    var(--whilo-text-primary) calc(100% - 18px),
+    var(--openbot-text-primary) 0,
+    var(--openbot-text-primary) calc(100% - 18px),
     transparent 100%
   );
 }
@@ -1321,29 +1348,17 @@ textarea:not(.ui-textarea):focus-visible {
   -webkit-mask-image: linear-gradient(
     to bottom,
     transparent 0,
-    var(--whilo-text-primary) 18px,
-    var(--whilo-text-primary) calc(100% - 18px),
+    var(--openbot-text-primary) 18px,
+    var(--openbot-text-primary) calc(100% - 18px),
     transparent 100%
   );
   mask-image: linear-gradient(
     to bottom,
     transparent 0,
-    var(--whilo-text-primary) 18px,
-    var(--whilo-text-primary) calc(100% - 18px),
+    var(--openbot-text-primary) 18px,
+    var(--openbot-text-primary) calc(100% - 18px),
     transparent 100%
   );
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
 }
 
 body,
@@ -1352,7 +1367,7 @@ body,
 .app-frame,
 .conversation-panel,
 .direct-conversation {
-  background: var(--whilo-bg-canvas);
+  background: var(--openbot-bg-canvas);
 }
 
 .panel-edge,
@@ -1362,7 +1377,7 @@ body,
 .browser-panel,
 .remote-desktop-workspace,
 .provider-picker-list {
-  border-color: var(--whilo-border);
+  border-color: var(--openbot-border);
 }
 
 .search-field,
@@ -1374,9 +1389,9 @@ body,
 .setup-remote-form input,
 .setup-remote-form textarea,
 .account-login-form input {
-  border-color: var(--whilo-border);
-  background: var(--whilo-bg-surface);
-  color: var(--whilo-text-primary);
+  border-color: var(--openbot-border);
+  background: var(--openbot-bg-surface);
+  color: var(--openbot-text-primary);
 }
 
 .search-field:focus-within,
@@ -1388,8 +1403,8 @@ body,
 .setup-remote-form input:focus,
 .setup-remote-form textarea:focus,
 .account-login-form input:focus {
-  border-color: var(--whilo-border-focus);
-  background: var(--whilo-bg-surface-raised);
+  border-color: var(--openbot-border-focus);
+  background: var(--openbot-bg-surface-raised);
 }
 
 .search-field input::placeholder,
@@ -1400,86 +1415,91 @@ body,
 .setup-remote-form input::placeholder,
 .setup-remote-form textarea::placeholder,
 .account-login-form input::placeholder {
-  color: var(--whilo-text-placeholder);
+  color: var(--openbot-text-placeholder);
 }
 
 .provider-picker-option-selected,
 .provider-model-option-selected {
-  border-color: var(--whilo-border-focus);
-  background: var(--whilo-accent-soft);
-  color: var(--whilo-text-primary);
+  border-color: var(--openbot-border-focus);
+  background: var(--openbot-accent-soft);
+  color: var(--openbot-text-primary);
 }
 
 .provider-picker-option,
 .provider-model-option {
-  border-color: var(--whilo-border);
-  background: var(--whilo-bg-control);
-  color: var(--whilo-text-secondary);
+  border-color: var(--openbot-border);
+  background: var(--openbot-bg-control);
+  color: var(--openbot-text-secondary);
 }
 
 .provider-picker-option:hover:not(.provider-picker-option-unavailable),
 .provider-picker-option:focus-within,
 .provider-model-option:hover,
 .provider-model-option:focus-visible {
-  background: var(--whilo-bg-control-hover);
-  color: var(--whilo-text-primary);
+  background: var(--openbot-bg-control-hover);
+  color: var(--openbot-text-primary);
 }
 
 .voice-button,
 .voice-button-active,
 .initial-setup-save,
 .account-login-primary {
-  background: var(--whilo-surface-light);
-  color: var(--whilo-text-on-light);
+  background: var(--openbot-surface-light);
+  color: var(--openbot-text-on-light);
 }
 
 .voice-button:hover,
 .voice-button-active:hover,
 .initial-setup-save:hover:not(:disabled),
 .account-login-primary:hover:not(:disabled, [aria-disabled="true"]) {
-  background: var(--whilo-text-primary);
-  color: var(--whilo-text-on-light);
+  background: var(--openbot-text-primary);
+  color: var(--openbot-text-on-light);
 }
 
 .remote-desktop-overlay > button,
 .remote-desktop-overlay > button:hover {
-  border-color: var(--whilo-border-strong);
-  background: var(--whilo-bg-control-hover);
-  color: var(--whilo-text-primary);
+  border-color: var(--openbot-border-strong);
+  background: var(--openbot-bg-control-hover);
+  color: var(--openbot-text-primary);
 }
 
 .remote-desktop-overlay > button:hover {
-  background: var(--whilo-bg-control-active);
+  background: var(--openbot-bg-control-active);
 }
 
 .account-login-error,
 .initial-setup-error {
-  border-color: var(--whilo-danger-soft);
-  background: var(--whilo-danger-soft);
-  color: var(--whilo-danger);
+  border-color: var(--openbot-danger-soft);
+  background: var(--openbot-danger-soft);
+  color: var(--openbot-danger);
 }
 
 .setup-route-button,
 .setup-route-icon,
 .setup-remote-form input,
 .setup-remote-form textarea {
-  border-color: var(--whilo-border);
-  background: var(--whilo-bg-surface);
+  border-color: var(--openbot-border);
+  background: var(--openbot-bg-surface);
 }
 
 .setup-route-button:hover,
 .setup-route-button:focus-visible {
-  border-color: var(--whilo-border-focus);
-  background: var(--whilo-bg-surface-raised);
+  border-color: var(--openbot-border-focus);
+  background: var(--openbot-bg-surface-raised);
 }
 
 .setup-route-icon-local i,
 .provider-picker-status-available i {
-  color: var(--whilo-success);
+  color: var(--openbot-success);
 }
 
 .account-login-development-code,
 .provider-picker-status-sign-in-required i,
 .provider-picker-status-outdated i {
-  color: var(--whilo-warning);
+  color: var(--openbot-warning);
+}
+
+/* Change email goes back, so its arrow follows the reading direction. */
+.account-login-code-action-change > svg[class~="lucide-arrow-left"]:dir(rtl) {
+  transform: scaleX(-1);
 }

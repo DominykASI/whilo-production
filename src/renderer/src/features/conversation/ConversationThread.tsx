@@ -1,37 +1,28 @@
-import { supportedAttachmentExtensions } from "@whilo/contracts/attachment-files";
-import { canPreviewAttachment } from "@whilo/contracts/ipc";
-import type { AppTextKey } from "@whilo/i18n";
-import { classifyFailure } from "@whilo/telemetry";
-import { Input } from "@whilo/ui";
-import type { AgentMessage } from "@whilo/ui/data";
-import { ChatSearch } from "@whilo/ui/features/conversation/ChatSearch";
-import { contextUsageView } from "@whilo/ui/features/conversation/ContextUsage";
-import { AgentThreadView, type AgentThreadVoice } from "@whilo/ui/features/conversation/threads/AgentThreadView";
-import type { AgentThreadBranchSource } from "@whilo/ui/features/conversation/threads/BranchDivider";
-import { useText } from "@whilo/ui/text";
+import { canPreviewAttachment } from "@openbot/contracts/ipc";
+import type { AppTextKey } from "@openbot/i18n";
+import { classifyFailure } from "@openbot/telemetry";
+import { Input } from "@openbot/ui";
+import type { AgentMessage } from "@openbot/ui/data";
+import { ChatSearch } from "@openbot/ui/features/conversation/ChatSearch";
+import { contextUsageView } from "@openbot/ui/features/conversation/ContextUsage";
+import { AgentThreadView, type AgentThreadVoice } from "@openbot/ui/features/conversation/threads/AgentThreadView";
+import type { AgentThreadBranchSource } from "@openbot/ui/features/conversation/threads/BranchDivider";
+import { useText } from "@openbot/ui/text";
 import { createEffect, createMemo, createProjection, createSignal, Show, untrack } from "solid-js";
 import { actionToast } from "../../action-toast";
 import { useShowAgentSteps } from "../../agent-steps-preference";
 import { toAgentMessages } from "../../app-message-projection";
+import { useCompactMessageActions } from "../../compact-message-actions-preference";
 import { usePlatform } from "../../platform";
-import { deviceSendShortcut } from "../../send-shortcut-preference";
+import { deviceQuoteShortcut, deviceSendShortcut } from "../../send-shortcut-preference";
 import { ConversationBrowserTakeover } from "./ConversationBrowserTakeover";
 import { ConversationQuestionPrompt } from "./ConversationQuestionPrompt";
+import { chatSearchOpensMessage } from "./chat-search";
 import { latestVisibleAgentMessageId } from "./conversation-read-state";
 import { useConversationViewScope } from "./conversation-scope";
 import type { ConversationThreads } from "./conversation-types";
+import { useThreadMcpSignInCard } from "./McpSignInChatCard";
 import { createTurnSteps } from "./turn-steps";
-
-/** A thread takes files only from this computer, which reads every supported type. */
-const THREAD_ATTACHMENT_ACCEPT = supportedAttachmentExtensions({
-  eml: true,
-  media: true,
-  zip: true,
-  mp4: true,
-  svg: true,
-})
-  .map((extension) => `.${extension}`)
-  .join(",");
 
 /** The open side thread of the agent, in the place of the agent's own chat and its message box. */
 export function ConversationThread() {
@@ -40,11 +31,16 @@ export function ConversationThread() {
     openExternalMessageUrl,
     previewAttachment,
     attachmentAction,
+    attachmentDownloads,
     browserTakeoverResolution,
     installedSkills,
     installedSkillsLoadFailed,
     mcpServers,
+    taggableBrowserTabs,
+    taggableThreads,
+    openTaggedReference,
     threadComposer,
+    threadQueue,
     threadFocusRequest,
     threadVoiceLiveText,
     threadVoiceOwned,
@@ -102,6 +98,7 @@ export function ConversationThread() {
     activeTurnId: () => props.threads?.open?.activeTurnId,
   });
   const showAgentSteps = useShowAgentSteps();
+  const compactMessageActions = useCompactMessageActions();
   const { appFocused } = usePlatform();
   // The person reads the open thread while the window has focus. The mark is the member's, so the
   // phone no longer shows the thread as unread.
@@ -176,6 +173,27 @@ export function ConversationThread() {
     if (!threads.onBranch || !taskId) return undefined;
     return (messageId: string) => void branchThread(taskId, messageId);
   };
+  /** Deletes a message of the open thread. A new thread has no message to delete. */
+  const deleteMessage = (threads: ConversationThreads) => {
+    const remove = threads.onDeleteMessage;
+    const taskId = threads.open?.id;
+    if (!remove || !taskId) return undefined;
+    return (messageId: string) => remove(taskId, messageId);
+  };
+  /** Replies to a message of the open thread. A new thread has no message to reply to. */
+  const reply = (threads: ConversationThreads) => {
+    if (!threads.acceptsReplies || !threads.open) return undefined;
+    return (message: AgentMessage) => threadComposer.setReply(threadComposer.openDraftKey(), message.id);
+  };
+  const replyTo = () => {
+    const id = props.threads?.acceptsReplies ? draft()?.replyToMessageId : null;
+    return id ? messages.find((message) => message.id === id) : undefined;
+  };
+  /** Text selected in the open thread goes to this thread, as a reply where the server takes one. */
+  const selectionActions = (threads: ConversationThreads) => ({
+    onSend: (messageId: string, body: string) => threads.onSend(body, [], threads.acceptsReplies ? messageId : null),
+    quoteShortcut: deviceQuoteShortcut(props.platform),
+  });
   /** Where the open thread came from, when it is a branch. The agent's own chat shows the agent's name. */
   const branchSource = (threads: ConversationThreads, agentName: string): AgentThreadBranchSource | undefined => {
     const source = threads.open ? threads.branchSource(threads.open) : undefined;
@@ -191,6 +209,10 @@ export function ConversationThread() {
     const focus = threads.focusMessage;
     return focus && focus.taskId === threads.open?.id ? focus : undefined;
   };
+  /** Continue on a sign-in card goes to the open thread, as the person's next message there. */
+  const mcpSignInCard = useThreadMcpSignInCard(
+    (body) => props.threads?.onSend(body, [], null) ?? Promise.resolve(false),
+  );
   /** The cards that the thread waits for: its browser takeover, and its question as a form. */
   const attention = () => {
     if (!hasAttention()) return undefined;
@@ -210,15 +232,7 @@ export function ConversationThread() {
       {(current) => (
         <>
           <Show when={current().threads.acceptsFiles}>
-            <Input
-              ref={setPicker}
-              type="file"
-              accept={THREAD_ATTACHMENT_ACCEPT}
-              multiple
-              hidden
-              tabindex={-1}
-              data-whilo-attachment-picker="true"
-            />
+            <Input ref={setPicker} type="file" multiple hidden tabindex={-1} data-openbot-attachment-picker="true" />
           </Show>
           <Show when={threadSearchOpen()}>
             <ChatSearch
@@ -234,6 +248,9 @@ export function ConversationThread() {
           </Show>
           <AgentThreadView
             scrollRef={setThreadScrollElement}
+            showFullMessage={(message) =>
+              threadSearchOpen() && chatSearchOpensMessage(message.body, threadSearchQuery())
+            }
             task={current().threads.open ?? null}
             limit={current().threads.limit}
             agent={current().agent}
@@ -242,6 +259,9 @@ export function ConversationThread() {
             skills={installedSkills()}
             skillsLoadFailed={installedSkillsLoadFailed()}
             mcpServers={mcpServers()}
+            browserTabs={taggableBrowserTabs()}
+            threads={taggableThreads()}
+            onOpenTag={openTaggedReference}
             draft={draft()?.text ?? ""}
             draftAttachments={draft()?.attachments}
             rowAttachments={rowImages()}
@@ -250,7 +270,7 @@ export function ConversationThread() {
               threadComposer.removeAttachment(threadComposer.openDraftKey(), attachment.id)
             }
             onDraftChange={(text) => threadComposer.setText(threadComposer.openDraftKey(), text)}
-            onPasteFiles={(files, selection) => threadComposer.pasteFiles(files, selection)}
+            onPasteFiles={(files, selection, text) => threadComposer.pasteFiles(files, selection, undefined, text)}
             onOpenDraftAttachment={(attachment) =>
               canPreviewAttachment(attachment)
                 ? void previewAttachment(attachment)
@@ -260,12 +280,19 @@ export function ConversationThread() {
             onSideQuestion={askSideQuestion()}
             voice={voice()}
             focusRequest={focusRequest()}
-            onSend={(text) => threadComposer.send(current().threads, text)}
+            onSend={(text) => {
+              // While a queued message is in the message box, Send saves it in its place.
+              const key = threadComposer.openDraftKey();
+              return key && threadQueue.editOf(current().threads.open?.id)
+                ? threadComposer.importsEnded(key).then(() => threadQueue.save(key))
+                : threadComposer.send(current().threads, text);
+            }}
             onStop={() => current().threads.onStop()}
             onOpenLink={(url) => void openExternalMessageUrl(url)}
             onPreview={(attachment) => void previewAttachment(attachment)}
             onAttachmentAction={attachmentAction}
             mediaSource={props.runtime?.attachmentMedia}
+            downloads={attachmentDownloads}
             macWindowControls={props.platform === "darwin"}
             approval={current().threads.approval}
             onRespondApproval={(decision) =>
@@ -275,6 +302,8 @@ export function ConversationThread() {
             onCompactContext={current().threads.onCompactContext}
             waitsForAnswer={props.prompt !== undefined || props.browserTakeover !== undefined}
             attention={attention()}
+            messageCard={mcpSignInCard}
+            olderMessages={current().threads.olderMessages}
             stepsAbove={turnSteps.stepsAbove}
             factsAbove={turnSteps.factsAbove}
             activeSteps={turnSteps.activeSteps()}
@@ -282,9 +311,17 @@ export function ConversationThread() {
             sendShortcut={deviceSendShortcut(props.platform)}
             onCopyMessage={(message) => void copyMessage(message)}
             copiedMessageId={copiedMessageId()}
+            compactMessageActions={compactMessageActions()}
             onBranch={branch(current().threads)}
+            onDeleteMessage={deleteMessage(current().threads)}
+            canDeleteMessage={props.canDeleteMessage}
             branchSource={branchSource(current().threads, current().agent.name)}
             focusMessage={focusMessage(current().threads)}
+            onReply={reply(current().threads)}
+            replyTo={replyTo()}
+            onCancelReply={() => threadComposer.setReply(threadComposer.openDraftKey(), null)}
+            queue={threadQueue.view(current().threads.open, threadComposer.openDraftKey())}
+            selectionActions={selectionActions(current().threads)}
           />
         </>
       )}

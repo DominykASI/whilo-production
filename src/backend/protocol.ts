@@ -3,8 +3,8 @@ import {
   isAgentProvider,
   PROVIDER_USAGE_RESET_OUTCOMES,
   type ProviderUsageResetOutcome,
-} from "@whilo/contracts/ipc";
-import { decodeRecord, requiredString } from "@whilo/contracts/ipc-decoding";
+} from "@openbot/contracts/ipc";
+import { decodeRecord, requiredString } from "@openbot/contracts/ipc-decoding";
 import {
   type DynamicRecord,
   isBoolean,
@@ -12,7 +12,7 @@ import {
   isNumber,
   isOneOf,
   isString,
-} from "@whilo/contracts/runtime-values";
+} from "@openbot/contracts/runtime-values";
 
 export type RequestId = string | number;
 
@@ -88,6 +88,11 @@ export interface AccountReadResult {
     type: string;
     email?: string | null | undefined;
     planType?: string | null | undefined;
+    /**
+     * The organization or workspace of the login, when the CLI gives one: the Claude `orgId` or the
+     * Codex `workspaceName`. One email can sign in to a team and to a personal account.
+     */
+    organization?: string | null | undefined;
   };
   requiresOpenaiAuth: boolean;
 }
@@ -259,11 +264,14 @@ export function decodeAccountReadResult(value: unknown): AccountReadResult {
   const accountRecord = decodeRecord(account, "account");
   const email = optionalString(accountRecord, "email");
   const planType = optionalString(accountRecord, "planType");
+  // The Claude client gives `organization`; the Codex app server gives `workspaceName`.
+  const organization = optionalString(accountRecord, "organization") ?? optionalString(accountRecord, "workspaceName");
   return {
     account: {
       type: requiredString(accountRecord, "type"),
       ...(email === undefined ? {} : { email }),
       ...(planType === undefined ? {} : { planType }),
+      ...(organization === undefined ? {} : { organization }),
     },
     requiresOpenaiAuth: requiresOpenaiAuth === undefined ? false : recordBoolean(record, "requiresOpenaiAuth"),
   };
@@ -281,7 +289,7 @@ export function decodeAccountLoginStartResult(value: unknown): AccountLoginStart
 export function decodeAccountDeviceCodeLoginStartResult(value: unknown): AccountDeviceCodeLoginStartResult {
   const record = decodeRecord(value, "account device login response");
   if (requiredString(record, "type") !== "chatgptDeviceCode") throw new Error("Unexpected Codex login type.");
-  // Held to the same rule as the browser login's URL: this is the address Whilo shows the user
+  // Held to the same rule as the browser login's URL: this is the address OpenBot shows the user
   // and offers to open, so a downgrade to plain HTTP is refused before it reaches the screen.
   const url = new URL(requiredString(record, "verificationUrl"));
   if (url.protocol !== "https:") throw new Error("Codex returned an unsafe login URL.");
@@ -464,7 +472,7 @@ function decodeRateLimitWindow(value: unknown): AccountRateLimitWindowResult | n
 }
 
 /**
- * Only the count: the credit rows are display text that Whilo does not show. A count it cannot
+ * Only the count: the credit rows are display text that OpenBot does not show. A count it cannot
  * read is unknown, so the usage reading that carries it still decodes.
  */
 function decodeRateLimitResetCredits(value: unknown): AccountRateLimitsReadResult["rateLimitResetCredits"] {
@@ -529,8 +537,9 @@ export function getRecord(record: unknown, key: string): DynamicRecord | null {
 /** The qualified name that a `tool_call` bridge item asks for. The model writes it, so check it before use. */
 export function bridgedToolName(item: ThreadItem): string | null {
   const tool = getString(item, "tool") ?? getString(item, "name");
-  if (tool !== "tool_call" && tool !== "mcp__whilo__tool_call") return null;
-  return getString(getRecord(item, "arguments"), "name");
+  if (tool !== "tool_call" && tool !== "mcp__openbot__tool_call") return null;
+  const args = getRecord(item, "arguments");
+  return getString(args, "name") ?? getString(args, "tool");
 }
 
 export function getArray(record: unknown, key: string): unknown[] {

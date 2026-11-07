@@ -1,40 +1,40 @@
 .account-update-island {
-  --panel-open-dur: calc(var(--whilo-duration-slow) + var(--whilo-duration-slow));
-  --panel-close-dur: calc(var(--whilo-duration-slow) + var(--whilo-duration-normal));
-  --panel-translate-y: calc(100% - var(--whilo-space-3));
-  --panel-blur: var(--whilo-space-0-5);
-  --panel-ease: var(--whilo-ease-out);
-  --text-swap-dur: var(--whilo-duration-normal);
-  --text-swap-translate-y: var(--whilo-space-1);
-  --text-swap-blur: var(--whilo-space-0-5);
-  --text-swap-ease: var(--whilo-ease-in-out);
-  --digit-dur: var(--whilo-duration-slow);
-  --digit-distance: var(--whilo-space-1);
-  --digit-stagger: calc(var(--whilo-duration-fast) - var(--whilo-duration-dialog));
-  --digit-blur: var(--whilo-space-0-5);
-  --digit-ease: var(--whilo-ease-out);
+  --panel-open-dur: calc(var(--openbot-duration-slow) + var(--openbot-duration-slow));
+  --panel-close-dur: calc(var(--openbot-duration-slow) + var(--openbot-duration-normal));
+  --panel-translate-y: calc(100% - var(--openbot-space-3));
+  --panel-blur: var(--openbot-space-0-5);
+  --panel-ease: var(--openbot-ease-out);
+  --text-swap-dur: var(--openbot-duration-normal);
+  --text-swap-translate-y: var(--openbot-space-1);
+  --text-swap-blur: var(--openbot-space-0-5);
+  --text-swap-ease: var(--openbot-ease-in-out);
+  --digit-dur: var(--openbot-duration-slow);
+  --digit-distance: var(--openbot-space-1);
+  --digit-stagger: calc(var(--openbot-duration-fast) - var(--openbot-duration-dialog));
+  --digit-blur: var(--openbot-space-0-5);
+  --digit-ease: var(--openbot-ease-out);
   --digit-dir-x: 0;
   --digit-dir-y: 1;
 
   position: absolute;
   z-index: 0;
-  right: var(--whilo-space-4);
-  bottom: var(--whilo-control-xl);
-  left: var(--whilo-space-4);
+  right: var(--openbot-space-4);
+  bottom: var(--openbot-control-xl);
+  left: var(--openbot-space-4);
   display: grid;
-  min-height: calc(var(--whilo-control-xl) + var(--whilo-radius-card));
+  min-height: calc(var(--openbot-control-xl) + var(--openbot-radius-card));
   align-items: center;
   border: 0;
-  border-radius: var(--whilo-radius-lg) var(--whilo-radius-lg) var(--whilo-radius-md) var(--whilo-radius-md);
-  background: var(--whilo-accent-strong);
-  box-shadow: 0 0 0 1px var(--whilo-accent-soft);
-  -webkit-backdrop-filter: blur(var(--whilo-space-3));
-  backdrop-filter: blur(var(--whilo-space-3));
-  padding: calc(var(--whilo-space-1) + 1px) var(--whilo-space-1-5)
-    calc(var(--whilo-space-4) + var(--whilo-space-1) - 1px);
+  border-radius: var(--openbot-radius-lg) var(--openbot-radius-lg) var(--openbot-radius-md) var(--openbot-radius-md);
+  background: var(--openbot-accent-strong);
+  box-shadow: 0 0 0 1px var(--openbot-accent-soft);
+  -webkit-backdrop-filter: blur(var(--openbot-space-3));
+  backdrop-filter: blur(var(--openbot-space-3));
+  padding: calc(var(--openbot-space-1) + 1px) var(--openbot-space-1-5)
+    calc(var(--openbot-space-4) + var(--openbot-space-1) - 1px);
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: var(--whilo-space-2);
-  color: var(--whilo-accent-text);
+  gap: var(--openbot-space-2);
+  color: var(--openbot-accent-text);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -80,10 +80,10 @@
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: var(--whilo-accent-text);
-  font-size: var(--whilo-text-sm);
-  font-weight: var(--whilo-weight-semibold);
-  line-height: var(--whilo-leading-sm);
+  color: var(--openbot-accent-text);
+  font-size: var(--openbot-text-sm);
+  font-weight: var(--openbot-weight-semibold);
+  line-height: var(--openbot-leading-sm);
   white-space: nowrap;
 }
 
@@ -131,35 +131,36 @@
   /* A floor, not a fixed width: translated labels such as "Uruchom ponownie" are wider than the
      English ones, and the button grows to hold them while the status text gives way. */
   min-width: calc(
-    var(--whilo-control-xl) +
-    var(--whilo-control-xl) +
-    var(--whilo-space-6) +
-    var(--whilo-space-1)
+    var(--openbot-control-xl) +
+    var(--openbot-control-xl) +
+    var(--openbot-space-6) +
+    var(--openbot-space-1)
   );
   flex-shrink: 0;
 }
 
 .account-update-island__action.ui-button {
   width: 100%;
-  height: var(--whilo-control-sm);
-  min-height: var(--whilo-control-sm);
-  border-radius: var(--whilo-radius-sm);
-  background: var(--whilo-surface-light);
-  box-shadow: 0 1px 2px var(--whilo-shadow-popover-ambient);
-  padding: 0 var(--whilo-space-3) 0 var(--whilo-space-2);
-  color: var(--whilo-text-on-light);
+  height: var(--openbot-control-sm);
+  min-height: var(--openbot-control-sm);
+  border-radius: var(--openbot-radius-sm);
+  background: var(--openbot-surface-light);
+  box-shadow: 0 1px 2px var(--openbot-shadow-popover-ambient);
+  padding-block: 0;
+  padding-inline: var(--openbot-space-2) var(--openbot-space-3);
+  color: var(--openbot-text-on-light);
   transition:
-    box-shadow var(--whilo-duration-normal) var(--whilo-ease-out),
-    transform var(--whilo-duration-fast) var(--whilo-ease-out);
+    box-shadow var(--openbot-duration-normal) var(--openbot-ease-out),
+    transform var(--openbot-duration-fast) var(--openbot-ease-out);
 }
 
 .account-update-island__action.ui-button::after {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: calc(100% + var(--whilo-space-4));
-  min-width: var(--whilo-control-xl);
-  height: var(--whilo-control-xl);
+  width: calc(100% + var(--openbot-space-4));
+  min-width: var(--openbot-control-xl);
+  height: var(--openbot-control-xl);
   transform: translate(-50%, -50%);
   content: "";
 }
@@ -173,22 +174,24 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--whilo-space-1-5);
+  gap: var(--openbot-space-1-5);
 }
 
 .account-update-island__action-label {
-  min-width: calc(var(--whilo-control-xl) + var(--whilo-space-3));
-  color: var(--whilo-text-on-light);
-  font-weight: var(--whilo-weight-semibold);
-  text-align: left;
+  min-width: calc(var(--openbot-control-xl) + var(--openbot-space-3));
+  color: var(--openbot-text-on-light);
+  font-weight: var(--openbot-weight-semibold);
+  text-align: start;
 }
 
 .account-update-island__progress-value {
   display: inline-grid;
   align-items: baseline;
   grid-template-columns: 3ch max-content;
-  font-size: var(--whilo-text-sm);
-  font-weight: var(--whilo-weight-semibold);
+  /* "45%" in every page direction, as the percent of the locale. */
+  direction: ltr;
+  font-size: var(--openbot-text-sm);
+  font-weight: var(--openbot-weight-semibold);
   font-variant-numeric: tabular-nums;
   line-height: 1;
 }
@@ -238,24 +241,24 @@
 }
 
 .account-update-island__action-shell[data-downloading="true"] .account-update-island__action-label {
-  min-width: var(--whilo-control-md);
+  min-width: var(--openbot-control-md);
   text-align: center;
 }
 
 .account-update-island__action-shell[data-downloading="true"] .account-update-island__action.ui-button {
-  padding-inline: var(--whilo-space-2);
+  padding-inline: var(--openbot-space-2);
 }
 
 .account-update-island__icon.t-icon-swap {
-  --icon-swap-dur: var(--whilo-duration-overlay);
-  --icon-swap-blur: var(--whilo-space-0-5);
+  --icon-swap-dur: var(--openbot-duration-overlay);
+  --icon-swap-blur: var(--openbot-space-0-5);
   --icon-swap-start-scale: 0.25;
-  --icon-swap-ease: var(--whilo-ease-in-out);
+  --icon-swap-ease: var(--openbot-ease-in-out);
 
   position: relative;
   display: inline-grid;
-  width: var(--whilo-icon-sm);
-  height: var(--whilo-icon-sm);
+  width: var(--openbot-icon-sm);
+  height: var(--openbot-icon-sm);
   flex: 0 0 auto;
   place-items: center;
 }
@@ -274,13 +277,13 @@
 }
 
 .account-update-island__icon.t-icon-swap svg {
-  width: var(--whilo-icon-sm);
-  height: var(--whilo-icon-sm);
-  stroke-width: var(--whilo-icon-stroke);
+  width: var(--openbot-icon-sm);
+  height: var(--openbot-icon-sm);
+  stroke-width: var(--openbot-icon-stroke);
 }
 
 .account-update-island__icon.t-icon-swap .ui-spinner {
-  border-color: var(--whilo-text-dim-on-light);
+  border-color: var(--openbot-text-dim-on-light);
   border-top-color: currentColor;
 }
 
@@ -304,11 +307,11 @@
 
 @media (hover: hover) and (pointer: fine) {
   .account-update-island__action.ui-button:hover:not(:disabled):not([data-disabled]) {
-    background: var(--whilo-surface-light);
+    background: var(--openbot-surface-light);
     box-shadow:
-      0 0 0 1px var(--whilo-text-dim-on-light),
-      0 1px 2px var(--whilo-shadow-popover-ambient);
-    color: var(--whilo-text-on-light);
+      0 0 0 1px var(--openbot-text-dim-on-light),
+      0 1px 2px var(--openbot-shadow-popover-ambient);
+    color: var(--openbot-text-on-light);
   }
 }
 
@@ -331,7 +334,8 @@
   position: relative;
   inset: auto;
   min-height: 0;
-  margin: var(--whilo-space-2) var(--whilo-space-3) var(--whilo-space-3);
-  border-radius: var(--whilo-radius-lg);
-  padding: var(--whilo-space-1-5) var(--whilo-space-1-5) var(--whilo-space-1-5) var(--whilo-space-3);
+  margin: var(--openbot-space-2) var(--openbot-space-3) var(--openbot-space-3);
+  border-radius: var(--openbot-radius-lg);
+  padding-block: var(--openbot-space-1-5);
+  padding-inline: var(--openbot-space-3) var(--openbot-space-1-5);
 }

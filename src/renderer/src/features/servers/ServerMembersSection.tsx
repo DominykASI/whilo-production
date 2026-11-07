@@ -1,15 +1,16 @@
-import { isOpenBillingStatus } from "@whilo/contracts/billing";
-import { DEFAULT_TEAM_MEMBER_LIMIT, INPUT_LIMITS } from "@whilo/contracts/input-limits";
-import type { InviteSummary, TeamInviteSummary, TeamPresenceMember, TeamRole } from "@whilo/contracts/ipc";
+import { isOpenBillingStatus } from "@openbot/contracts/billing";
+import { DEFAULT_TEAM_MEMBER_LIMIT, INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import type { InviteSummary, TeamInviteSummary, TeamPresenceMember, TeamRole } from "@openbot/contracts/ipc";
 import {
   LICENSE_INCLUDED_USERS,
   LICENSE_MAX_USERS,
   type License,
   licenseMonthlyAmount,
   licensePlanOf,
-} from "@whilo/contracts/license";
-import { normalizeEmailAddress } from "@whilo/contracts/validation";
-import type { AppTextKey } from "@whilo/i18n";
+} from "@openbot/contracts/license";
+import { normalizeEmailAddress } from "@openbot/contracts/validation";
+import type { AppTextKey } from "@openbot/i18n";
+import { sourceText } from "@openbot/i18n/source";
 import {
   Alert,
   AlertContent,
@@ -48,12 +49,12 @@ import {
   Text,
   Trash2,
   UserRound,
-} from "@whilo/ui";
-import { formatMinorMoney } from "@whilo/ui/features/billing/LicenseSection";
-import { MemberRoleMenu } from "@whilo/ui/features/servers/ServerRoles";
-import { teamMemberName } from "@whilo/ui/features/team/TeamPersonAvatar";
-import { useText } from "@whilo/ui/text";
-import { prefersReducedMotion } from "@whilo/ui/utils";
+} from "@openbot/ui";
+import { formatMinorMoney } from "@openbot/ui/features/billing/LicenseSection";
+import { MemberRoleMenu } from "@openbot/ui/features/servers/ServerRoles";
+import { teamMemberName } from "@openbot/ui/features/team/TeamPersonAvatar";
+import { useText } from "@openbot/ui/text";
+import { prefersReducedMotion } from "@openbot/ui/utils";
 import type { JSX } from "@solidjs/web";
 import { createEffect, createMemo, createSignal, createStore, For, onCleanup, Show, untrack } from "solid-js";
 import { desktopAnalytics } from "../../analytics";
@@ -149,9 +150,10 @@ export function createServerMembersSection(
   /**
    * Permanent links need a transport that carries the flag: local IPC or the account
    * plane. The frozen Team API projections strip it on legacy HTTP, where even two
-   * updated peers would silently mint single-use, so the tab stays hidden there.
+   * updated peers would silently mint single-use, so the tab stays hidden there. A server
+   * on this computer has a loopback address, but its invitations go to the account plane.
    */
-  const permanentSupported = () => local() || props.server.apiUrl === null;
+  const permanentSupported = () => local() || props.server.apiUrl === null || props.server.thisComputer === true;
   const canManage = () => configured() && serverRoleCanAdminister(props.server);
   const activeInvites = createMemo(() =>
     props.invites.filter(
@@ -367,6 +369,9 @@ export function createServerMembersSection(
   function accessDescription() {
     if (!local()) return published() ? t("server.settings.remoteOnline") : t("server.settings.remoteOffline");
     if (published()) return t("server.settings.reachable");
+    // The owner removed this server on another device, and the account service refused its automatic
+    // publish. Main sends the status as its English source text (#5273).
+    if (props.hostStatus?.message === sourceText("status.host.removed")) return t("status.host.removed");
     return configured() ? t("server.settings.notReachable") : t("server.settings.notPublished");
   }
 

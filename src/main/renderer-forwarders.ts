@@ -27,16 +27,17 @@ import {
   latestTurnAnswer,
   type ServerNotificationLevel,
   type SpeechModelStatus,
+  type VoiceLiveEvent,
   type VoiceModelStatus,
   type VoiceServerSettings,
   type VoiceStreamTranscript,
-} from "@whilo/contracts/ipc";
-import { TEAM_API_ROUTES } from "@whilo/contracts/team-api-routes";
-import { CHANNEL_ROUTES } from "@whilo/contracts/team-protocol/channels-v1";
-import { TEAM_CHANNEL_ATTENTION_CAPABILITY } from "@whilo/contracts/team-protocol/current";
-import type { MachineAlertEvent } from "@whilo/contracts/team-protocol/machine-resources-v1";
-import type { AppFormat, AppTranslate } from "@whilo/i18n";
-import { redactText } from "@whilo/logging";
+} from "@openbot/contracts/ipc";
+import { TEAM_API_ROUTES } from "@openbot/contracts/team-api-routes";
+import { CHANNEL_ROUTES } from "@openbot/contracts/team-protocol/channels-v1";
+import { TEAM_CHANNEL_ATTENTION_CAPABILITY } from "@openbot/contracts/team-protocol/current";
+import type { MachineAlertEvent } from "@openbot/contracts/team-protocol/machine-resources-v1";
+import type { AppFormat, AppTranslate } from "@openbot/i18n";
+import { redactText } from "@openbot/logging";
 import {
   type AgentNotificationChannel,
   agentEventAgentId,
@@ -45,12 +46,12 @@ import {
   notificationForAgentEvent,
   notificationForUsageLimit,
   notificationRequestKey,
-} from "@whilo/team-client/agent-notifications";
+} from "@openbot/team-client/agent-notifications";
 import {
   channelForThread,
   channelReplyNotifications,
   newChannelReplies,
-} from "@whilo/team-client/channel-notifications";
+} from "@openbot/team-client/channel-notifications";
 import { BrowserWindow, Notification } from "electron";
 import { isNoUpdateAnswer } from "../backend/agent/routine-quiet-runs";
 import type { AgentService } from "../backend/agent-service";
@@ -336,10 +337,13 @@ export function createRendererForwarders({
     if (notification) closeRetainedNotification(notification);
   }
 
-  async function notifyAgentEvent(serverId: string, event: AgentEvent): Promise<void> {
-    withdrawResolvedNotification(serverId, event);
+  async function notifyAgentEvent(serverId: string, received: AgentEvent): Promise<void> {
+    withdrawResolvedNotification(serverId, received);
+    // A routine thread's turn notifies as a turn of the chat does. Its answer is in the routine thread.
+    const routineTaskId = received.type === "routine-thread-turn-completed" ? received.taskId : null;
+    const event = received.type === "routine-thread-turn-completed" ? received.turn : received;
     // Most events stream while an agent works. Only these can notify, so the others skip the server list.
-    if (!agentEventCanNotify(event) && event.type !== "usage-limit-reached") return;
+    if (!agentEventCanNotify(event) && event.type !== "usage-limit-reached" && event.type !== "subagent-failed") return;
     // Like Discord, nothing pops up while the user is looking at the app. The level is read again
     // after the lookup, with the rest, because the user can change it while the lookup runs.
     const notifyLevel = (agentLevels: ReadonlyMap<string, ServerNotificationLevel> | null) => {
@@ -356,11 +360,11 @@ export function createRendererForwarders({
     const mostOpen = agentId === null ? null : new Map([[agentId, "all" as const]]);
     if (!notifyLevel(mostOpen) || !Notification.isSupported()) return;
     const requestKey = notificationRequestKey(serverId, event);
-    if (!requestKey) return showAgentNotification(serverId, event, notifyLevel, null);
+    if (!requestKey) return showAgentNotification(serverId, event, notifyLevel, null, routineTaskId);
     // A shown notification of the same request stays until the new one replaces it.
     if (!requestNotifications.has(requestKey)) requestNotifications.set(requestKey, null);
     try {
-      await showAgentNotification(serverId, event, notifyLevel, requestKey);
+      await showAgentNotification(serverId, event, notifyLevel, requestKey, null);
     } finally {
       // Nothing was shown, or the lookup failed.
       if (requestNotifications.get(requestKey) === null) requestNotifications.delete(requestKey);
@@ -372,11 +376,14 @@ export function createRendererForwarders({
     event: AgentEvent,
     notifyLevel: (agentLevels: ReadonlyMap<string, ServerNotificationLevel> | null) => ServerNotificationLevel | null,
     requestKey: string | null,
+    routineTaskId: string | null,
   ): Promise<void> {
     const preview = notificationPreviewEnabled();
     const answer =
       preview && event.type === "turn-completed" && event.status === "completed"
-        ? turnAnswer(serverId, event.agentId, event.turnId)
+        ? routineTaskId
+          ? routineTurnAnswer(event.agentId, routineTaskId, event.turnId)
+          : turnAnswer(serverId, event.agentId, event.turnId)
         : null;
     const agentLookup = notificationAgents(serverId);
     const agents = agentLookup instanceof Promise ? await agentLookup : agentLookup;
@@ -452,6 +459,18 @@ export function createRendererForwarders({
     return answer && !isNoUpdateAnswer(answer) ? answer : null;
   }
 
+  /** The answer of a turn in a routine thread of this computer, or null as for `turnAnswer`. */
+  function routineTurnAnswer(agentId: string, taskId: string, turnId: string): string | null {
+    try {
+      const snapshot = getHostService()?.readAgentTask(agentId, taskId);
+      const answer = snapshot && latestTurnAnswer(snapshot.messages, turnId)?.text;
+      return answer && !isNoUpdateAnswer(answer) ? answer : null;
+    } catch {
+      // The routine and its thread were deleted after the turn.
+      return null;
+    }
+  }
+
   /** A workflow step that waits for the user, or a workflow output. A click shows the main window. */
   function forwardWorkflowNotice(notice: WorkflowNotice): void {
     if (!desktopNotificationsEnabled()) return;
@@ -525,11 +544,11 @@ export function createRendererForwarders({
     }
   }
 
-  function forwardUpdateStatus(status: import("@whilo/contracts/ipc").UpdateStatus): void {
+  function forwardUpdateStatus(status: import("@openbot/contracts/ipc").UpdateStatus): void {
     for (const window of appWindows()) sendToRenderer(window, IPC_ENDPOINTS.update.event, status);
   }
 
-  function forwardUpdatePreference(preference: import("@whilo/contracts/ipc").UpdatePreference): void {
+  function forwardUpdatePreference(preference: import("@openbot/contracts/ipc").UpdatePreference): void {
     for (const window of appWindows()) sendToRenderer(window, IPC_ENDPOINTS.update.preference, preference);
   }
 
@@ -549,33 +568,40 @@ export function createRendererForwarders({
     for (const window of appWindows()) sendToRenderer(window, IPC_ENDPOINTS.voice.streamTranscript, transcript);
   }
 
-  function forwardProviderRuntimeStatus(snapshot: import("@whilo/contracts/ipc").ProviderRuntimeSnapshot): void {
+  function forwardVoiceLiveEvent(event: VoiceLiveEvent): void {
+    for (const window of appWindows()) sendToRenderer(window, IPC_ENDPOINTS.voice.liveEvent, event);
+  }
+
+  function forwardProviderRuntimeStatus(snapshot: import("@openbot/contracts/ipc").ProviderRuntimeSnapshot): void {
     for (const window of appWindows()) sendToRenderer(window, IPC_ENDPOINTS.providerRuntimes.event, snapshot);
   }
 
-  function forwardGitHubConnectorStatus(status: import("@whilo/contracts/ipc").GitHubConnectorStatus): void {
+  function forwardGitHubConnectorStatus(status: import("@openbot/contracts/ipc").GitHubConnectorStatus): void {
     for (const window of appWindows()) sendToRenderer(window, IPC_ENDPOINTS.githubConnector.changed, status);
   }
 
-  function forwardLinkAccountStatus(status: import("@whilo/contracts/ipc").LinkAccountStatus): void {
+  function forwardLinkAccountStatus(status: import("@openbot/contracts/ipc").LinkAccountStatus): void {
     for (const window of appWindows()) sendToRenderer(window, IPC_ENDPOINTS.linkAccount.changed, status);
   }
 
   function forwardOnePasswordConnectorStatus(
-    status: import("@whilo/contracts/ipc").OnePasswordConnectorStatus,
+    status: import("@openbot/contracts/ipc").OnePasswordConnectorStatus,
   ): void {
     for (const window of appWindows()) sendToRenderer(window, IPC_ENDPOINTS.onePasswordConnector.changed, status);
   }
 
-  function forwardBitwardenConnectorStatus(status: import("@whilo/contracts/ipc").BitwardenConnectorStatus): void {
+  function forwardBitwardenConnectorStatus(status: import("@openbot/contracts/ipc").BitwardenConnectorStatus): void {
     for (const window of appWindows()) sendToRenderer(window, IPC_ENDPOINTS.bitwardenConnector.changed, status);
   }
+  function forwardPasswordManagerStatus(status: import("@openbot/contracts/ipc").PasswordManagerStatus): void {
+    for (const window of appWindows()) sendToRenderer(window, IPC_ENDPOINTS.passwordManagers.changed, status);
+  }
 
-  function forwardVaultState(state: import("@whilo/contracts/ipc").VaultState): void {
+  function forwardVaultState(state: import("@openbot/contracts/ipc").VaultState): void {
     for (const window of appWindows()) sendToRenderer(window, IPC_ENDPOINTS.vault.changed, state);
   }
 
-  function forwardHostStatus(status: import("@whilo/contracts/ipc").HostStatus): void {
+  function forwardHostStatus(status: import("@openbot/contracts/ipc").HostStatus): void {
     const remoteServers = getRemoteServerManager();
     const servers = remoteServers ? withLocalHostSummary(remoteServers.list(), status) : null;
     for (const target of appWindows()) {
@@ -584,13 +610,13 @@ export function createRendererForwarders({
     }
   }
 
-  function forwardRemoteDesktopSessions(sessions: import("@whilo/contracts/ipc").RemoteDesktopSession[]): void {
+  function forwardRemoteDesktopSessions(sessions: import("@openbot/contracts/ipc").RemoteDesktopSession[]): void {
     const window = getMainWindow();
     if (!window || window.isDestroyed()) return;
     sendToRenderer(window, IPC_ENDPOINTS.remoteDesktop.event, sessions);
   }
 
-  function forwardServers(servers: import("@whilo/contracts/ipc").ServerSummary[]): void {
+  function forwardServers(servers: import("@openbot/contracts/ipc").ServerSummary[]): void {
     const host = getHostService();
     const summaries = host ? withLocalHostSummary(servers, host.getStatus()) : servers;
     for (const target of appWindows()) sendToRenderer(target, IPC_ENDPOINTS.servers.event, summaries);
@@ -598,7 +624,7 @@ export function createRendererForwarders({
 
   function forwardTeamPresence(
     serverId: string,
-    snapshot: import("@whilo/contracts/ipc").TeamPresenceSnapshot,
+    snapshot: import("@openbot/contracts/ipc").TeamPresenceSnapshot,
   ): void {
     for (const target of appWindows()) {
       sendToRenderer(target, IPC_ENDPOINTS.servers.scopedPresence, { serverId, snapshot });
@@ -607,7 +633,7 @@ export function createRendererForwarders({
 
   function forwardDirectMessage(
     serverId: string,
-    event: import("@whilo/contracts/ipc").DirectMessageRealtimeEvent,
+    event: import("@openbot/contracts/ipc").DirectMessageRealtimeEvent,
   ): void {
     const window = getMainWindow();
     if (!window || window.isDestroyed()) return;
@@ -616,11 +642,22 @@ export function createRendererForwarders({
 
   function forwardDirectTyping(
     serverId: string,
-    event: import("@whilo/contracts/ipc").DirectTypingRealtimeEvent,
+    event: import("@openbot/contracts/ipc").DirectTypingRealtimeEvent,
   ): void {
     const window = getMainWindow();
     if (!window || window.isDestroyed()) return;
     sendToRenderer(window, IPC_ENDPOINTS.servers.scopedDirectTyping, { serverId, event });
+  }
+
+  // Every window can show the chat that holds the attachment.
+  function forwardAttachmentDownload(progress: import("@openbot/contracts/ipc").AttachmentDownloadProgress): void {
+    for (const target of appWindows())
+      sendToRenderer(target, IPC_ENDPOINTS.agentAttachments.attachmentDownload, progress);
+  }
+
+  // The preload of the window that started the import knows its request id; the others drop it.
+  function forwardAttachmentImportProgress(progress: import("@openbot/contracts/ipc").AttachmentImportProgress): void {
+    for (const target of appWindows()) sendToRenderer(target, IPC_ENDPOINTS.attachmentImports.importProgress, progress);
   }
 
   return {
@@ -632,6 +669,7 @@ export function createRendererForwarders({
     forwardUpdatePreference,
     forwardVoiceModelStatus,
     forwardVoiceStreamTranscript,
+    forwardVoiceLiveEvent,
     forwardSpeechModelStatus,
     forwardVoiceServerSettings,
     forwardProviderRuntimeStatus,
@@ -639,6 +677,7 @@ export function createRendererForwarders({
     forwardLinkAccountStatus,
     forwardOnePasswordConnectorStatus,
     forwardBitwardenConnectorStatus,
+    forwardPasswordManagerStatus,
     forwardVaultState,
     forwardHostStatus,
     forwardRemoteDesktopSessions,
@@ -646,5 +685,7 @@ export function createRendererForwarders({
     forwardTeamPresence,
     forwardDirectMessage,
     forwardDirectTyping,
+    forwardAttachmentDownload,
+    forwardAttachmentImportProgress,
   };
 }

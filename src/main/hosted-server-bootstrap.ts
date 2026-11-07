@@ -1,6 +1,6 @@
 /**
  * The first start of a hosted server: a VM that the account server created for one account. It runs
- * only in a packaged Linux build that the server template starts with `WHILO_HOSTED_SERVER=1`.
+ * only in a packaged Linux build that the server template starts with `OPENBOT_HOSTED_SERVER=1`.
  *
  * The VM gets a host ID and a single-use claim. The claim becomes the owner's account session, and
  * the host is configured with the ID that the account server reserved for that owner. It then
@@ -11,8 +11,9 @@
  * built, at the same position as `applyDevelopmentRemoteAccount`.
  */
 
-import { parseHostedServerList } from "@whilo/contracts/hosted-servers";
-import type { CentralAuthState, CentralAuthUser } from "@whilo/contracts/ipc";
+import { existsSync } from "node:fs";
+import { parseHostedServerList } from "@openbot/contracts/hosted-servers";
+import type { CentralAuthState, CentralAuthUser } from "@openbot/contracts/ipc";
 import { Effect } from "effect";
 import type { CentralAuthManager } from "./central-auth-manager";
 import { RemoteWorkflowError, toRemoteWorkflowError } from "./remote-service-effects";
@@ -35,12 +36,30 @@ export function takeHostedServerEnvironment(
   isPackaged: boolean,
   platform: NodeJS.Platform,
 ): HostedServerEnvironment | null {
-  const claim = environment.WHILO_HOSTED_CLAIM?.trim() || null;
-  delete environment.WHILO_HOSTED_CLAIM;
-  if (!isPackaged || platform !== "linux" || environment.WHILO_HOSTED_SERVER !== "1") return null;
-  const hostId = environment.WHILO_HOSTED_HOST_ID?.trim().toLowerCase() ?? "";
+  const claim = environment.OPENBOT_HOSTED_CLAIM?.trim() || null;
+  delete environment.OPENBOT_HOSTED_CLAIM;
+  if (!isPackaged || platform !== "linux" || environment.OPENBOT_HOSTED_SERVER !== "1") return null;
+  const hostId = environment.OPENBOT_HOSTED_HOST_ID?.trim().toLowerCase() ?? "";
   if (!HOST_ID_PATTERN.test(hostId)) return null;
   return { hostId, claim };
+}
+
+/** The markers of the host's snapshot restore. `openbot-hosted-update` reads the same two. */
+const RESTORE_ACTIVE = "/var/lib/ascii-lazy/active";
+const RESTORE_DONE = "/var/lib/ascii-lazy/hydration-done";
+
+/**
+ * Answers whether the host still restores this server's disk after a wake. A restore that ended does
+ * not start again in the same boot, and each wake is a new boot, so the end is kept and not read again.
+ * A missing `active` marker is read again, because the host can write it after the first probe.
+ */
+export function hostedDiskRestoreProbe(): () => boolean {
+  let done = false;
+  return () => {
+    if (done) return false;
+    done = existsSync(RESTORE_DONE);
+    return !done && existsSync(RESTORE_ACTIVE);
+  };
 }
 
 export interface HostedServerAccountOptions {

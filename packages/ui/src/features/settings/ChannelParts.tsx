@@ -1,7 +1,7 @@
 /**
- * The parts that the chat channel pages share: Slack, Discord and Telegram. Each page connects places
- * where people talk to Whilo (a workspace, a Discord server, a chat), and one orchestrator agent
- * answers there. The pages differ only in how a place connects and in their own extra sections.
+ * The parts that the chat channel pages share: Slack, Discord, Telegram and WhatsApp. Each page
+ * connects places where people talk to OpenBot (a workspace, a Discord server, a chat, a number), and
+ * one orchestrator agent answers there. The pages differ only in how a place connects and in their own extra sections.
  */
 
 import type {
@@ -14,8 +14,8 @@ import type {
   CustomProviderSummary,
   MessagingConnection,
   MessagingPlatform,
-} from "@whilo/contracts/ipc";
-import type { AppTextKey } from "@whilo/i18n";
+} from "@openbot/contracts/ipc";
+import type { AppTextKey } from "@openbot/i18n";
 import {
   Alert,
   AlertContent,
@@ -37,7 +37,7 @@ import {
   Text,
   Trash2,
   TriangleAlert,
-} from "@whilo/ui";
+} from "@openbot/ui";
 import type { JSX } from "@solidjs/web";
 import { For, Match, Show, Switch } from "solid-js";
 import { ProviderModelPicker } from "../../components/ProviderModelPicker";
@@ -99,7 +99,7 @@ export interface ChannelText {
   orchestratorDescription: AppTextKey;
   orchestratorNone: AppTextKey;
   orchestratorNoneDescription: AppTextKey;
-  /** The last line of the orchestrator card: how people reach Whilo. */
+  /** The last line of the orchestrator card: how people reach OpenBot. */
   note: AppTextKey;
   connectStepBrowser: AppTextKey;
   connectStepAllow: AppTextKey;
@@ -234,6 +234,8 @@ export function ChannelConnectionRow(props: {
   busy: boolean;
   /** False when only a new connection brings the place back. */
   canReconnect?: boolean | undefined;
+  /** One more action before Disconnect, such as a new link in place of Reconnect. */
+  action?: JSX.Element;
   onReconnect: () => void;
   onSetEnabled: (enabled: boolean) => void;
   onDisconnect: () => void;
@@ -263,6 +265,7 @@ export function ChannelConnectionRow(props: {
           <Match when={kind() === "paused"}>{action(t(props.text.resume), () => props.onSetEnabled(true))}</Match>
           <Match when={kind() === "live"}>{action(t(props.text.pause), () => props.onSetEnabled(false))}</Match>
         </Switch>
+        {props.action}
         <Button
           type="button"
           size="sm"
@@ -289,7 +292,7 @@ function ChannelOrchestratorFace(props: { avatar: ChannelAvatar; size?: "md" | "
 
 /**
  * The orchestrators of a channel. With none, the card holds the step that adds one. The last line says
- * how people reach Whilo.
+ * how people reach OpenBot.
  */
 export function ChannelOrchestratorSection(props: {
   text: ChannelText;

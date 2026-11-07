@@ -1,9 +1,9 @@
 // @vitest-environment node
 import { DatabaseSync } from "node:sqlite";
-import { AGENT_MEMORY_CONTEXT_BUDGET_BYTES, essentialMemoryBytes } from "@whilo/contracts/agent-memory-context";
+import { AGENT_MEMORY_CONTEXT_BUDGET_BYTES, essentialMemoryBytes } from "@openbot/contracts/agent-memory-context";
 import { afterEach, describe, expect, it } from "vitest";
 import { databaseRows, requiredStringColumn } from "./database/database-rows";
-import { migrateWhiloDatabase } from "./whilo-database-schema";
+import { migrateOpenBotDatabase } from "./openbot-database-schema";
 
 // Failure modes: upgrade loses text; selection exceeds budget; a partial migration survives failure;
 // invalid history is accepted; selection/index outlive a deleted memory. These fixtures cover each.
@@ -18,7 +18,7 @@ function databaseAt(version: number): DatabaseSync {
   db.exec(`CREATE TABLE schema_migrations(version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL);
     CREATE TEMP TRIGGER stop_at_version BEFORE INSERT ON schema_migrations WHEN new.version > ${version}
     BEGIN SELECT RAISE(ABORT, 'fixture stop'); END;`);
-  expect(() => migrateWhiloDatabase(db)).toThrow(`migration to version ${version + 1} failed`);
+  expect(() => migrateOpenBotDatabase(db)).toThrow(`migration to version ${version + 1} failed`);
   db.exec("DROP TRIGGER stop_at_version");
   return db;
 }
@@ -65,9 +65,9 @@ describe("agent memory selection migration", () => {
       const db = databaseAt(version);
       seedMemories(db);
       const before = rows(db);
-      migrateWhiloDatabase(db);
+      migrateOpenBotDatabase(db);
       expect(rows(db)).toEqual(before);
-      expect(db.prepare("SELECT MAX(version) AS version FROM schema_migrations").get()).toEqual({ version: 50 });
+      expect(db.prepare("SELECT MAX(version) AS version FROM schema_migrations").get()).toEqual({ version: 58 });
       const selected = databaseRows(
         db
           .prepare(`SELECT m.memory_id, m.text, m.origin FROM projection_agent_memories m
@@ -113,13 +113,13 @@ describe("agent memory selection migration", () => {
     const before = rows(db);
     db.exec(`CREATE TEMP TRIGGER fail_marker BEFORE INSERT ON schema_migrations WHEN new.version=32
       BEGIN SELECT RAISE(ABORT, 'late failure'); END;`);
-    expect(() => migrateWhiloDatabase(db)).toThrow("migration to version 32 failed");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("migration to version 32 failed");
     expect(rows(db)).toEqual(before);
     expect(db.prepare("SELECT name FROM sqlite_master WHERE name LIKE 'agent_memory_%'").all()).toEqual([]);
     expect(db.prepare("SELECT version FROM schema_migrations WHERE version=32").all()).toEqual([]);
     expect(db.prepare("PRAGMA foreign_keys").get()).toEqual({ foreign_keys: 1 });
     db.exec("DROP TRIGGER fail_marker");
-    migrateWhiloDatabase(db);
+    migrateOpenBotDatabase(db);
     expect(rows(db)).toEqual(before);
     expect(db.prepare("SELECT COUNT(*) AS count FROM agent_memory_selections").get()).toEqual({ count: 25 });
     db.prepare("DELETE FROM projection_agent_memories WHERE memory_id='other'").run();
@@ -133,10 +133,10 @@ describe("agent memory selection migration", () => {
     const db = databaseAt(31);
     seedMemories(db);
     const before = rows(db);
-    db.exec("INSERT INTO schema_migrations VALUES(51,'now')");
-    expect(() => migrateWhiloDatabase(db)).toThrow("newer than this application supports");
-    db.exec("DELETE FROM schema_migrations WHERE version=51; DELETE FROM schema_migrations WHERE version=20");
-    expect(() => migrateWhiloDatabase(db)).toThrow("missing version 20");
+    db.exec("INSERT INTO schema_migrations VALUES(59,'now')");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("newer than this application supports");
+    db.exec("DELETE FROM schema_migrations WHERE version=59; DELETE FROM schema_migrations WHERE version=20");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("missing version 20");
     expect(rows(db)).toEqual(before);
   });
 });

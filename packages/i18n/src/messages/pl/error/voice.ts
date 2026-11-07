@@ -11,7 +11,7 @@ export const messages = {
   "error.voice.modelUnavailable": "Model głosowy jest niedostępny.",
   "error.voice.transcriptionTimedOut": "Przekroczono limit czasu transkrypcji głosu.",
   "error.voice.prepareRequired":
-    "Lokalna transkrypcja głosu jest niedostępna. Uruchom `bun run voice:prepare` i uruchom ponownie Whilo.",
+    "Lokalna transkrypcja głosu jest niedostępna. Uruchom `bun run voice:prepare` i uruchom ponownie OpenBot.",
   "error.voice.transcriptionFailed": "Nie udało się przetranskrybować tego nagrania.",
   "error.voice.cloud.keyRequired": "Dodaj klucz API ElevenLabs w sekcji Ustawienia → Głos.",
   "error.voice.cloud.keyRejected": "ElevenLabs nie zaakceptował klucza API. Sprawdź klucz w sekcji Ustawienia → Głos.",
@@ -24,6 +24,11 @@ export const messages = {
   "error.voice.speech.runtimeUnavailable": "Lokalna synteza mowy nie jest dostępna na tej platformie.",
   "error.voice.speech.modelRequired": "Pobierz model syntezy mowy w Ustawienia → Głos.",
   "error.voice.speech.timedOut": "Czytanie odpowiedzi na głos trwało zbyt długo.",
-  "error.voice.speech.failed": "Whilo nie mógł przeczytać odpowiedzi na głos.",
-  "error.voice.recordingNotKept": "Whilo nie mógł zachować nagrania głosowego.",
+  "error.voice.speech.failed": "OpenBot nie mógł przeczytać odpowiedzi na głos.",
+  "error.voice.recordingNotKept": "OpenBot nie mógł zachować nagrania głosowego.",
+  "error.voice.live.timedOut": "Głos na żywo Codex nie uruchomił się na czas. Spróbuj ponownie.",
+  "error.voice.live.failed": "Głos na żywo zatrzymał się: {reason}",
+  "error.voice.live.disconnected": "Głos na żywo został rozłączony.",
+  "error.voice.live.signIn": "Zaloguj się do Codex kontem ChatGPT, aby używać głosu na żywo.",
+  "error.voice.live.off": "Głos na żywo Codex jest wyłączony. Włącz go w Ustawienia → Głos.",
 } as const satisfies PartialTranslation<typeof source>;

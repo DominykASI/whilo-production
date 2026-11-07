@@ -1,21 +1,21 @@
-// Checks two Discord servers on one Whilo server, the role list of a Discord server, the
-// replied-to message as context, a forwarded message as context, and an earlier image posted without a mention as context. A Gateway event goes through Signal's normalizer
+// Checks two Discord servers on one OpenBot server, the role list of a Discord server, the
+// replied-to message as context, a forwarded message as context, embeds as context, and an earlier image posted without a mention as context. A Gateway event goes through Signal's normalizer
 // (`remote/api/src/discord-events.ts`), a JSON round trip and the host's decoder, into the real
 // Discord driver and messaging service on a temporary profile. Signal's API (`makeDiscordApi`) runs
 // over a fake Discord REST client. No agent turn runs: the check reads the prompt that a turn would get.
-// `bun scripts/messaging-discord-access-e2e.ts`. Writes .whilo-build/messaging-discord-access-e2e/report.json.
+// `bun scripts/messaging-discord-access-e2e.ts`. Writes .openbot-build/messaging-discord-access-e2e/report.json.
 import assert from "node:assert/strict";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { DISCORD_GATEWAY_INTENTS, DISCORD_MESSAGE_CONTENT_INTENT } from "@whilo/contracts/discord-app";
-import { isDiscordRoleList } from "@whilo/contracts/ipc";
+import { DISCORD_GATEWAY_INTENTS, DISCORD_MESSAGE_CONTENT_INTENT } from "@openbot/contracts/discord-app";
+import { isDiscordRoleList } from "@openbot/contracts/ipc";
 import {
   decodeDiscordApiError,
   decodeDiscordDelivery,
   decodeDiscordHistory,
-} from "@whilo/contracts/signal-protocol/discord-api";
+} from "@openbot/contracts/signal-protocol/discord-api";
 import { Effect } from "effect";
 import { type DiscordRestRequest, DiscordTransportError, makeDiscordApi } from "../remote/api/src/discord-api";
 import { DiscordState } from "../remote/api/src/discord-events";
@@ -33,13 +33,13 @@ import {
   MessagingAdapterError,
   type MessagingIngress,
 } from "../src/backend/messaging/messaging-types";
-import { WhiloDatabase } from "../src/backend/whilo-database";
+import { OpenBotDatabase } from "../src/backend/openbot-database";
 import { SidebarLayoutStore } from "../src/backend/sidebar-layout-store";
 import { parseSetDiscordAccessInput } from "../src/main/ipc/messaging-inputs";
 
-const OUT = resolve(import.meta.dirname, "../.whilo-build/messaging-discord-access-e2e");
+const OUT = resolve(import.meta.dirname, "../.openbot-build/messaging-discord-access-e2e");
 const REPORT = join(OUT, "report.json");
-const root = await mkdtemp(join(tmpdir(), "whilo-messaging-discord-access-"));
+const root = await mkdtemp(join(tmpdir(), "openbot-messaging-discord-access-"));
 const userData = join(root, "user-data");
 const home = join(root, "home");
 const APP = "300000000000000001";
@@ -64,6 +64,9 @@ const OLEK = "500000000000000009";
 const NINA = "500000000000000010";
 const PIOTR = "500000000000000011";
 const RITA = "500000000000000012";
+const SARA = "500000000000000013";
+const KUBA = "500000000000000014";
+const TICKET_TOOL = "500000000000000015";
 
 interface Step {
   name: string;
@@ -110,6 +113,9 @@ const browser: AgentBrowserHost = {
   endControl: () => {},
   close: () => Effect.void,
   clearAgentSession: () => Effect.void,
+  shareTab: () => undefined,
+  unshareThread: () => undefined,
+  agentTab: () => null,
 };
 
 /** A Gateway event as Discord sends it. JSON, as on the wire. */
@@ -121,6 +127,15 @@ function gateway(t: string, d: unknown): Parameters<DiscordState["handle"]>[0] {
 const calls: DiscordRestRequest[] = [];
 const waiters: Array<{ match: (call: DiscordRestRequest) => boolean; resolve: () => void }> = [];
 let nextMessageId = 600000000000000000n;
+/** One embed as Discord gives it: each part that the embed does not have is left out. */
+interface RestEmbed {
+  title?: string;
+  description?: string;
+  url?: string;
+  color?: number;
+  footer?: { text: string; icon_url?: string };
+  fields?: { name: string; value: string; inline?: boolean }[];
+}
 /** One channel message as Discord's REST API gives it. */
 interface RestMessage {
   id: string;
@@ -128,6 +143,7 @@ interface RestMessage {
   timestamp: string;
   author: { id: string; username: string };
   attachments: { id: string; filename: string; content_type: string; size: number; url: string }[];
+  embeds?: RestEmbed[];
   /** A forward has no text or files of its own: they are in its snapshot. */
   message_reference?: { type: number; message_id: string };
   message_snapshots?: { message: { content: string; attachments: RestMessage["attachments"] } }[];
@@ -191,7 +207,7 @@ const rest = {
           { id: GUILD_ONE, name: "@everyone", position: 0 },
           { id: MEMBERS, name: "Members", position: 1 },
           { id: MAINTAINERS, name: "Maintainers", position: 2 },
-          { id: "400000000000000009", name: "Whilo", position: 3, managed: true },
+          { id: "400000000000000009", name: "OpenBot", position: 3, managed: true },
           // 60 emoji: 60 characters for Discord, 120 UTF-16 units.
           { id: LONG_ROLE, name: "🦊".repeat(60), position: 0 },
         ]);
@@ -204,7 +220,7 @@ const signal = new DiscordState(APP);
 signal.handle(
   gateway("READY", {
     v: 10,
-    user: { id: APP, username: "Whilo", bot: true },
+    user: { id: APP, username: "OpenBot", bot: true },
     application: { id: APP, flags: 0 },
     guilds: [
       { id: GUILD_ONE, unavailable: true },
@@ -273,7 +289,7 @@ interface Booted {
 }
 
 async function boot<T>(use: (services: Booted) => Promise<T>): Promise<T> {
-  const database = new WhiloDatabase(userData);
+  const database = new OpenBotDatabase(userData);
   const store = new AgentStore(userData, home, database);
   const mailbox = new MailboxStore(userData, store.sharedRoot, store.database);
   const sidebar = new SidebarLayoutStore(join(userData, "sidebar-layout.json"));
@@ -290,6 +306,7 @@ async function boot<T>(use: (services: Booted) => Promise<T>): Promise<T> {
     forgetThread: () => Effect.void,
     ownChat: () => false,
     contextSession: () => null,
+    progressUpdates: () => null,
   });
   const messaging = new MessagingService({
     threads,
@@ -335,10 +352,13 @@ interface Mention {
     attachments?: { id: string; filename: string; content_type: string; size: number; url: string }[];
     /** The replied-to message is a forward: Discord gives its text and files in its snapshot. */
     forwarded?: boolean;
+    /** Another bot, such as a ticket bot, wrote the replied-to message. */
+    bot?: boolean;
+    embeds?: RestEmbed[];
   };
 }
 
-/** One MESSAGE_CREATE that mentions Whilo, through Signal and the relay. Returns Signal's delivery. */
+/** One MESSAGE_CREATE that mentions OpenBot, through Signal and the relay. Returns Signal's delivery. */
 async function mention(message: Mention) {
   const actions = signal.handle(
     gateway("MESSAGE_CREATE", {
@@ -357,7 +377,11 @@ async function mention(message: Mention) {
             referenced_message: {
               id: message.replyTo.id,
               timestamp: "2026-10-19T11:40:00.000Z",
-              author: { id: message.replyTo.authorId, username: message.replyTo.authorName },
+              author: {
+                id: message.replyTo.authorId,
+                username: message.replyTo.authorName,
+                ...(message.replyTo.bot ? { bot: true } : {}),
+              },
               ...(message.replyTo.forwarded
                 ? {
                     content: "",
@@ -369,7 +393,11 @@ async function mention(message: Mention) {
                       },
                     ],
                   }
-                : { content: message.replyTo.content, attachments: message.replyTo.attachments ?? [] }),
+                : {
+                    content: message.replyTo.content,
+                    attachments: message.replyTo.attachments ?? [],
+                    embeds: message.replyTo.embeds ?? [],
+                  }),
             },
           }
         : {}),
@@ -392,7 +420,7 @@ const received = (messageId: string) =>
       call.method === "PUT" && call.route.includes(`/messages/${messageId}/reactions/${encodeURIComponent("👀")}/`),
   );
 
-/** Whether Whilo reacted to the message, or posted a reply to it. */
+/** Whether OpenBot reacted to the message, or posted a reply to it. */
 function touched(messageId: string): boolean {
   return calls.some(
     (call) => call.route.includes(`/messages/${messageId}`) || JSON.stringify(call.body ?? null).includes(messageId),
@@ -422,7 +450,7 @@ try {
     return { base: DISCORD_GATEWAY_INTENTS, messageContent: DISCORD_MESSAGE_CONTENT_INTENT };
   });
 
-  await step("a mention of Whilo's own role reaches Whilo; a mention of another role does not", async () => {
+  await step("a mention of OpenBot's own role reaches OpenBot; a mention of another role does not", async () => {
     // Discord's autocomplete can choose the role that Discord made for the bot instead of the bot.
     const BOT_ROLE = "1300000000000000001";
     const OTHER_ROLE = "1300000000000000002";
@@ -430,7 +458,7 @@ try {
     state.handle(
       gateway("READY", {
         v: 10,
-        user: { id: APP, username: "Whilo", bot: true },
+        user: { id: APP, username: "OpenBot", bot: true },
         application: { id: APP, flags: 0 },
         guilds: [{ id: GUILD_ONE, unavailable: true }],
         session_id: "session",
@@ -445,7 +473,7 @@ try {
         channels: [{ id: CHANNEL_ONE, type: 0, name: "general" }],
         roles,
       });
-    const botRole = { id: BOT_ROLE, name: "Whilo", managed: true, tags: { bot_id: APP } };
+    const botRole = { id: BOT_ROLE, name: "OpenBot", managed: true, tags: { bot_id: APP } };
     const otherRole = { id: OTHER_ROLE, name: "Mods", managed: false };
     /** The text that Signal gives the host for a message that mentions only the role, or null. */
     const roleMention = (roleId: string): string | null => {
@@ -489,7 +517,7 @@ try {
     return { botRole: BOT_ROLE, otherRole: OTHER_ROLE };
   });
 
-  // Two Discord servers connect to one Whilo server, as after two installs.
+  // Two Discord servers connect to one OpenBot server, as after two installs.
   await boot(async ({ threads }) => {
     for (const [guildId, name] of [
       [GUILD_ONE, "Nightly"],
@@ -552,7 +580,7 @@ try {
         () => null,
         (error: unknown) => (error instanceof Error ? error.message : String(error)),
       );
-      assert.equal(failure, "Whilo cannot list Discord roles yet. Try again later.");
+      assert.equal(failure, "OpenBot cannot list Discord roles yet. Try again later.");
       return { failure };
     });
 
@@ -570,7 +598,7 @@ try {
       return { refused: true };
     });
 
-    await step("with a role list, only members with one of its roles reach Whilo", async () => {
+    await step("with a role list, only members with one of its roles reach OpenBot", async () => {
       const input = parseSetDiscordAccessInput({
         workspaceId: GUILD_ONE,
         allowedRoles: [{ id: MAINTAINERS, name: "Maintainers" }],
@@ -610,8 +638,8 @@ try {
       });
       await received(maintainer);
       // The role check runs before the first await, so the ignored mentions are decided by now.
-      assert.equal(touched(outsider), false, "Whilo reacted or replied to a member without a listed role.");
-      assert.equal(touched(unknownRoles), false, "Whilo reacted or replied to a mention without roles.");
+      assert.equal(touched(outsider), false, "OpenBot reacted or replied to a member without a listed role.");
+      assert.equal(touched(unknownRoles), false, "OpenBot reacted or replied to a mention without roles.");
       const record = services.threads.store.connectionForWorkspace("discord", GUILD_ONE);
       assert.ok(record);
       assert.equal(
@@ -653,14 +681,14 @@ try {
           id: replied,
           authorId: KAMIL,
           authorName: "Kamil",
-          content: `Feature idea: webhooks for Whilo. <@${BOB}> agrees.`,
+          content: `Feature idea: webhooks for OpenBot. <@${BOB}> agrees.`,
         },
       });
       await received(id);
       const prompt = await promptOf(services, GUILD_ONE, id, CHANNEL_ONE);
       assert.match(
         prompt,
-        /--- the message this one replies to \(context\) ---\n\[2026-10-19T11:40:00\.000Z\] Kamil: Feature idea: webhooks for Whilo\. @Bob agrees\.\n--- message ---\nmake an issue for this/u,
+        /--- the message this one replies to \(context\) ---\n\[2026-10-19T11:40:00\.000Z\] Kamil: Feature idea: webhooks for OpenBot\. @Bob agrees\.\n--- message ---\nmake an issue for this/u,
       );
       assert.doesNotMatch(prompt, /earlier messages/u);
 
@@ -753,7 +781,7 @@ try {
             : realFetch(input, init),
         realFetch,
       );
-      // tomek posts only an image and does not mention Whilo, so Signal does not pass it on.
+      // tomek posts only an image and does not mention OpenBot, so Signal does not pass it on.
       channelOne.push({
         id: posted,
         content: "",
@@ -916,6 +944,91 @@ try {
       }
       return { forwardedReport: true };
     });
+
+    await step(
+      "a reply to a ticket bot's form, and an earlier link preview, give their embeds to the agent",
+      async () => {
+        // Sara replies to the form of a ticket bot. The bot writes the answers in embed fields.
+        const id = nextId();
+        await mention({
+          id,
+          guildId: GUILD_ONE,
+          channelId: CHANNEL_ONE,
+          authorId: SARA,
+          authorName: "Sara",
+          roles: [MAINTAINERS],
+          content: "please look at this ticket",
+          replyTo: {
+            id: nextId(),
+            authorId: TICKET_TOOL,
+            authorName: "Ticket Tool",
+            bot: true,
+            content: `<@${BOB}> Welcome`,
+            embeds: [
+              {
+                description: `Support will be with you shortly. Opened by <@${KAMIL}>.`,
+                color: 0x2ecc71,
+                footer: {
+                  text: "TicketTool.xyz - Ticketing without clutter",
+                  icon_url: "https://tickettool.xyz/icon.png",
+                },
+              },
+              {
+                fields: [
+                  { name: "What do you need?", value: "```Bug```", inline: false },
+                  { name: "OpenBot version", value: "```0.59.0```", inline: false },
+                  // A blank field, as bots use for spacing: it is left out.
+                  { name: "\u200b", value: "\u200b" },
+                ],
+              },
+              // An embed with no text: it is left out.
+              { color: 0x2ecc71 },
+            ],
+          },
+        });
+        await received(id);
+        assert.match(
+          await promptOf(services, GUILD_ONE, id, CHANNEL_ONE),
+          /--- the message this one replies to \(context\) ---\n\[2026-10-19T11:40:00\.000Z\] Ticket Tool: @Bob Welcome\n\(Embed\)\nSupport will be with you shortly\. Opened by @Kamil\.\nFooter: TicketTool\.xyz - Ticketing without clutter\n\(Embed\)\nWhat do you need\?: ```Bug```\nOpenBot version: ```0\.59\.0```\n--- message ---\nplease look at this ticket/u,
+        );
+
+        // A link that a person posted without a mention has only Discord's preview embed.
+        channelOne.push({
+          id: nextId(),
+          content: "",
+          timestamp: "2026-10-19T11:46:00.000Z",
+          author: { id: TOMEK, username: "tomek" },
+          attachments: [],
+          embeds: [
+            {
+              title: "Login fails after the update",
+              url: "https://github.com/nightly-labs/openbot/issues/1",
+              description: "The app closes at start.",
+            },
+          ],
+        });
+        try {
+          const asked = nextId();
+          await mention({
+            id: asked,
+            guildId: GUILD_ONE,
+            channelId: CHANNEL_ONE,
+            authorId: KUBA,
+            authorName: "Kuba",
+            roles: [MAINTAINERS],
+            content: "is this fixed?",
+          });
+          await received(asked);
+          assert.match(
+            await promptOf(services, GUILD_ONE, asked, CHANNEL_ONE),
+            /--- earlier messages \(context, oldest first\) ---\n\[2026-10-19T11:46:00\.000Z\] tomek: \(Embed\)\nLogin fails after the update\nLink: https:\/\/github\.com\/nightly-labs\/openbot\/issues\/1\nThe app closes at start\.\n/u,
+          );
+        } finally {
+          channelOne.length = 0;
+        }
+        return { embeds: true };
+      },
+    );
   });
 
   await boot(async (services) => {
@@ -970,5 +1083,5 @@ try {
   await rm(root, { recursive: true, force: true });
 }
 // The report names steps and ids only: no message text.
-assert.ok(!readFileSync(REPORT, "utf8").includes("webhooks for Whilo"), "The report contains message text.");
+assert.ok(!readFileSync(REPORT, "utf8").includes("webhooks for OpenBot"), "The report contains message text.");
 process.stdout.write(`Discord access check passed. Report: ${REPORT}\n`);

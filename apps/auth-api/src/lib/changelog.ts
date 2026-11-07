@@ -9,18 +9,17 @@
 // `### Added` style groups, `-` bullets with indented continuation lines, plain paragraphs
 // under a heading, and inline `**bold**`, `code` and [links](url).
 
-import { isDynamicRecord } from "@whilo/contracts/runtime-values";
-import {
-  WHILO_SITE_URL,
-  WHILO_SOCIAL_IMAGE_ALT,
-  WHILO_SOCIAL_IMAGE_URL,
-  WHILO_X_HANDLE,
-} from "./site-metadata";
+import { isDynamicRecord } from "@openbot/contracts/runtime-values";
+import { OPENBOT_SITE_URL, OPENBOT_X_HANDLE, type PageSocialImage, pageSocialImageMeta } from "./site-metadata";
 
 export const CHANGELOG_ROUTE = "/changelog";
-const CHANGELOG_TITLE = "Whilo Changelog: Release Notes for Every Version";
+const CHANGELOG_TITLE = "OpenBot Changelog: Release Notes for Every Version";
 export const CHANGELOG_DESCRIPTION =
-  "Every Whilo release, newest first: new features, improvements and fixes, with what to do after you upgrade.";
+  "Every OpenBot release, newest first: new features, improvements and fixes, with what to do after you upgrade.";
+const CHANGELOG_SOCIAL_IMAGE: PageSocialImage = {
+  path: "/social/changelog.jpg",
+  alt: "Good things in the making. OpenBot agents around a paper sun",
+};
 
 /** The app a changelog covers. The web client ships with the desktop app, so it has no own list. */
 export type ChangelogPlatform = "desktop" | "mobile";
@@ -57,6 +56,8 @@ export interface StoreAvailability {
   store: MobileStore;
   /** `YYYY-MM-DD`, the day the store made the version available. Empty while it reviews it. */
   date: string;
+  /** The store will never ship the version, because a newer one replaced it. `date` is empty. */
+  skipped: boolean;
 }
 
 export interface ChangelogRelease {
@@ -85,6 +86,8 @@ const IN_REVIEW_HEADING = /^## \[[^\]]+\]\s+-\s+In review\s*$/;
 const SHARED_DATE_HEADING = /^## \[[^\]]+\]\s+-\s+\d{4}-\d{2}-\d{2}\s*$/;
 /** `2026-10-14 (Android)`: one store's date in a mobile heading, as `scripts/release-notes.ts` writes it. */
 const STORE_DATE = /(\d{4}-\d{2}-\d{2}) \((iOS|Android)\)/g;
+/** `Skipped (Android)`: a store that will never ship the version, as `scripts/release-notes.ts` writes it. */
+const STORE_SKIPPED = /Skipped \((iOS|Android)\)/g;
 const STORE_NAMES: Record<string, MobileStore> = { iOS: "ios", Android: "android" };
 const MOBILE_STORES: readonly MobileStore[] = ["ios", "android"];
 const GROUP_HEADING = /^### (.+)$/;
@@ -118,7 +121,12 @@ function storeAvailability(line: string, date: string): StoreAvailability[] {
     const store = STORE_NAMES[name];
     if (store && isRealDate(day)) dates.set(store, day);
   }
-  return MOBILE_STORES.map((store) => ({ store, date: dates.get(store) ?? "" })).sort(
+  const skipped = new Set<MobileStore>();
+  for (const [, name = ""] of line.matchAll(STORE_SKIPPED)) {
+    const store = STORE_NAMES[name];
+    if (store && !dates.has(store)) skipped.add(store);
+  }
+  return MOBILE_STORES.map((store) => ({ store, date: dates.get(store) ?? "", skipped: skipped.has(store) })).sort(
     (a, b) => (a.date === "" ? 1 : 0) - (b.date === "" ? 1 : 0) || a.date.localeCompare(b.date),
   );
 }
@@ -168,8 +176,10 @@ export function parseChangelog(
       const firstDate = isRealDate(written) ? written : "";
       const availability = stores ? storeAvailability(line, firstDate) : [];
       group = undefined;
+      // A mobile version that no store made available, because each one reviews or skipped it.
+      const unavailable = stores && availability.every((entry) => entry.date === "");
       release =
-        version.toLowerCase() === "unreleased" || IN_REVIEW_HEADING.test(line)
+        version.toLowerCase() === "unreleased" || IN_REVIEW_HEADING.test(line) || unavailable
           ? undefined
           : {
               version,
@@ -242,7 +252,7 @@ export function parseInline(text: string): InlineSegment[] {
   return segments;
 }
 
-export function changelogUrl(siteUrl: string = WHILO_SITE_URL, platform: ChangelogPlatform = "desktop"): string {
+export function changelogUrl(siteUrl: string = OPENBOT_SITE_URL, platform: ChangelogPlatform = "desktop"): string {
   const url = new URL(CHANGELOG_ROUTE, siteUrl);
   if (platform === "mobile") url.searchParams.set("platform", platform);
   return url.toString();
@@ -250,25 +260,24 @@ export function changelogUrl(siteUrl: string = WHILO_SITE_URL, platform: Changel
 
 export function changelogHead(siteUrl: string, platform: ChangelogPlatform = "desktop") {
   const url = changelogUrl(siteUrl, platform);
+  const image = pageSocialImageMeta(CHANGELOG_SOCIAL_IMAGE, siteUrl);
 
   return {
     meta: [
       { title: CHANGELOG_TITLE },
       { name: "description", content: CHANGELOG_DESCRIPTION },
       { property: "og:type", content: "website" },
-      { property: "og:site_name", content: "Whilo" },
+      { property: "og:site_name", content: "OpenBot" },
       { property: "og:locale", content: "en_US" },
       { property: "og:url", content: url },
       { property: "og:title", content: CHANGELOG_TITLE },
       { property: "og:description", content: CHANGELOG_DESCRIPTION },
-      { property: "og:image", content: WHILO_SOCIAL_IMAGE_URL },
-      { property: "og:image:alt", content: WHILO_SOCIAL_IMAGE_ALT },
+      ...image.openGraph,
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: WHILO_X_HANDLE },
+      { name: "twitter:site", content: OPENBOT_X_HANDLE },
       { name: "twitter:title", content: CHANGELOG_TITLE },
       { name: "twitter:description", content: CHANGELOG_DESCRIPTION },
-      { name: "twitter:image", content: WHILO_SOCIAL_IMAGE_URL },
-      { name: "twitter:image:alt", content: WHILO_SOCIAL_IMAGE_ALT },
+      ...image.twitter,
     ],
     links: [{ rel: "canonical", href: url }],
   };

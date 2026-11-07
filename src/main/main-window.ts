@@ -12,14 +12,17 @@ import { Effect } from "effect";
 
 import { join } from "node:path";
 import {
+  type AgentSummary,
   type AppVariant,
+  type CentralAuthState,
   type ChatWindowTarget,
   type ComputerUseHighlightPlacement,
+  type HostStatus,
   IPC_ENDPOINTS,
   LOCAL_SERVER_ID,
   type MacPermissionId,
-} from "@whilo/contracts/ipc";
-import type { AppTextKey, AppTranslate } from "@whilo/i18n";
+} from "@openbot/contracts/ipc";
+import type { AppTextKey, AppTranslate, LayoutDirection } from "@openbot/i18n";
 import {
   app,
   BrowserWindow,
@@ -31,6 +34,7 @@ import {
   type MenuItemConstructorOptions,
   type Point,
   type Rectangle,
+  type RenderProcessGoneDetails,
   screen,
   session,
   type WebContents,
@@ -49,7 +53,7 @@ import type { HighlightDisplay } from "./computer-use-highlight-window";
 import { shouldShowDevelopmentWindow } from "./development-profile";
 import { dynamicIslandNotchSizeForDisplay } from "./dynamic-island-window";
 import { type InterfaceSizeService, type InterfaceSizeStep, interfaceSizeShortcut } from "./interface-size-service";
-import { hideMacDockWhenNoWindowShows, showMacDock } from "./mac-dock";
+import { withLocalHostSummary } from "./ipc/team-handlers";
 import { preventPanelActivation } from "./mac-panel-activation";
 import {
   createMainWindowBoundsRecorder,
@@ -64,10 +68,25 @@ import type { RemoteWorkflowError } from "./remote-service-effects";
 import { sendToRenderer } from "./renderer-ipc";
 import { isTrustedRendererUrl } from "./trusted-renderer";
 import type { UpdateService } from "./update-service";
-import { followAppearance, followWindowGlass, windowBackgroundColor } from "./window-appearance";
+import { followAppearance, followWindowGlass, glassWindowOptions, windowBackgroundColor } from "./window-appearance";
+import { followWindowButtonSide, WINDOW_BUTTON_INSET } from "./window-buttons";
 
 /** The dark background of the main and setup windows, under the page's own canvas. */
 const MAIN_WINDOW_DARK_BACKGROUND = "#0b0d0e";
+
+/**
+ * The main window loads its page again when the renderer stops, as many times as this in
+ * `RENDERER_RELOAD_WINDOW_MS`. A page that stops each time it loads then ends as it did before.
+ */
+const RENDERER_RELOAD_MAX = 3;
+const RENDERER_RELOAD_WINDOW_MS = 60_000;
+/** A clean exit or a launch failure is not a page that stopped while in use. */
+const RELOADABLE_RENDERER_EXITS: ReadonlySet<RenderProcessGoneDetails["reason"]> = new Set([
+  "crashed",
+  "oom",
+  "killed",
+  "abnormal-exit",
+]);
 
 /**
  * What the window surface reads off the running application. Deliberately narrower than
@@ -76,6 +95,8 @@ const MAIN_WINDOW_DARK_BACKGROUND = "#0b0d0e";
  */
 interface MainWindowApplicationServices {
   browser: BrowserHost;
+  centralAuth: { getState(): CentralAuthState };
+  host: { getStatus(): HostStatus };
   remoteServers: RemoteServerManager;
   interfaceSize: InterfaceSizeService;
 }
@@ -132,6 +153,8 @@ export interface MainWindowContext {
   getServices: () => MainWindowApplicationServices | null;
   /** A function, not a value: the saved language is read after the first window opens. */
   getTranslate: () => AppTranslate;
+  /** A function, not a value: the user can change the language while the window is open. */
+  getLayoutDirection: () => LayoutDirection;
   /** A renderer load or committed document navigation resets delivery of queued links. */
   onRendererLoadStarted: () => void;
   /** Main must release resources when a renderer can no longer run its own cleanup. */
@@ -141,6 +164,8 @@ export interface MainWindowContext {
   reportError: (message: string, error: unknown) => void;
   /** Quits after `Cmd + Q` was held or pressed twice in a window. See `createQuitShortcut`. */
   quitFromShortcut: () => void;
+  /** The agents that a quit stops, here and on the servers on this computer. See `createQuitShortcut`. */
+  workingAgents: () => AgentSummary[];
 }
 
 export interface MainWindowController {
@@ -173,18 +198,21 @@ export function createMainWindowController({
   keepRunningInBackground,
   getServices,
   getTranslate,
+  getLayoutDirection,
   onRendererLoadStarted,
   onRendererGone,
   onMainWindowCreated,
   reportError,
   quitFromShortcut,
+  workingAgents,
 }: MainWindowContext): MainWindowController {
   const quitShortcut =
     process.platform === "darwin"
       ? createQuitShortcut({
           quit: quitFromShortcut,
           isQuitting,
-          showHint: (window, visible) => sendToRenderer(window, IPC_ENDPOINTS.app.quitShortcutHint, visible),
+          workingAgents,
+          showHint: (window, agents) => sendToRenderer(window, IPC_ENDPOINTS.app.quitShortcutHint, agents),
         })
       : null;
   const { restoreMainWindowBounds, currentMainWindowBounds, rememberMainWindowBounds, flushMainWindowBounds } =
@@ -194,6 +222,7 @@ export function createMainWindowController({
       writeBounds: (bounds) => writeMainWindowBounds(statePath, bounds),
       reportError,
     });
+  let rendererReloadTimes: number[] = [];
 
   function createWindow(): BrowserWindow {
     const cursor = screen.getCursorScreenPoint();
@@ -209,7 +238,7 @@ export function createMainWindowController({
       minWidth: 960,
       minHeight: 640,
       show: false,
-      backgroundColor: windowBackgroundColor(MAIN_WINDOW_DARK_BACKGROUND),
+      ...glassWindowOptions(MAIN_WINDOW_DARK_BACKGROUND),
       title:
         developmentProfile === "test-client"
           ? getTranslate()("window.localClientTitle")
@@ -219,9 +248,10 @@ export function createMainWindowController({
       // detail. macOS spaces the three 13px dots 23px apart, so the group is 59px wide: x 12 leaves
       // it 11px clear of the 82px where the top row's first control starts, in the app frame and in
       // the full-bleed browser header alike, and y 13 puts its centre line within half a pixel of
-      // both of those rows. The setup window below uses the same offsets.
+      // both of those rows. The setup window below uses the same offsets. In a right-to-left language
+      // the group is at the top right with the same offsets (`window-buttons.ts`).
       ...(process.platform === "darwin"
-        ? { titleBarStyle: "hidden" as const, trafficLightPosition: { x: 12, y: 13 } }
+        ? { titleBarStyle: "hidden" as const, trafficLightPosition: WINDOW_BUTTON_INSET }
         : {}),
       webPreferences: {
         preload: join(__dirname, "../preload/index.cjs"),
@@ -236,7 +266,7 @@ export function createMainWindowController({
     followWindowGlass(window, MAIN_WINDOW_DARK_BACKGROUND);
 
     window.once("ready-to-show", () => {
-      performance.mark("whilo:window-ready");
+      performance.mark("openbot:window-ready");
       if (
         !windowsKeptHidden &&
         shouldShowDevelopmentWindow({
@@ -253,11 +283,11 @@ export function createMainWindowController({
       getServices()?.browser.releaseUserControlHeldBy({ kind: "local" });
       // The hidden renderer owns the cross-host Dynamic Island coordinator and must outlive its visible
       // window. On Windows and Linux the user chooses it, and the tray icon is the way back. On macOS
-      // the Dock icon is the way back, or the menu bar icon when the user chooses it.
+      // the Dock icon is the way back, and the menu bar icon too when the user chooses it. The Dock
+      // icon stays, so its dot shows that OpenBot still runs.
       if ((process.platform === "darwin" || keepRunningInBackground()) && !isQuitting()) {
         event.preventDefault();
         window.hide();
-        if (process.platform === "darwin" && keepRunningInBackground()) hideMacDockWhenNoWindowShows();
       }
     });
     onMainWindowCreated(window);
@@ -280,7 +310,29 @@ export function createMainWindowController({
     });
     window.webContents.on("render-process-gone", onRendererGone);
     window.webContents.once("destroyed", onRendererGone);
+    // A dead page gets no keys, so Ctrl+R cannot reach the Reload item on Windows and Linux, and the
+    // window stayed white until a restart (#4696). The agents keep running in main.
+    window.webContents.on("render-process-gone", (_event, details) => {
+      const now = Date.now();
+      rendererReloadTimes = rendererReloadTimes.filter((time) => now - time < RENDERER_RELOAD_WINDOW_MS);
+      if (
+        isQuitting() ||
+        window.isDestroyed() ||
+        !RELOADABLE_RENDERER_EXITS.has(details.reason) ||
+        rendererReloadTimes.length >= RENDERER_RELOAD_MAX
+      ) {
+        return;
+      }
+      rendererReloadTimes.push(now);
+      setImmediate(() => {
+        if (window.isDestroyed()) return;
+        loadRenderer(window).catch((error: unknown) =>
+          reportError("Could not reload the main window after its renderer stopped", error),
+        );
+      });
+    });
     attachAppInput(window, getServices, getTranslate, { closesBrowserTabs: true, quitShortcut });
+    followWindowButtonSide(window, getLayoutDirection);
     window.webContents.on("will-navigate", (event, targetUrl) => {
       if (!isTrustedRendererUrl(targetUrl)) event.preventDefault();
     });
@@ -289,6 +341,20 @@ export function createMainWindowController({
       if (services) {
         Effect.runFork(services.remoteServers.refreshRuntimeSnapshots());
       }
+    });
+    // `sendToRenderer` drops an event while the page loads, and the page still counts as loading in
+    // `did-finish-load`. A page that read `loading` and then missed the settled account would show
+    // the connecting screen until a restart. A page that read a server before it came online would
+    // keep it offline and not load its workspace (#5004).
+    window.webContents.on("did-stop-loading", () => {
+      const services = getServices();
+      if (!services) return;
+      sendToRenderer(window, IPC_ENDPOINTS.auth.event, services.centralAuth.getState());
+      sendToRenderer(
+        window,
+        IPC_ENDPOINTS.servers.event,
+        withLocalHostSummary(services.remoteServers.list(), services.host.getStatus()),
+      );
     });
 
     return window;
@@ -322,12 +388,12 @@ export function createMainWindowController({
       minWidth: 380,
       minHeight: 480,
       show: false,
-      backgroundColor: windowBackgroundColor(MAIN_WINDOW_DARK_BACKGROUND),
+      ...glassWindowOptions(MAIN_WINDOW_DARK_BACKGROUND),
       // The page sets the chat name as its title when it loads.
       title: getTranslate()("window.localHostTitle"),
       icon: appIconPath,
       ...(process.platform === "darwin"
-        ? { titleBarStyle: "hidden" as const, trafficLightPosition: { x: 12, y: 13 } }
+        ? { titleBarStyle: "hidden" as const, trafficLightPosition: WINDOW_BUTTON_INSET }
         : {}),
       webPreferences: {
         preload: join(__dirname, "../preload/index.cjs"),
@@ -359,6 +425,7 @@ export function createMainWindowController({
       if (interfaceSize) window.webContents.setZoomFactor(interfaceSize.zoomFactor);
     });
     attachAppInput(window, getServices, getTranslate, { closesBrowserTabs: false, quitShortcut });
+    followWindowButtonSide(window, getLayoutDirection);
     announceChatWindows();
     const url = appRendererUrl(process.env.ELECTRON_RENDERER_URL);
     url.searchParams.set("window", "chat");
@@ -590,6 +657,45 @@ export function createDynamicIslandWindow(bounds: Rectangle, _display: Display):
   return window;
 }
 
+/** The agent dock at the right edge of the screen: a transparent panel above the other apps. */
+export function createAgentDockWindow(bounds: Rectangle): BrowserWindow {
+  const window = new BrowserWindow({
+    ...bounds,
+    show: false,
+    transparent: true,
+    frame: false,
+    alwaysOnTop: true,
+    focusable: false,
+    hiddenInMissionControl: true,
+    resizable: false,
+    movable: false,
+    minimizable: false,
+    maximizable: false,
+    fullscreenable: false,
+    hasShadow: false,
+    skipTaskbar: true,
+    type: "panel",
+    backgroundColor: "#00000000",
+    webPreferences: {
+      preload: join(__dirname, "../preload/index.cjs"),
+      contextIsolation: true,
+      devTools: true,
+      sandbox: true,
+      nodeIntegration: false,
+      webSecurity: true,
+    },
+  });
+  // The chat composer makes the panel key. It must not activate the app and bring the main window up.
+  preventPanelActivation(window);
+  // Chromium shares zoom per origin. The main window zoom would change the size of the dock.
+  window.webContents.setZoomMode("isolated");
+  window.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+  window.webContents.on("will-navigate", (event, targetUrl) => {
+    if (!isTrustedRendererUrl(targetUrl)) event.preventDefault();
+  });
+  return window;
+}
+
 /**
  * The overlay that carries the Computer Use rim over the window an agent works in.
  *
@@ -638,7 +744,7 @@ export function createComputerUseHighlightWindow(bounds: Rectangle): BrowserWind
   // application's full screen. One overlay on every Space is what lets the rim follow it there
   // without a second window and without pulling the user out of the Space they are on. The
   // overlays are built again after each idle period, and without `skipTransformProcessType` each
-  // build would hide the Dock icon and every Whilo window for a moment.
+  // build would hide the Dock icon and every OpenBot window for a moment.
   window.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true, skipTransformProcessType: true });
   // Nothing on this surface may be pressed, and it covers another application's whole window, so
   // every event is handed straight on to the window below it.
@@ -655,7 +761,7 @@ export function createComputerUseHighlightWindow(bounds: Rectangle): BrowserWind
 /**
  * The small window that stands beside the System Settings pane a permission is granted in.
  *
- * System Settings opens in front of everything and covers Whilo, so the panel that asked for the
+ * System Settings opens in front of everything and covers OpenBot, so the panel that asked for the
  * grant is no longer on screen at the moment the user has to act. This window carries the steps
  * there: it floats, it is small enough to leave the pane readable, and it reports the grant landing
  * so the user knows they are done without going back to look.
@@ -664,7 +770,10 @@ export function createComputerUseHighlightWindow(bounds: Rectangle): BrowserWind
  * sandboxed, context-isolated, no window may be opened from it, and no navigation away from the
  * renderer's own origin.
  */
-export function createComputerUsePermissionHelpWindow(translate: AppTranslate): BrowserWindow {
+export function createComputerUsePermissionHelpWindow(
+  translate: AppTranslate,
+  getLayoutDirection: () => LayoutDirection,
+): BrowserWindow {
   const workArea = screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).workArea;
   const width = 340;
   // The card the user drags out of it, the two steps, and nothing else: a window taller than its
@@ -685,7 +794,7 @@ export function createComputerUsePermissionHelpWindow(translate: AppTranslate): 
     backgroundColor: windowBackgroundColor(MAIN_WINDOW_DARK_BACKGROUND),
     title: translate("window.computerUsePermissionTitle"),
     ...(process.platform === "darwin"
-      ? { titleBarStyle: "hiddenInset" as const, trafficLightPosition: { x: 12, y: 13 } }
+      ? { titleBarStyle: "hiddenInset" as const, trafficLightPosition: WINDOW_BUTTON_INSET }
       : {}),
     webPreferences: {
       preload: join(__dirname, "../preload/index.cjs"),
@@ -700,6 +809,7 @@ export function createComputerUsePermissionHelpWindow(translate: AppTranslate): 
   // the steps to nobody.
   window.setAlwaysOnTop(true, "floating");
   followAppearance(window, MAIN_WINDOW_DARK_BACKGROUND);
+  followWindowButtonSide(window, getLayoutDirection);
   // The fixed height fits the contents only at 100%; the main window zoom would clip the steps.
   window.webContents.setZoomMode("isolated");
   window.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
@@ -711,7 +821,7 @@ export function createComputerUsePermissionHelpWindow(translate: AppTranslate): 
 
 /** The entry that loads `App`: the main window, and a chat window with its query. */
 function appRendererUrl(developmentUrl: string | undefined): URL {
-  return developmentUrl ? new URL(developmentUrl) : new URL("whilo-app://app/index.html");
+  return developmentUrl ? new URL(developmentUrl) : new URL("openbot-app://app/index.html");
 }
 
 function chatWindowKey(target: ChatWindowTarget): string {
@@ -720,7 +830,7 @@ function chatWindowKey(target: ChatWindowTarget): string {
 
 /** The entry for the helper windows. It does not load `App`, so each window uses less memory. */
 function helperRendererUrl(developmentUrl: string | undefined): URL {
-  return developmentUrl ? new URL("helper.html", `${developmentUrl}/`) : new URL("whilo-app://app/helper.html");
+  return developmentUrl ? new URL("helper.html", `${developmentUrl}/`) : new URL("openbot-app://app/helper.html");
 }
 
 export function loadComputerUsePermissionHelpRenderer(
@@ -774,7 +884,7 @@ export function computerUseDesktopRect(rect: Rectangle): Rectangle {
 }
 
 /**
- * The driver ids of Whilo's windows that cover the rim, such as the conversation.
+ * The driver ids of OpenBot's windows that cover the rim, such as the conversation.
  *
  * The overlays - the rim's own and the dynamic island - can never take focus, and every window the
  * user reads can. The id in a media source id is the one the driver lists a window by: the
@@ -807,9 +917,10 @@ export function sendComputerUseHighlightPlacement(
 let windowsKeptHidden = false;
 
 /**
- * A server (`WHILO_SERVER=1` or a hosted server) shows no window. Its windows are on a virtual
+ * A server (`OPENBOT_SERVER=1` or a hosted server) shows no window. Its windows are on a virtual
  * display that has no viewer and no GPU, so a shown window drew each frame in software for nobody
  * (#4482). A hidden window draws nothing, and its renderer runs as in the background on a desktop.
+ * A local server on this computer also shows no window: its main window never loads.
  */
 export function keepWindowsHidden(): void {
   windowsKeptHidden = true;
@@ -827,18 +938,13 @@ export function hideWindowsForQuit(): void {
 
 export function showMainWindow(window: BrowserWindow): void {
   if (windowsKeptHidden) return;
-  if (process.platform !== "darwin" || app.dock?.isVisible() !== false) {
-    presentMainWindow(window, process.platform, () => app.show());
-    return;
-  }
-  // Menu bar mode hid the Dock icon. It comes back before the window takes focus.
-  void showMacDock().then(() => {
-    if (windowsKeptHidden || window.isDestroyed()) return;
-    presentMainWindow(window, process.platform, () => app.show());
-    // An app with no Dock icon is not active, and a click on its menu bar icon does not make it
-    // active. Without this, the window opens behind the app in front.
-    app.focus({ steal: true });
-  });
+  presentMainWindow(window, process.platform, () => app.show());
+}
+
+export function loadAgentDockRenderer(window: BrowserWindow): Promise<void> {
+  const url = helperRendererUrl(process.env.ELECTRON_RENDERER_URL);
+  url.searchParams.set("surface", "agent-dock");
+  return window.loadURL(url.toString());
 }
 
 export function loadDynamicIslandRenderer(window: BrowserWindow, display: Display, variant: AppVariant): Promise<void> {
@@ -885,19 +991,25 @@ export type MenuQuitSource = "menu" | "shortcut";
 let quitConfirmationOpen = false;
 
 /**
- * `Cmd + Q` is next to `Cmd + W` and `Cmd + A`, and one press stopped Whilo with its agents and
- * routines (#4149). In a focused Whilo page the keys never get here: `createQuitShortcut` quits
- * when they are held or pressed twice. The item gets the keys only with no Whilo page focused, such
- * as with the window closed or a sign-in window focused. No page can show the hint there, so Whilo
+ * `Cmd + Q` is next to `Cmd + W` and `Cmd + A`, and one press stopped OpenBot with its agents and
+ * routines (#4149). In a focused OpenBot page the keys never get here: `createQuitShortcut` quits
+ * when they are held or pressed twice. The item gets the keys only with no OpenBot page focused, such
+ * as with the window closed or a sign-in window focused. No page can show the hint there, so OpenBot
  * asks. A click on
  * the item, the Dock, a system logout and an update still quit at once.
  */
-function macQuitItem(translate: AppTranslate, quit: (source: MenuQuitSource) => void): MenuItemConstructorOptions {
+function macQuitItem(
+  translate: AppTranslate,
+  agentsWork: () => boolean,
+  quit: (source: MenuQuitSource) => void,
+): MenuItemConstructorOptions {
   return {
     label: translate("menu.quit"),
     accelerator: "Command+Q",
     click: (_item, _window, event) => {
       if (!event.triggeredByAccelerator) return quit("menu");
+      // With no agent at work, a quit stops nothing, so the keys quit at once.
+      if (!agentsWork()) return quit("shortcut");
       // A second press while the question is open does not open another one, and a quit that has
       // started hid every window and needs no question.
       if (quitConfirmationOpen || windowsKeptHidden) return;
@@ -941,6 +1053,7 @@ export function configureApplicationMenu(
   interfaceSize: InterfaceSizeService,
   translate: AppTranslate,
   getMainWindow: () => BrowserWindow | null,
+  workingAgents: () => AgentSummary[],
   quit: (source: MenuQuitSource) => void,
 ): void {
   Menu.setApplicationMenu(
@@ -985,7 +1098,9 @@ export function configureApplicationMenu(
           { role: "hideOthers" },
           { role: "unhide" },
           { type: "separator" },
-          process.platform === "darwin" ? macQuitItem(translate, quit) : { role: "quit" },
+          process.platform === "darwin"
+            ? macQuitItem(translate, () => workingAgents().length > 0, quit)
+            : { role: "quit" },
         ],
       },
       { role: "editMenu" },
@@ -1016,8 +1131,8 @@ export function configureApplicationMenu(
           { role: "togglefullscreen" },
         ],
       },
-      // Windows and Linux: the default Close item takes Ctrl+W. With "Keep Whilo running in the
-      // background" off, closing the main window quits Whilo, so a Ctrl+W that no browser tab took
+      // Windows and Linux: the default Close item takes Ctrl+W. With "Keep OpenBot running in the
+      // background" off, closing the main window quits OpenBot, so a Ctrl+W that no browser tab took
       // ended the app with no question (#2675). The item keeps the key the system closes with.
       process.platform === "darwin"
         ? { role: "windowMenu" }

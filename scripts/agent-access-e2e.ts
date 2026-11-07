@@ -6,7 +6,7 @@
 // The server-audit-v1 log records each roles change with its actor, for owners and admins only.
 // The agent service is not initialized, so no provider CLI starts.
 // Run: `bun scripts/agent-access-e2e.ts`.
-// Writes .whilo-build/agent-access-e2e/report.json.
+// Writes .openbot-build/agent-access-e2e/report.json.
 
 import assert from "node:assert/strict";
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -19,30 +19,31 @@ import {
   decodeAgentAccessSnapshot,
   decodeServerAuditLog,
   type ServerAuditLog,
-} from "@whilo/contracts/ipc";
-import { TEAM_API_ROUTES } from "@whilo/contracts/team-api-routes";
+} from "@openbot/contracts/ipc";
+import { TEAM_API_ROUTES } from "@openbot/contracts/team-api-routes";
 import {
   TEAM_APP_VERSION_HEADER,
   TEAM_CAPABILITIES_HEADER,
   TEAM_PROTOCOL_V1_WEBSOCKET,
   TEAM_PROTOCOL_VERSION_HEADER,
-} from "@whilo/contracts/team-protocol";
+} from "@openbot/contracts/team-protocol";
 import {
   AGENT_ACCESS_CAPABILITY,
   AGENT_ACCESS_CODECS,
   AGENT_ACCESS_ROUTES,
   agentAccessEvent,
-} from "@whilo/contracts/team-protocol/agent-access-v1";
-import { AGENT_MEMORY_INCLUSION_ROUTE } from "@whilo/contracts/team-protocol/agent-memories-v1";
-import { teamCapabilitiesForProtocol } from "@whilo/contracts/team-protocol/current";
+} from "@openbot/contracts/team-protocol/agent-access-v1";
+import { AGENT_MEMORY_INCLUSION_ROUTE } from "@openbot/contracts/team-protocol/agent-memories-v1";
+import { CHAT_COLORS_ROUTES } from "@openbot/contracts/team-protocol/chat-colors-v1";
+import { teamCapabilitiesForProtocol } from "@openbot/contracts/team-protocol/current";
 import {
   SERVER_AUDIT_CAPABILITY,
   SERVER_AUDIT_CODECS,
   SERVER_AUDIT_ROUTES,
-} from "@whilo/contracts/team-protocol/server-audit-v1";
-import { TEAM_PROTOCOL_V7 } from "@whilo/contracts/team-protocol/v7";
-import { TEAM_PROTOCOL_V9 } from "@whilo/contracts/team-protocol/v9";
-import { sourceText } from "@whilo/i18n/source";
+} from "@openbot/contracts/team-protocol/server-audit-v1";
+import { TEAM_PROTOCOL_V7 } from "@openbot/contracts/team-protocol/v7";
+import { TEAM_PROTOCOL_V9 } from "@openbot/contracts/team-protocol/v9";
+import { sourceText } from "@openbot/i18n/source";
 import { plugin } from "bun";
 import { Effect } from "effect";
 import type { AgentBrowserHost } from "../src/backend/agent/turn-lifecycle";
@@ -50,11 +51,11 @@ import { AgentService } from "../src/backend/agent-service";
 import { AgentStore } from "../src/backend/agent-store";
 import { runCauseEffect } from "../src/backend/effect-boundary";
 import { MailboxStore } from "../src/backend/mailbox-store";
-import { WhiloDatabase } from "../src/backend/whilo-database";
+import { OpenBotDatabase } from "../src/backend/openbot-database";
 import { SidebarLayoutStore } from "../src/backend/sidebar-layout-store";
 import type { TeamApiBrowser } from "../src/main/team-api/dependencies";
 
-const OUT = resolve(import.meta.dirname, "../.whilo-build/agent-access-e2e");
+const OUT = resolve(import.meta.dirname, "../.openbot-build/agent-access-e2e");
 const HOST_VERSION = "0.0.0-e2e";
 const OWNER = { username: "owner-user", password: "owner-password-123" };
 const MEMBER = { username: "member-user", password: "member-password-123" };
@@ -171,6 +172,9 @@ const agentBrowser: AgentBrowserHost = {
   endControl: () => {},
   close: () => Effect.void,
   clearAgentSession: () => Effect.void,
+  shareTab: () => undefined,
+  unshareThread: () => undefined,
+  agentTab: () => null,
 };
 const teamBrowser: TeamApiBrowser = {
   listTabs: () => [],
@@ -195,12 +199,12 @@ const teamBrowser: TeamApiBrowser = {
   importSignIn: unused,
 };
 
-const root = await mkdtemp(join(tmpdir(), "whilo-agent-access-"));
+const root = await mkdtemp(join(tmpdir(), "openbot-agent-access-"));
 const userData = join(root, "user-data");
 const home = join(root, "home");
 
 interface Host {
-  database: WhiloDatabase;
+  database: OpenBotDatabase;
   agents: AgentService;
   server: InstanceType<typeof TeamApiServer>;
   team: InstanceType<typeof TeamStore>;
@@ -214,11 +218,11 @@ const sockets: WebSocket[] = [];
 
 /** Starts the host on the profile, as the app does at each launch. The stores keep their files. */
 async function startHost(): Promise<Host> {
-  const database = new WhiloDatabase(userData);
+  const database = new OpenBotDatabase(userData);
   const agentStore = new AgentStore(userData, home, database);
   const mailbox = new MailboxStore(userData, agentStore.sharedRoot, agentStore.database);
   const sidebar = new SidebarLayoutStore(join(userData, "sidebar-layout.json"));
-  const team = new TeamStore(join(userData, "whilo-team-server-v2.json"));
+  const team = new TeamStore(join(userData, "openbot-team-server-v2.json"));
   const audit = new ServerAuditStore(join(userData, SERVER_AUDIT_FILE));
   await runCauseEffect(audit.load());
   // As the app wires it: the roles store records each save in the audit log.
@@ -376,7 +380,7 @@ function refusal(body: unknown): string {
 async function openEvents(token: string): Promise<WebSocket> {
   const socket = new WebSocket(`ws://127.0.0.1:${current().port}${TEAM_API_ROUTES.events}`, [
     TEAM_PROTOCOL_V1_WEBSOCKET,
-    `whilo-token.${token}`,
+    `openbot-token.${token}`,
   ]);
   sockets.push(socket);
   await new Promise<void>((resolveOpen, reject) => {
@@ -572,13 +576,26 @@ try {
       body: { agentId: legal, changes: [{ memoryId: "memory-e2e", inclusion: "essential", expectedRevision: 0 }] },
     });
     assert.equal(included.status, 403, `A memory inclusion change on a chat agent returned ${included.status}.`);
-    assert.equal(
-      current()
-        .agents.listAgents()
-        .find((agent) => agent.id === legal)?.name,
-      "Legal",
-    );
-    return { viewCancel: refused.status, chatCancel: passed.status, patch: patched.status, inclusion: included.status };
+    // A chat colour needs manage access, as the avatar on the released agent route does.
+    const chatColor = await call("POST", CHAT_COLORS_ROUTES.set, {
+      token: setup.memberToken,
+      body: { agentId: legal, color: "#a1b2c3" },
+      protocol: TEAM_PROTOCOL_V9,
+    });
+    assert.equal(chatColor.status, 403, `A chat colour change on a chat agent returned ${chatColor.status}.`);
+    assert.ok(refusal(chatColor.body).includes(sourceText("error.team.agentManageDenied")), refusal(chatColor.body));
+    const legalAgent = current()
+      .agents.listAgents()
+      .find((agent) => agent.id === legal);
+    assert.equal(legalAgent?.name, "Legal");
+    assert.equal(legalAgent?.chatColor, undefined, "A refused chat colour was saved.");
+    return {
+      viewCancel: refused.status,
+      chatCancel: passed.status,
+      patch: patched.status,
+      inclusion: included.status,
+      chatColor: chatColor.status,
+    };
   });
 
   await step("manage: the member changes an agent that Everyone does not list", async () => {
@@ -587,13 +604,18 @@ try {
       body: { name: "General 2" },
     });
     assert.equal(patched.status, 200, `PATCH on a manage agent returned ${patched.status}.`);
-    assert.equal(
-      current()
-        .agents.listAgents()
-        .find((agent) => agent.id === general)?.name,
-      "General 2",
-    );
-    return { patch: patched.status };
+    const chatColor = await call("POST", CHAT_COLORS_ROUTES.set, {
+      token: setup.memberToken,
+      body: { agentId: general, color: "#a1b2c3" },
+      protocol: TEAM_PROTOCOL_V9,
+    });
+    assert.equal(chatColor.status, 200, `A chat colour change on a manage agent returned ${chatColor.status}.`);
+    const generalAgent = current()
+      .agents.listAgents()
+      .find((agent) => agent.id === general);
+    assert.equal(generalAgent?.name, "General 2");
+    assert.equal(generalAgent?.chatColor, "#a1b2c3", "The agent store did not keep the chat colour.");
+    return { patch: patched.status, chatColor: chatColor.status };
   });
 
   await step("owner: sees and changes every agent, and reads every role", async () => {

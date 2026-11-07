@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, describe, expect, it } from "vitest";
-import { migrateWhiloDatabase } from "./whilo-database-schema";
+import { migrateOpenBotDatabase } from "./openbot-database-schema";
 
 // Failure modes: the upgrade changes or loses a row of any table; a task does not become a thread, or
 // loses a column; a task row with no thread stops the upgrade; a failed upgrade leaves the new table, or
@@ -24,16 +24,16 @@ function databaseAt(version: number): DatabaseSync {
 function migrateUpTo(db: DatabaseSync, version: number): void {
   db.exec(`CREATE TEMP TRIGGER stop_at_version BEFORE INSERT ON schema_migrations WHEN new.version > ${version}
     BEGIN SELECT RAISE(ABORT, 'fixture stop'); END;`);
-  expect(() => migrateWhiloDatabase(db)).toThrow(`migration to version ${version + 1} failed`);
+  expect(() => migrateOpenBotDatabase(db)).toThrow(`migration to version ${version + 1} failed`);
   db.exec("DROP TRIGGER stop_at_version");
 }
 
 /** The agent's own chat and two task conversations, in the columns every release has. */
 function seedThreads(db: DatabaseSync): void {
   const insert = db.prepare("INSERT INTO projection_threads VALUES (?, 'chief', ?, NULL, ?, ?, 1)");
-  insert.run("whilo-thread-chief", 'Chief 界"\\', "2026-10-01T07:00:00.000Z", "2026-10-01T07:00:00.000Z");
-  insert.run("whilo-thread-open", "Billing export", "2026-10-01T08:00:00.000Z", "2026-10-01T08:00:00.000Z");
-  insert.run("whilo-thread-closed", "Release notes", "2026-10-01T09:00:00.000Z", "2026-10-01T09:00:00.000Z");
+  insert.run("openbot-thread-chief", 'Chief 界"\\', "2026-10-01T07:00:00.000Z", "2026-10-01T07:00:00.000Z");
+  insert.run("openbot-thread-open", "Billing export", "2026-10-01T08:00:00.000Z", "2026-10-01T08:00:00.000Z");
+  insert.run("openbot-thread-closed", "Release notes", "2026-10-01T09:00:00.000Z", "2026-10-01T09:00:00.000Z");
 }
 
 /** An open task of the person, and a closed, failed task that the agent started. From schema 38 on. */
@@ -41,9 +41,9 @@ function seedTasks(db: DatabaseSync): void {
   db.exec(`INSERT INTO projection_agent_tasks
     (task_id, agent_id, thread_id, origin, title, outcome, error, created_at, updated_at, closed_at,
      last_event_sequence)
-    VALUES ('agent-task-open', 'chief', 'whilo-thread-open', 'user', 'Billing export 界"\\', 'completed', NULL,
+    VALUES ('agent-task-open', 'chief', 'openbot-thread-open', 'user', 'Billing export 界"\\', 'completed', NULL,
         '2026-10-01T08:00:00.000Z', '2026-10-02T08:00:00.000Z', NULL, 4),
-      ('agent-task-closed', 'chief', 'whilo-thread-closed', 'agent', 'Release notes', 'failed', 'Provider said no',
+      ('agent-task-closed', 'chief', 'openbot-thread-closed', 'agent', 'Release notes', 'failed', 'Provider said no',
         '2026-10-01T09:00:00.000Z', '2026-10-02T09:00:00.000Z', '2026-10-03T09:00:00.000Z', 7)`);
 }
 
@@ -57,7 +57,7 @@ const EMPTY_GITHUB_TABLES = {
 // Migration 48 adds the branch link, null for every moved task.
 const THREADS = [
   {
-    thread_id: "whilo-thread-closed",
+    thread_id: "openbot-thread-closed",
     agent_id: "chief",
     legacy_task_id: "agent-task-closed",
     origin: "agent",
@@ -72,9 +72,10 @@ const THREADS = [
     branch_source_thread_id: null,
     branch_source_message_id: null,
     branch_through_message_id: null,
+    routine_id: null,
   },
   {
-    thread_id: "whilo-thread-open",
+    thread_id: "openbot-thread-open",
     agent_id: "chief",
     legacy_task_id: "agent-task-open",
     origin: "user",
@@ -89,6 +90,7 @@ const THREADS = [
     branch_source_thread_id: null,
     branch_source_message_id: null,
     branch_through_message_id: null,
+    routine_id: null,
   },
 ];
 
@@ -116,14 +118,26 @@ function agentTables(db: DatabaseSync): unknown[] {
     .all();
 }
 
-/** The rows that migration 47 must keep: every table except the task table, which becomes the thread table. */
+/**
+ * The rows that migration 47 must keep: every table except the task table, which becomes the thread table.
+ * Migration 51 adds an empty sender table after it.
+ */
 function withoutTasks(rows: Record<string, unknown[]>): Record<string, unknown[]> {
-  const { projection_agent_tasks: _tasks, projection_agent_threads: _threads, ...kept } = rows;
+  const {
+    projection_agent_tasks: _tasks,
+    projection_agent_threads: _threads,
+    projection_messaging_allowed_senders: _senders,
+    projection_deleted_thread_messages: _deleted,
+    browser_proxies: _proxies,
+    browser_profile_proxies: _profileProxies,
+    agent_usage_skill_loads: _skillLoads,
+    ...kept
+  } = rows;
   return kept;
 }
 
 function expectHealthy(db: DatabaseSync): void {
-  expect(db.prepare("SELECT MAX(version) AS version FROM schema_migrations").get()).toEqual({ version: 50 });
+  expect(db.prepare("SELECT MAX(version) AS version FROM schema_migrations").get()).toEqual({ version: 58 });
   expect(db.prepare("PRAGMA foreign_keys").get()).toEqual({ foreign_keys: 1 });
   expect(db.prepare("PRAGMA foreign_key_check").all()).toEqual([]);
   expect(db.prepare("PRAGMA integrity_check").get()).toEqual({ integrity_check: "ok" });
@@ -137,7 +151,7 @@ function insertThread(
     (thread_id, agent_id, legacy_task_id, origin, title, title_source, outcome, error, created_at, updated_at,
      archived_at, last_event_sequence)
     VALUES (?, 'chief', ?, ?, 'Billing export', ?, NULL, NULL, '2026-10-04', '2026-10-04', NULL, 9)`).run(
-    values.threadId ?? "whilo-thread-new",
+    values.threadId ?? "openbot-thread-new",
     values.legacyTaskId ?? null,
     values.origin ?? "user",
     values.titleSource ?? "user",
@@ -155,12 +169,13 @@ describe("agent thread migration", () => {
       seedTasks(db);
       if (version < 46) migrateUpTo(db, 46);
       const before = contents(db);
-      migrateWhiloDatabase(db);
+      migrateOpenBotDatabase(db);
       expect(withoutTasks(contents(db))).toEqual({ ...withoutTasks(before), ...EMPTY_GITHUB_TABLES });
       expect(threads(db)).toEqual(THREADS);
       expect(agentTables(db)).toEqual([
         { type: "index", name: "agent_threads_agent" },
         { type: "index", name: "agent_threads_open" },
+        { type: "index", name: "agent_threads_routine" },
         { type: "table", name: "projection_agent_threads" },
       ]);
       expectHealthy(db);
@@ -171,10 +186,10 @@ describe("agent thread migration", () => {
     const db = databaseAt(46);
     seedThreads(db);
     seedTasks(db);
-    db.exec("PRAGMA foreign_keys=OFF; DELETE FROM projection_threads WHERE thread_id='whilo-thread-closed'");
+    db.exec("PRAGMA foreign_keys=OFF; DELETE FROM projection_threads WHERE thread_id='openbot-thread-closed'");
     db.exec("PRAGMA foreign_keys=ON");
     expect(db.prepare("SELECT COUNT(*) AS count FROM projection_agent_tasks").get()).toEqual({ count: 2 });
-    migrateWhiloDatabase(db);
+    migrateOpenBotDatabase(db);
     expect(threads(db)).toEqual([THREADS[1]]);
     expectHealthy(db);
   });
@@ -190,7 +205,7 @@ describe("agent thread migration", () => {
     db.exec(`INSERT INTO projection_deliveries
       (delivery_id, message_id, recipient_agent_id, status, turn_id, error, created_at, delivery_json, last_event_sequence)
       VALUES ('delivery-1', 'message-1', 'chief', 'queued', NULL, NULL, '2026-10-04', '{"id":"delivery-1"}', 10)`);
-    migrateWhiloDatabase(db);
+    migrateOpenBotDatabase(db);
     expect(db.prepare("SELECT message_json FROM projection_mailbox_messages").all()).toEqual([
       { message_json: message },
     ]);
@@ -201,7 +216,7 @@ describe("agent thread migration", () => {
            WHERE legacy_task_id = ? OR (legacy_task_id IS NULL AND thread_id = ?)`,
         )
         .all("agent-task-open", "agent-task-open"),
-    ).toEqual([{ thread_id: "whilo-thread-open" }]);
+    ).toEqual([{ thread_id: "openbot-thread-open" }]);
     expectHealthy(db);
   });
 
@@ -213,13 +228,13 @@ describe("agent thread migration", () => {
     const tablesBefore = agentTables(db);
     db.exec(`CREATE TEMP TRIGGER fail_marker BEFORE INSERT ON schema_migrations WHEN new.version=47
       BEGIN SELECT RAISE(ABORT, 'late failure'); END;`);
-    expect(() => migrateWhiloDatabase(db)).toThrow("migration to version 47 failed");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("migration to version 47 failed");
     expect(contents(db)).toEqual(before);
     expect(agentTables(db)).toEqual(tablesBefore);
     expect(db.prepare("SELECT version FROM schema_migrations WHERE version=47").all()).toEqual([]);
     expect(db.prepare("PRAGMA foreign_keys").get()).toEqual({ foreign_keys: 1 });
     db.exec("DROP TRIGGER fail_marker");
-    migrateWhiloDatabase(db);
+    migrateOpenBotDatabase(db);
     expect(threads(db)).toEqual(THREADS);
     expectHealthy(db);
   });
@@ -229,10 +244,10 @@ describe("agent thread migration", () => {
     seedThreads(db);
     seedTasks(db);
     const before = contents(db);
-    db.exec("INSERT INTO schema_migrations VALUES(51,'now')");
-    expect(() => migrateWhiloDatabase(db)).toThrow("newer than this application supports");
-    db.exec("DELETE FROM schema_migrations WHERE version=51; DELETE FROM schema_migrations WHERE version=20");
-    expect(() => migrateWhiloDatabase(db)).toThrow("missing version 20");
+    db.exec("INSERT INTO schema_migrations VALUES(59,'now')");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("newer than this application supports");
+    db.exec("DELETE FROM schema_migrations WHERE version=59; DELETE FROM schema_migrations WHERE version=20");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("missing version 20");
     expect(contents(db)).toEqual(before);
   });
 
@@ -240,15 +255,15 @@ describe("agent thread migration", () => {
     const db = databaseAt(46);
     seedThreads(db);
     seedTasks(db);
-    migrateWhiloDatabase(db);
+    migrateOpenBotDatabase(db);
     db.prepare(
-      "INSERT INTO projection_threads VALUES ('whilo-thread-new', 'chief', 'Chief', NULL, '2026-10-04', '2026-10-04', 9)",
+      "INSERT INTO projection_threads VALUES ('openbot-thread-new', 'chief', 'Chief', NULL, '2026-10-04', '2026-10-04', 9)",
     ).run();
-    expect(() => insertThread(db, { threadId: "whilo-thread-unknown" })).toThrow("FOREIGN KEY constraint failed");
+    expect(() => insertThread(db, { threadId: "openbot-thread-unknown" })).toThrow("FOREIGN KEY constraint failed");
     expect(() => insertThread(db, { origin: "routine" })).toThrow("CHECK constraint failed");
     expect(() => insertThread(db, { titleSource: "channel" })).toThrow("CHECK constraint failed");
     expect(() => insertThread(db, { legacyTaskId: "agent-task-open" })).toThrow("UNIQUE constraint failed");
-    expect(() => insertThread(db, { threadId: "whilo-thread-open" })).toThrow("UNIQUE constraint failed");
+    expect(() => insertThread(db, { threadId: "openbot-thread-open" })).toThrow("UNIQUE constraint failed");
     insertThread(db);
     expect(threads(db)).toHaveLength(3);
   });
@@ -257,11 +272,11 @@ describe("agent thread migration", () => {
     const db = databaseAt(46);
     seedThreads(db);
     seedTasks(db);
-    migrateWhiloDatabase(db);
-    db.exec("DELETE FROM projection_threads WHERE thread_id IN ('whilo-thread-open', 'whilo-thread-closed')");
+    migrateOpenBotDatabase(db);
+    db.exec("DELETE FROM projection_threads WHERE thread_id IN ('openbot-thread-open', 'openbot-thread-closed')");
     expect(threads(db)).toEqual([]);
     expect(db.prepare("SELECT thread_id FROM projection_threads").all()).toEqual([
-      { thread_id: "whilo-thread-chief" },
+      { thread_id: "openbot-thread-chief" },
     ]);
     expect(db.prepare("PRAGMA foreign_key_check").all()).toEqual([]);
   });

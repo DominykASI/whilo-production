@@ -1,7 +1,7 @@
 // The routines twin of `memories-port.ts`: one settings panel, two owners.
 
 import type {
-  WhiloDesktopApi,
+  OpenBotDesktopApi,
   RoutineFields,
   RoutineLimitPolicy,
   RoutineMissedPolicy,
@@ -9,9 +9,10 @@ import type {
   RoutineResultDelivery,
   RoutineResultDestination,
   RoutineRunFields,
+  RoutineRunPlace,
   RoutineSchedule,
-} from "@whilo/contracts/ipc";
-import type { EventRoutine, EventRoutineOwner, EventRoutineTriggerInput } from "@whilo/contracts/ipc-events";
+} from "@openbot/contracts/ipc";
+import type { EventRoutine, EventRoutineOwner, EventRoutineTriggerInput } from "@openbot/contracts/ipc-events";
 import type { EventRoutinesApi, RoutineWebhooksApi } from "./routine-webhooks-api";
 
 interface RoutineSaveInput {
@@ -25,6 +26,8 @@ interface RoutineSaveInput {
   limitPolicy?: RoutineLimitPolicy;
   /** Left out, an update keeps the saved policy. */
   missedPolicy?: RoutineMissedPolicy;
+  /** Left out, an update keeps the saved place. */
+  runIn?: RoutineRunPlace;
   /** Only the event API reads it. Schedule-only adapters save `schedule`. */
   trigger?: EventRoutineTriggerInput;
 }
@@ -59,7 +62,7 @@ export interface RoutinesPort {
    */
   limitPolicy: boolean;
   /**
-   * Whether the host keeps what a routine does with a run that came due while Whilo was closed:
+   * Whether the host keeps what a routine does with a run that came due while OpenBot was closed:
    * this computer's host, and a remote host with `routine-recovery-v1`. `events-v1` drops the field.
    */
   missedPolicy: boolean;
@@ -68,6 +71,12 @@ export interface RoutinesPort {
    * API cannot carry the `once` kind, so a remote host hides such routines.
    */
   onceSchedule: boolean;
+  /**
+   * Whether the host keeps where an agent routine runs: the agent's chat or the routine's own thread.
+   * This computer's host does, and a remote host with `routine-run-place-v1`. The released routine
+   * routes drop the field, so the remote adapters send it on that capability's routes.
+   */
+  runIn: boolean;
   list: () => Promise<RoutineEditorRecord[]>;
   listRuns: (routineId: string, limit: number) => Promise<RoutineRunFields[]>;
   save: (input: RoutineSaveInput) => Promise<RoutineSaveResult>;
@@ -83,7 +92,7 @@ export interface RoutinesPort {
 }
 
 function agentRoutineResults(agentId: string): RoutineResultsPort {
-  const api = window.whilo.routineResults;
+  const api = window.openbot.routineResults;
   return {
     options: () => api.options(),
     destination: (routineId) => api.destination({ agentId, routineId }),
@@ -95,7 +104,7 @@ function agentRoutineResults(agentId: string): RoutineResultsPort {
 
 /** The host calls an agent's routines make. The desktop sends them through preload. */
 export type AgentRoutinesApi = Pick<
-  WhiloDesktopApi["agent"],
+  OpenBotDesktopApi["agent"],
   "listRoutines" | "listRoutineRuns" | "createRoutine" | "updateRoutine" | "deleteRoutine" | "testRoutine" | "onEvent"
 >;
 
@@ -103,7 +112,8 @@ export function agentRoutinesPort(
   agentId: string,
   automation = false,
   localHost = false,
-  api: AgentRoutinesApi = window.whilo.agent,
+  api: AgentRoutinesApi = window.openbot.agent,
+  runPlace = localHost,
 ): RoutinesPort {
   return {
     ownerId: agentId,
@@ -111,12 +121,15 @@ export function agentRoutinesPort(
     limitPolicy: localHost,
     missedPolicy: localHost,
     onceSchedule: localHost,
+    runIn: runPlace,
     list: () => api.listRoutines(agentId),
     listRuns: (routineId, limit) => api.listRoutineRuns({ agentId, routineId, limit }),
-    save: ({ routineId, name, instruction, active, timezone, schedule, limitPolicy, missedPolicy }) => {
-      const policy = localHost
-        ? { ...(limitPolicy ? { limitPolicy } : {}), ...(missedPolicy ? { missedPolicy } : {}) }
-        : {};
+    save: ({ routineId, name, instruction, active, timezone, schedule, limitPolicy, missedPolicy, runIn }) => {
+      const policy = {
+        ...(localHost && limitPolicy ? { limitPolicy } : {}),
+        ...(localHost && missedPolicy ? { missedPolicy } : {}),
+        ...(runPlace && runIn ? { runIn } : {}),
+      };
       return (
         routineId
           ? api.updateRoutine({ agentId, routineId, name, instruction, active, schedule, ...policy })
@@ -128,7 +141,7 @@ export function agentRoutinesPort(
       await api.testRoutine({ agentId, routineId });
     },
     ...(automation
-      ? { runCommand: (routineId: string) => window.whilo.agent.automationRunCommand({ agentId, routineId }) }
+      ? { runCommand: (routineId: string) => window.openbot.agent.automationRunCommand({ agentId, routineId }) }
       : {}),
     ...(localHost ? { results: agentRoutineResults(agentId) } : {}),
     subscribe: (reload) =>
@@ -140,7 +153,7 @@ export function agentRoutinesPort(
 
 /** The host calls a channel's routines make. The desktop sends them through preload. */
 export type ChannelRoutinesApi = Pick<
-  WhiloDesktopApi["agent"],
+  OpenBotDesktopApi["agent"],
   | "listChannelRoutines"
   | "listChannelRoutineRuns"
   | "createChannelRoutine"
@@ -152,7 +165,7 @@ export type ChannelRoutinesApi = Pick<
 
 export function channelRoutinesPort(
   channelId: string,
-  api: ChannelRoutinesApi = window.whilo.agent,
+  api: ChannelRoutinesApi = window.openbot.agent,
   localHost = false,
 ): RoutinesPort {
   return {
@@ -161,6 +174,7 @@ export function channelRoutinesPort(
     limitPolicy: localHost,
     missedPolicy: localHost,
     onceSchedule: localHost,
+    runIn: false,
     list: () => api.listChannelRoutines(channelId),
     listRuns: (routineId, limit) => api.listChannelRoutineRuns({ channelId, routineId, limit }),
     save: ({ routineId, name, instruction, active, timezone, schedule, limitPolicy, missedPolicy }) => {
@@ -194,7 +208,10 @@ export function channelRoutinesPort(
 export function eventRoutinesPort(
   owner: EventRoutineOwner,
   api: EventRoutinesApi,
-  legacy: Pick<RoutinesPort, "listRuns" | "subscribe" | "runCommand" | "missedPolicy" | "onceSchedule" | "results">,
+  legacy: Pick<
+    RoutinesPort,
+    "listRuns" | "subscribe" | "runCommand" | "missedPolicy" | "onceSchedule" | "runIn" | "results"
+  >,
 ): RoutinesPort {
   const { runCommand, results } = legacy;
   const recoveryRuns = api.listRuns;
@@ -205,6 +222,7 @@ export function eventRoutinesPort(
     limitPolicy: true,
     missedPolicy: missedPolicyKept,
     onceSchedule: legacy.onceSchedule,
+    runIn: legacy.runIn,
     list: () => api.listRoutines({ owner }),
     // The released run routes leave out the records of missed occurrences.
     // An agent run names its agent so that the history opens the message the run posted.
@@ -217,7 +235,7 @@ export function eventRoutinesPort(
         }
       : legacy.listRuns,
     events: { owner, api },
-    save: ({ routineId, name, instruction, active, timezone, schedule, trigger, limitPolicy, missedPolicy }) =>
+    save: ({ routineId, name, instruction, active, timezone, schedule, trigger, limitPolicy, missedPolicy, runIn }) =>
       api.saveRoutine({
         ...(routineId ? { id: routineId } : {}),
         owner,
@@ -228,6 +246,7 @@ export function eventRoutinesPort(
         trigger: trigger ?? { kind: "schedule", schedule },
         ...(limitPolicy ? { limitPolicy } : {}),
         ...(missedPolicyKept && missedPolicy ? { missedPolicy } : {}),
+        ...(legacy.runIn && runIn ? { runIn } : {}),
       }),
     remove: (routineId) => api.deleteRoutine({ id: routineId, owner }),
     test: (routineId) => api.testRoutine({ id: routineId, owner }),

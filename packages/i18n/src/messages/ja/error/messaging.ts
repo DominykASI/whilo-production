@@ -5,19 +5,24 @@ export const messages = {
   "error.messaging.notConnected": "この Slack ワークスペースは接続されていません。",
   "error.messaging.unsupported": "このコンピューターは Slack に接続できません。",
   "error.messaging.relayUnavailable":
-    "Whilo はこのコンピューターで Slack のイベントを受信できません。サインインし、このコンピューターに名前を付けてから、もう一度お試しください。",
+    "OpenBot はこのコンピューターで Slack のイベントを受信できません。サインインし、このコンピューターに名前を付けてから、もう一度お試しください。",
   "error.messaging.discordNotConnected": "この Discord サーバーは接続されていません。",
   "error.messaging.discordUnsupported": "このコンピューターは Discord に接続できません。",
   "error.messaging.discordRelayUnavailable":
-    "Whilo はこのコンピューターで Discord のイベントを受信できません。サインインし、このコンピューターに名前を付けてから、もう一度お試しください。",
+    "OpenBot はこのコンピューターで Discord のイベントを受信できません。サインインし、このコンピューターに名前を付けてから、もう一度お試しください。",
   "error.messaging.discordRolesUnsupported":
-    "Whilo はまだ Discord のロールを一覧にできません。後でもう一度お試しください。",
+    "OpenBot はまだ Discord のロールを一覧にできません。後でもう一度お試しください。",
   "error.messaging.telegramNotConnected": "この Telegram チャットは接続されていません。",
   "error.messaging.telegramUnsupported": "このコンピューターは Telegram に接続できません。",
   "error.messaging.telegramRelayUnavailable":
-    "Whilo はこのコンピューターから Telegram に接続できません。サインインし、このコンピューターに名前を付けてから、もう一度お試しください。",
+    "OpenBot はこのコンピューターから Telegram に接続できません。サインインし、このコンピューターに名前を付けてから、もう一度お試しください。",
   "error.messaging.telegramServiceUnavailable":
-    "Whilo は現在 Telegram に接続できません。しばらくしてからもう一度お試しください。",
+    "OpenBot は現在 Telegram に接続できません。しばらくしてからもう一度お試しください。",
+  "error.messaging.whatsappNotConnected": "この WhatsApp 番号は接続されていません。",
+  "error.messaging.whatsappUnsupported": "このコンピューターは WhatsApp に接続できません。",
+  "error.messaging.whatsappTooManySenders": "1 つの WhatsApp 番号で許可できる連絡先とグループは最大 200 件です。",
+  "error.messaging.whatsappRequestEnded":
+    "このリクエストは終了しました。新しいコードを受け取るには、相手にもう一度書き込むよう依頼してください。",
   "error.messaging.memoryLimit":
     "接続したワークスペースに置けるメモリーは {limit} 個までです。先に 1 つ削除してください。",
 } as const satisfies PartialTranslation<typeof source>;

@@ -11,7 +11,7 @@ export interface AuthRetentionResult {
   remoteInvites: number;
   mobileConnectLinks: number;
   serverClaims: number;
-  oauthFlows: number;
+  companySignIn: number;
 }
 
 interface AuthRetentionOperation {
@@ -78,10 +78,14 @@ function authRetentionOperations(now: number): AuthRetentionOperation[] {
       sql: "DELETE FROM server_claims WHERE expires_at <= ? OR redeemed_at IS NOT NULL",
       cutoff: now,
     },
-    // A Google or GitHub sign-in that nobody finished. The callback deletes the row it spends.
     {
-      name: "oauthFlows",
-      sql: "DELETE FROM oauth_flows WHERE expires_at <= ?",
+      name: "companySignIn",
+      sql: "DELETE FROM company_sign_in_flows WHERE expires_at <= ?",
+      cutoff: now,
+    },
+    {
+      name: "companySignIn",
+      sql: "DELETE FROM company_sign_in_codes WHERE expires_at <= ? OR redeemed_at IS NOT NULL",
       cutoff: now,
     },
   ];
@@ -111,7 +115,7 @@ const prune = Effect.fn("AuthRetention.prune")(function* (now: number) {
     remoteInvites: 0,
     mobileConnectLinks: 0,
     serverClaims: 0,
-    oauthFlows: 0,
+    companySignIn: 0,
   };
   for (const [index, operation] of operations.entries()) {
     deleted[operation.name] += results[index]?.meta.changes ?? 0;

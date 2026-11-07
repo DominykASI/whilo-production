@@ -1,20 +1,23 @@
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
+import { access } from "node:fs/promises";
 import { homedir } from "node:os";
 import { delimiter, isAbsolute, join } from "node:path";
 import { promisify } from "node:util";
 import {
   type AgentProviderId,
   COMPUTER_USE_MCP_SERVER_ID,
+  COMPUTER_USE_MCP_SERVER_NAME,
   isReservedMcpServerName,
   type McpServerConfig,
   type McpTransport,
-} from "@whilo/contracts/ipc";
-import { type DynamicRecord, isDynamicRecord } from "@whilo/contracts/runtime-values";
-import { sourceText } from "@whilo/i18n/source";
+} from "@openbot/contracts/ipc";
+import { type DynamicRecord, isDynamicRecord } from "@openbot/contracts/runtime-values";
+import { sourceText } from "@openbot/i18n/source";
 import { Deferred, Effect, Schema } from "effect";
-import { isWindowsRunnable, runInLoginShell } from "./cli";
+import { agentLaunchPath, isExecutable, isWindowsRunnable } from "./cli";
 import { causeHelpers } from "./effect-boundary";
+import { isMissingFileError } from "./file-errors";
 import type { McpOperationError } from "./mcp-effects";
 import { getRecord } from "./protocol";
 
@@ -24,7 +27,7 @@ const execFileAsync = promisify(execFile);
 export type McpServerSource = () => readonly McpServerConfig[];
 
 /**
- * What Whilo can lend a machine that does not have it: the `bin` directories of the tool runtimes
+ * What OpenBot can lend a machine that does not have it: the `bin` directories of the tool runtimes
  * it downloaded, and the command words it can answer itself.
  *
  * Both are a floor, never a choice. The directories are appended *after* the user's own `PATH`, so
@@ -48,10 +51,10 @@ export const NO_MCP_TOOL_RUNTIMES: McpToolRuntimes = { binDirectories: [], comma
 export type McpToolRuntimeSource = () => McpToolRuntimes;
 
 /**
- * Where one http server is reached, and the bearer Whilo adds, asked at each spawn.
+ * Where one http server is reached, and the bearer OpenBot adds, asked at each spawn.
  *
  * The bearer is never stored on the row: a value in the configuration would be a credential the
- * panel shows, the Team API carries and a user edits. A server Whilo signed in to is reached
+ * panel shows, the Team API carries and a user edits. A server OpenBot signed in to is reached
  * through the loopback OAuth proxy (`McpOAuthProxy`): `url` is then the proxy route, `authorization`
  * is that route's own bearer, and the OAuth token never leaves this process. Asked per
  * configuration rather than per URL, because two rows on one URL are two routes.
@@ -134,7 +137,7 @@ export type UsableMcpServer =
       path: string | null;
       /** Where an http server is reached: its own URL, or a route of the OAuth proxy. `""` for stdio. */
       url: string;
-      /** The bearer Whilo adds at hand-off. `null` for all others. */
+      /** The bearer OpenBot adds at hand-off. `null` for all others. */
       authorization: string | null;
       /** See `McpEndpoint.proxied`. */
       proxied: boolean;
@@ -183,12 +186,12 @@ export function computerUseParam(params: unknown): boolean {
 }
 
 /**
- * The agent of a `thread/start` or `thread/resume`. `ThreadLifecycle` sends `whiloAgentId` to
+ * The agent of a `thread/start` or `thread/resume`. `ThreadLifecycle` sends `openbotAgentId` to
  * Claude and the ACP clients, which read the MCP servers themselves, so that the proxy can name the
  * agent to a server it signed in to.
  */
 export function mcpAgentParam(params: unknown): string | null {
-  return isDynamicRecord(params) && typeof params.whiloAgentId === "string" ? params.whiloAgentId : null;
+  return isDynamicRecord(params) && typeof params.openbotAgentId === "string" ? params.openbotAgentId : null;
 }
 
 export const usableMcpServers = Effect.fnUntraced(function* (
@@ -223,7 +226,7 @@ export const usableMcpServer = Effect.fnUntraced(function* (
   // is looked up in: `python` with a virtual environment's `PATH` names that interpreter, and the
   // absolute path a login shell answered with would silently be a different one.
   const configured = mcpEnvironment(config).PATH;
-  const path = appendToolRuntimes(configured ?? (yield* loginShellPath()), tools.binDirectories);
+  const path = appendToolRuntimes(configured ?? (yield* agentLaunchPath()), tools.binDirectories);
   const command = (yield* resolveMcpCommand(config.command, path)) ?? tools.commandAliases[config.command.trim()];
   if (!command)
     return {
@@ -285,24 +288,14 @@ function expandHomePath(value: string): string {
 }
 
 /**
- * One word for a POSIX shell, whatever it holds.
- *
- * The lookup below needs a shell, and the word it looks up is written by the user - and by a remote
- * administrator of this machine's host. Quoted, a name such as `node$(...)` is a name the machine
- * does not have; unquoted, the shell would run what is inside it while answering the question.
- */
-function shellWord(value: string): string {
-  return `'${value.replaceAll("'", "'\\''")}'`;
-}
-
-/**
  * An absolute path for a command name, or `null` when the given `PATH` holds none. A command the
  * user already wrote as a path is taken as written, after `~` is expanded: it is their statement of
- * which build to run.
+ * which build to run. An absolute path that names no file is `null` too: the provider would fail to
+ * start it and say so only in its own log (#4845).
  *
- * `path` is the list to search, which is the list the server will be launched with. Without one the
- * login shell's own is used, because a packaged app starts with a restricted `PATH` - the same
- * reason `collectCandidates` in `cli.ts` uses a login shell.
+ * `path` is the list to search, which is the list the server will be launched with. It is
+ * `agentLaunchPath` unless the configuration sets its own: the login shell's `PATH` and then this
+ * process's, because a packaged app starts with a restricted `PATH`.
  */
 /** Share one lookup per command and PATH. A miss is removed so new installs can be found. */
 const resolvedCommands = new Map<string, Deferred.Deferred<string | null, McpShapeFailed>>();
@@ -310,7 +303,8 @@ const resolvedCommands = new Map<string, Deferred.Deferred<string | null, McpSha
 const resolveMcpCommand = Effect.fn("McpShape.resolveCommand")(function* (command: string, path: string | null = null) {
   const trimmed = expandHomePath(command);
   if (!trimmed) return null;
-  if (isAbsolute(trimmed) || trimmed.startsWith(".")) return trimmed;
+  if (isAbsolute(trimmed)) return (yield* isMissingCommandFile(trimmed)) ? null : trimmed;
+  if (trimmed.startsWith(".")) return trimmed;
   const key = `${path ?? ""}\u0000${trimmed}`;
   const cached = resolvedCommands.get(key);
   if (cached) return yield* Deferred.await(cached);
@@ -324,6 +318,31 @@ const resolveMcpCommand = Effect.fn("McpShape.resolveCommand")(function* (comman
     ),
     Effect.onExit((exit) => Deferred.done(pending, exit)),
     Effect.uninterruptible,
+  );
+});
+
+/** How long a hand-off waits for the file check. A slow answer keeps the path as written. */
+const COMMAND_FILE_CHECK_MS = 2_000;
+
+/**
+ * Whether an absolute command path names no file.
+ *
+ * Only a missing file counts. Any other answer, such as a folder this process cannot read, keeps the
+ * path as written, so the provider reports what it can actually start. The check has a deadline,
+ * because a privacy prompt for a protected folder or a dead network volume can hold the call, and the
+ * hand-off must not wait for it. On Windows, process creation adds an extension to a path without
+ * one, so only a path that has a `PATHEXT` extension is checked.
+ */
+const isMissingCommandFile = Effect.fn("McpShape.isMissingCommandFile")(function* (command: string) {
+  if (process.platform === "win32" && !isWindowsRunnable(command, process.env.PATHEXT)) return false;
+  return yield* mcpShapeIo(() => access(command)).pipe(
+    Effect.as(false),
+    Effect.catch(({ cause }) =>
+      Effect.succeed(
+        isMissingFileError(cause) || (cause instanceof Error && "code" in cause && cause.code === "ENOTDIR"),
+      ),
+    ),
+    Effect.timeoutOrElse({ duration: COMMAND_FILE_CHECK_MS, orElse: () => Effect.succeed(false) }),
   );
 });
 
@@ -370,45 +389,21 @@ const lookUpMcpCommand = Effect.fn("McpShape.lookUpCommand")(
       );
       return pickWindowsExecutable(stdout, process.env.PATHEXT);
     }
-    // The assignment goes inside the command, not into the shell's environment: a login shell reads
-    // the user's profile first, and a profile that appends to `PATH` would undo an inherited one.
-    const search = path === null ? "" : `PATH=${shellWord(path)} `;
-    const stdout = yield* runInLoginShell(`${search}command -v -- ${shellWord(trimmed)}`).pipe(
-      Effect.mapError(({ cause }) => new McpShapeFailed({ cause })),
-    );
-    // Only the last line: an interactive profile can print a greeting before the command runs. The
-    // line is kept as `command -v` gave it - a relative `PATH` entry gives a relative path, and a
-    // shell function, such as the `npx` of a lazy-loaded nvm, gives its bare name for spawn to find.
-    return stdout.trim().split(/\r?\n/u).at(-1)?.trim() || null;
-  },
-  Effect.catch(() => Effect.succeed(null)),
-);
-
-/**
- * This user's own `PATH`, as their login shell builds it, or `null` when it cannot be read.
- *
- * Read once per run and reused, because every hand-off and every test would otherwise start a login
- * shell of its own. Windows has no equivalent: `where.exe` runs against the process `PATH` already.
- */
-let loginShellPathOnce: Deferred.Deferred<string | null> | null = null;
-
-const loginShellPath = Effect.fn("McpShape.loginShellPath")(function* () {
-  if (loginShellPathOnce) return yield* Deferred.await(loginShellPathOnce);
-  const pending = Deferred.makeUnsafe<string | null>();
-  loginShellPathOnce = pending;
-  return yield* readLoginShellPath().pipe(
-    Effect.onExit((exit) => Deferred.done(pending, exit)),
-    Effect.uninterruptible,
-  );
-});
-
-const readLoginShellPath = Effect.fn("McpShape.readLoginShellPath")(
-  function* () {
-    if (process.platform === "win32") return null;
-    const stdout = yield* runInLoginShell('printf %s "$PATH"').pipe(
-      Effect.mapError(({ cause }) => new McpShapeFailed({ cause })),
-    );
-    return stdout.split(/\r?\n/u).pop()?.trim() || null;
+    // Searched here, in Node, as `resolveAgentCommand` does for a custom agent: no shell runs, so a
+    // slow or failing profile, or an alias of the same name, cannot turn a command on the `PATH` into
+    // "not found". A name with a separator is not a name to search for, and a relative folder would
+    // be read in this process's directory.
+    if (trimmed.includes("/")) return null;
+    for (const folder of (path ?? process.env.PATH ?? "").split(delimiter)) {
+      if (!isAbsolute(folder)) continue;
+      const candidate = join(folder, trimmed);
+      // The deadline of `isMissingCommandFile`: a dead network volume or a privacy prompt can hold it.
+      const found = yield* isExecutable(candidate).pipe(
+        Effect.timeoutOrElse({ duration: COMMAND_FILE_CHECK_MS, orElse: () => Effect.succeed(false) }),
+      );
+      if (found) return candidate;
+    }
+    return null;
   },
   Effect.catch(() => Effect.succeed(null)),
 );
@@ -424,7 +419,7 @@ export const needsManagedRuntime = Effect.fn("McpShape.needsManagedRuntime")(fun
   config: McpServerConfig,
   tools: McpToolRuntimes,
 ) {
-  if (config.transport !== "stdio") return false;
+  if (config.transport !== "stdio" || isAbsolute(expandHomePath(config.command))) return false;
   const resolved = yield* usableMcpServer(config, tools);
   return resolved.error !== undefined && resolved.reason === "command_not_found";
 });
@@ -432,9 +427,9 @@ export const needsManagedRuntime = Effect.fn("McpShape.needsManagedRuntime")(fun
 /**
  * The environment a stdio MCP server is launched with, `PATH` included.
  *
- * The login shell that found the command holds the `PATH` that makes it run: an `npx` or `uvx`
- * installed by nvm, Homebrew or mise starts with `#!/usr/bin/env node`, so it needs that same `PATH`
- * to find its own runtime. An app the user started from Finder or a launcher inherits none of it,
+ * The `PATH` the command was looked up in is the one that makes it run: an `npx` or `uvx` installed
+ * by nvm, Homebrew or mise starts with `#!/usr/bin/env node`, so it needs that same `PATH` to find
+ * its own runtime. An app the user started from Finder or a launcher inherits none of it,
  * which is a server that tests green from a terminal and fails everywhere else.
  *
  * The resolved `server.path` wins over the configured pairs: it is what the command was looked up
@@ -506,7 +501,7 @@ export function claudeMcpServers(servers: readonly UsableMcpServer[]): McpHandof
  * **Names travel as `providerMcpServerName`.** Antigravity refuses `session/new` with `invalid
  * params` when one name has a space, so a server the user named "My Server" failed every Gemini
  * task (#2801). A changed name that another server already has, such as "computer use", or that is
- * one of Whilo's own, is reported as a drop. So is the second of two names that become the same.
+ * one of OpenBot's own, is reported as a drop. So is the second of two names that become the same.
  */
 export type AcpMcpServer =
   | { name: string; command: string; args: string[]; env: Array<{ name: string; value: string }> }
@@ -563,7 +558,7 @@ export function acpMcpServers(servers: readonly UsableMcpServer[]): McpHandoff<A
  *
  * **stdio takes its working directory as `cwd`.** Codex starts the server there; without it, Codex
  * starts it in its own directory. A server whose start script names a local `.venv` was left out
- * when Whilo did not send the key, so a Codex agent had no tools from it (#3869).
+ * when OpenBot did not send the key, so a Codex agent had no tools from it (#3869).
  *
  * **http travels as `url` with `http_headers`.** Both were confirmed against the pinned Codex
  * app-server: an entry with an invalid credential is listed as failed with the server's own 401,
@@ -574,7 +569,7 @@ export function acpMcpServers(servers: readonly UsableMcpServer[]): McpHandoff<A
  * and gave a Codex agent no tools. Two names that become the same key keep the first; the second is
  * reported as a drop.
  *
- * **A key Codex's own files use with the other transport travels as `whilo_<key>`.** See
+ * **A key Codex's own files use with the other transport travels as `openbot_<key>`.** See
  * `codexMcpServerKey`.
  */
 export type CodexMcpServer =
@@ -589,13 +584,13 @@ export type CodexMcpServer =
   | { url: string; http_headers: Record<string, string> };
 
 /**
- * The disabled placeholders Whilo saves in the Codex user file for its own servers, so Codex can
+ * The disabled placeholders OpenBot saves in the Codex user file for its own servers, so Codex can
  * keep their tool approvals. They are not the user's entries.
  */
-export const CODEX_PLACEHOLDER_COMMAND = "whilo-mcp";
+export const CODEX_PLACEHOLDER_COMMAND = "openbot-mcp";
 export const CODEX_PLACEHOLDER_URL = "http://127.0.0.1:1";
 
-/** The transport of each server that Codex's own files declare, without Whilo's placeholders. */
+/** The transport of each server that Codex's own files declare, without OpenBot's placeholders. */
 export type CodexOwnTransports = Readonly<Record<string, McpTransport>>;
 
 /** What Codex declares in its own files: each name turned off, and the transport each one uses. */
@@ -645,7 +640,7 @@ export function providerMcpServerName(name: string): string {
 /**
  * The key one server travels under to Codex. Codex merges a thread entry with the entry of the same
  * key in its own files. A stdio `command` and an http `url` under one key stop Codex from loading
- * its configuration at all, and the chat cannot start. The server then travels as `whilo_<key>`,
+ * its configuration at all, and the chat cannot start. The server then travels as `openbot_<key>`,
  * and the user's own entry stays as written, turned off. A clash with the same transport keeps the
  * key.
  *
@@ -654,11 +649,11 @@ export function providerMcpServerName(name: string): string {
 export function codexMcpServerKey(config: McpServerConfig, own: CodexOwnTransports = {}): string {
   const name = providerMcpServerName(config.name);
   return config.id !== COMPUTER_USE_MCP_SERVER_ID && Object.hasOwn(own, name) && own[name] !== config.transport
-    ? `whilo_${name}`
+    ? `openbot_${name}`
     : name;
 }
 
-/** Whether a key from `codexMcpServerKey` is taken by another server, or a renamed key by Whilo's own tools. */
+/** Whether a key from `codexMcpServerKey` is taken by another server, or a renamed key by OpenBot's own tools. */
 function codexMcpServerKeyTaken(
   key: string,
   config: McpServerConfig,
@@ -671,7 +666,7 @@ function codexMcpServerKeyTaken(
 }
 
 /**
- * The thread's `mcp_servers`: every name from Codex's own files turned off, then Whilo's servers
+ * The thread's `mcp_servers`: every name from Codex's own files turned off, then OpenBot's servers
  * turned on. A name in both resolves to the one the panel shows, with the approvals Codex saved.
  */
 export function codexThreadMcpServers(
@@ -686,18 +681,20 @@ export function codexThreadMcpServers(
 }
 
 /**
- * The namespace Codex gives the tools of each server Whilo turns on. For a code-mode-only model,
- * such as GPT-6, Codex otherwise defers MCP tools into `exec` without naming them, and the model
- * does not find them. These join the direct-only list, so the request names the tools. The keys are
- * the ones `codexMcpServers` chose, renamed keys included; a name Codex's own files declare is turned
- * off and has no tools. Codex changes each character other than a letter, a digit or `_` to `_`, then
- * adds `mcp__` unless the name starts with it.
+ * The MCP namespaces that Codex declares in each request, beside OpenBot's own. Codex defers the
+ * tools of every other server: behind its `tool_search`, or, for a code-mode-only model such as GPT-6,
+ * into `exec`, where the developer instructions name the servers. A direct namespace sends the schema
+ * of each of its tools in each request (#4468). Computer Use stays direct: its results are
+ * screenshots, and from `exec` a model must forward each image with `image()`. Its key is never
+ * renamed, see `codexMcpServerKey`.
  */
-export function codexMcpNamespaces(servers: Readonly<Record<string, CodexMcpServer>>): string[] {
-  return Object.keys(servers).map((key) => {
-    const name = key.replace(/[^A-Za-z0-9_]/gu, "_");
-    return name.startsWith("mcp__") ? name : `mcp__${name}`;
-  });
+export function codexDirectMcpNamespaces(servers: Readonly<Record<string, CodexMcpServer>>): string[] {
+  return Object.hasOwn(servers, COMPUTER_USE_MCP_SERVER_NAME) ? [`mcp__${COMPUTER_USE_MCP_SERVER_NAME}`] : [];
+}
+
+/** The servers that are on and whose tools Codex defers: all except Computer Use, see `codexDirectMcpNamespaces`. */
+export function codexDeferredMcpServers(configs: readonly McpServerConfig[]): McpServerConfig[] {
+  return configs.filter((config) => config.enabled && config.id !== COMPUTER_USE_MCP_SERVER_ID);
 }
 
 export function codexMcpServers(
@@ -768,18 +765,18 @@ function secretDigest(config: McpServerConfig): string {
 }
 
 /**
- * The headers one http server is handed, with Whilo's bearer added here and only here.
+ * The headers one http server is handed, with OpenBot's bearer added here and only here.
  *
  * The bearer is never written to the row: a credential written into `McpServerConfig.headers`
  * would be one the panel shows, the Team API carries to a remote administrator, and a user can edit
- * into something Whilo then refreshes over. Added at the hand-off, it is a value `McpHandoffLog`
+ * into something OpenBot then refreshes over. Added at the hand-off, it is a value `McpHandoffLog`
  * has already seen, so every log, export and send path removes it.
  *
  * A proxied server is handed the proxy bearer alone. The proxy adds the row's own headers upstream,
  * so a key the user typed beside a sign-in stays in this process too.
  *
  * A header the user typed wins otherwise. Someone who pasted their own `Authorization` has said
- * which credential this server takes, and silently replacing it would be Whilo overruling them
+ * which credential this server takes, and silently replacing it would be OpenBot overruling them
  * with an account they did not choose. Such a row is never proxied: see `McpGateway.endpoint`.
  */
 export function mcpHandoffHeaders(server: ResolvedMcpServer): Record<string, string> {

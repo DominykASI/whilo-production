@@ -4,16 +4,16 @@
 
 .billing-lifecycle-card {
   overflow: hidden;
-  border-radius: var(--whilo-radius-lg);
-  background: var(--whilo-bg-surface);
-  box-shadow: 0 0 0 1px var(--whilo-border);
+  border-radius: var(--openbot-radius-lg);
+  background: var(--openbot-bg-surface);
+  box-shadow: 0 0 0 1px var(--openbot-border);
 }
 
 .billing-lifecycle-identity {
   display: flex;
   align-items: center;
-  gap: var(--whilo-space-3);
-  padding: var(--whilo-space-4);
+  gap: var(--openbot-space-3);
+  padding: var(--openbot-space-4);
 }
 
 .billing-lifecycle-server-icon,
@@ -21,70 +21,72 @@
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  width: var(--whilo-control-xl);
-  height: var(--whilo-control-xl);
-  border-radius: var(--whilo-radius-md);
-  color: var(--whilo-text-secondary);
-  background: var(--whilo-bg-control-hover);
+  width: var(--openbot-control-xl);
+  height: var(--openbot-control-xl);
+  border-radius: var(--openbot-radius-md);
+  color: var(--openbot-text-secondary);
+  background: var(--openbot-bg-control-hover);
 }
 
 .billing-lifecycle-server-icon svg,
 .billing-lifecycle-dialog-icon svg {
-  width: var(--whilo-icon-lg);
-  height: var(--whilo-icon-lg);
+  width: var(--openbot-icon-lg);
+  height: var(--openbot-icon-lg);
+  stroke-width: var(--openbot-icon-stroke-lg);
 }
 
 .billing-lifecycle-server-copy {
   display: grid;
   flex: 1;
   min-width: 0;
-  gap: var(--whilo-space-1);
+  gap: var(--openbot-space-1);
 }
 
 .billing-lifecycle-billing {
   display: flex;
   align-items: center;
-  gap: var(--whilo-space-3);
-  padding: var(--whilo-space-4);
-  border-top: 1px solid var(--whilo-border);
+  gap: var(--openbot-space-3);
+  padding: var(--openbot-space-4);
+  border-top: 1px solid var(--openbot-border);
 }
 
 .billing-lifecycle-billing[data-scheduled] {
-  background: color-mix(in srgb, var(--whilo-warning-soft) 35%, transparent);
+  background: color-mix(in srgb, var(--openbot-warning-soft) 35%, transparent);
 }
 
 .billing-lifecycle-billing-copy {
   display: grid;
   flex: 1;
   min-width: 0;
-  gap: var(--whilo-space-1);
+  gap: var(--openbot-space-1);
 }
 
 .billing-lifecycle-calendar {
   flex-shrink: 0;
-  width: var(--whilo-icon-lg);
-  height: var(--whilo-icon-lg);
-  color: var(--whilo-warning-text);
+  width: var(--openbot-icon-lg);
+  height: var(--openbot-icon-lg);
+  color: var(--openbot-warning-text);
+  stroke-width: var(--openbot-icon-stroke-lg);
 }
 
 .billing-lifecycle-receipt {
   display: grid;
-  gap: var(--whilo-space-3);
-  padding: var(--whilo-space-4);
-  margin-bottom: var(--whilo-space-4);
-  border-radius: var(--whilo-radius-md);
-  background: var(--whilo-bg-surface);
+  gap: var(--openbot-space-3);
+  padding: var(--openbot-space-4);
+  margin-bottom: var(--openbot-space-4);
+  border-radius: var(--openbot-radius-md);
+  background: var(--openbot-bg-surface);
 }
 
 .billing-lifecycle-receipt > div {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: var(--whilo-space-4);
+  gap: var(--openbot-space-4);
 }
 
 .billing-lifecycle-receipt > div > :last-child {
-  text-align: right;
+  text-align: end;
   text-wrap: pretty;
 }
 
@@ -95,7 +97,7 @@
 @container (max-width: 450px) {
   .billing-lifecycle-identity {
     flex-wrap: wrap;
-    gap: var(--whilo-space-2);
+    gap: var(--openbot-space-2);
   }
 
   .billing-lifecycle-server-icon {
@@ -119,54 +121,54 @@
   .billing-lifecycle-receipt > div {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--whilo-space-1);
+    gap: var(--openbot-space-1);
   }
 
   .billing-lifecycle-receipt > div > :last-child {
-    text-align: left;
+    text-align: start;
   }
 }
 
 .billing-lifecycle-menu.ui-action-menu {
-  z-index: var(--whilo-layer-dialog-host);
+  z-index: var(--openbot-layer-dialog-host);
 }
 
 .billing-lifecycle-list {
   display: grid;
-  gap: var(--whilo-space-3);
+  gap: var(--openbot-space-3);
 }
 
 .billing-lifecycle-price {
   display: grid;
   justify-items: end;
-  gap: var(--whilo-space-1);
+  gap: var(--openbot-space-1);
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 
 .billing-lifecycle-timing {
   display: grid;
-  gap: var(--whilo-space-2);
-  margin-bottom: var(--whilo-space-4);
-  font-size: var(--whilo-text-sm);
+  gap: var(--openbot-space-2);
+  margin-bottom: var(--openbot-space-4);
+  font-size: var(--openbot-text-sm);
 }
 
 .billing-lifecycle-timing-option {
   display: flex;
   align-items: center;
-  gap: var(--whilo-space-2);
-  padding: var(--whilo-space-3);
-  border: 1px solid var(--whilo-border);
-  border-radius: var(--whilo-radius-md);
+  gap: var(--openbot-space-2);
+  padding: var(--openbot-space-3);
+  border: 1px solid var(--openbot-border);
+  border-radius: var(--openbot-radius-md);
 }
 
 .billing-lifecycle-timing-option[data-checked] {
-  border-color: var(--whilo-accent);
-  background: var(--whilo-bg-surface);
+  border-color: var(--openbot-accent);
+  background: var(--openbot-bg-surface);
 }
 
 .billing-lifecycle-timing-option[data-focus-visible] {
-  outline: 1px solid var(--whilo-accent);
+  outline: 1px solid var(--openbot-accent);
 }
 
 .billing-lifecycle-timing-option label {
@@ -176,16 +178,16 @@
 
 .billing-lifecycle-radio {
   flex-shrink: 0;
-  width: var(--whilo-icon-md);
-  height: var(--whilo-icon-md);
-  border: 1px solid var(--whilo-border-strong);
-  border-radius: var(--whilo-radius-pill);
+  width: var(--openbot-icon-md);
+  height: var(--openbot-icon-md);
+  border: 1px solid var(--openbot-border-strong);
+  border-radius: var(--openbot-radius-pill);
 }
 
 .billing-lifecycle-radio[data-checked] {
-  border-color: var(--whilo-accent);
-  background: var(--whilo-accent);
-  box-shadow: inset 0 0 0 var(--whilo-space-1) var(--whilo-bg-canvas);
+  border-color: var(--openbot-accent);
+  background: var(--openbot-accent);
+  box-shadow: inset 0 0 0 var(--openbot-space-1) var(--openbot-bg-canvas);
 }
 
 @container (max-width: 450px) {

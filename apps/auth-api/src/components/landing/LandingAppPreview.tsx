@@ -1,18 +1,19 @@
 import {
   LANDING_PREVIEW_READY_MESSAGE,
   LANDING_PREVIEW_START_MESSAGE,
-} from "@whilo/contracts/landing-preview-messages";
-import { prefersReducedMotion } from "@whilo/ui/utils";
+} from "@openbot/contracts/landing-preview-messages";
+import { prefersReducedMotion } from "@openbot/ui/utils";
 import { onSettled } from "solid-js";
+import { useLandingText } from "./LandingText";
 
 const LANDING_PREVIEW_URL = "/app-preview";
 const LANDING_PREVIEW_LOAD_DELAY_MS = 300;
 const LANDING_PREVIEW_REVEAL_FALLBACK_MS = 240;
 
 const LANDING_PREVIEW_MARKS = {
-  ready: "whilo:landing-preview:ready",
-  shown: "whilo:landing-preview:shown",
-  src: "whilo:landing-preview:src",
+  ready: "openbot:landing-preview:ready",
+  shown: "openbot:landing-preview:shown",
+  src: "openbot:landing-preview:src",
 } as const;
 
 function readDuration(name: string, fallback: number): number {
@@ -35,6 +36,7 @@ export interface LandingAppPreviewProps {
 }
 
 export function LandingAppPreview(props: LandingAppPreviewProps) {
+  const text = useLandingText();
   let root: HTMLElement | undefined;
   let iframe: HTMLIFrameElement | undefined;
   let placeholder: HTMLDivElement | undefined;
@@ -123,7 +125,7 @@ export function LandingAppPreview(props: LandingAppPreviewProps) {
       data-preview-state="idle"
     >
       <h2 id="app-preview-title" class="landing-visually-hidden">
-        Interactive Whilo application preview
+        {text().preview.title}
       </h2>
       <span class="landing-preview-window-controls" aria-hidden="true">
         <i />
@@ -134,14 +136,10 @@ export function LandingAppPreview(props: LandingAppPreviewProps) {
         ref={placeholder}
         class="landing-preview-placeholder t-skel-skeleton"
         role="status"
-        aria-label="Loading Whilo preview"
+        aria-label={text().preview.loading}
       />
       <div class="landing-preview-stage t-skel-content">
-        <iframe
-          ref={iframe}
-          title="Interactive Whilo application preview"
-          sandbox="allow-forms allow-same-origin allow-scripts"
-        />
+        <iframe ref={iframe} title={text().preview.title} sandbox="allow-forms allow-same-origin allow-scripts" />
       </div>
     </section>
   );

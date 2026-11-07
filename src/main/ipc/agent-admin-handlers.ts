@@ -7,13 +7,17 @@ import type { RemoteWorkflowError } from "../remote-service-effects";
 import {
   type AddedAgent,
   type AgentAdminSettings,
+  type BrowserComputerSharing,
   decodeAgentAdminSettings,
   decodeAgentBackupModelSettings,
   decodeAgentBrowserProfile,
   decodeAgentPlanCardSettings,
   decodeAgentTaskLimitSettings,
+  decodeBrowserComputerSharing,
   decodeBrowserProfileList,
   decodeBrowserProfileSummary,
+  decodeBrowserProxyList,
+  decodeBrowserProxySummary,
   decodeHostAddedAgent,
   decodeHostAgentTemplatePreview,
   decodeHostAgentTemplatePublication,
@@ -23,6 +27,9 @@ import {
   parseBrowserProfileId,
   parseBrowserProfileName,
   parseClearBrowserDataInput,
+  parseDeleteBrowserProxyInput,
+  parseSaveBrowserProxyInput,
+  parseSetBrowserProfileProxyInput,
   parseUpdateAgentAdminSettingsInput,
   parseUpdateAgentBackupModelsInput,
   parseUpdateAgentBrowserProfileInput,
@@ -32,43 +39,47 @@ import {
   parseUpdateAgentPlanCardInput,
   parseUpdateAgentTaskLimitInput,
   parseUpdateBrowserProfileInput,
-} from "@whilo/contracts/ipc";
-import { AGENT_ADMIN_CAPABILITY, AGENT_ADMIN_ROUTES } from "@whilo/contracts/team-protocol/agent-admin-v1";
+} from "@openbot/contracts/ipc";
+import { AGENT_ADMIN_CAPABILITY, AGENT_ADMIN_ROUTES } from "@openbot/contracts/team-protocol/agent-admin-v1";
 import {
   AGENT_BACKUP_MODELS_CAPABILITY,
   AGENT_BACKUP_MODELS_ROUTES,
-} from "@whilo/contracts/team-protocol/agent-backup-models-v1";
+} from "@openbot/contracts/team-protocol/agent-backup-models-v1";
 import {
   AGENT_FAST_MODE_CAPABILITY,
   AGENT_FAST_MODE_ROUTES,
-} from "@whilo/contracts/team-protocol/agent-fast-mode-v1";
+} from "@openbot/contracts/team-protocol/agent-fast-mode-v1";
 import {
   AGENT_HOST_SETTINGS_CAPABILITY,
   AGENT_HOST_SETTINGS_ROUTES,
-} from "@whilo/contracts/team-protocol/agent-host-settings-v1";
-import { AGENT_INSTALL_CAPABILITY, AGENT_INSTALL_ROUTES } from "@whilo/contracts/team-protocol/agent-install-v1";
-import { AGENT_NEW_CHAT_CAPABILITY, AGENT_NEW_CHAT_ROUTES } from "@whilo/contracts/team-protocol/agent-new-chat-v1";
+} from "@openbot/contracts/team-protocol/agent-host-settings-v1";
+import { AGENT_INSTALL_CAPABILITY, AGENT_INSTALL_ROUTES } from "@openbot/contracts/team-protocol/agent-install-v1";
+import { AGENT_NEW_CHAT_CAPABILITY, AGENT_NEW_CHAT_ROUTES } from "@openbot/contracts/team-protocol/agent-new-chat-v1";
 import {
   AGENT_PLAN_CARD_CAPABILITY,
   AGENT_PLAN_CARD_ROUTES,
-} from "@whilo/contracts/team-protocol/agent-plan-card-v1";
+} from "@openbot/contracts/team-protocol/agent-plan-card-v1";
 import {
   AGENT_PUBLISH_CAPABILITY,
   AGENT_PUBLISH_IMAGE_BYTES,
   AGENT_PUBLISH_ROUTES,
-} from "@whilo/contracts/team-protocol/agent-publish-v1";
+} from "@openbot/contracts/team-protocol/agent-publish-v1";
 import {
   AGENT_TASK_LIMIT_CAPABILITY,
   AGENT_TASK_LIMIT_ROUTES,
-} from "@whilo/contracts/team-protocol/agent-task-limit-v1";
-import { AGENT_UPDATE_CAPABILITY, AGENT_UPDATE_ROUTES } from "@whilo/contracts/team-protocol/agent-update-v1";
+} from "@openbot/contracts/team-protocol/agent-task-limit-v1";
+import { AGENT_UPDATE_CAPABILITY, AGENT_UPDATE_ROUTES } from "@openbot/contracts/team-protocol/agent-update-v1";
 import {
   BROWSER_PROFILES_CAPABILITY,
   BROWSER_PROFILES_ROUTES,
-} from "@whilo/contracts/team-protocol/browser-profiles-v1";
-import type { TeamCurrentCapability } from "@whilo/contracts/team-protocol/current";
-import { SKILLS_ADMIN_CAPABILITY, SKILLS_ADMIN_ROUTES } from "@whilo/contracts/team-protocol/skills-admin-v1";
-import { sourceText } from "@whilo/i18n/source";
+} from "@openbot/contracts/team-protocol/browser-profiles-v1";
+import {
+  BROWSER_PROXIES_CAPABILITY,
+  BROWSER_PROXIES_ROUTES,
+} from "@openbot/contracts/team-protocol/browser-proxies-v1";
+import type { TeamCurrentCapability } from "@openbot/contracts/team-protocol/current";
+import { SKILLS_ADMIN_CAPABILITY, SKILLS_ADMIN_ROUTES } from "@openbot/contracts/team-protocol/skills-admin-v1";
+import { sourceText } from "@openbot/i18n/source";
 import { runCauseEffect } from "../../backend/effect-boundary";
 import type { AgentAdminSettingsService } from "../agent-admin-settings";
 import type { AgentHostSettingsService } from "../agent-host-settings";
@@ -96,6 +107,8 @@ import { requireString } from "./validation";
 
 interface AgentAdminRemoteServers {
   supportsCapability(serverId: string, capability: TeamCurrentCapability): boolean;
+  browserComputerSharing(serverId: string): BrowserComputerSharing | null;
+  setBrowserComputerSharing(serverId: string, sharing: boolean): Effect.Effect<void, RemoteWorkflowError>;
   request<T>(
     serverId: string,
     path: string,
@@ -242,6 +255,38 @@ export function agentAdminIpcHandlers({
         remote: (input, serverId) =>
           remoteBrowserProfiles(serverId, BROWSER_PROFILES_ROUTES.updateAgent, input, decodeAgentBrowserProfile),
       }),
+      listBrowserProxies: scopedQueryHandler({
+        local: () => browserProfiles.listProxies(),
+        // Null: the host has no proxy routes, so the settings show no proxy choice.
+        remote: (serverId) =>
+          remoteServers.supportsCapability(serverId, BROWSER_PROXIES_CAPABILITY)
+            ? remoteBrowserProxies(serverId, BROWSER_PROXIES_ROUTES.list, {}, decodeBrowserProxyList)
+            : null,
+      }),
+      saveBrowserProxy: scopedHandler(parseSaveBrowserProxyInput, {
+        local: (input) => runCauseEffect(browserProfiles.saveProxy(input)),
+        remote: (input, serverId) =>
+          remoteBrowserProxies(serverId, BROWSER_PROXIES_ROUTES.save, input, decodeBrowserProxySummary),
+      }),
+      deleteBrowserProxy: scopedHandler(parseDeleteBrowserProxyInput, {
+        local: (input) => runCauseEffect(browserProfiles.deleteProxy(input)),
+        remote: (input, serverId) => remoteBrowserProxies(serverId, BROWSER_PROXIES_ROUTES.delete, input, acceptEmpty),
+      }),
+      setBrowserProfileProxy: scopedHandler(parseSetBrowserProfileProxyInput, {
+        local: (input) => runCauseEffect(browserProfiles.setProfileProxy(input)),
+        remote: (input, serverId) => remoteBrowserProxies(serverId, BROWSER_PROXIES_ROUTES.profile, input, acceptEmpty),
+      }),
+      // This computer's own server has no computer proxy of this computer: its pages already use it.
+      getBrowserComputerSharing: scopedQueryHandler({
+        local: () => null,
+        remote: (serverId) => remoteServers.browserComputerSharing(serverId),
+      }),
+      setBrowserComputerSharing: scopedHandler(decodeBrowserComputerSharing, {
+        local: () => {
+          throw new Error(sourceText("error.team.agentSettingsUnsupported"));
+        },
+        remote: ({ sharing }, serverId) => runCauseEffect(remoteServers.setBrowserComputerSharing(serverId, sharing)),
+      }),
       listBrowserTabProfiles: scopedQueryHandler({
         local: () => browserProfiles.tabProfiles(),
         // A host without the capability shows no label: its tabs are all in its one shared session.
@@ -343,6 +388,12 @@ export function agentAdminIpcHandlers({
   // A joined server has no browser profile routes yet.
   function remoteBrowserProfiles<A>(serverId: string, path: string, body: unknown, decode: ResponseDecoder<A>) {
     if (!remoteServers.supportsCapability(serverId, BROWSER_PROFILES_CAPABILITY))
+      throw new Error(sourceText("error.team.agentSettingsUnsupported"));
+    return runCauseEffect(remoteServers.request(serverId, path, decode, { method: "POST", body }));
+  }
+
+  function remoteBrowserProxies<A>(serverId: string, path: string, body: unknown, decode: ResponseDecoder<A>) {
+    if (!remoteServers.supportsCapability(serverId, BROWSER_PROXIES_CAPABILITY))
       throw new Error(sourceText("error.team.agentSettingsUnsupported"));
     return runCauseEffect(remoteServers.request(serverId, path, decode, { method: "POST", body }));
   }

@@ -52,6 +52,7 @@ import type { HostProviderSettings } from "./features/settings/ProviderSettingsS
 import { useSettings } from "./features/settings/settings-context";
 import { settingsPort } from "./features/settings/settings-port";
 import { useSidebar } from "./features/sidebar/sidebar-context";
+import { codexLiveAccess as codexLiveAccessOf } from "./features/speech/codex-live-access";
 import { useUpdates } from "./features/updates/updates-context";
 import { useWhatsNew } from "./features/updates/whats-new-context";
 import { usePlanLimitRows } from "./features/usage/plan-limit-rows";
@@ -730,6 +731,7 @@ function ServerSettings() {
           onRotateHostKey={server().kind === "local" ? rotateHostKey : undefined}
           onCreateInvite={createServerInvite}
           license={appPort().license}
+          companySignIn={appPort().auth}
           onContactUs={() => void appPort().openExternal("hosted-server-contact")}
           onUpdateMember={updateServerMember}
           onRemoveMember={removeServerMember}
@@ -806,9 +808,12 @@ function ServerSettings() {
           }
           hostUpdate={{}}
           hostTimezone={{}}
+          hostPersonality={{}}
           hostMemoryLimit={{}}
           memoryReview={{}}
           hostPromptCacheTtl={{}}
+          hostModelVisibility={{}}
+          hostDefaultProvider={{}}
           agentAccess={{ listAgents: () => appPort().agent.listAgents(server().id) }}
           serverAudit={{ listAgents: () => appPort().agent.listAgents(server().id) }}
           initialSection={serverSettingsSection()}
@@ -869,7 +874,25 @@ function AppSettings(props: AccountProps) {
   const auth = useAuth();
   const updates = useUpdates();
   const whatsNew = useWhatsNew();
-  const { servers, setAddServerOpen, setServerMuted, setServerNotificationLevel } = useServers();
+  const { servers, activeServer, setAddServerOpen, setServerMuted, setServerNotificationLevel } = useServers();
+  const { agentStatus, agentList, userHiddenAgentIds } = useAgents();
+  const { sidebarLayout, pinnedSidebarItems } = useSidebar();
+  const { openServerSettings } = useServerSettings();
+  /** The agent dock tab lists the agents of the active server in sidebar order, without hidden agents. */
+  const agentDockSettings = createMemo(() => {
+    const server = activeServer();
+    return {
+      server: server ? { id: server.id, name: server.name } : null,
+      agents: sidebarAgentOrder(agentList(), {
+        layout: sidebarLayout(),
+        pinnedItems: pinnedSidebarItems(),
+        hiddenAgentIds: userHiddenAgentIds(),
+      }),
+    };
+  });
+  /** Live voice runs on this computer's Codex, whose status shows only while this computer is active. */
+  const codexLiveAccess = () =>
+    activeServer()?.kind === "local" ? codexLiveAccessOf(agentStatus().providers) : undefined;
   const {
     appSettingsOpen,
     notificationFocusRequest,
@@ -899,6 +922,7 @@ function AppSettings(props: AccountProps) {
         chatWindow={platform.chatWindow !== null}
         builtInDisplayGeometry={builtInDisplayGeometry()}
         servers={servers()}
+        agentDock={agentDockSettings()}
         updateStatus={updates.status()}
         onUpdateAction={updates.runAction}
         onOpenWhatsNew={
@@ -915,6 +939,7 @@ function AppSettings(props: AccountProps) {
         account={props.account()}
         onUpdateAccountName={auth.updateAccountName}
         onUpdateAccountAvatar={auth.updateAccountAvatar}
+        onSetChatColor={auth.setChatColor}
         onCreateMobileConnect={auth.createMobileConnect}
         onCancelMobileConnect={auth.cancelMobileConnect}
         onGetMobileConnectLink={auth.getMobileConnectLink}
@@ -934,6 +959,11 @@ function AppSettings(props: AccountProps) {
         onAddHostedServer={() => {
           setAppSettingsOpen(false);
           setAddServerOpen(true, "settings_billing");
+        }}
+        codexLiveAccess={codexLiveAccess()}
+        onConnectCodex={() => {
+          setAppSettingsOpen(false);
+          openServerSettings(LOCAL_SERVER_ID, null, "providers");
         }}
         onTestNotification={sendTestNotification}
         onOpenNotificationSettings={openNotificationSettings}

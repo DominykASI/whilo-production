@@ -82,7 +82,7 @@ export const messages = {
   "agentSettings.backupModels.intro":
     "Quando {model} raggiunge il limite di utilizzo prima che {name} inizi a scrivere, {name} ti chiede quale modello usare.",
   "agentSettings.backupModels.introAutomatic":
-    "Quando {model} raggiunge il limite di utilizzo o fallisce per un errore del provider prima che {name} inizi a scrivere, {name} passa al primo modello disponibile nell'ordine.",
+    "Quando {model} raggiunge il limite di utilizzo, {name} passa al primo modello disponibile nell'ordine. {name} cambia modello anche quando {model} fallisce per un errore del provider prima che {name} inizi a scrivere.",
   "agentSettings.backupModels.ask": "Chiedi prima di cambiare",
   "agentSettings.backupModels.order": "Ordine",
   "agentSettings.backupModels.listLabel": "Modelli di riserva, in ordine",
@@ -95,7 +95,7 @@ export const messages = {
   "agentSettings.backupModels.unavailable": "Non disponibile ora · saltato",
   "agentSettings.backupModels.withAccount": "{model} · {account}",
   "agentSettings.backupModels.note":
-    "{name} non cambia mai dopo aver iniziato a scrivere. Torna a {model} quando il limite termina, o 10 minuti dopo un errore del provider.",
+    "Se un limite di utilizzo ferma {name} dopo l'inizio del lavoro, {name} continua lo stesso lavoro con il primo modello disponibile nell'ordine. Torna a {model} quando il limite termina, o 10 minuti dopo un errore del provider.",
   "agentSettings.groups.brain": "Cervello",
   "agentSettings.groups.knows": "Cosa sa",
   "agentSettings.groups.does": "Cosa fa",
@@ -128,6 +128,9 @@ export const messages = {
   "agentSettings.avatar.resetToId": "Ripristina da ID",
   "agentSettings.avatar.shape": "Forma",
   "agentSettings.avatar.shuffle": "Volto casuale",
+  "agentSettings.avatar.style": "Stile dell'avatar",
+  "agentSettings.avatar.stylePlush": "Peluche",
+  "agentSettings.avatar.styleFlat": "Piatto",
   "agentSettings.avatar.shapes": "Forme dell’avatar",
   "agentSettings.avatar.shapeOption": "Forma {number}",
   "agentSettings.avatar.eyes": "Occhi",
@@ -143,10 +146,6 @@ export const messages = {
 
   "agentSettings.runtime.model": "Modello dell'agente",
   "agentSettings.runtime.modelUnavailable": "I modelli sono disponibili dopo la connessione di una CLI dell'agente.",
-  "agentSettings.runtime.reasoning": "Ragionamento",
-  "agentSettings.runtime.reasoningLabel": "Livello di ragionamento dell'agente",
-  "agentSettings.runtime.selectReasoning": "Scegli il ragionamento",
-  "agentSettings.runtime.reasoningSetByProvider": "Da {provider}",
   "agentSettings.runtime.access": "Accesso",
   "agentSettings.runtime.accessLabel": "Accesso dell'agente",
   "agentSettings.runtime.busyMessage": "Durante il lavoro",
@@ -225,8 +224,7 @@ export const messages = {
   "agentSettings.agentNewChat.description":
     "L'agente può avviare una nuova chat quando la sua diventa lunga. Prima salva delle note.",
   "agentSettings.quickAcknowledgement.title": "Mostra il piano prima delle attività lunghe",
-  "agentSettings.quickAcknowledgement.description":
-    "Prima di un'attività lunga, l'agente mostra il suo piano. Inizia dopo 10 s o quando premi Avvia.",
+  "agentSettings.quickAcknowledgement.description": "Prima di un'attività lunga, l'agente mostra il suo piano.",
   "agentSettings.browserProfile.label": "Profilo del browser",
   "agentSettings.browserProfile.shared": "Condiviso",
   "agentSettings.browserProfile.agent": "Solo questo agente",

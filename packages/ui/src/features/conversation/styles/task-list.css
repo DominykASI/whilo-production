@@ -1,8 +1,8 @@
 /* Task list: the chat block of a plan an agent works through. */
 
 .task-list {
-  --task-list-glyph: var(--whilo-icon-sm);
-  --task-list-ease: var(--whilo-ease-out);
+  --task-list-glyph: var(--openbot-icon-sm);
+  --task-list-ease: var(--openbot-ease-out);
   /* The open is slower than the close: rows settle in one after another, and leave together. */
   --task-list-open: 320ms;
   --task-list-close: 200ms;
@@ -12,10 +12,10 @@
 
   box-sizing: border-box;
   width: min(100%, 448px);
-  border: 1px solid var(--whilo-border);
-  border-radius: var(--whilo-radius-card);
-  background: var(--whilo-bg-canvas);
-  color: var(--whilo-text-primary);
+  border: 1px solid var(--openbot-border);
+  border-radius: var(--openbot-radius-card);
+  background: var(--openbot-bg-canvas);
+  color: var(--openbot-text-primary);
 }
 
 /* The ghost button is the whole header row, so it takes the card corners and the row height.
@@ -28,18 +28,18 @@
   height: auto;
   align-items: center;
   justify-content: flex-start;
-  gap: var(--whilo-space-3);
-  border-radius: var(--whilo-radius-card);
-  color: var(--whilo-text-primary);
-  font-size: var(--whilo-text-md);
-  font-weight: var(--whilo-weight-regular);
-  padding: var(--whilo-space-3);
-  text-align: left;
+  gap: var(--openbot-space-3);
+  border-radius: var(--openbot-radius-card);
+  color: var(--openbot-text-primary);
+  font-size: var(--openbot-text-md);
+  font-weight: var(--openbot-weight-regular);
+  padding: var(--openbot-space-3);
+  text-align: start;
 }
 
 .task-list .task-list-header:focus-visible {
   outline: 0;
-  box-shadow: 0 0 0 1px var(--whilo-text-muted);
+  box-shadow: 0 0 0 1px var(--openbot-text-muted);
 }
 
 .task-list-summary-glyph {
@@ -59,13 +59,13 @@
 }
 
 .task-list-donut-track {
-  stroke: var(--whilo-border-strong);
+  stroke: var(--openbot-border-strong);
 }
 
 .task-list-donut-value {
-  stroke: var(--whilo-text-primary);
+  stroke: var(--openbot-text-primary);
   stroke-linecap: round;
-  transition: stroke-dashoffset var(--whilo-duration-slow) var(--task-list-ease);
+  transition: stroke-dashoffset var(--openbot-duration-slow) var(--task-list-ease);
 }
 
 /* The title and the running task share one cell, and swap with a blur when the list closes. */
@@ -73,8 +73,8 @@
   display: grid;
   min-width: 0;
   flex: 1;
-  font-size: var(--whilo-text-md);
-  line-height: var(--whilo-leading-md);
+  font-size: var(--openbot-text-md);
+  line-height: var(--openbot-leading-md);
 }
 
 .task-list-title-layer {
@@ -90,11 +90,11 @@
 }
 
 .task-list-title-name {
-  font-weight: var(--whilo-weight-semibold);
+  font-weight: var(--openbot-weight-semibold);
 }
 
 .task-list-title-task {
-  font-weight: var(--whilo-weight-regular);
+  font-weight: var(--openbot-weight-regular);
 }
 
 .task-list-title[data-showing="task"] .task-list-title-name,
@@ -104,11 +104,11 @@
 }
 
 .task-list-title[data-showing="task"] .task-list-title-name {
-  transform: translateY(calc(-1 * var(--whilo-space-1)));
+  transform: translateY(calc(-1 * var(--openbot-space-1)));
 }
 
 .task-list-title[data-showing="title"] .task-list-title-task {
-  transform: translateY(var(--whilo-space-1));
+  transform: translateY(var(--openbot-space-1));
 }
 
 /* The next task enters from below while the list stays closed. */
@@ -117,19 +117,24 @@
 }
 
 .task-list-count {
-  color: var(--whilo-text-muted);
-  font-size: var(--whilo-text-md);
+  color: var(--openbot-text-muted);
+  font-size: var(--openbot-text-md);
   font-variant-numeric: tabular-nums;
-  line-height: var(--whilo-leading-md);
+  line-height: var(--openbot-leading-md);
 }
 
 .task-list-chevron {
-  width: var(--whilo-icon-sm);
-  height: var(--whilo-icon-sm);
+  width: var(--openbot-icon-sm);
+  height: var(--openbot-icon-sm);
   flex: 0 0 auto;
-  color: var(--whilo-text-muted);
+  color: var(--openbot-text-muted);
   transform: rotate(-90deg);
-  transition: transform var(--whilo-duration-normal) var(--task-list-ease);
+  transition: transform var(--openbot-duration-normal) var(--task-list-ease);
+}
+
+/* The closed chevron points to the end side: right in LTR, left in RTL. */
+:dir(rtl) .task-list-chevron {
+  transform: rotate(90deg);
 }
 
 .task-list[data-open] .task-list-chevron {
@@ -153,13 +158,13 @@
   overflow: hidden;
   min-height: 0;
   margin: 0;
-  padding: 0 var(--whilo-space-3);
+  padding: 0 var(--openbot-space-3);
   list-style: none;
   transition: padding var(--task-list-close) var(--task-list-close-ease);
 }
 
 .task-list[data-open] .task-list-items {
-  padding-bottom: var(--whilo-space-3);
+  padding-bottom: var(--openbot-space-3);
   transition: padding var(--task-list-open) var(--task-list-ease);
 }
 
@@ -169,16 +174,20 @@
   display: flex;
   min-width: 0;
   align-items: flex-start;
-  gap: var(--whilo-space-3);
-  padding: var(--whilo-space-0-5) 0;
+  gap: var(--openbot-space-3);
+  padding: var(--openbot-space-0-5) 0;
   filter: blur(var(--task-list-blur));
   opacity: 0;
-  transform: translateY(calc(-1 * var(--whilo-space-1))) scale(0.98);
+  transform: translateY(calc(-1 * var(--openbot-space-1))) scale(0.98);
   transform-origin: left top;
   transition:
     opacity var(--task-list-close) var(--task-list-close-ease),
     filter var(--task-list-close) var(--task-list-close-ease),
     transform var(--task-list-close) var(--task-list-close-ease);
+}
+
+:dir(rtl) .task-list-item {
+  transform-origin: right top;
 }
 
 .task-list[data-open] .task-list-item {
@@ -195,7 +204,7 @@
 .task-list-item-mark {
   display: inline-flex;
   width: var(--task-list-glyph);
-  height: var(--whilo-leading-md);
+  height: var(--openbot-leading-md);
   flex: 0 0 auto;
   align-items: center;
 }
@@ -204,18 +213,18 @@
   position: relative;
   min-width: 0;
   flex: 1;
-  color: var(--whilo-text-primary);
-  font-size: var(--whilo-text-md);
-  line-height: var(--whilo-leading-md);
-  transition: color var(--whilo-duration-normal) var(--task-list-ease);
+  color: var(--openbot-text-primary);
+  font-size: var(--openbot-text-md);
+  line-height: var(--openbot-leading-md);
+  transition: color var(--openbot-duration-normal) var(--task-list-ease);
 }
 
 .task-list-item[data-state="pending"] .task-list-item-label {
-  color: var(--whilo-text-muted);
+  color: var(--openbot-text-muted);
 }
 
 .task-list-item[data-state="done"] .task-list-item-label {
-  color: var(--whilo-text-dim);
+  color: var(--openbot-text-dim);
 }
 
 /* The strike line draws from the start of the text when the task is done. */
@@ -233,7 +242,12 @@
   content: "";
   transform: scaleX(0);
   transform-origin: left center;
-  transition: transform var(--whilo-duration-slow) var(--task-list-ease);
+  transition: transform var(--openbot-duration-slow) var(--task-list-ease);
+}
+
+/* The strike-through grows from the start of the text. */
+:dir(rtl) .task-list-item-text::after {
+  transform-origin: right center;
 }
 
 .task-list-item[data-state="done"] .task-list-item-text::after {
@@ -243,7 +257,7 @@
 .task-list-item[data-state="active"] .task-list-item-text,
 .task-list-title[data-showing="task"] .task-list-title-task-text {
   display: inline-block;
-  color: var(--whilo-text-primary);
+  color: var(--openbot-text-primary);
   animation: task-list-pulse 1.6s ease-in-out infinite;
   animation-play-state: var(--task-list-play-state, running);
 }
@@ -261,22 +275,22 @@
 
 /* The same roll as the update island: each settled value lifts in from below and sharpens. */
 .task-list-item-progress {
-  --digit-dur: var(--whilo-duration-overlay);
-  --digit-distance: var(--whilo-space-1);
-  --digit-blur: var(--whilo-space-0-5);
+  --digit-dur: var(--openbot-duration-overlay);
+  --digit-distance: var(--openbot-space-1);
+  --digit-blur: var(--openbot-space-0-5);
   --digit-stagger: 40ms;
 
   display: inline-flex;
   min-width: 4ch;
   flex: 0 0 auto;
   justify-content: flex-end;
-  border-radius: var(--whilo-radius-pill);
-  background: var(--whilo-bg-control);
-  color: var(--whilo-text-muted);
-  font-size: var(--whilo-text-sm);
+  border-radius: var(--openbot-radius-pill);
+  background: var(--openbot-bg-control);
+  color: var(--openbot-text-muted);
+  font-size: var(--openbot-text-sm);
   font-variant-numeric: tabular-nums;
-  line-height: var(--whilo-leading-md);
-  padding: 0 var(--whilo-space-1-5);
+  line-height: var(--openbot-leading-md);
+  padding: 0 var(--openbot-space-1-5);
 }
 
 /* One glyph for all states. Each layer shows for its own state, so a change animates in place. */
@@ -289,42 +303,42 @@
 .task-list-mark circle,
 .task-list-mark path {
   transition:
-    opacity var(--whilo-duration-normal) var(--task-list-ease),
-    transform var(--whilo-duration-normal) var(--task-list-ease),
-    stroke-dashoffset var(--whilo-duration-slow) var(--task-list-ease);
+    opacity var(--openbot-duration-normal) var(--task-list-ease),
+    transform var(--openbot-duration-normal) var(--task-list-ease),
+    stroke-dashoffset var(--openbot-duration-slow) var(--task-list-ease);
   transform-box: fill-box;
   transform-origin: center;
 }
 
 .task-list-mark-pending {
   opacity: 0;
-  stroke: var(--whilo-text-dim);
+  stroke: var(--openbot-text-dim);
   stroke-dasharray: 1.2 2;
   stroke-width: 1.5;
 }
 
 .task-list-mark-track {
   opacity: 0;
-  stroke: var(--whilo-border-strong);
+  stroke: var(--openbot-border-strong);
   stroke-width: 1.5;
 }
 
 .task-list-mark-arc {
   opacity: 0;
-  stroke: var(--whilo-text-primary);
+  stroke: var(--openbot-text-primary);
   stroke-dasharray: 12 100;
   stroke-linecap: round;
   stroke-width: 1.5;
 }
 
 .task-list-mark-fill {
-  fill: var(--whilo-text-dim);
+  fill: var(--openbot-text-dim);
   opacity: 0;
   transform: scale(0.4);
 }
 
 .task-list-mark-check {
-  stroke: var(--whilo-bg-canvas);
+  stroke: var(--openbot-bg-canvas);
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
   stroke-linecap: round;
@@ -333,7 +347,7 @@
 }
 
 .task-list-mark-cross {
-  stroke: var(--whilo-bg-canvas);
+  stroke: var(--openbot-bg-canvas);
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
   stroke-linecap: round;
@@ -360,14 +374,14 @@
 }
 
 .task-list-mark[data-state="failed"] .task-list-mark-fill {
-  fill: var(--whilo-danger);
+  fill: var(--openbot-danger);
 }
 
 /* The check and the cross draw after the disc has filled. */
 .task-list-mark[data-state="done"] .task-list-mark-check,
 .task-list-mark[data-state="failed"] .task-list-mark-cross {
   stroke-dashoffset: 0;
-  transition-delay: var(--whilo-duration-fast);
+  transition-delay: var(--openbot-duration-fast);
 }
 
 @keyframes task-list-turn {
@@ -380,7 +394,7 @@
   from {
     filter: blur(var(--task-list-blur));
     opacity: 0;
-    transform: translateY(var(--whilo-space-1));
+    transform: translateY(var(--openbot-space-1));
   }
 }
 

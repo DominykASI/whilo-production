@@ -11,8 +11,8 @@ export const messages = {
   "error.voice.modelUnavailable": "Het spraakmodel is niet beschikbaar.",
   "error.voice.transcriptionTimedOut": "De spraaktranscriptie duurde te lang.",
   "error.voice.prepareRequired":
-    "Lokale spraaktranscriptie is niet beschikbaar. Voer `bun run voice:prepare` uit en start Whilo opnieuw.",
-  "error.voice.transcriptionFailed": "Whilo kon deze opname niet transcriberen.",
+    "Lokale spraaktranscriptie is niet beschikbaar. Voer `bun run voice:prepare` uit en start OpenBot opnieuw.",
+  "error.voice.transcriptionFailed": "OpenBot kon deze opname niet transcriberen.",
   "error.voice.cloud.keyRequired": "Voeg je ElevenLabs-API-sleutel toe in Instellingen → Spraak.",
   "error.voice.cloud.keyRejected":
     "ElevenLabs heeft de API-sleutel niet geaccepteerd. Controleer de sleutel in Instellingen → Spraak.",
@@ -26,6 +26,11 @@ export const messages = {
   "error.voice.speech.runtimeUnavailable": "Lokale spraakuitvoer is niet beschikbaar op dit platform.",
   "error.voice.speech.modelRequired": "Download het spraakuitvoermodel in Instellingen → Spraak.",
   "error.voice.speech.timedOut": "Het voorlezen van het antwoord duurde te lang.",
-  "error.voice.speech.failed": "Whilo kon het antwoord niet voorlezen.",
-  "error.voice.recordingNotKept": "Whilo kon de spraakopname niet bewaren.",
+  "error.voice.speech.failed": "OpenBot kon het antwoord niet voorlezen.",
+  "error.voice.recordingNotKept": "OpenBot kon de spraakopname niet bewaren.",
+  "error.voice.live.timedOut": "Codex live spraak is niet op tijd gestart. Probeer het opnieuw.",
+  "error.voice.live.failed": "Live spraak is gestopt: {reason}",
+  "error.voice.live.disconnected": "Live spraak is verbroken.",
+  "error.voice.live.signIn": "Meld je met je ChatGPT-account aan bij Codex om live spraak te gebruiken.",
+  "error.voice.live.off": "Codex live spraak staat uit. Zet het aan in Instellingen → Spraak.",
 } as const satisfies PartialTranslation<typeof source>;

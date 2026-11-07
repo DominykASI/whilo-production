@@ -1,7 +1,9 @@
 import { randomUUID } from "node:crypto";
-import { chatVisualItemType } from "@whilo/contracts/chat-visual";
-import { sortConversationMessages } from "@whilo/contracts/conversation-order";
-import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import { basename } from "node:path";
+import { attachmentMimeTypeForName } from "@openbot/contracts/attachment-files";
+import { chatVisualItemType } from "@openbot/contracts/chat-visual";
+import { sortConversationMessages } from "@openbot/contracts/conversation-order";
+import { ATTACHMENT_LIMITS, INPUT_LIMITS } from "@openbot/contracts/input-limits";
 import type {
   AgentModelChoice,
   AgentModelOption,
@@ -12,7 +14,7 @@ import type {
   McpServerConfig,
   SidebarLayoutSnapshot,
   UpdateAgentInput,
-} from "@whilo/contracts/ipc";
+} from "@openbot/contracts/ipc";
 import {
   agentComputerUseEnabled,
   agentNewChatAllowed,
@@ -23,11 +25,11 @@ import {
   skillConversationEventItemType,
   VAULT_CHANGE_ITEM_TYPE,
   workspaceAccessEnforced,
-} from "@whilo/contracts/ipc";
-import { isString } from "@whilo/contracts/runtime-values";
-import { isUiBlockId, normalizeUiBlockSpec } from "@whilo/contracts/ui-blocks";
-import { sourceText } from "@whilo/i18n/source";
-import { createWhiloLogger, redactText } from "@whilo/logging";
+} from "@openbot/contracts/ipc";
+import { isString } from "@openbot/contracts/runtime-values";
+import { isUiBlockId, normalizeUiBlockSpec } from "@openbot/contracts/ui-blocks";
+import { sourceText } from "@openbot/i18n/source";
+import { createOpenBotLogger, redactText, registerSecretValue, toLogValue } from "@openbot/logging";
 import { Effect, Result } from "effect";
 import { z } from "zod";
 import type { AgentApiKeys, SavedApiKey } from "../agent-api-keys";
@@ -36,11 +38,12 @@ import type { AgentTables } from "../agent-data/agent-tables";
 import type { AgentStore } from "../agent-store";
 import type { AgentTasks } from "../agent-tasks/agent-tasks";
 import type { AgentWaits } from "../agent-waits/agent-waits";
-import { WHILO_BROWSER_NAMESPACE } from "../browser-tools";
+import { attachmentCall, attachmentFailure } from "../attachment-effects";
+import { OPENBOT_BROWSER_NAMESPACE } from "../browser-tools";
 import type { ChannelService } from "../channel-service";
 import type { ProviderSession } from "../database/provider-sessions";
 import type { MailboxStore } from "../mailbox-store";
-import { agentMcpServers } from "../mcp-provider-shapes";
+import { agentMcpServers, codexDeferredMcpServers } from "../mcp-provider-shapes";
 import type { MessagingThreads } from "../messaging/messaging-threads";
 import { MESSAGING_OUTBOUND_TOOLS } from "../messaging/messaging-tools";
 import {
@@ -54,10 +57,19 @@ import {
   removeApiKeyToolSchema,
   requestApiKeyToolSchema,
   routineReportFailureToolSchema,
-} from "../whilo-tools";
+  saveApiKeyToolSchema,
+  sendToChannelToolSchema,
+} from "../openbot-tools";
 import { type AppServerRequest, type DynamicToolCallParams, type DynamicToolResult, isRecord } from "../protocol";
 import { handleRoutineFlowTool, type RoutineFlowTools } from "../routine-flows/routine-flow-tools";
 import type { StoredStateFailure } from "../stored-state-effects";
+import type { VaultItems } from "../vault-items";
+import {
+  handleWorkflowTool,
+  WORKFLOW_CHANGE_TOOL_NAMES,
+  WORKFLOW_TOOL_NAMES,
+  type WorkflowTools,
+} from "../workflows/workflow-tools";
 import { AgentInterruptTool } from "./agent-interrupt-tool";
 import type { AgentMemories } from "./agent-memories";
 import { type ApprovalAutomationPolicy, NO_APPROVAL_AUTOMATION } from "./approval-automation";
@@ -65,6 +77,12 @@ import type { AttachmentGateway } from "./attachment-gateway";
 import type { AttentionRegistry } from "./attention-registry";
 import { loadAvatarFile } from "./avatar-file";
 import type { BrowserUploads } from "./browser-uploads";
+import {
+  CHANNEL_AGENT_TOOL_NAMES,
+  CHANNEL_AGENT_TOOL_NEEDS_LOCAL_PERSON,
+  handleChannelAgentTool,
+  listChannelsToolSchema,
+} from "./channel-agent-tools";
 import type { ChatVisualPreviewHost } from "./chat-visual-preview";
 import type { ConversationRuntime } from "./conversation-runtime";
 import { handleDataTool } from "./data-tools";
@@ -105,7 +123,7 @@ import {
 import { apiKeyFormSpec, browserUserControlResult } from "./prompts";
 import { ROUTINE_NO_UPDATE_TOOL, ROUTINE_REPORT_FAILURE_TOOL } from "./routine-quiet-runs";
 import type { RoutineScheduler } from "./routine-scheduler";
-import { type WhiloToolResponse, whiloToolFailure, whiloToolResult } from "./routine-tools";
+import { type OpenBotToolResponse, openBotToolFailure, openBotToolResult } from "./routine-tools";
 import {
   captureScreenToolSchema,
   type ScreenCaptureFailed,
@@ -117,18 +135,29 @@ import { type AgentSidebar, handleSidebarTool } from "./sidebar-tools";
 import { LOCAL_SKILL_TOOL_DEFINITIONS, type LocalSkillTools, runLocalSkillTool } from "./skill-tools";
 import { isDynamicToolCall } from "./thread-items";
 import { toolCallIdempotencyKey } from "./tool-call-idempotency";
-import { discoverTools, namesInSearch, resolveDeferredTool } from "./tool-catalog";
+import {
+  CODEX_DEFERRED_MCP_NOTE,
+  DEFERRED_MCP_NOTE,
+  discoverTools,
+  namesInSearch,
+  resolveDeferredTool,
+} from "./tool-catalog";
 import { ToolOperationFailed, toolStep, toToolOperationFailed } from "./tool-operation";
 import type { AgentBrowserHost } from "./turn-lifecycle";
 import { handleUpdateAgentsTool } from "./update-agents-tool";
 
-const logger = createWhiloLogger("whilo-tool-router");
+const logger = createOpenBotLogger("openbot-tool-router");
 
-/** How long the plan card of `acknowledge_request` waits before the host presses its start button. */
-const ACKNOWLEDGE_START_MS = 10_000;
+/** The key of a `save_api_key` call whose other arguments can be wrong. */
+const secretKeyArgument = z.object({ key: z.string() });
 
 /** The tools that `#apiKeyTool` answers. */
-const API_KEY_TOOLS: ReadonlySet<string> = new Set(["request_api_key", "list_api_keys", "remove_api_key"]);
+const API_KEY_TOOLS: ReadonlySet<string> = new Set([
+  "request_api_key",
+  "list_api_keys",
+  "remove_api_key",
+  "save_api_key",
+]);
 
 /** The characters of an agent description that `list_agents` returns. `read_agent` returns all of it. */
 const LISTED_DESCRIPTION_LENGTH = 300;
@@ -144,10 +173,10 @@ function listedDescription(description: string): string {
 
 /** The reason says what to grant or to correct, and holds no screen content. */
 function captureFailure(failure: ScreenCaptureFailed) {
-  return whiloToolFailure(failure.reason);
+  return openBotToolFailure(failure.reason);
 }
 
-export interface WhiloToolRouterHooks {
+export interface OpenBotToolRouterHooks {
   listAgents(): AgentSummary[];
   listModels(): AgentModelOption[];
   /** The accounts of a signed-in provider, as the settings page lists them. */
@@ -184,7 +213,7 @@ export interface WhiloToolRouterHooks {
   steerAgentMessage(recipientAgentId: string, deliveryId: string): Effect.Effect<void>;
 }
 
-export interface WhiloToolRouterOptions {
+export interface OpenBotToolRouterOptions {
   capturedSteps?: (session: ProviderSession) => Effect.Effect<Map<string, string> | null, ToolOperationFailed>;
   store: AgentStore;
   mailbox: MailboxStore;
@@ -206,28 +235,31 @@ export interface WhiloToolRouterOptions {
   sidebarLayout: AgentSidebar | null;
   localSkillTools?: (() => LocalSkillTools) | undefined;
   routineFlowTools?: (() => RoutineFlowTools) | undefined;
+  workflowTools?: (() => WorkflowTools) | undefined;
   approvalAutomation?: ApprovalAutomationPolicy | undefined;
   /** Draws pages for `html_preview`; null where no window can draw one. */
   visualPreview?: ChatVisualPreviewHost | null | undefined;
   /** Captures the desktop for `capture_screen`; null where this process has no desktop. */
   screenCapture?: ScreenCaptureHost | null | undefined;
-  /** The MCP servers of this Whilo server, for the MCP tools; null where nothing holds them. */
+  /** The MCP servers of this OpenBot server, for the MCP tools; null where nothing holds them. */
   mcpServers?: AgentMcpServers | null | undefined;
   /** The saved server that a Marketplace app installs, or null when it is not installed. */
   marketplaceAppServer?: ((appId: string) => MarketplaceAppServer | null) | undefined;
   /** The API keys that users saved for agents; null where nothing can save them. */
   apiKeys?: AgentApiKeys | null | undefined;
-  hooks: WhiloToolRouterHooks;
+  /** The Vault, where `save_api_key` keeps a key for every agent; null where this server has none. */
+  vaultItems?: VaultItems | null | undefined;
+  hooks: OpenBotToolRouterHooks;
 }
 
 /**
- * Owns the answer to every request a provider process sends to Whilo: approvals and prompts go to
- * the attention registry, browser tools to the browser, and the `whilo` tools to the controller
+ * Owns the answer to every request a provider process sends to OpenBot: approvals and prompts go to
+ * the attention registry, browser tools to the browser, and the `openbot` tools to the controller
  * that owns each one. The profile, reaction and `send_message` tools are answered here.
  *
  * It never imports the agent service facade.
  */
-export class WhiloToolRouter {
+export class OpenBotToolRouter {
   readonly #history: HistoryTools;
   readonly #store: AgentStore;
   readonly #mailbox: MailboxStore;
@@ -249,16 +281,18 @@ export class WhiloToolRouter {
   readonly #sidebarLayout: AgentSidebar | null;
   readonly #localSkillTools: (() => LocalSkillTools) | undefined;
   readonly #routineFlowTools: (() => RoutineFlowTools) | undefined;
+  readonly #workflowTools: (() => WorkflowTools) | undefined;
   readonly #approvalAutomation: ApprovalAutomationPolicy;
   readonly #visualPreview: ChatVisualPreviewHost | null;
   readonly #screenCapture: ScreenCaptureHost | null;
   readonly #mcpServers: AgentMcpServers | null;
   readonly #marketplaceAppServer: (appId: string) => MarketplaceAppServer | null;
   readonly #apiKeys: AgentApiKeys | null;
-  readonly #hooks: WhiloToolRouterHooks;
+  readonly #vaultItems: VaultItems | null;
+  readonly #hooks: OpenBotToolRouterHooks;
   readonly #interruptTool: AgentInterruptTool;
 
-  constructor(options: WhiloToolRouterOptions) {
+  constructor(options: OpenBotToolRouterOptions) {
     this.#history = new HistoryTools({
       store: options.store,
       redact: options.hooks.redactMcp,
@@ -284,12 +318,14 @@ export class WhiloToolRouter {
     this.#sidebarLayout = options.sidebarLayout;
     this.#localSkillTools = options.localSkillTools;
     this.#routineFlowTools = options.routineFlowTools;
+    this.#workflowTools = options.workflowTools;
     this.#approvalAutomation = options.approvalAutomation ?? NO_APPROVAL_AUTOMATION;
     this.#visualPreview = options.visualPreview ?? null;
     this.#screenCapture = options.screenCapture ?? null;
     this.#mcpServers = options.mcpServers ?? null;
     this.#marketplaceAppServer = options.marketplaceAppServer ?? (() => null);
     this.#apiKeys = options.apiKeys ?? null;
+    this.#vaultItems = options.vaultItems ?? null;
     this.#hooks = options.hooks;
     this.#interruptTool = new AgentInterruptTool({
       store: options.store,
@@ -305,8 +341,8 @@ export class WhiloToolRouter {
     });
   }
 
-  readonly handle = Effect.fn("WhiloToolRouter.handle")(function* (
-    this: WhiloToolRouter,
+  readonly handle = Effect.fn("OpenBotToolRouter.handle")(function* (
+    this: OpenBotToolRouter,
     client: AgentClient,
     request: AppServerRequest,
   ) {
@@ -343,45 +379,63 @@ export class WhiloToolRouter {
         case "item/tool/call": {
           if (!isDynamicToolCall(request.params)) throw new Error("Invalid dynamic tool request.");
           let params = request.params;
-          if (params.namespace === "whilo") {
+          if (params.namespace === "openbot") {
+            const deferredMcp = this.#deferredMcpNote(client, params.threadId);
+            const invalid = deferredMcp
+              ? `${sourceText("error.agent.toolRequestInvalid")} ${deferredMcp}`
+              : sourceText("error.agent.toolRequestInvalid");
             if (params.tool === "tool_search" || params.tool === "tool_describe") {
               const agentId = this.#conversation.agentForThread(params.threadId);
-              if (!agentId) throw new Error("The calling Whilo agent is unknown.");
+              if (!agentId) throw new Error("The calling OpenBot agent is unknown.");
               let result: ReturnType<typeof discoverTools>;
               try {
                 this.#requireAgent(agentId);
                 result = discoverTools(params);
               } catch {
-                client.respond(request.id, whiloToolFailure(sourceText("error.agent.toolRequestInvalid")));
+                client.respond(request.id, openBotToolFailure(invalid));
                 return;
               }
               const signIns = yield* this.#searchSignIns(agentId, params);
               if (request.signal?.aborted || !client.running) return;
+              const found =
+                deferredMcp && params.tool === "tool_search" ? { ...result, mcpTools: deferredMcp } : result;
               client.respond(
                 request.id,
-                whiloToolResult(signIns.length > 0 ? { ...result, mcpServers: signIns } : result),
+                openBotToolResult(signIns.length > 0 ? { ...found, mcpServers: signIns } : found),
               );
               return;
             }
             if (params.tool === "tool_call") {
               const resolved = resolveDeferredTool(params);
               if (!resolved) {
-                client.respond(request.id, whiloToolFailure(sourceText("error.agent.toolRequestInvalid")));
+                client.respond(request.id, openBotToolFailure(invalid));
                 return;
               }
               params = resolved;
             }
           }
-          if (params.namespace === "whilo" && (params.tool === "history_search" || params.tool === "history_read")) {
+          if (params.namespace === "openbot" && (params.tool === "history_search" || params.tool === "history_read")) {
             const scope = this.#conversation.historyScope(params.threadId, client);
             if (!scope || this.#channels.store.channelForThread(scope.threadId)) {
-              client.respond(request.id, whiloToolFailure(sourceText("error.agent.historyUnavailable")));
+              client.respond(request.id, openBotToolFailure(sourceText("error.agent.historyUnavailable")));
               return;
             }
-            const result = yield* this.#history.call(scope.agentId, scope.threadId, params.tool, params.arguments).pipe(
-              Effect.catch(() => Effect.succeed(whiloToolFailure(sourceText("error.agent.historyUnavailable")))),
+            // A taskId reads a side thread of the same agent. A thread of another agent reads as unknown.
+            const taskId = isRecord(params.arguments) ? params.arguments.taskId : undefined;
+            const targetThreadId =
+              taskId === undefined
+                ? scope.threadId
+                : typeof taskId === "string" && this.#tasks.has(scope.agentId, taskId)
+                  ? this.#tasks.require(scope.agentId, taskId).threadId
+                  : null;
+            if (targetThreadId === null) {
+              client.respond(request.id, openBotToolFailure(sourceText("error.backend.threadNotFound")));
+              return;
+            }
+            const result = yield* this.#history.call(scope.agentId, targetThreadId, params.tool, params.arguments).pipe(
+              Effect.catch(() => Effect.succeed(openBotToolFailure(sourceText("error.agent.historyUnavailable")))),
               Effect.catchDefect(() =>
-                Effect.succeed(whiloToolFailure(sourceText("error.agent.historyUnavailable"))),
+                Effect.succeed(openBotToolFailure(sourceText("error.agent.historyUnavailable"))),
               ),
             );
             const currentScope = this.#conversation.historyScope(params.threadId, client);
@@ -390,15 +444,15 @@ export class WhiloToolRouter {
                 request.id,
                 currentScope?.threadId === scope.threadId
                   ? result
-                  : whiloToolFailure(sourceText("error.agent.historyUnavailable")),
+                  : openBotToolFailure(sourceText("error.agent.historyUnavailable")),
               );
             return;
           }
           // Keep the transport identifiers and abort signal; enter the original dispatch below.
           const toolRequest = { ...request, params };
-          if (toolRequest.params.namespace === WHILO_BROWSER_NAMESPACE) {
+          if (toolRequest.params.namespace === OPENBOT_BROWSER_NAMESPACE) {
             const agentId = this.#conversation.agentForThread(toolRequest.params.threadId);
-            if (!agentId) throw new Error("The browsing Whilo agent is unknown.");
+            if (!agentId) throw new Error("The browsing OpenBot agent is unknown.");
             if (toolRequest.params.tool === "request_takeover" || toolRequest.params.tool === "submit_secret") {
               const result = yield* this.#attention.surfaceBrowserTakeover(client, toolRequest);
               // A takeover of a stopped client ends with a cancel, and that process has nothing to answer.
@@ -441,7 +495,9 @@ export class WhiloToolRouter {
                 case "list_vault_items":
                   return yield* this.#attention.listVaultItems(params);
                 case "save_vault_item":
-                  return yield* this.#attention.saveVaultItem(params);
+                  return yield* this.#attention.saveVaultItem(params, () =>
+                    this.#requestedByPerson(agentId, params.turnId, params.threadId),
+                  );
                 case "delete_vault_item":
                   return yield* this.#attention.deleteVaultItem(params);
                 case "request_link_payment":
@@ -472,7 +528,7 @@ export class WhiloToolRouter {
             if (!signal?.aborted && client.running) client.respond(toolRequest.id, result);
             return;
           }
-          if (toolRequest.params.namespace === "whilo") {
+          if (toolRequest.params.namespace === "openbot") {
             if (toolRequest.params.tool === "ask_user") {
               this.#attention.surfaceDynamicPrompt(client, toolRequest);
               return;
@@ -516,13 +572,23 @@ export class WhiloToolRouter {
             const correctableFailure = (error: unknown) =>
               Effect.sync(() => {
                 const message = this.#hooks.redactMcp(profileToolErrorMessage(error));
-                if (!(error instanceof z.ZodError)) logger.warn("An Whilo tool failed.", { tool, error: message });
-                return whiloToolFailure(message);
+                if (!(error instanceof z.ZodError)) logger.warn("An OpenBot tool failed.", { tool, error: message });
+                return openBotToolFailure(message);
               });
-            const correctable = PROFILE_TOOL_NAMES.has(tool) || tool === "attach_files_to_response";
-            const response = this.#handleWhiloTool(toolRequest.params).pipe(
-              Effect.catch((failure) => (correctable ? correctableFailure(failure.cause) : Effect.fail(failure))),
-              Effect.catchDefect((defect) => (correctable ? correctableFailure(defect) : Effect.die(defect))),
+            const correctableTool =
+              PROFILE_TOOL_NAMES.has(tool) ||
+              CHANNEL_AGENT_TOOL_NAMES.has(tool) ||
+              tool === "list_channels" ||
+              tool === "attach_files_to_response" ||
+              tool === "messaging_post";
+            // A workflow tool reports its own correctable failures; only bad arguments reach this point.
+            const correctable = (cause: unknown) =>
+              correctableTool || (WORKFLOW_TOOL_NAMES.has(tool) && cause instanceof z.ZodError);
+            const response = this.#handleOpenBotTool(client, toolRequest, toolRequest.params).pipe(
+              Effect.catch((failure) =>
+                correctable(failure.cause) ? correctableFailure(failure.cause) : Effect.fail(failure),
+              ),
+              Effect.catchDefect((defect) => (correctable(defect) ? correctableFailure(defect) : Effect.die(defect))),
               Effect.tap((result) => Effect.sync(() => client.respond(toolRequest.id, result))),
             );
             // Both store a file and then add the message that names it.
@@ -545,7 +611,7 @@ export class WhiloToolRouter {
         default:
           client.respondError(request.id, {
             code: -32601,
-            message: `Whilo does not implement server request ${request.method}.`,
+            message: `OpenBot does not implement server request ${request.method}.`,
           });
       }
     }).pipe(
@@ -555,11 +621,22 @@ export class WhiloToolRouter {
   }).bind(this);
 
   /**
+   * The note that sends a model from OpenBot's catalog to its provider's own MCP tools, or null when
+   * the provider declares them. Pi tells this for each thread. Codex defers each MCP server except
+   * Computer Use (#4468), so one saved server that is on is enough.
+   */
+  #deferredMcpNote(client: AgentClient, threadId: string): string | null {
+    if (client.deferredMcpTools?.(threadId)) return DEFERRED_MCP_NOTE;
+    if (client.provider !== "codex") return null;
+    return codexDeferredMcpServers(this.#mcpServers?.list() ?? []).length > 0 ? CODEX_DEFERRED_MCP_NOTE : null;
+  }
+
+  /**
    * Checks an `ask_ui` call and shows its block. Like `ask_user`, it answers the call only when the
    * person answers or the turn ends. The agent can correct a refused block, so it gets the reason.
    */
   #askUi(client: AgentClient, request: AppServerRequest, params: DynamicToolCallParams): void {
-    const refuse = (message: string) => client.respond(request.id, whiloToolFailure(message));
+    const refuse = (message: string) => client.respond(request.id, openBotToolFailure(message));
     const parsed = askUiToolSchema.safeParse(params.arguments);
     if (!parsed.success) {
       refuse(`${z.prettifyError(parsed.error)}\nCorrect the arguments and retry.`);
@@ -580,76 +657,148 @@ export class WhiloToolRouter {
   /**
    * The API key tools. `request_api_key` shows a form with one secret field, and the attention registry
    * answers it with the path of the saved key, so it returns null. The others answer at once. No result
-   * holds a key value.
+   * holds a key value. `save_api_key` gets the value from the agent: the agent already has it, so it
+   * goes in the Vault and is redacted from the logs.
    */
-  readonly #apiKeyTool = Effect.fn("WhiloToolRouter.apiKeyTool")(function* (
-    this: WhiloToolRouter,
+  readonly #apiKeyTool = Effect.fn("OpenBotToolRouter.apiKeyTool")(function* (
+    this: OpenBotToolRouter,
     client: AgentClient,
     request: AppServerRequest,
     params: DynamicToolCallParams,
   ) {
     const agentId = this.#conversation.agentForThread(params.threadId);
-    if (!agentId) throw new Error("The calling Whilo agent is unknown.");
+    if (!agentId) throw new Error("The calling OpenBot agent is unknown.");
     const apiKeys = this.#apiKeys;
-    if (!apiKeys) return whiloToolFailure("This Whilo server cannot save API keys.");
+    if (!apiKeys) return openBotToolFailure("This OpenBot server cannot save API keys.");
     const failed = (failure: { cause: unknown }) =>
       Effect.succeed(
-        whiloToolFailure(
+        openBotToolFailure(
           failure.cause instanceof Error ? failure.cause.message : sourceText("error.backend.apiKeySaveFailed"),
         ),
       );
     if (params.tool === "list_api_keys")
       return yield* apiKeys.list(agentId).pipe(
-        Effect.map((keys) => whiloToolResult({ keys })),
+        Effect.map((keys) => openBotToolResult({ keys })),
         Effect.catch(failed),
       );
     if (params.tool === "remove_api_key") {
       const parsed = removeApiKeyToolSchema.safeParse(params.arguments);
       if (!parsed.success)
-        return whiloToolFailure(`${z.prettifyError(parsed.error)}\nCorrect the arguments and retry.`);
-      return yield* apiKeys.remove(agentId, parsed.data.name).pipe(
-        Effect.map((removed) =>
-          whiloToolResult({ status: removed ? "removed" : "not_found", name: parsed.data.name }),
-        ),
+        return openBotToolFailure(`${z.prettifyError(parsed.error)}\nCorrect the arguments and retry.`);
+      const { name } = parsed.data;
+      return yield* apiKeys.remove(agentId, name).pipe(
+        Effect.map((removed) => {
+          if (removed) return openBotToolResult({ status: "removed", name });
+          // Agents cannot delete a Vault key: every agent reads it.
+          if (this.#vaultItems?.apiKeys().some((key) => key.name === name))
+            return openBotToolFailure(
+              `${name} is in the Vault, which every agent uses. Only the user can delete it, in Server settings > Vault.`,
+            );
+          return openBotToolResult({ status: "not_found", name });
+        }),
         Effect.catch(failed),
       );
     }
+    if (params.tool === "save_api_key") return yield* this.#saveApiKey(apiKeys, agentId, params);
     const parsed = requestApiKeyToolSchema.safeParse(params.arguments);
     if (!parsed.success)
-      return whiloToolFailure(`${z.prettifyError(parsed.error)}\nCorrect the arguments and retry.`);
+      return openBotToolFailure(`${z.prettifyError(parsed.error)}\nCorrect the arguments and retry.`);
     // A key that the Vault has is used as it is: a copy for this agent would not follow a change in the Vault.
     const keys = yield* apiKeys.list(agentId).pipe(Effect.catch(() => Effect.succeed<SavedApiKey[]>([])));
     const vaultKey = keys.find((key) => key.name === parsed.data.name && key.source === "vault");
-    if (vaultKey) return whiloToolResult({ status: "saved", ...vaultKey });
+    if (vaultKey) return openBotToolResult({ status: "saved", ...vaultKey });
     if (this.#messaging.store.linkForThread(this.#conversation.publicThreadId(agentId, params.threadId)))
-      return whiloToolFailure(
-        "request_api_key does not work in a Slack, Discord or Telegram chat. Ask the user to give you the key in Whilo.",
+      return openBotToolFailure(
+        "request_api_key does not work in an external chat. Ask the user to give you the key in OpenBot.",
       );
-    const spec = apiKeyFormSpec(parsed.data);
-    if (!spec) return whiloToolFailure("Whilo could not show this form. Use a shorter title and retry.");
+    // With a Vault, the user can save the key for every agent, so another agent does not ask again.
+    const vault = this.#vaultItems?.ready() === true;
+    const spec = apiKeyFormSpec({ ...parsed.data, vault });
+    if (!spec) return openBotToolFailure("OpenBot could not show this form. Use a shorter title and retry.");
     this.#attention.surfaceUiBlock(client, request, {
       blockId: randomUUID(),
       spec,
-      apiKey: { name: parsed.data.name },
+      apiKey: { name: parsed.data.name, vault },
     });
     return null;
   });
 
+  readonly #saveApiKey = Effect.fn("OpenBotToolRouter.saveApiKey")(function* (
+    this: OpenBotToolRouter,
+    apiKeys: AgentApiKeys,
+    agentId: string,
+    params: DynamicToolCallParams,
+  ) {
+    // The key is redacted from the logs before anything can fail, also when the call is refused. A short
+    // key is redacted only when the Vault saves it: an unsaved short value would hide unrelated text.
+    const raw = secretKeyArgument.safeParse(params.arguments);
+    if (raw.success) registerSecretValue(raw.data.key);
+    const parsed = saveApiKeyToolSchema.safeParse(params.arguments);
+    if (!parsed.success)
+      return openBotToolFailure(`${z.prettifyError(parsed.error)}\nCorrect the arguments and retry.`);
+    const { name, key, notes } = parsed.data;
+    const threadId = this.#conversation.publicThreadId(agentId, params.threadId);
+    // A person in an external chat is not an OpenBot user, and every agent reads a Vault key.
+    if (this.#messaging.store.linkForThread(threadId))
+      return openBotToolFailure(
+        "save_api_key does not work in an external chat. Ask the user to add the key in Server settings > Vault.",
+      );
+    // A team member, a routine, another agent or a web page must not replace the key of every agent.
+    if (!this.#requestedByPerson(agentId, params.turnId, threadId))
+      return openBotToolFailure(
+        "Only a person's message, in your OpenBot chat or a thread they opened, can save a key to the Vault. Ask the user to add it in Server settings > Vault.",
+      );
+    const vault = this.#vaultItems;
+    if (!vault?.ready()) return openBotToolFailure("No Vault is available on this computer. Ask the user.");
+    const agentName = this.#store.list().find((candidate) => candidate.id === agentId)?.name;
+    const saved = yield* Effect.result(vault.saveApiKey({ name, key, notes }, agentName));
+    if (Result.isFailure(saved)) {
+      // The Vault's own errors are user text with no secret in them. A file error gets a fixed text.
+      const { cause } = saved.failure;
+      logger.warn("Unable to save an API key in the Vault for an agent", { error: toLogValue(cause) });
+      return openBotToolFailure(
+        cause instanceof Error && !("code" in cause) ? cause.message : sourceText("error.backend.apiKeySaveFailed"),
+      );
+    }
+    this.postVaultNote(
+      agentId,
+      threadId,
+      params.turnId,
+      sourceText(saved.success.created ? "status.agent.vaultAdded" : "status.agent.vaultUpdated", {
+        name: saved.success.name,
+      }),
+    );
+    // The agent's own key of this name wins over the Vault key, so the older value goes.
+    const removed = yield* Effect.result(apiKeys.remove(agentId, name));
+    if (Result.isFailure(removed)) {
+      logger.warn("Unable to delete an agent's own API key after a Vault save", {
+        error: toLogValue(removed.failure.cause),
+      });
+      return openBotToolFailure(
+        `The Vault has ${name} now, but OpenBot could not delete your own key with this name, which you still read first. Call remove_api_key name=${name}.`,
+      );
+    }
+    const keys = yield* apiKeys.list(agentId).pipe(Effect.catch(() => Effect.succeed<SavedApiKey[]>([])));
+    const path = keys.find((entry) => entry.name === name)?.path ?? null;
+    return openBotToolResult({ status: saved.success.created ? "added" : "updated", name, path });
+  });
+
   /**
-   * Shows the plan card of `acknowledge_request` and waits like `ask_ui`. When nobody answers in
-   * `ACKNOWLEDGE_START_MS`, the host presses the start button, so the work never waits long for a
-   * person who is away.
+   * Shows the plan card of `acknowledge_request` and waits like `ask_ui`. When nobody answers in the
+   * `planStartAfterMs` of the account defaults, the host presses the start button. With no time, the
+   * card waits for a person, and its prompt raises a notification as `ask_ui` does.
    */
   #acknowledgeRequest(client: AgentClient, request: AppServerRequest, params: DynamicToolCallParams): void {
-    const refuse = (message: string) => client.respond(request.id, whiloToolFailure(message));
+    const refuse = (message: string) => client.respond(request.id, openBotToolFailure(message));
     const agentId = this.#conversation.agentForThread(params.threadId);
     const agent = agentId ? this.#store.list().find((candidate) => candidate.id === agentId) : undefined;
-    if (!agent || !agentQuickAcknowledgementEnabled(agent, this.#store.agentDefaults())) {
+    const defaults = this.#store.agentDefaults();
+    if (!agent || !agentQuickAcknowledgementEnabled(agent, defaults)) {
       refuse("The user has not turned on the plan card for you. Start the work without it.");
       return;
     }
     const threadId = this.#conversation.publicThreadId(agent.id, params.threadId);
-    // Nobody presses a button on Slack, Discord or Telegram.
+    // Nobody presses a button on Slack, Discord, Telegram or WhatsApp.
     if (this.#messaging.store.linkForThread(threadId)) {
       refuse("This chat cannot show the plan card. Do not call it here; start the work.");
       return;
@@ -678,7 +827,9 @@ export class WhiloToolRouter {
       client,
       request,
       { blockId: randomUUID(), spec },
-      { actionId: ACKNOWLEDGE_REQUEST_ACTIONS.start, afterMs: ACKNOWLEDGE_START_MS },
+      defaults.planStartAfterMs === null
+        ? undefined
+        : { actionId: ACKNOWLEDGE_REQUEST_ACTIONS.start, afterMs: defaults.planStartAfterMs },
     );
   }
 
@@ -694,7 +845,7 @@ export class WhiloToolRouter {
    * headers can hold secrets.
    */
 
-  readonly #readAgent = Effect.fn("WhiloToolRouter.readAgent")(function* (this: WhiloToolRouter, agentId: string) {
+  readonly #readAgent = Effect.fn("OpenBotToolRouter.readAgent")(function* (this: OpenBotToolRouter, agentId: string) {
     const agent = yield* toolStep(() => this.#requireAgent(agentId));
     const computerUse = agentComputerUseEnabled(agent);
     let skills: unknown[] | undefined;
@@ -751,12 +902,14 @@ export class WhiloToolRouter {
     };
   });
 
-  readonly #handleWhiloTool = Effect.fn("WhiloToolRouter.handleWhiloTool")(function* (
-    this: WhiloToolRouter,
+  readonly #handleOpenBotTool = Effect.fn("OpenBotToolRouter.handleOpenBotTool")(function* (
+    this: OpenBotToolRouter,
+    client: AgentClient,
+    request: AppServerRequest,
     params: DynamicToolCallParams,
   ) {
     const senderAgentId = this.#conversation.agentForThread(params.threadId);
-    if (!senderAgentId) throw new Error("The sending Whilo agent is unknown.");
+    if (!senderAgentId) throw new Error("The sending OpenBot agent is unknown.");
 
     if (LOCAL_SKILL_TOOL_DEFINITIONS.some((tool) => tool.name === params.tool)) {
       const reportFailure = (error: unknown) =>
@@ -770,7 +923,7 @@ export class WhiloToolRouter {
         });
       return yield* Effect.gen({ self: this }, function* () {
         if (!this.#localSkillTools) throw new Error("Local skill tools are unavailable.");
-        const result = whiloToolResult(
+        const result = openBotToolResult(
           yield* runLocalSkillTool(
             this.#localSkillTools(),
             senderAgentId,
@@ -818,20 +971,37 @@ export class WhiloToolRouter {
     const executionThreadId = this.#conversation.publicThreadId(senderAgentId, params.threadId);
     // Any agent can post on its own initiative, such as a routine that reports to a Discord channel.
     if (MESSAGING_OUTBOUND_TOOLS.has(params.tool))
-      return yield* this.#messaging.outboundTool(params.tool, params.arguments);
+      return yield* this.#messaging.outboundTool(params.tool, params.arguments, (paths) =>
+        // The attachment path rules: the agent's workspace, its folders, or the OpenBot shared directory,
+        // which holds the files the user attached. The adapters read each file again by its path.
+        Effect.acquireUseRelease(
+          this.#attachments.openSources(senderAgentId, paths, { allowAnyReadablePath: false }),
+          (sources) =>
+            Effect.forEach(sources, (source) =>
+              Effect.gen(function* () {
+                const name = basename(source.path);
+                const { size } = yield* attachmentCall(() => source.handle.stat());
+                if (size > ATTACHMENT_LIMITS.fileBytes)
+                  return yield* attachmentFailure(
+                    new Error(`${name} is larger than ${ATTACHMENT_LIMITS.fileBytes} bytes.`),
+                  );
+                return { name, path: source.path, mimeType: attachmentMimeTypeForName(name) };
+              }),
+            ),
+          (sources) => Effect.promise(() => Promise.allSettled(sources.map((source) => source.handle.close()))),
+        ),
+      );
     if (params.tool.startsWith("messaging_")) {
       // Only the agent that answers a platform conversation, in that conversation's own thread.
       const link = this.#messaging.store.linkForThread(executionThreadId);
       if (!link || link.agentId !== senderAgentId)
-        return whiloToolFailure(
-          "Messaging tools work only in a turn that answers a Slack, Discord or Telegram message.",
-        );
+        return openBotToolFailure("Messaging tools work only in a turn that answers an external chat message.");
       return yield* this.#messaging.tool(link, params.turnId, params.callId, params.tool, params.arguments);
     }
     const channelId = this.#channels.store.channelForThread(executionThreadId);
     if (channelId && (params.tool.startsWith("channel_") || params.tool === "send_message")) {
       if (params.tool === "send_message") throw new Error("Use channel_assign or channel_transfer for channel work.");
-      return whiloToolResult(
+      return openBotToolResult(
         yield* this.#channels.tool(
           channelId,
           senderAgentId,
@@ -848,10 +1018,47 @@ export class WhiloToolRouter {
         contentItems: [
           {
             type: "inputText",
-            text: "This chat has no active channel assignment. Channel tools work only inside a channel task. Use whilo.send_message for direct teammate work, or sidebar section tools (list_sections, create_section, assign_agent_section) to group agents.",
+            text: "This chat has no active channel assignment. Channel tools work only inside a channel task. To give work to a channel from this chat, use openbot.list_channels and openbot.send_to_channel. Use openbot.send_message for direct teammate work.",
           },
         ],
       };
+    }
+
+    if (params.tool === "list_channels") {
+      const args = listChannelsToolSchema.parse(params.arguments ?? {}, { reportInput: true });
+      return openBotToolResult({ channels: this.#channels.handoffTargets(args.archived === true) });
+    }
+    if (CHANNEL_AGENT_TOOL_NAMES.has(params.tool)) {
+      // In a channel task, the request that started the task must come from this computer's user.
+      if (channelId) {
+        if (!(yield* this.#channels.requestedByLocalPerson(channelId, senderAgentId, params.turnId)))
+          return openBotToolFailure(CHANNEL_AGENT_TOOL_NEEDS_LOCAL_PERSON);
+      } else if (!this.#requestedByPerson(senderAgentId, params.turnId, executionThreadId))
+        return openBotToolFailure(
+          "Only a person's message, in your OpenBot chat or a thread they opened, can create or change a channel. Ask the user to request it there.",
+        );
+      return yield* handleChannelAgentTool(params, senderAgentId, {
+        channels: this.#channels,
+        listAgents: () => this.#hooks.listAgents(),
+        taskChannelId: channelId,
+      });
+    }
+    if (params.tool === "send_to_channel") {
+      if (channelId) return openBotToolFailure("Use channel_assign or channel_transfer for channel work.");
+      const args = sendToChannelToolSchema.parse(params.arguments, { reportInput: true });
+      const channel = yield* this.#channels.handoff({
+        operationId: toolCallIdempotencyKey(params),
+        channelId: args.channelId,
+        senderAgentId,
+        text: args.text,
+        recipientAgentIds: args.recipientAgentIds ?? [],
+        sourcePaths: args.paths ?? [],
+      });
+      return openBotToolResult({
+        status: "posted",
+        channel: { id: channel.id, name: channel.name },
+        next: "The channel members work on it in the channel. Tell the user to follow it there, and do not do the work here.",
+      });
     }
 
     if (params.tool === "html_preview") {
@@ -863,7 +1070,7 @@ export class WhiloToolRouter {
     }
 
     if (params.tool === "list_sites") {
-      return whiloToolResult(yield* this.#hostedSites.listSites());
+      return openBotToolResult(yield* this.#hostedSites.listSites());
     }
 
     if (isHostedSiteMutationTool(params.tool)) throw new Error("Hosted site changes require user approval.");
@@ -914,7 +1121,7 @@ export class WhiloToolRouter {
             ...(openWaits.has(agent.id) ? { openWaits: openWaits.get(agent.id) } : {}),
           };
         });
-      return whiloToolResult({ agents });
+      return openBotToolResult({ agents });
     }
 
     if (params.tool === "list_models") {
@@ -954,13 +1161,13 @@ export class WhiloToolRouter {
     if (params.tool === "start_new_chat") {
       const agent = this.#store.list().find((candidate) => candidate.id === senderAgentId);
       if (!agent || !agentNewChatAllowed(agent, this.#store.agentDefaults()))
-        return whiloToolFailure(
+        return openBotToolFailure(
           "The user has not allowed you to start a new chat. Ask the user to allow it in your settings, or to start a new chat there.",
         );
       if (agent.threadId !== this.#conversation.publicThreadId(senderAgentId, params.threadId))
-        return whiloToolFailure("You can start a new chat only from your own chat, not from a task or a channel.");
+        return openBotToolFailure("You can start a new chat only from your own chat, not from a task or a channel.");
       this.#hooks.requestNewChat(senderAgentId);
-      return whiloToolResult({
+      return openBotToolResult({
         status: "requested",
         note: "The new chat starts when this turn ends and your queue is empty. A queued message that runs first ends the request. Finish your answer now.",
       });
@@ -968,8 +1175,8 @@ export class WhiloToolRouter {
 
     if (params.tool === ROUTINE_NO_UPDATE_TOOL) {
       const outcome = this.#hooks.requestNoUpdate(senderAgentId, executionThreadId, params.turnId);
-      if (outcome === null) return whiloToolFailure("Use this tool only in a routine run.");
-      return whiloToolResult(
+      if (outcome === null) return openBotToolFailure("Use this tool only in a routine run.");
+      return openBotToolResult(
         outcome === "quiet"
           ? { status: "quiet", note: "This run ends without a message or a notification. End your turn now." }
           : { status: "shown", note: "Someone waits for this answer. Report the result as usual." },
@@ -979,8 +1186,8 @@ export class WhiloToolRouter {
     if (params.tool === ROUTINE_REPORT_FAILURE_TOOL) {
       const { reason } = routineReportFailureToolSchema.parse(params.arguments ?? {});
       if (!this.#hooks.reportRoutineFailure(senderAgentId, params.turnId, reason))
-        return whiloToolFailure("Use this tool only in a routine run.");
-      return whiloToolResult({ status: "failed", note: "This run ends as failed. Give your answer as usual." });
+        return openBotToolFailure("Use this tool only in a routine run.");
+      return openBotToolResult({ status: "failed", note: "This run ends as failed. Give your answer as usual." });
     }
 
     const sidebarResult = yield* handleSidebarTool(
@@ -1003,14 +1210,100 @@ export class WhiloToolRouter {
     );
     if (flowResult) return flowResult;
 
+    if (
+      WORKFLOW_CHANGE_TOOL_NAMES.has(params.tool) &&
+      !this.#requestedByPerson(senderAgentId, params.turnId, executionThreadId)
+    )
+      return openBotToolFailure(
+        "Only a person's message, in your OpenBot chat or a thread they opened, can change, delete or run a workflow. Ask the user to request it there.",
+      );
+    // A read gives every workflow, its webhook URLs and its run outputs. The Team API hides these
+    // from a member by agent access and admin rights, so a member's message does not get them here.
+    if (WORKFLOW_TOOL_NAMES.has(params.tool) && this.#fromRemoteMember(senderAgentId, params.turnId))
+      return openBotToolFailure("A team member's message cannot read workflows. Ask the member to use Workflows.");
+    // The agent list is read only for a workflow tool, not on each OpenBot tool call.
+    if (WORKFLOW_TOOL_NAMES.has(params.tool)) {
+      const workflowResult = yield* handleWorkflowTool(
+        params.tool,
+        params.arguments,
+        this.#workflowTools?.() ?? null,
+        senderAgentId,
+        // A call that comes again starts no second run.
+        `${params.threadId}:${params.turnId}:${params.callId}`,
+        new Set(this.#hooks.listAgents().map((agent) => agent.id)),
+        (title) =>
+          this.#attention
+            .awaitToolApproval(
+              client,
+              request,
+              {
+                requestId: request.id,
+                agentId: senderAgentId,
+                threadId: this.#conversation.publicThreadId(senderAgentId, params.threadId),
+                turnId: params.turnId,
+                kind: "permissions",
+                command: null,
+                cwd: null,
+                reason: sourceText("status.agent.workflowDelete", { title }),
+                grantRoot: null,
+                permissions: null,
+              },
+              // A delete loses the run history, so Full access does not answer for the user.
+              { alwaysAsk: true },
+            )
+            .pipe(
+              Effect.map((decision) => decision === "accept"),
+              toToolOperationFailed,
+            ),
+      );
+      if (workflowResult) return workflowResult;
+    }
+
+    // An isolated channel keeps what its members learn in it (#4332). The fact becomes a channel
+    // memory, which only the packets of this channel show, so the agent's own chats do not get it.
+    // Its other memory tools still change its own memories, which reach every chat.
+    if (
+      params.tool === "remember" &&
+      channelId &&
+      this.#channels.store.exists(channelId) &&
+      this.#channels.store.get(channelId).isolated
+    ) {
+      const args = isRecord(params.arguments) ? params.arguments : {};
+      if (args.memoryId !== undefined)
+        return openBotToolFailure(
+          "This channel is isolated, so a memory from it cannot change your own memories. Save the corrected fact without memoryId: it becomes a channel memory.",
+        );
+      const result = yield* this.#channels.tool(
+        channelId,
+        senderAgentId,
+        params.turnId,
+        params.callId,
+        "channel_remember",
+        { text: args.text },
+      );
+      return openBotToolResult(
+        isRecord(result) && result.accepted === true
+          ? {
+              status: "saved",
+              savedAs: "channel memory",
+              note: "This channel is isolated: the members of this channel see the memory here, and your other chats do not.",
+            }
+          : result,
+      );
+    }
+
     const memoryResult = this.#memories.handleTool(params, senderAgentId, this.#hooks.redactMcp);
     if (memoryResult) return memoryResult;
 
+    // A routine thread takes the runs that the agent's own chat took before, so its runs keep the
+    // tools of the chat: they wait for events and start tasks.
+    const callerThreadId = this.#conversation.publicThreadId(senderAgentId, params.threadId);
+    const callerTaskId = this.#tasks.taskForThread(callerThreadId);
     const caller = {
       agentId: senderAgentId,
-      inExecutionThread: this.#conversation.isExecutionThread(
-        this.#conversation.publicThreadId(senderAgentId, params.threadId),
-      ),
+      inExecutionThread:
+        this.#conversation.isExecutionThread(callerThreadId) &&
+        !(callerTaskId !== null && this.#tasks.isRoutineThread(callerTaskId)),
     };
     const waitResult = this.#waits.handleTool(params, caller);
     if (waitResult) return waitResult;
@@ -1025,7 +1318,7 @@ export class WhiloToolRouter {
       const args = params.arguments;
       if (!isRecord(args) || !isString(args.app)) throw new Error("app must be a Marketplace app slug.");
       if (!MARKETPLACE_APP_IDS.includes(args.app)) {
-        return whiloToolResult({
+        return openBotToolResult({
           status: "not_found",
           app: args.app,
           apps: MARKETPLACE_APP_IDS,
@@ -1043,7 +1336,7 @@ export class WhiloToolRouter {
         eventType: "marketplace.suggested",
         detail: { appId: args.app },
       });
-      return whiloToolResult({
+      return openBotToolResult({
         status: "suggested",
         app: args.app,
         next:
@@ -1062,21 +1355,21 @@ export class WhiloToolRouter {
    * `html_render`: stores the page as an HTML attachment and adds a visual reply message, which the
    * app shows in a sandboxed frame above the final answer. A retried call finds its message by id.
    */
-  readonly #renderVisual = Effect.fn("WhiloToolRouter.renderVisual")(function* (
-    this: WhiloToolRouter,
+  readonly #renderVisual = Effect.fn("OpenBotToolRouter.renderVisual")(function* (
+    this: OpenBotToolRouter,
     params: DynamicToolCallParams,
     senderAgentId: string,
     executionThreadId: string,
   ) {
     // The agent can correct its page, so it gets the reason. The reason does not repeat the page.
     const parsed = htmlRenderToolSchema.safeParse(params.arguments, { reportInput: true });
-    if (!parsed.success) return whiloToolFailure(profileToolErrorMessage(parsed.error));
+    if (!parsed.success) return openBotToolFailure(profileToolErrorMessage(parsed.error));
     const args = parsed.data;
     const messageId = visualReplyMessageId(params.threadId, params.turnId, params.callId);
     if (
       this.#conversation.ensureSnapshot(senderAgentId, executionThreadId).messages.some(({ id }) => id === messageId)
     ) {
-      return whiloToolResult({ status: "shown", messageId });
+      return openBotToolResult({ status: "shown", messageId });
     }
     yield* this.#addGeneratedMessage({
       agentId: senderAgentId,
@@ -1093,15 +1386,15 @@ export class WhiloToolRouter {
       eventType: "response.visual-added",
       detail: (attachmentId) => ({ turnId: params.turnId, messageId, attachmentId }),
     });
-    return whiloToolResult({ status: "shown", messageId });
+    return openBotToolResult({ status: "shown", messageId });
   });
 
   /**
    * Stores generated bytes as the attachment of one new assistant message. The file and its message
    * are saved together, so a failed save keeps no file and a retry stores one.
    */
-  readonly #addGeneratedMessage = Effect.fn("WhiloToolRouter.addGeneratedMessage")(function* (
-    this: WhiloToolRouter,
+  readonly #addGeneratedMessage = Effect.fn("OpenBotToolRouter.addGeneratedMessage")(function* (
+    this: OpenBotToolRouter,
     message: {
       agentId: string;
       threadId: string;
@@ -1153,15 +1446,15 @@ export class WhiloToolRouter {
    * `html_preview`: draws the page out of view and gives the agent the image, the content height and
    * the console output. A page that fails to draw is a result the agent can correct.
    */
-  readonly #previewVisual = Effect.fn("WhiloToolRouter.previewVisual")(function* (
-    this: WhiloToolRouter,
+  readonly #previewVisual = Effect.fn("OpenBotToolRouter.previewVisual")(function* (
+    this: OpenBotToolRouter,
     params: DynamicToolCallParams,
   ) {
     const parsed = htmlPreviewToolSchema.safeParse(params.arguments, { reportInput: true });
-    if (!parsed.success) return whiloToolFailure(profileToolErrorMessage(parsed.error));
+    if (!parsed.success) return openBotToolFailure(profileToolErrorMessage(parsed.error));
     const args = parsed.data;
     const preview = this.#visualPreview;
-    if (!preview) return whiloToolFailure("This Whilo cannot draw a page. Call html_render without a preview.");
+    if (!preview) return openBotToolFailure("This OpenBot cannot draw a page. Call html_render without a preview.");
     return yield* preview
       .capture({
         html: args.html,
@@ -1178,7 +1471,7 @@ export class WhiloToolRouter {
             ],
           }),
         ),
-        Effect.catchTag("ChatVisualPreviewFailed", (failure) => Effect.succeed(whiloToolFailure(failure.reason))),
+        Effect.catchTag("ChatVisualPreviewFailed", (failure) => Effect.succeed(openBotToolFailure(failure.reason))),
       );
   });
 
@@ -1186,36 +1479,36 @@ export class WhiloToolRouter {
    * `list_capture_sources` and `capture_screen`. The agent's Computer Use setting allows both. Each
    * capture waits for the user's approval, and the user sees the image in the conversation.
    */
-  readonly #screenCaptureTool = Effect.fn("WhiloToolRouter.screenCaptureTool")(function* (
-    this: WhiloToolRouter,
+  readonly #screenCaptureTool = Effect.fn("OpenBotToolRouter.screenCaptureTool")(function* (
+    this: OpenBotToolRouter,
     client: AgentClient,
     request: AppServerRequest,
     params: DynamicToolCallParams,
   ) {
     const agentId = this.#conversation.agentForThread(params.threadId);
     const agent = agentId ? this.#hooks.listAgents().find((candidate) => candidate.id === agentId) : undefined;
-    if (!agent) return whiloToolFailure(sourceText("error.agent.toolRequestInvalid"));
-    if (!agentComputerUseEnabled(agent)) return whiloToolFailure(sourceText("error.agent.screenCaptureOff"));
+    if (!agent) return openBotToolFailure(sourceText("error.agent.toolRequestInvalid"));
+    if (!agentComputerUseEnabled(agent)) return openBotToolFailure(sourceText("error.agent.screenCaptureOff"));
     const host = this.#screenCapture;
-    if (!host) return whiloToolFailure(sourceText("error.agent.screenCaptureUnavailable"));
+    if (!host) return openBotToolFailure(sourceText("error.agent.screenCaptureUnavailable"));
     const threadId = this.#conversation.publicThreadId(agent.id, params.threadId);
-    // A Slack, Discord or Telegram link sends each agent attachment of the turn to the platform. The
+    // A Slack, Discord, Telegram or WhatsApp link sends each agent attachment of the turn to the platform. The
     // screen of this computer must stay on this computer.
     if (this.#messaging.store.linkForThread(threadId)) {
-      return whiloToolFailure(sourceText("error.agent.screenCaptureShared"));
+      return openBotToolFailure(sourceText("error.agent.screenCaptureShared"));
     }
     // A channel shows the image to each member who reads it, so each capture asks, with Full access too.
     const channelId = this.#channels.store.channelForThread(threadId);
     if (params.tool === "list_capture_sources") {
       const sources = yield* Effect.result(host.listSources());
-      return Result.isFailure(sources) ? captureFailure(sources.failure) : whiloToolResult(sources.success);
+      return Result.isFailure(sources) ? captureFailure(sources.failure) : openBotToolResult(sources.success);
     }
     const parsed = captureScreenToolSchema.safeParse(params.arguments, { reportInput: true });
-    if (!parsed.success) return whiloToolFailure(profileToolErrorMessage(parsed.error));
+    if (!parsed.success) return openBotToolFailure(profileToolErrorMessage(parsed.error));
     const capture = parsed.data;
     const messageId = responseAttachmentMessageId(params.threadId, params.turnId, params.callId);
     if (this.#conversation.ensureSnapshot(agent.id, threadId).messages.some(({ id }) => id === messageId)) {
-      return whiloToolResult({ status: "shown", messageId });
+      return openBotToolResult({ status: "shown", messageId });
     }
     const target = yield* this.#captureApprovalReason(host, capture);
     if (typeof target !== "string") return target;
@@ -1241,7 +1534,7 @@ export class WhiloToolRouter {
       },
       { alwaysAsk: channelId !== null },
     );
-    if (decision !== "accept") return whiloToolFailure(sourceText("error.agent.screenCaptureDeclined"));
+    if (decision !== "accept") return openBotToolFailure(sourceText("error.agent.screenCaptureDeclined"));
     const image = yield* Effect.result(host.capture(capture));
     if (Result.isFailure(image)) return captureFailure(image.failure);
     return yield* this.#showCapture(agent.id, threadId, params, messageId, image.success);
@@ -1252,8 +1545,8 @@ export class WhiloToolRouter {
    * access, and a server that needs a sign-in gets a card in the conversation. Every failure is a
    * result the agent can correct, with the MCP secrets masked.
    */
-  readonly #mcpServerTool = Effect.fn("WhiloToolRouter.mcpServerTool")(function* (
-    this: WhiloToolRouter,
+  readonly #mcpServerTool = Effect.fn("OpenBotToolRouter.mcpServerTool")(function* (
+    this: OpenBotToolRouter,
     client: AgentClient,
     request: AppServerRequest,
     params: DynamicToolCallParams,
@@ -1261,7 +1554,7 @@ export class WhiloToolRouter {
     const agentId = this.#conversation.agentForThread(params.threadId);
     const servers = this.#mcpServers;
     if (!agentId || !servers || !isMcpServerTool(params.tool))
-      return whiloToolFailure(sourceText("error.agent.toolRequestInvalid"));
+      return openBotToolFailure(sourceText("error.agent.toolRequestInvalid"));
     const threadId = this.#conversation.publicThreadId(agentId, params.threadId);
     return yield* handleMcpServerTool(servers, {
       tool: params.tool,
@@ -1292,8 +1585,8 @@ export class WhiloToolRouter {
    * The saved MCP servers that a tool search names and that need a sign-in, each with its card in the
    * conversation. A failure leaves the search as it is.
    */
-  readonly #searchSignIns = Effect.fn("WhiloToolRouter.searchSignIns")(function* (
-    this: WhiloToolRouter,
+  readonly #searchSignIns = Effect.fn("OpenBotToolRouter.searchSignIns")(function* (
+    this: OpenBotToolRouter,
     agentId: string,
     params: DynamicToolCallParams,
   ) {
@@ -1336,6 +1629,39 @@ export class WhiloToolRouter {
       eventType: "mcp.sign_in_requested",
       detail: { mcpServerId: config.id },
     });
+  }
+
+  /**
+   * Whether only a person in this computer's own chat asked for the turn. As for webhook routines: an
+   * external chat, a routine or workflow run, or an agent message can carry text from outside, such
+   * as a webhook body. A message steered into a run shares the run's turn. A team member's message is
+   * refused too: the Team API checks that member's agent access. The agent's own chat counts, and so
+   * does a side thread that the person opened, or branched, and that takes no routine runs. A channel
+   * task and a Slack or Telegram message also arrive as `user`, so a thread linked to either does not.
+   */
+  #requestedByPerson(agentId: string, turnId: string, executionThreadId: string): boolean {
+    const deliveries = this.#mailbox.findDeliveriesByTurn(agentId, turnId);
+    return (
+      deliveries.length > 0 &&
+      deliveries.every(({ delivery }) => delivery.sender.kind === "user" && !this.#remoteMember(delivery.messageId)) &&
+      (!this.#conversation.isExecutionThread(executionThreadId) ||
+        (this.#tasks.isPersonThread(agentId, executionThreadId) &&
+          !this.#messaging.store.linkForThread(executionThreadId) &&
+          !this.#channels.store.channelForThread(executionThreadId)))
+    );
+  }
+
+  /** Whether a team member on another computer sent this message. */
+  #remoteMember(messageId: string): boolean {
+    const member = this.#mailbox.senderMember(messageId);
+    return member !== undefined && (this.#channels.hooks.remotePerson?.(member.id) ?? false);
+  }
+
+  /** Whether a team member on another computer sent a message of this turn. */
+  #fromRemoteMember(agentId: string, turnId: string): boolean {
+    return this.#mailbox
+      .findDeliveriesByTurn(agentId, turnId)
+      .some(({ delivery }) => this.#remoteMember(delivery.messageId));
   }
 
   /** Adds the note that an agent changed the Vault. `text` names the item, never a secret. */
@@ -1385,7 +1711,7 @@ export class WhiloToolRouter {
   }
 
   /** What the approval card says. A window that is gone is a result the agent can correct. */
-  readonly #captureApprovalReason = Effect.fn("WhiloToolRouter.captureApprovalReason")(function* (
+  readonly #captureApprovalReason = Effect.fn("OpenBotToolRouter.captureApprovalReason")(function* (
     host: ScreenCaptureHost,
     capture: ScreenCaptureRequest,
   ) {
@@ -1399,13 +1725,13 @@ export class WhiloToolRouter {
     const sources = listed.success;
     if (capture.target === "window") {
       const window = sources.windows.find(({ id }) => id === capture.windowId);
-      if (!window) return whiloToolFailure(sourceText("error.agent.screenCaptureWindowMissing"));
+      if (!window) return openBotToolFailure(sourceText("error.agent.screenCaptureWindowMissing"));
       return sourceText("status.agent.screenCaptureWindow", { name: window.name });
     }
     const display = capture.displayId
       ? sources.displays.find(({ id }) => id === capture.displayId)
       : sources.displays.find(({ primary }) => primary);
-    if (capture.displayId && !display) return whiloToolFailure(sourceText("error.agent.screenCaptureDisplayMissing"));
+    if (capture.displayId && !display) return openBotToolFailure(sourceText("error.agent.screenCaptureDisplayMissing"));
     return display?.name
       ? sourceText("status.agent.screenCaptureDisplay", { name: display.name })
       : sourceText("status.agent.screenCaptureScreen");
@@ -1415,8 +1741,8 @@ export class WhiloToolRouter {
    * Stores the capture as an attachment of a message in the conversation and gives the agent the
    * image. The image and its message are saved together, as for `html_render`.
    */
-  readonly #showCapture = Effect.fn("WhiloToolRouter.showCapture")(function* (
-    this: WhiloToolRouter,
+  readonly #showCapture = Effect.fn("OpenBotToolRouter.showCapture")(function* (
+    this: OpenBotToolRouter,
     agentId: string,
     threadId: string,
     params: DynamicToolCallParams,
@@ -1457,12 +1783,12 @@ export class WhiloToolRouter {
     return result;
   }, Effect.uninterruptible);
 
-  readonly #createAgent = Effect.fn("WhiloToolRouter.createAgent")(
+  readonly #createAgent = Effect.fn("OpenBotToolRouter.createAgent")(
     function* (
-      this: WhiloToolRouter,
+      this: OpenBotToolRouter,
       params: DynamicToolCallParams,
       senderAgentId: string,
-    ): Effect.fn.Return<WhiloToolResponse, ToolOperationFailed> {
+    ): Effect.fn.Return<OpenBotToolResponse, ToolOperationFailed> {
       const args = createAgentToolSchema.parse(params.arguments, { reportInput: true });
       const hue = args.avatarHue ?? null;
       const caller = this.#requireAgent(senderAgentId);
@@ -1548,12 +1874,12 @@ export class WhiloToolRouter {
     Effect.uninterruptible,
   );
 
-  readonly #updateProfile = Effect.fn("WhiloToolRouter.updateProfile")(
+  readonly #updateProfile = Effect.fn("OpenBotToolRouter.updateProfile")(
     function* (
-      this: WhiloToolRouter,
+      this: OpenBotToolRouter,
       params: DynamicToolCallParams,
       senderAgentId: string,
-    ): Effect.fn.Return<WhiloToolResponse, ToolOperationFailed> {
+    ): Effect.fn.Return<OpenBotToolResponse, ToolOperationFailed> {
       const args = updateProfileToolSchema.parse(params.arguments, { reportInput: true });
       const {
         agentId,
@@ -1588,7 +1914,7 @@ export class WhiloToolRouter {
       if (!sender) throw new Error("The calling agent no longer exists.");
       const target = this.#requireAgent(agentId);
       if (widensAgentSettings(target, access, computerUse)) {
-        return whiloToolFailure(sourceText("error.agent.onlyUserWidensSettings"));
+        return openBotToolFailure(sourceText("error.agent.onlyUserWidensSettings"));
       }
       // Checked before anything is written, so a model the provider does not list leaves the name
       // and every other field of the same call unchanged.
@@ -1665,12 +1991,12 @@ export class WhiloToolRouter {
     Effect.uninterruptible,
   );
 
-  readonly #react = Effect.fn("WhiloToolRouter.react")(
+  readonly #react = Effect.fn("OpenBotToolRouter.react")(
     function* (
-      this: WhiloToolRouter,
+      this: OpenBotToolRouter,
       params: DynamicToolCallParams,
       senderAgentId: string,
-    ): Effect.fn.Return<WhiloToolResponse, ToolOperationFailed> {
+    ): Effect.fn.Return<OpenBotToolResponse, ToolOperationFailed> {
       const args = params.arguments;
       if (!isRecord(args) || !isMessageReaction(args.emoji)) {
         throw new Error("emoji must be exactly one complete Unicode emoji.");
@@ -1687,20 +2013,20 @@ export class WhiloToolRouter {
       const snapshot = this.#conversation.ensureSnapshot(senderAgentId, params.threadId);
       this.#mailboxSync.syncMailboxMessages(snapshot);
       this.#conversation.emitConversation(snapshot);
-      return whiloToolResult({ status: "reacted", messageId: delivery.delivery.id, emoji: args.emoji });
+      return openBotToolResult({ status: "reacted", messageId: delivery.delivery.id, emoji: args.emoji });
     },
     Effect.catchDefect((cause) => Effect.fail(new ToolOperationFailed({ cause }))),
     Effect.uninterruptible,
   );
 
-  readonly #sendMessage = Effect.fn("WhiloToolRouter.sendMessage")(
+  readonly #sendMessage = Effect.fn("OpenBotToolRouter.sendMessage")(
     function* (
-      this: WhiloToolRouter,
+      this: OpenBotToolRouter,
       params: DynamicToolCallParams,
       senderAgentId: string,
-    ): Effect.fn.Return<WhiloToolResponse, ToolOperationFailed> {
+    ): Effect.fn.Return<OpenBotToolResponse, ToolOperationFailed> {
       if (params.tool !== "send_message" || !isRecord(params.arguments)) {
-        throw new Error(`Unsupported Whilo tool: ${params.tool}`);
+        throw new Error(`Unsupported OpenBot tool: ${params.tool}`);
       }
       const recipientValues = params.arguments.recipientAgentIds;
       if (!Array.isArray(recipientValues) || !recipientValues.every((item) => isString(item))) {
@@ -1713,7 +2039,7 @@ export class WhiloToolRouter {
       const known = new Map(this.#hooks.listAgents().map((agent) => [agent.id, agent]));
       for (const recipient of recipientValues) {
         const agent = known.get(recipient);
-        if (!agent) throw new Error(`Unknown Whilo agent: ${recipient}`);
+        if (!agent) throw new Error(`Unknown OpenBot agent: ${recipient}`);
         // A hidden agent receives no new messages until the user restores it.
         if (agent.hiddenAt !== undefined)
           throw new Error(`${recipient}: ${sourceText("error.backend.recipientHidden")}`);
@@ -1747,15 +2073,53 @@ export class WhiloToolRouter {
         .find((taskId) => taskId !== null);
       // An agent can send "" for no reply. Every reader rejects an empty id. A model can also copy the
       // quotes around the id in the delivery prompt; such an id refers to no message.
-      const replyTo =
+      const replyReference =
         replyToMessageId
           ?.trim()
           .replace(/^"(.*)"$/s, "$1")
           .trim() || null;
+      const replyTo = replyReference && this.#mailbox.replyReferenceMessageId(replyReference);
+      // An id that names no message would store the answer outside the thread that asked, and stop the
+      // automatic result for the request (#5452). Nothing is written, so the agent can send it again. The
+      // agent corrects its own call, so the user gets no error for it.
+      if (replyReference && !replyTo) {
+        const requestIds = turnDeliveries
+          .filter(
+            ({ delivery }) =>
+              delivery.sender.kind === "agent" &&
+              recipientValues.includes(delivery.sender.agentId) &&
+              delivery.expectsReply !== false,
+          )
+          .map(({ delivery }) => delivery.messageId);
+        return openBotToolFailure(
+          [
+            sourceText("error.backend.replyReferenceUnknown", { id: replyReference }),
+            ...(requestIds.length > 0
+              ? [sourceText("error.backend.replyReferenceRequests", { ids: requestIds.join(", ") })]
+              : []),
+          ].join(" "),
+        );
+      }
       // An answer to a request from a side thread runs in that thread. When the thread is archived, the
-      // answer goes to the recipient's own chat, so it is not lost.
-      const answerTaskId = replyTo ? this.#mailbox.answerTaskId(senderAgentId, replyTo, recipientValues) : null;
+      // answer goes to the recipient's own chat, so it is not lost. A message without replyToMessageId,
+      // such as a question back, goes to the thread of the requests from its recipient that this turn
+      // works on, when they all came from that one thread (#5093). Otherwise it goes to the own chat,
+      // and the automatic result does not follow, so the thread would wait without an answer.
+      // `answerTaskId` routes a message to one recipient only.
+      const answeredRequestIds = replyTo
+        ? [replyTo]
+        : turnDeliveries
+            .filter(
+              ({ delivery }) => delivery.sender.kind === "agent" && delivery.sender.agentId === recipientValues[0],
+            )
+            .map(({ delivery }) => delivery.messageId);
+      const answerTaskIds = new Set(
+        answeredRequestIds.map((requestId) => this.#mailbox.answerTaskId(senderAgentId, requestId, recipientValues)),
+      );
+      const [answerTaskId = null] = answerTaskIds.size === 1 ? answerTaskIds : [];
       const taskId = answerTaskId && this.#tasks.threadId(answerTaskId) !== null ? answerTaskId : undefined;
+      // The same rule for a request from a Slack thread or another external conversation (#5517).
+      const messaging = this.#mailbox.answerReturn(answeredRequestIds, recipientValues);
       const text = params.arguments.text;
       const receipt = yield* this.#mailbox
         .enqueue({
@@ -1765,6 +2129,7 @@ export class WhiloToolRouter {
           sourcePaths: paths,
           replyToMessageId: replyTo,
           ...(expectsReply === undefined ? {} : { expectsReply }),
+          ...(messaging ? { messaging } : {}),
           ...(messagingReturn ? { messagingReturn } : {}),
           ...(senderTaskId ? { senderTaskId } : {}),
           ...(taskId ? { taskId } : {}),

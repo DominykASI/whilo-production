@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, describe, expect, it } from "vitest";
-import { migrateWhiloDatabase } from "./whilo-database-schema";
+import { migrateOpenBotDatabase } from "./openbot-database-schema";
 
 // Failure modes: the upgrade changes or loses a row of any table; a failed upgrade leaves the table
 // or its marker; a newer or incomplete history is accepted; a memory can point to no connection; a
@@ -22,7 +22,7 @@ function databaseAt(version: number): DatabaseSync {
 function migrateUpTo(db: DatabaseSync, version: number): void {
   db.exec(`CREATE TEMP TRIGGER stop_at_version BEFORE INSERT ON schema_migrations WHEN new.version > ${version}
     BEGIN SELECT RAISE(ABORT, 'fixture stop'); END;`);
-  expect(() => migrateWhiloDatabase(db)).toThrow(`migration to version ${version + 1} failed`);
+  expect(() => migrateOpenBotDatabase(db)).toThrow(`migration to version ${version + 1} failed`);
   db.exec("DROP TRIGGER stop_at_version");
 }
 
@@ -74,7 +74,7 @@ describe("messaging memory migration", () => {
       if (version < 35) migrateUpTo(db, 35);
       if (version < 25) seedConnection(db);
       const before = contents(db);
-      migrateWhiloDatabase(db);
+      migrateOpenBotDatabase(db);
       expect(contents(db)).toEqual({
         ...before,
         projection_messaging_memories: [],
@@ -97,8 +97,13 @@ describe("messaging memory migration", () => {
         workflow_versions: [],
         workflow_webhook_receipts: [],
         workflows: [],
+        projection_messaging_allowed_senders: [],
+        projection_deleted_thread_messages: [],
+        browser_proxies: [],
+        browser_profile_proxies: [],
+        agent_usage_skill_loads: [],
       });
-      expect(db.prepare("SELECT MAX(version) AS version FROM schema_migrations").get()).toEqual({ version: 50 });
+      expect(db.prepare("SELECT MAX(version) AS version FROM schema_migrations").get()).toEqual({ version: 58 });
       expect(db.prepare("PRAGMA foreign_keys").get()).toEqual({ foreign_keys: 1 });
       expect(db.prepare("PRAGMA foreign_key_check").all()).toEqual([]);
       expect(db.prepare("PRAGMA integrity_check").get()).toEqual({ integrity_check: "ok" });
@@ -110,13 +115,13 @@ describe("messaging memory migration", () => {
     const before = contents(db);
     db.exec(`CREATE TEMP TRIGGER fail_marker BEFORE INSERT ON schema_migrations WHEN new.version=36
       BEGIN SELECT RAISE(ABORT, 'late failure'); END;`);
-    expect(() => migrateWhiloDatabase(db)).toThrow("migration to version 36 failed");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("migration to version 36 failed");
     expect(contents(db)).toEqual(before);
     expect(memoryTables(db)).toEqual([]);
     expect(db.prepare("SELECT version FROM schema_migrations WHERE version=36").all()).toEqual([]);
     expect(db.prepare("PRAGMA foreign_keys").get()).toEqual({ foreign_keys: 1 });
     db.exec("DROP TRIGGER fail_marker");
-    migrateWhiloDatabase(db);
+    migrateOpenBotDatabase(db);
     expect(contents(db)).toEqual({
       ...before,
       projection_messaging_memories: [],
@@ -139,23 +144,28 @@ describe("messaging memory migration", () => {
       workflow_versions: [],
       workflow_webhook_receipts: [],
       workflows: [],
+      projection_messaging_allowed_senders: [],
+      projection_deleted_thread_messages: [],
+      browser_proxies: [],
+      browser_profile_proxies: [],
+      agent_usage_skill_loads: [],
     });
   });
 
   it("rejects newer and incomplete migration histories before it creates the table", () => {
     const db = databaseAtWithSeed(35);
     const before = contents(db);
-    db.exec("INSERT INTO schema_migrations VALUES(51,'now')");
-    expect(() => migrateWhiloDatabase(db)).toThrow("newer than this application supports");
-    db.exec("DELETE FROM schema_migrations WHERE version=51; DELETE FROM schema_migrations WHERE version=20");
-    expect(() => migrateWhiloDatabase(db)).toThrow("missing version 20");
+    db.exec("INSERT INTO schema_migrations VALUES(59,'now')");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("newer than this application supports");
+    db.exec("DELETE FROM schema_migrations WHERE version=59; DELETE FROM schema_migrations WHERE version=20");
+    expect(() => migrateOpenBotDatabase(db)).toThrow("missing version 20");
     expect(contents(db)).toEqual(before);
     expect(memoryTables(db)).toEqual([]);
   });
 
   it("refuses a memory of no connection, and keeps a connection that has memories", () => {
     const db = databaseAtWithSeed(35);
-    migrateWhiloDatabase(db);
+    migrateOpenBotDatabase(db);
     const insert = db.prepare(`INSERT INTO projection_messaging_memories
       (memory_id, connection_id, text, normalized_text, origin, source_turn_id, created_at, updated_at,
        last_event_sequence)

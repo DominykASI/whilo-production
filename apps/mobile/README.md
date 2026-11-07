@@ -1,4 +1,4 @@
-# Whilo Mobile
+# OpenBot Mobile
 
 React Native app built with Expo SDK 58, Expo Router, TypeScript 7, Biome, and Bun. The app uses Expo Continuous Native Generation, so native `ios/` and `android/` directories are intentionally not committed.
 
@@ -39,12 +39,6 @@ Expo modules by default, so a patch to Expo Swift code needs `expo.autolinking.i
 extend `NativeMethods`, which React Native 0.87 removed from its types, so `MaskedView` was not a
 valid JSX component. Remove the patch when a release fixes the types.
 
-react-native-uitextview 2.7.1 is patched in `patches/react-native-uitextview@2.7.1.patch` so the
-native selectable message text applies the same baseline offset as React Native `Text`. React Native
-centers each line in its `lineHeight`. Without the offset, the text view drew each line at the bottom
-of its line box, so iOS message bubbles had more space above the text than below it. Remove the
-patch when a release applies the offset.
-
 react-native-screens 4.30.0 is patched in `patches/react-native-screens@4.30.0.patch` so the full
 screen swipe back of a chat waits for a gesture handler pan in the top screen to fail. The swipe back
 starts anywhere in the chat, and a swipe to the right on a message bubble still replies. Without
@@ -82,7 +76,7 @@ then build and launch the app with Expo. Expo arguments such as `--device` and
 `--port` pass through. The RocketSim command requires the app in `/Applications`
 or `~/Applications`, or `ROCKETSIM_APP_PATH` set to its `.app` directory. If it is
 missing, the command stops with setup instructions. The standard command does not
-look for RocketSim, even if `ROCKETSIM_APP_PATH` or the old `WHILO_ROCKETSIM`
+look for RocketSim, even if `ROCKETSIM_APP_PATH` or the old `OPENBOT_ROCKETSIM`
 variable is set.
 
 The iOS commands keep the Xcode build in `ios/DerivedData`, not in
@@ -193,12 +187,23 @@ When no agents have loaded and the selected server is connecting or offline, the
 `Waiting for connection`. The empty-server prompt appears only once the server is online; agents
 already loaded remain visible during reconnection.
 
-The phone keeps an encrypted copy of the agents, hidden agents, sections and latest chat pages of
-each server (`workspace-cache.ts`), and writes it when a server load ends and when the app goes to
-the background. After a start, a server shows its copy at once, and its first connection attempt is
-quiet for 5 seconds, as a return to the app is. The UI does not mark the copy: a server that takes
-longer shows the usual reconnect status and faded avatars. Its own reads then replace the copy.
-Sign-out, an expired session and the removal of a server delete it.
+The phone keeps an encrypted copy of the agents, hidden agents, sections, latest chat pages,
+channels with the latest 50 messages of each opened channel, capabilities and last drawer values (`drawer-snapshot.ts`) of each server (`workspace-cache.ts`),
+and writes it when a server load ends and when the app goes to the background. It also keeps the
+last server list of the account service. After a start, the servers of that list connect at once,
+before the account service answers; a server whose key is not the key that the phone trusts waits
+for the account service. Its list then replaces the copy: it removes a server that the account
+left. A server shows its copy at once, and its first connection attempt is quiet for 5 seconds, as
+a return to the app is. The first workspace reads go out with the compatibility read when the copy
+has the capabilities. The UI does not mark the copy: a server that takes longer shows the usual
+reconnect status and faded avatars. Its own reads then replace the copy. Sign-out, an expired
+session and the removal of a server delete it.
+
+The first connect of each server asks the account service for its logical session while the hidden
+peer page loads (`remote-team-transport.tsx`). The account service gives the active session again, so
+the peer then asks only for its ticket. After a return to the app, the other servers wait for the
+selected server for up to 3 seconds. A failed attempt of the selected server, or its host that
+Signal reports offline, ends this wait.
 
 While a server is disconnected, its agent avatars and colored chat bubbles fade locally with the same
 280 ms transition. Voice controls and suggested prompts are disabled until the server is online. The
@@ -336,9 +341,10 @@ Cloud builds require the final `ios.bundleIdentifier` and `android.package` valu
 
 ### Local TestFlight build
 
-On a Mac with Xcode, CocoaPods, Fastlane, and this project's Node and Bun versions installed,
-sign in to Expo with `bunx eas-cli@latest login` from `apps/mobile`. An active Apple Developer
-membership is required for signing and TestFlight distribution.
+On a Mac with Xcode 27.1 or newer (see the iPhone Duo note below), CocoaPods, Fastlane, and this
+project's Node and Bun versions installed, sign in to Expo with `bunx eas-cli@latest login` from
+`apps/mobile`. An active Apple Developer membership is required for signing and TestFlight
+distribution.
 
 From the repository root, run:
 
@@ -348,7 +354,7 @@ bun run mobile:ios:build:local
 
 From `apps/mobile`, the equivalent command is `bun run ios:build:local`.
 This runs EAS Build locally with the `production` profile and writes
-`/private/tmp/whilo-testflight.ipa`. Each successful build replaces that output file.
+`/private/tmp/openbot-testflight.ipa`. Each successful build replaces that output file.
 The profile uses remote build numbers and increments the build number automatically.
 EAS CLI prompts for signing credentials when needed.
 
@@ -363,29 +369,33 @@ it to a tester group. Upload is manual; the command does not run EAS Submit.
 ### GitHub Actions TestFlight release
 
 The `Release iOS to TestFlight` workflow builds the selected `main` commit on a GitHub-hosted
-`macos-26` runner with Xcode 26.6. Expo SDK 58 requires Xcode 26.4 or newer; the desktop release's
-`macos-14` runner is not suitable. EAS CLI 24.1.2 runs with `--local --non-interactive`, so compilation
-uses GitHub Actions compute. Fastlane uploads directly to Apple without EAS Submit.
+`xcode-27` runner (a GitHub preview image) with Xcode 27.1. Expo SDK 58 compiles with Xcode 26.4 or
+newer, but iOS decides the iPhone Duo layout from the SDK of the build: an iOS 26 SDK build shows in
+a small window in the middle of the open iPhone Duo, and only the iOS 27.1 SDK fills the screen and
+moves the bars into the vertical rail. Keep Xcode 27.1 or newer, and check `DTSDKName` in the IPA
+`Info.plist` after a runner change. The desktop release's `macos-14` runner is not suitable. EAS CLI
+24.1.2 runs with `--local --non-interactive`, so compilation uses GitHub Actions compute. Fastlane
+uploads directly to Apple without EAS Submit.
 
 One-time setup:
 
 1. In GitHub repository settings, create the `release-ios` environment. Under deployment branches
    and tags, select only the `main` branch.
 2. Add environment secrets `EXPO_TOKEN`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, and `ASC_PRIVATE_KEY`.
-   The Expo token needs access to the Whilo project. The Apple secrets are the Key ID, Issuer ID,
+   The Expo token needs access to the OpenBot project. The Apple secrets are the Key ID, Issuer ID,
    and full `.p8` contents of an App Store Connect team API key with the App Manager role.
 3. Keep the iOS distribution certificate and provisioning profiles configured in EAS. CI downloads
    these existing credentials. If they expire or need repair, update them interactively through
    EAS before retrying; the upload API key is not passed to the build step. Each target has its own
-   profile: the app, `ExpoWidgetsTarget` (`run.whilo.mobile.ExpoWidgetsTarget`),
-   `WhiloNotificationService` (`run.whilo.mobile.NotificationService`, the Notification Service
-   Extension) and `expo-sharing-extension` (`run.whilo.mobile.ShareExtension`, the share extension).
-   Each extension needs the App Group `group.run.whilo.mobile`. When a release adds a
+   profile: the app, `ExpoWidgetsTarget` (`run.openbot.mobile.ExpoWidgetsTarget`),
+   `OpenBotNotificationService` (`run.openbot.mobile.NotificationService`, the Notification Service
+   Extension) and `expo-sharing-extension` (`run.openbot.mobile.ShareExtension`, the share extension).
+   Each extension needs the App Group `group.run.openbot.mobile`. When a release adds a
    target, set up its profile interactively once (`bunx eas-cli credentials -p ios`) before CI builds
    it. Keep the saved push key; do not let EAS make a new one.
 4. Keep the OpenPanel variables in EAS `production` with `Plain text` or `Sensitive` visibility.
    `Secret` variables are unavailable to this local build. Do not copy these values into source.
-5. Ensure App Store Connect has the app `run.whilo.mobile` and the intended TestFlight group.
+5. Ensure App Store Connect has the app `run.openbot.mobile` and the intended TestFlight group.
 
 After this workflow is merged into `main`, authenticate GitHub CLI with `gh auth login`, then run
 from the repository root:
@@ -411,14 +421,39 @@ version in `app.json`, `package.json` and `bun.lock`. Merge that change to `main
 
 The new section is `## [x.y.z] - In review`, and `/changelog` does not show it. Apple and Google
 review a build on their own, and each can take days. When testers can install the build from one
-store, run `bun run mobile:release:published ios` or `bun run mobile:release:published android`.
-It writes today's date for that store, for example `## [x.y.z] - 2026-10-14 (Android)`. Merge that
-change to `main`, and the site shows the version with that store, and the other store as "In review".
-When the other store makes the build available, run the command again with that store. The heading
-becomes `## [x.y.z] - 2026-10-14 (Android), 2026-10-16 (iOS)`, or `## [x.y.z] - 2026-10-14` when
-both dates are the same. Use `both` when the two stores make the build available on the same day.
+store, run `bun run mobile:release` and select 3, or `bun run mobile:release:published ios` (or
+`android`). It writes today's date for that store, for example `## [x.y.z] - 2026-10-14 (Android)`,
+and raises that store's `cloudServers` and `browser` flags and newest version in
+`apps/auth-api/src/server/mobile-features-config.ts`. Merge that change to `main`. After the Worker
+deploy, the site shows the version with that store, the other store as "In review", and Discord gets
+the post of that store. When the other store makes the build available, do the same for that store.
+The heading becomes `## [x.y.z] - 2026-10-14 (Android), 2026-10-16 (iOS)`, or `## [x.y.z] - 2026-10-14`
+when both dates are the same. Use `both` when the two stores make the build available on the same day.
 For an older version, add `--version x.y.z`. A new `mobile:release:*` stops while no store has the
 current version.
+
+A store that will never ship a version, because a newer one replaced it, is skipped:
+`## [x.y.z] - 2026-11-01 (iOS), Skipped (Android)`. `/changelog` shows it as skipped, and Discord gets
+no post. When you mark a newer version as available, the menu asks to mark the older versions that
+the store still reviews as skipped (`--skip-older` on the command). Menu step 4 marks a version as
+skipped by hand, or as in review again.
+
+### Release menu
+
+`bun run mobile:release` shows the state of the newest versions on each store and their posts, and
+one menu for each step. Press a digit; Enter selects the first choice, and 0 goes back.
+
+1. Prepare a new version (`prepare-release.ts --mobile`).
+2. Build and send to TestFlight or Google Play (dispatches `release-ios.yml` or `release-android.yml` on `main`).
+3. Mark a version as available in a store, with its flags and the skip of older versions.
+4. Mark a version as skipped, or in review again.
+5. Write the Discord highlights.
+6. Show the live state: the flags and `/changelog` of production, and the posts that are due or wait.
+
+A step that changes files needs a clean working tree. It makes a branch from the `main` of GitHub,
+commits (the pre-commit hook runs), pushes, opens the pull request with the release title and body,
+and goes back to your branch. It can also turn on auto-merge. The menu never merges by itself.
+
 The signed `.ipa` is saved as a GitHub Actions artifact for seven days before upload. If upload
 fails, download that artifact and retry with Transporter to avoid rebuilding. Re-running the full
 workflow creates a new build number.
@@ -449,7 +484,7 @@ One-time setup:
    same as in `release-ios`. The Google secret is the full JSON key of a Google Cloud service account.
 3. In the Google Cloud project of that service account, enable the Google Play Android Developer API.
    In Play Console, under **Users and permissions**, invite the service account email and give it
-   access to `run.whilo.mobile` with the release permissions for testing tracks.
+   access to `run.openbot.mobile` with the release permissions for testing tracks.
 4. Keep the Android upload keystore configured in EAS as the default build credentials. CI downloads
    it. Play App Signing keeps the app signing key; the EAS keystore is the upload key.
 5. Keep the OpenPanel variables in EAS `production`, as for iOS.
@@ -459,7 +494,7 @@ One-time setup:
    published release, Play accepts only draft releases: dispatch with `release_status` set to `draft`
    and roll out the release in Play Console.
 7. Commit `apps/mobile/google-services.json`, the Firebase file of the Android app
-   `run.whilo.mobile`. `app.config.js` adds it when it exists. Without it the build has no Firebase,
+   `run.openbot.mobile`. `app.config.js` adds it when it exists. Without it the build has no Firebase,
    and Android gets no notifications. The file has public identifiers only. The account service has
    the key that sends (`FCM_SERVICE_ACCOUNT` in [the account service](../auth-api/README.md)).
 
@@ -484,50 +519,66 @@ A successful workflow means Google Play accepted the bundle on the selected trac
 upload store metadata, screenshots or release notes. Write the release notes in Play Console.
 
 To build a signed `.aab` on your computer, run `bun run mobile:android:build:local`. It needs JDK 17
-and the Android SDK, and writes `/private/tmp/whilo-play.aab`.
+and the Android SDK, and writes `/private/tmp/openbot-play.aab`.
 See [Fastlane Google Play upload](https://docs.fastlane.tools/actions/upload_to_play_store/).
 
 ### Discord announcement
 
-Each mobile version gets one post in the Whilo Discord, when the second store has it. Android is
-often available hours or days before iOS, so the post waits for both. The source is
-`apps/mobile/CHANGELOG.md`, not the stores. The `Announce mobile release on Discord` workflow
-(`mobile-release-announcement.yml`) runs on each push to `main` that changes the file. When the
-push gives a version its second store date, for example
-`## [x.y.z] - 2026-10-14 (Android), 2026-10-16 (iOS)`, it posts the message. The desktop release
+Each store gets its own post in the OpenBot Discord when users of that store can see the version.
+The source is `apps/mobile/CHANGELOG.md`; the gate is production. The `Announce mobile release on
+Discord` workflow (`mobile-release-announcement.yml`) runs after each CI run on `main`, at minutes
+17 and 47 of each hour, and on a manual dispatch. It posts a version for a store only when the
+account Worker lists the version in `/v1/mobile/changelog?platform=<store>` and gives it the newest
+version and the flags of `apps/auth-api/src/server/mobile-features-config.ts` in
+`/v1/mobile/features`. Thus the post never comes before the deploy of the flags, the browser and
+`/changelog`. A newer push to `main` cancels an older CI run, and that does not lose a post: the next
+deploy or the schedule sends it.
+
+A tag `mobile-announced/v<version>/<store>` records each post. The workflow creates the tag, then
+posts; a failed post removes the tag, so the next run tries again. A version with a tag gets no post
+again. Only the newest dated version of each store gets a post, from 1.4.7 on. The desktop release
 has its own post and its own workflow (`docs/RELEASING.md#discord-announcement`).
 
-Before the second store has the build, select the 3 to 5 changes in the version section that have
+| Event | Title | Line under the title |
+| --- | --- | --- |
+| The first store | `OpenBot vx.y.z is out on iOS` | `The Android version comes out later.` |
+| The second store | `OpenBot vx.y.z is out on Android` | `It is already out on iOS.` |
+| Both stores in the same run | `OpenBot vx.y.z is out on iOS and Android` | none |
+| The other store skipped the version | `OpenBot vx.y.z is out on iOS` | none |
+
+The message mentions the `Mobile Release Pings` role, then has the title, the highlights, and one
+line of links to each store that has the version and to `Full Changelog`, the version on the Mobile
+tab of `/changelog`. It notifies only that role.
+
+Before the first store has the build, select the 3 to 5 changes in the version section that have
 the largest effect on users, and write them with the version in `apps/mobile/release-announcement.json`:
 
 ```json
 { "version": "x.y.z", "highlights": ["...", "...", "..."] }
 ```
 
-Use the highlight rules of the desktop announcement. Replace the highlights of the previous version;
-the file holds only one version. Run `bun scripts/discord-mobile-release-announcement.ts check x.y.z`
-to see the message. `bun run mobile:release:published` stops when it gives the version its second
-store and the file is not ready, and the Changelog workflow stops such a pull request.
+Use the highlight rules of the desktop announcement. Both posts of a version use the same file.
+Replace the highlights of the previous version; the file holds only one version. Run
+`bun scripts/discord-mobile-release-announcement.ts check x.y.z` to see the posts.
+`bun run mobile:release` and `bun run mobile:release:published` stop while the file is not ready,
+and the Changelog workflow stops a pull request that adds a store date before the file is ready.
 
-The message mentions the `Mobile Release Pings` role, then has the title
-`Whilo vx.y.z is out on iOS and Android`, the highlights, and one line of links:
-`iOS · Android · Full Changelog`. The last link opens the version on the Mobile tab of
-`/changelog`. It notifies only that role.
+`bun scripts/discord-mobile-release-announcement.ts plan` shows the posts that are due and why the
+others wait. To post a version again, or an older one, run
+`gh workflow run mobile-release-announcement.yml --ref main -f version=x.y.z -f stores=ios -f again=true`.
+For a post that you sent by hand, run
+`bun scripts/discord-mobile-release-announcement.ts mark-posted x.y.z ios`, so the workflow does not send it again.
 
 One-time setup:
 
 1. In GitHub repository settings, create the `release-mobile` environment. Under deployment branches
    and tags, select only the `main` branch.
 2. In Discord, open the settings of the announcement channel, then Integrations > Webhooks. Make a
-   webhook named `Whilo` with the Whilo icon. Add its URL as the environment secret
+   webhook named `OpenBot` with the OpenBot icon. Add its URL as the environment secret
    `DISCORD_MOBILE_RELEASE_WEBHOOK_URL`. It can be the same channel as the desktop post.
 3. In Discord, turn on Developer Mode, open Server Settings > Roles, right-click `Mobile Release Pings`
    and select Copy Role ID. Add the ID as the environment variable `DISCORD_MOBILE_RELEASE_ROLE_ID`.
-
-A failed post does not change the release: re-run the `Post on Discord` job. A re-run after a
-successful post posts the message again. To post a version again, or one that a push did not post,
-run `gh workflow run mobile-release-announcement.yml --ref main -f version=x.y.z`. Both stores must
-have the version in `apps/mobile/CHANGELOG.md`, and the file must be for that version.
+4. A tag ruleset must let GitHub Actions create and delete tags that start with `mobile-announced/`.
 
 ## OpenPanel product analytics
 
@@ -537,11 +588,11 @@ The endpoint is fixed to `https://analytics.openbot.run/api`. No analytics crede
 
 ### Production configuration
 
-1. In the self-hosted OpenPanel dashboard, open the existing **Whilo** project used by desktop and the website.
-   Do not create or select a separate **Whilo Mobile** project.
-   Create a separate client for Whilo Mobile with **write** access only. Copy its Client ID and
+1. In the self-hosted OpenPanel dashboard, open the existing **Openbot** project used by desktop and the website.
+   Do not create or select a separate **Openbot Mobile** project.
+   Create a separate client for OpenBot Mobile with **write** access only. Copy its Client ID and
    Client Secret. Do not use an organization/root client or a client with read access.
-2. In the Expo dashboard, open the **whilo** project → **Environment variables**, select the
+2. In the Expo dashboard, open the **openbot** project → **Environment variables**, select the
    **production** environment, and add:
 
    | Variable | Value |
@@ -565,7 +616,7 @@ The endpoint is fixed to `https://analytics.openbot.run/api`. No analytics crede
 React Native requires a Client Secret according to OpenPanel's native SDK guide. In this direct
 native integration it is an **embedded write credential**, not a confidential server secret.
 Expo's `EXPO_PUBLIC_` values are visible in the shipped bundle. Use only a dedicated write client;
-never embed a key for Export, Insights, Manage, or an Whilo account/session. EAS visibility can hide
+never embed a key for Export, Insights, Manage, or an OpenBot account/session. EAS visibility can hide
 values in its UI but does not hide them in the app. See [OpenPanel client access levels](https://openpanel.dev/docs/api/authentication)
 and [Expo environment variables](https://docs.expo.dev/guides/environment-variables/).
 
@@ -615,7 +666,7 @@ where available, `duration_ms`. Failure codes are fixed categories, never raw er
 | `analytics_preference_changed` | `enabled=false`, sent once before collection stops when the user turns analytics off; the app waits at most 2 seconds for it |
 
 Use a mobile activation funnel from open → successful QR redemption → successful connection →
-conversation load or message send. Measure signed-in D1/D7 retention by Whilo account ID. Eligible
+conversation load or message send. Measure signed-in D1/D7 retention by OpenBot account ID. Eligible
 pre-session events join that account after sign-in. Unclaimed and expired attempts are not sent, so
 this funnel does not measure all abandoned pairing attempts.
 A message receipt means the host accepted the message, not that the agent finished its work.
@@ -641,7 +692,7 @@ Opt-out and process exit discard the buffer. Sign-out ends the previous account'
 new signed-out activity can be claimed by the next sign-in. There is no disk queue.
 Existing anonymous events already sent by older builds are not reassigned by this fix.
 If mobile credentials belong to another project, replace both production variables with credentials
-for a write-only client in **Whilo**, then ship a build or compatible update with those values.
+for a write-only client in **Openbot**, then ship a build or compatible update with those values.
 
 Mobile schema generation 2 adds safe error diagnostics. Native error alerts and chat send errors
 emit `notification_shown`; existing failed actions emit a separate `client_operation_failed`.
@@ -649,7 +700,7 @@ Only fixed cause, source, operation, and provider/model fields are sent. No aler
 
 Mobile schema generation 3 adds sign-in, hosted server plans, first-run, notification settings,
 Live Activity, voice, agent template and opt-out events, `entry_point` on pairing, and `scope` on
-`usage_viewed`. The generation comes from `ANALYTICS_GENERATIONS.mobile` in `@whilo/telemetry`.
+`usage_viewed`. The generation comes from `ANALYTICS_GENERATIONS.mobile` in `@openbot/telemetry`.
 The file queue holds at most 1,000 reports, 1 MiB, and seven days, and sends only after a local
 write succeeds. Foreground and host reconnection trigger retries. Opt-out and account changes
 clear this queue. See [the analytics contract](../../ANALYTICS.md#reliable-error-reports).

@@ -1,5 +1,8 @@
 export const INPUT_LIMITS = {
   identifier: 128,
+  // A saved login id from `list_logins`. The longest is a Proton Pass id:
+  // `proton:` + share id (256) + `:` + item id (256).
+  vaultLoginId: 520,
   email: 254,
   accountName: 120,
   profileNameMin: 3,
@@ -76,6 +79,8 @@ export const INPUT_LIMITS = {
   routineCalendarDays: 44,
   routineCron: 255,
   messageText: 100_000,
+  // A longer text paste becomes a `pasted-text.txt` attachment, so the message keeps all of it.
+  pastedText: 4_000,
   directMessageText: 20_000,
   // A side question carries its earlier questions and answers, because nothing on the host keeps them.
   sideQuestionTurns: 20,

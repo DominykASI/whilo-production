@@ -1,6 +1,11 @@
-import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
-import { BROWSER_TAKEOVER_REASONS, VAULT_TEXT_LIMIT, type VaultContactFields } from "@whilo/contracts/ipc";
-import { UI_BLOCK_LIMITS, UI_VAULT_REQUEST_KINDS } from "@whilo/contracts/ui-blocks";
+import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import {
+  BROWSER_TAKEOVER_REASONS,
+  VAULT_PASSWORD_LIMIT,
+  VAULT_TEXT_LIMIT,
+  type VaultContactFields,
+} from "@openbot/contracts/ipc";
+import { UI_BLOCK_LIMITS, UI_VAULT_REQUEST_KINDS } from "@openbot/contracts/ui-blocks";
 import { z } from "zod";
 import { advertisedJsonSchema } from "./agent/advertised-json-schema";
 import {
@@ -9,7 +14,7 @@ import {
   BROWSER_FILL_FIELDS_MAX_TIMEOUT_MS,
 } from "./browser-fill-fields";
 
-export const WHILO_BROWSER_NAMESPACE = "whilo_browser";
+export const OPENBOT_BROWSER_NAMESPACE = "openbot_browser";
 
 const identifier = z.string().min(1).max(INPUT_LIMITS.identifier);
 const requiredString = (max: number) =>
@@ -240,49 +245,54 @@ const BROWSER_TOOL_DEFINITIONS = [
       submission: z
         .enum(["click", "enter", "on_input"])
         .describe(
-          "Use click with submitTarget when the page has a Continue, Verify, Next, or Sign in button, even if disabled before entry. Whilo fills the fields then clicks that button. Use enter only for a form submitted by Enter. on_input ONLY fills fields; use it only when the site explicitly submits on the final digit without a button. It does not find or click a button.",
+          "Use click with submitTarget when the page has a Continue, Verify, Next, or Sign in button, even if disabled before entry. OpenBot fills the fields then clicks that button. Use enter only for a form submitted by Enter. on_input ONLY fills fields; use it only when the site explicitly submits on the final digit without a button. It does not find or click a button.",
         ),
       submitTarget: browserTargetSchema
         .optional()
         .describe(
           "Required with click: the active step’s Continue, Verify, Next, or Sign in button from the same fresh snapshot. A currently disabled button can become enabled after entry.",
         ),
-      loginId: identifier
+      loginId: z
+        .string()
+        .min(1)
+        .max(INPUT_LIMITS.vaultLoginId)
         .optional()
         .describe(
-          "For password or authenticator: the id of a saved login from list_logins. Whilo fills its password or current code without asking the user.",
+          "For password or authenticator: the id of a saved login from list_logins. OpenBot fills its password or current code without asking the user.",
         ),
       username: z
         .string()
         .max(VAULT_TEXT_LIMIT)
         .optional()
         .describe(
-          "For password without loginId: the username or email of this sign-in, as typed on the page. When the user saves the password in the Whilo Vault from the card, the login gets this username.",
+          "For password without loginId: the username or email of this sign-in, as typed on the page. When the user saves the password in the OpenBot Vault from the card, the login gets this username.",
         ),
     },
   }),
   browserTool({
     name: "list_logins",
     description:
-      "List 1Password, Bitwarden and Whilo Vault logins for the tab's HTTPS site: id, title, username and hasOneTimePassword. Use it to log in with a password manager. No passwords or codes. Type the username, then call submit_secret with loginId.",
+      "List password manager and OpenBot Vault logins for the tab's HTTPS site: id, title, username and hasOneTimePassword. No passwords or codes. Type the username, then call submit_secret with loginId.",
     shape: { tabId },
   }),
   browserTool({
     name: "list_vault_items",
     description:
-      "List what the user saved in the Whilo Vault, not 1Password or Bitwarden. A login shows id, website and username; its password and notes are never returned, so sign in with list_logins and submit_secret. A card shows id, label, nameOnCard, brand, last4, expiry and hasSecurityCode; its number and security code are never returned, so fill card fields with fill_card. A contact shows every field: type them with fill_fields, type, or select_option. addedBy, when present, names the agent that added the item.",
+      "List what the user saved in the OpenBot Vault, not a password manager. A login shows id, website and username; its password and notes are never returned, so sign in with list_logins and submit_secret. A card shows id, label, nameOnCard, brand, last4, expiry and hasSecurityCode; its number and security code are never returned, so fill card fields with fill_card. A contact shows every field: type them with fill_fields, type, or select_option. addedBy, when present, names the agent that added the item.",
     shape: {},
   }),
   browserTool({
     name: "save_vault_item",
     description:
-      "Add contact info to the Whilo Vault, or change a saved item. A contact without id is new; with id, it changes. A login or a card needs its id from list_vault_items (not from list_logins). A login changes only its username; a card changes only fields that are not secret. You cannot set a password, a website, a card number or a security code. An omitted field keeps its value. Returns the id, kind and name, never a secret.",
+      "Add contact info or a login to the OpenBot Vault, or change a saved item. Without id, the item is new; a login needs website, username and password, such as a pasted password, and a saved login for that site and username gets it. With an id from list_vault_items (not list_logins), a login changes its username and password, and a card only fields that are not secret. An omitted field keeps its value. Returns status, id, kind and name, never a secret. Do not repeat a password. A password needs a request of a person in your OpenBot chat.",
     shape: {
       kind: z.enum(["contact", "login", "card"]),
-      id: identifier.optional().describe("The item to change. Omit it to add a contact."),
+      id: identifier.optional().describe("The item to change. Omit it to add a contact or a login."),
       label: vaultText.describe("Contact or card: a short name, such as Home or Work card."),
       ...vaultContactShape,
+      website: vaultText.describe("New login: the HTTPS website."),
       username: vaultText.describe("Login: the username or email."),
+      password: z.string().max(VAULT_PASSWORD_LIMIT).optional().describe("Login: the password."),
       nameOnCard: vaultText.describe("Card: the name on the card."),
       expMonth: z.number().int().min(1).max(12).optional().describe("Card: the expiry month."),
       expYear: z.number().int().min(2000).max(2099).optional().describe("Card: the four-digit expiry year."),
@@ -313,7 +323,7 @@ const BROWSER_TOOL_DEFINITIONS = [
   browserTool({
     name: "delete_vault_item",
     description:
-      "Delete a login, card or contact from the Whilo Vault by its id from list_vault_items (not from list_logins). A card that uses a deleted contact for billing keeps no billing address. This cannot be undone: ask first unless you added the item or the user asked for the delete.",
+      "Delete a login, card or contact from the OpenBot Vault by its id from list_vault_items (not from list_logins). A card that uses a deleted contact for billing keeps no billing address. This cannot be undone: ask first unless you added the item or the user asked for the delete.",
     shape: { id: identifier },
   }),
   browserTool({
@@ -539,8 +549,8 @@ const BROWSER_TOOL_DEFINITIONS = [
 export const BROWSER_DYNAMIC_TOOLS = [
   {
     type: "namespace" as const,
-    name: WHILO_BROWSER_NAMESPACE,
-    description: "Operate Whilo's private, persistent native Electron/CDP browser.",
+    name: OPENBOT_BROWSER_NAMESPACE,
+    description: "Operate OpenBot's private, persistent native Electron/CDP browser.",
     tools: BROWSER_TOOL_DEFINITIONS.map((definition) => ({
       type: "function" as const,
       name: definition.name,

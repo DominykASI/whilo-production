@@ -1,71 +1,71 @@
 @import "../styles.css";
 @source "../";
 
-.whilo-playground-root {
+.openbot-playground-root {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: var(--whilo-bg-canvas);
+  background: var(--openbot-bg-canvas);
 }
 
-.whilo-playground-loading {
+.openbot-playground-loading {
   width: 100%;
   height: 100%;
-  background: var(--whilo-bg-canvas);
+  background: var(--openbot-bg-canvas);
 }
 
-.whilo-playground-root .unread-messages-banner {
+.openbot-playground-root .unread-messages-banner {
   display: none;
 }
 
 @media (max-width: 640px) {
-  .whilo-playground-root .app-frame,
-  .whilo-playground-root .app-frame-with-server-rail {
+  .openbot-playground-root .app-frame,
+  .openbot-playground-root .app-frame-with-server-rail {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: 68px minmax(0, 1fr);
   }
 
-  .whilo-playground-root .server-rail,
-  .whilo-playground-root .left-panel-resizer,
-  .whilo-playground-root .sidebar-topbar,
-  .whilo-playground-root .sidebar-search-wrap,
-  .whilo-playground-root .sidebar-list-context-trigger,
-  .whilo-playground-root .sidebar-chat-group > header {
+  .openbot-playground-root .server-rail,
+  .openbot-playground-root .left-panel-resizer,
+  .openbot-playground-root .sidebar-topbar,
+  .openbot-playground-root .sidebar-search-wrap,
+  .openbot-playground-root .sidebar-list-context-trigger,
+  .openbot-playground-root .sidebar-chat-group > header {
     display: none;
   }
 
-  .whilo-playground-root .sidebar {
+  .openbot-playground-root .sidebar {
     grid-column: 1;
     grid-row: 1;
     flex-direction: row;
-    border-right: 0;
-    border-bottom: 1px solid var(--whilo-border);
+    border-inline-end: 0;
+    border-bottom: 1px solid var(--openbot-border);
   }
 
-  .whilo-playground-root .agent-list,
-  .whilo-playground-root .sidebar-compact .agent-list {
+  .openbot-playground-root .agent-list,
+  .openbot-playground-root .sidebar-compact .agent-list {
     display: flex;
     overflow-x: auto;
     overflow-y: hidden;
     align-items: center;
     justify-content: center;
-    gap: var(--whilo-space-1-5);
-    padding: var(--whilo-space-2) var(--whilo-space-3);
+    gap: var(--openbot-space-1-5);
+    padding: var(--openbot-space-2) var(--openbot-space-3);
   }
 
   /* Every wrapper between the list and the rows becomes one row of avatars. */
-  .whilo-playground-root .agent-list-content,
-  .whilo-playground-root .sidebar-chat-group,
-  .whilo-playground-root .sidebar-section-collapse,
-  .whilo-playground-root .sidebar-section-body {
+  .openbot-playground-root .agent-list-content,
+  .openbot-playground-root .sidebar-chat-group,
+  .openbot-playground-root .sidebar-section-collapse,
+  .openbot-playground-root .sidebar-section-body {
     display: flex;
     align-items: center;
-    gap: var(--whilo-space-1-5);
+    gap: var(--openbot-space-1-5);
     margin: 0;
   }
 
-  .whilo-playground-root .agent-row,
-  .whilo-playground-root .sidebar-compact .agent-row {
+  .openbot-playground-root .agent-row,
+  .openbot-playground-root .sidebar-compact .agent-row {
     --agent-row-avatar-size: 36px;
     --sidebar-pinned-avatar-size: 36px;
 
@@ -76,18 +76,18 @@
     padding: 6px;
   }
 
-  .whilo-playground-root .sidebar-compact .agent-row-avatar {
+  .openbot-playground-root .sidebar-compact .agent-row-avatar {
     transform: none;
   }
 
-  .whilo-playground-root .agent-row-copy {
+  .openbot-playground-root .agent-row-copy {
     display: none;
   }
 
   /* The chat is inside the panes wrapper, which the frame puts in the first row. */
-  .whilo-playground-root .app-frame-panes,
-  .whilo-playground-root .conversation-panel,
-  .whilo-playground-root .app-frame-with-server-rail .conversation-panel {
+  .openbot-playground-root .app-frame-panes,
+  .openbot-playground-root .conversation-panel,
+  .openbot-playground-root .app-frame-with-server-rail .conversation-panel {
     grid-column: 1;
     grid-row: 2;
   }

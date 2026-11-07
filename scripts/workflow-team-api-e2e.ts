@@ -7,41 +7,44 @@
 // secret from a member, clip step texts, drop the step of an agent that is hidden now and refuse its
 // retry, hide a
 // workflow of a local-only provider, refuse a workflow too large for one frame, and tell the member's
-// event socket about a change. The codec carries kinds and statuses that this app does not know, and
+// event socket about a change. With routine results, the host advertises `workflows-chats-v1` to a
+// protocol 9 peer, and only an owner or admin adds a Telegram trigger or a Slack output. The codec carries kinds and statuses that this app does not know, and
 // the client shows a workflow with such a node read-only; a member reads the graph of an old version.
 // Agent steps answer through stand-ins, so no provider CLI starts and no model turn is sent.
 // Run: `bun scripts/workflow-team-api-e2e.ts`.
-// Writes .whilo-build/workflow-team-api-e2e/report.json.
+// Writes .openbot-build/workflow-team-api-e2e/report.json.
 
 import assert from "node:assert/strict";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import type { AgentAccessChange, WorkflowDetail, WorkflowGraph, WorkflowNode } from "@whilo/contracts/ipc";
-import { TEAM_API_ROUTES } from "@whilo/contracts/team-api-routes";
+import type { AgentAccessChange, WorkflowDetail, WorkflowGraph, WorkflowNode } from "@openbot/contracts/ipc";
+import { TEAM_API_ROUTES } from "@openbot/contracts/team-api-routes";
 import {
   TEAM_APP_VERSION_HEADER,
   TEAM_CAPABILITIES_HEADER,
   TEAM_PROTOCOL_V1_WEBSOCKET,
   TEAM_PROTOCOL_VERSION_HEADER,
-} from "@whilo/contracts/team-protocol";
-import { AGENT_ACCESS_CODECS, AGENT_ACCESS_ROUTES } from "@whilo/contracts/team-protocol/agent-access-v1";
-import { teamCapabilitiesForProtocol } from "@whilo/contracts/team-protocol/current";
-import { TEAM_PROTOCOL_V7 } from "@whilo/contracts/team-protocol/v7";
+} from "@openbot/contracts/team-protocol";
+import { AGENT_ACCESS_CODECS, AGENT_ACCESS_ROUTES } from "@openbot/contracts/team-protocol/agent-access-v1";
+import { teamCapabilitiesForProtocol } from "@openbot/contracts/team-protocol/current";
+import { TEAM_PROTOCOL_V7 } from "@openbot/contracts/team-protocol/v7";
+import { TEAM_PROTOCOL_V9 } from "@openbot/contracts/team-protocol/v9";
+import { WORKFLOWS_CHATS_CAPABILITY } from "@openbot/contracts/team-protocol/workflows-chats-v1";
 import {
   WORKFLOW_STEP_TEXT_LIMIT,
   WORKFLOWS_CAPABILITY,
   WORKFLOWS_CODECS,
   WORKFLOWS_ROUTES,
   workflowsEvent,
-} from "@whilo/contracts/team-protocol/workflows-v1";
-import { sourceText } from "@whilo/i18n/source";
+} from "@openbot/contracts/team-protocol/workflows-v1";
+import { sourceText } from "@openbot/i18n/source";
 import {
   decodeRemoteWorkflowDetail,
   decodeRemoteWorkflowRunDetail,
   decodeRemoteWorkflowVersions,
-} from "@whilo/team-client/workflow-decoding";
+} from "@openbot/team-client/workflow-decoding";
 import { plugin } from "bun";
 import { Effect } from "effect";
 import type { AgentBrowserHost } from "../src/backend/agent/turn-lifecycle";
@@ -49,7 +52,7 @@ import { AgentService } from "../src/backend/agent-service";
 import { AgentStore } from "../src/backend/agent-store";
 import { runCauseEffect } from "../src/backend/effect-boundary";
 import { MailboxStore } from "../src/backend/mailbox-store";
-import { WhiloDatabase } from "../src/backend/whilo-database";
+import { OpenBotDatabase } from "../src/backend/openbot-database";
 import { SidebarLayoutStore } from "../src/backend/sidebar-layout-store";
 import { WorkflowGitHubStore } from "../src/backend/workflows/workflow-github-store";
 import { WorkflowRunStore } from "../src/backend/workflows/workflow-run-store";
@@ -58,7 +61,7 @@ import { workflowScheduleDueAt } from "../src/backend/workflows/workflow-trigger
 import { createWorkflows, type WorkflowsHandle } from "../src/backend/workflows/workflows";
 import type { TeamApiBrowser } from "../src/main/team-api/dependencies";
 
-const OUT = resolve(import.meta.dirname, "../.whilo-build/workflow-team-api-e2e");
+const OUT = resolve(import.meta.dirname, "../.openbot-build/workflow-team-api-e2e");
 const HOST_VERSION = "0.0.0-e2e";
 const OWNER = { username: "owner-user", password: "owner-password-123" };
 const MEMBER = { username: "member-user", password: "member-password-123" };
@@ -182,6 +185,9 @@ const agentBrowser: AgentBrowserHost = {
   endControl: () => {},
   close: () => Effect.void,
   clearAgentSession: () => Effect.void,
+  shareTab: () => undefined,
+  unshareThread: () => undefined,
+  agentTab: () => null,
 };
 const teamBrowser: TeamApiBrowser = {
   listTabs: () => [],
@@ -206,12 +212,12 @@ const teamBrowser: TeamApiBrowser = {
   importSignIn: unused,
 };
 
-const root = await mkdtemp(join(tmpdir(), "whilo-workflow-team-api-"));
+const root = await mkdtemp(join(tmpdir(), "openbot-workflow-team-api-"));
 const userData = join(root, "user-data");
 const home = join(root, "home");
 
 interface Host {
-  database: WhiloDatabase;
+  database: OpenBotDatabase;
   agents: AgentService;
   workflows: WorkflowsHandle;
   server: InstanceType<typeof TeamApiServer>;
@@ -226,11 +232,11 @@ let failingAgent = "";
 
 /** Starts the host on the profile, as the app does at each launch, with stand-ins for agent turns. */
 async function startHost(): Promise<Host> {
-  const database = new WhiloDatabase(userData);
+  const database = new OpenBotDatabase(userData);
   const agentStore = new AgentStore(userData, home, database);
   const mailbox = new MailboxStore(userData, agentStore.sharedRoot, agentStore.database);
   const sidebar = new SidebarLayoutStore(join(userData, "sidebar-layout.json"));
-  const team = new TeamStore(join(userData, "whilo-team-server-v2.json"));
+  const team = new TeamStore(join(userData, "openbot-team-server-v2.json"));
   const access = new AgentAccessStore(join(userData, AGENT_ACCESS_FILE));
   await runCauseEffect(sidebar.initialize());
   // The stores only: `AgentService.initialize` would start the provider CLIs, which no step needs.
@@ -298,6 +304,14 @@ async function startHost(): Promise<Host> {
         ),
       rotateWorkflowSecret: () => Effect.succeed({ secret: SECRET }),
     },
+    // The chats of Telegram and Slack nodes (`workflows-chats-v1`); no messaging driver runs here.
+    admin: {
+      routineResults: {
+        options: () => Effect.succeed([]),
+        destination: () => Effect.succeed(null),
+        setDestination: () => Effect.succeed(null),
+      },
+    },
   });
   const port = await Effect.runPromise(server.start());
   return { database, agents, workflows, server, team, port };
@@ -322,13 +336,14 @@ function current(): Host {
 async function call(
   method: string,
   path: string,
-  input: { token?: string; body?: unknown; capabilities?: readonly string[] } = {},
+  input: { token?: string; body?: unknown; capabilities?: readonly string[]; protocol?: number } = {},
 ): Promise<{ status: number; body: unknown }> {
+  const protocol = input.protocol ?? TEAM_PROTOCOL_V7;
   const headers: Record<string, string> = {
     Accept: "application/json",
-    [TEAM_PROTOCOL_VERSION_HEADER]: String(TEAM_PROTOCOL_V7),
+    [TEAM_PROTOCOL_VERSION_HEADER]: String(protocol),
     [TEAM_APP_VERSION_HEADER]: HOST_VERSION,
-    [TEAM_CAPABILITIES_HEADER]: (input.capabilities ?? teamCapabilitiesForProtocol(TEAM_PROTOCOL_V7)).join(","),
+    [TEAM_CAPABILITIES_HEADER]: (input.capabilities ?? teamCapabilitiesForProtocol(protocol)).join(","),
   };
   if (input.body !== undefined) headers["Content-Type"] = "application/json";
   if (input.token) headers.Authorization = `Bearer ${input.token}`;
@@ -404,7 +419,7 @@ async function setLevels(ownerToken: string, everyone: AgentAccessChange["everyo
 async function openEvents(token: string): Promise<WebSocket> {
   const socket = new WebSocket(`ws://127.0.0.1:${current().port}${TEAM_API_ROUTES.events}`, [
     TEAM_PROTOCOL_V1_WEBSOCKET,
-    `whilo-token.${token}`,
+    `openbot-token.${token}`,
   ]);
   sockets.push(socket);
   await new Promise<void>((resolveOpen, reject) => {
@@ -715,6 +730,55 @@ try {
     });
     assert.equal(saved.ok, true);
     return { denied, owner: 200, moved, kept: 200 };
+  });
+
+  await step("chats: workflows-chats-v1 goes to protocol 9; only an owner adds Telegram and Slack nodes", async () => {
+    const capabilities = async (protocol: number) =>
+      list(
+        record((await call("GET", TEAM_API_ROUTES.compatibility, { protocol })).body, "compatibility").capabilities,
+        "capabilities",
+      );
+    assert.ok((await capabilities(TEAM_PROTOCOL_V9)).includes(WORKFLOWS_CHATS_CAPABILITY));
+    assert.ok(!(await capabilities(TEAM_PROTOCOL_V7)).includes(WORKFLOWS_CHATS_CAPABILITY));
+    const before = Number((await ok(WORKFLOWS_ROUTES.get, member, { workflowId: ids.open })).revision);
+    const base = agentGraph(open);
+    const chats: WorkflowGraph = withOutput(
+      {
+        ...base,
+        nodes: [
+          ...base.nodes,
+          {
+            id: "telegram-trigger",
+            kind: "trigger",
+            at: at(-300),
+            fields: { trigger: "telegram", event: "mention", connectionId: "telegram-chat", text: "deploy" },
+          },
+        ],
+      },
+      {
+        id: "slack-output",
+        kind: "output",
+        at: at(600),
+        fields: { target: "slack", connectionId: "slack-workspace", action: "post", placeId: "C-slack" },
+      },
+    );
+    const denied = await refused(
+      WORKFLOWS_ROUTES.saveGraph,
+      member,
+      { workflowId: ids.open, baseRevision: before, graph: chats },
+      403,
+      "error.team.adminRequired",
+    );
+    const owner = await ok(WORKFLOWS_ROUTES.saveGraph, ownerToken, {
+      workflowId: ids.open,
+      baseRevision: before,
+      graph: chats,
+    });
+    assert.equal(owner.ok, true);
+    const saved = await ok(WORKFLOWS_ROUTES.get, ownerToken, { workflowId: ids.open });
+    const nodes = JSON.stringify(record(saved.graph, "graph").nodes);
+    assert.ok(nodes.includes("telegram-chat") && nodes.includes("C-slack"), nodes);
+    return { denied, owner: 200, capability: WORKFLOWS_CHATS_CAPABILITY };
   });
 
   await step("restore: a version that names the closed agent answers as missing", async () => {

@@ -5,7 +5,7 @@
 
 .order-form {
   /* The colour of the order. The pricing page sets it from the size of the order. */
-  --order-accent: var(--whilo-accent);
+  --order-accent: var(--openbot-accent);
   --order-spring: cubic-bezier(0.34, 1.36, 0.64, 1);
   --order-move: 300ms;
   --order-glow: 600ms;
@@ -27,18 +27,6 @@
   container: order-form / inline-size;
 }
 
-.order-form .sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
-}
-
 /* The heading slot on the left and the switches on the right. */
 .order-form-top {
   position: relative;
@@ -55,7 +43,7 @@
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 10px;
-  margin-left: auto;
+  margin-inline-start: auto;
 }
 
 /* Month or year, and the currency: the same pill switch as the app's billing switch. */
@@ -66,12 +54,12 @@
   min-width: 0;
   padding: 3px;
   /* Frosted glass: the glow behind it shows through, blurred. */
-  border: 1px solid var(--whilo-glass-border);
-  border-radius: var(--whilo-radius-pill);
-  background: var(--whilo-glass-surface);
+  border: 1px solid var(--openbot-glass-border);
+  border-radius: var(--openbot-radius-pill);
+  background: var(--openbot-glass-surface);
   box-shadow:
-    inset 0 1px 0 var(--whilo-glass-highlight),
-    0 8px 24px -12px var(--whilo-glass-shadow);
+    inset 0 1px 0 var(--openbot-glass-highlight),
+    0 8px 24px -12px var(--openbot-glass-shadow);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   backdrop-filter: blur(20px) saturate(180%);
 }
@@ -81,13 +69,17 @@
   position: absolute;
   top: 3px;
   bottom: 3px;
-  left: 3px;
+  inset-inline-start: 3px;
   width: calc((100% - 6px) / var(--order-count, 2));
-  border-radius: var(--whilo-radius-pill);
-  background: var(--whilo-surface-light);
+  border-radius: var(--openbot-radius-pill);
+  background: var(--openbot-surface-light);
   content: "";
   transform: translateX(calc(var(--order-index, 0) * 100%));
   transition: transform var(--order-move) var(--order-spring);
+}
+
+.order-form-segment:dir(rtl)::before {
+  transform: translateX(calc(var(--order-index, 0) * -100%));
 }
 
 .order-form-segment[data-disabled] {
@@ -106,18 +98,18 @@
   align-items: center;
   justify-content: center;
   padding: 0 14px;
-  border-radius: var(--whilo-radius-pill);
+  border-radius: var(--openbot-radius-pill);
   /* Primary text: the glow behind the glass can be bright. */
-  color: var(--whilo-text-primary);
-  font-size: var(--whilo-text-md);
+  color: var(--openbot-text-primary);
+  font-size: var(--openbot-text-md);
   font-weight: 500;
   white-space: nowrap;
   cursor: pointer;
-  transition: color var(--whilo-duration-slow) ease;
+  transition: color var(--openbot-duration-slow) ease;
 }
 
 .order-form-segment-option[data-checked] .order-form-segment-label {
-  color: var(--whilo-text-on-light);
+  color: var(--openbot-text-on-light);
 }
 
 .order-form-segment[data-disabled] .order-form-segment-label {
@@ -125,7 +117,7 @@
 }
 
 .order-form-segment-option:has(input:focus-visible) .order-form-segment-label {
-  outline: 2px solid var(--whilo-accent-strong);
+  outline: 2px solid var(--openbot-accent-strong);
   outline-offset: 2px;
 }
 
@@ -148,11 +140,11 @@
   align-items: center;
   min-height: 22px;
   padding: 0 9px;
-  border-radius: var(--whilo-radius-pill);
-  background: color-mix(in srgb, var(--order-accent) 18%, var(--whilo-transparent));
+  border-radius: var(--openbot-radius-pill);
+  background: color-mix(in srgb, var(--order-accent) 18%, var(--openbot-transparent));
   /* The text mixes in the text colour, so a dark accent stays readable. */
-  color: color-mix(in srgb, var(--order-accent) 65%, var(--whilo-text-primary));
-  font-family: var(--whilo-font-mono);
+  color: color-mix(in srgb, var(--order-accent) 65%, var(--openbot-text-primary));
+  font-family: var(--openbot-font-mono);
   font-size: var(--order-text-badge);
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -172,7 +164,7 @@
 }
 
 .order-form-price-amount {
-  color: var(--whilo-text-primary);
+  color: var(--openbot-text-primary);
   font-size: var(--order-text-price);
   font-weight: 600;
   letter-spacing: -0.04em;
@@ -181,8 +173,8 @@
 }
 
 .order-form-price-unit {
-  color: var(--whilo-text-muted);
-  font-size: var(--whilo-text-lg);
+  color: var(--openbot-text-muted);
+  font-size: var(--openbot-text-lg);
 }
 
 /* Rolling digits, as the app's `t-digit` transition. A rise comes up from below; a fall comes down from above. */
@@ -202,6 +194,16 @@
 
 .order-form .t-digit-group {
   display: inline-flex;
+  /* The digits are flex items: a right-to-left page would put them in reverse order. */
+  direction: ltr;
+}
+
+.order-form .t-digit-run {
+  display: inline-flex;
+}
+
+.order-form .t-digit-word {
+  white-space: pre;
 }
 
 .order-form .t-digit {
@@ -229,17 +231,17 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-top: clamp(32px, 4vw, 48px);
-  border: 1px solid color-mix(in srgb, var(--order-accent) 40%, var(--whilo-transparent));
+  border: 1px solid color-mix(in srgb, var(--order-accent) 40%, var(--openbot-transparent));
   border-radius: var(--order-radius-frame);
-  background: var(--whilo-bg-surface);
+  background: var(--openbot-bg-surface);
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--order-accent) 12%, var(--whilo-transparent)),
-    0 -1px 0 color-mix(in srgb, var(--order-accent) 60%, var(--whilo-transparent)),
-    0 30px 120px -40px color-mix(in srgb, var(--order-accent) 55%, var(--whilo-transparent));
+    0 0 0 1px color-mix(in srgb, var(--order-accent) 12%, var(--openbot-transparent)),
+    0 -1px 0 color-mix(in srgb, var(--order-accent) 60%, var(--openbot-transparent)),
+    0 30px 120px -40px color-mix(in srgb, var(--order-accent) 55%, var(--openbot-transparent));
   overflow: hidden;
   transition:
-    border-color var(--order-glow) var(--whilo-ease-out),
-    box-shadow var(--order-glow) var(--whilo-ease-out);
+    border-color var(--order-glow) var(--openbot-ease-out),
+    box-shadow var(--order-glow) var(--openbot-ease-out);
 }
 
 /* A hairline of the accent colour along the top edge. */
@@ -249,7 +251,7 @@
   right: 20%;
   left: 20%;
   height: 1px;
-  background: linear-gradient(90deg, var(--whilo-transparent), var(--order-accent), var(--whilo-transparent));
+  background: linear-gradient(90deg, var(--openbot-transparent), var(--order-accent), var(--openbot-transparent));
   content: "";
 }
 
@@ -261,7 +263,7 @@
 }
 
 .order-form-half + .order-form-half {
-  border-left: 1px solid var(--whilo-border);
+  border-inline-start: 1px solid var(--openbot-border);
 }
 
 /* The yearly discount: a success-toned pill by the heading, lit when yearly billing is on. */
@@ -274,7 +276,7 @@
 
 .order-form-half h2 {
   margin: 0;
-  color: var(--whilo-text-primary);
+  color: var(--openbot-text-primary);
   font-size: var(--order-text-title);
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -282,8 +284,8 @@
 
 .order-form-half-summary {
   margin: 8px 0 0;
-  color: var(--whilo-text-muted);
-  font-size: var(--whilo-text-lg);
+  color: var(--openbot-text-muted);
+  font-size: var(--openbot-text-lg);
   line-height: 1.45;
 }
 
@@ -293,21 +295,21 @@
   align-items: center;
   min-height: 24px;
   padding: 0 10px;
-  border-radius: var(--whilo-radius-pill);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--whilo-success) 30%, var(--whilo-transparent));
-  color: var(--whilo-success-text);
-  font-size: var(--whilo-text-sm);
+  border-radius: var(--openbot-radius-pill);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--openbot-success) 30%, var(--openbot-transparent));
+  color: var(--openbot-success-text);
+  font-size: var(--openbot-text-sm);
   font-weight: 600;
   white-space: nowrap;
-  transition: background-color var(--whilo-duration-slow) ease;
+  transition: background-color var(--openbot-duration-slow) ease;
 }
 
 .order-form-trial {
-  background: color-mix(in srgb, var(--whilo-success) 14%, var(--whilo-transparent));
+  background: color-mix(in srgb, var(--openbot-success) 14%, var(--openbot-transparent));
 }
 
 .order-form-yearly[data-active] {
-  background: color-mix(in srgb, var(--whilo-success) 14%, var(--whilo-transparent));
+  background: color-mix(in srgb, var(--openbot-success) 14%, var(--openbot-transparent));
   animation: order-form-pop var(--order-move) var(--order-spring) 80ms both;
 }
 
@@ -325,22 +327,22 @@
 
 .order-form-choice {
   position: relative;
-  border: 1px solid var(--whilo-border);
-  border-radius: var(--whilo-radius-card);
-  background: var(--whilo-bg-surface);
+  border: 1px solid var(--openbot-border);
+  border-radius: var(--openbot-radius-card);
+  background: var(--openbot-bg-surface);
   transition:
-    border-color var(--whilo-duration-slow) ease,
-    background-color var(--whilo-duration-slow) ease;
+    border-color var(--openbot-duration-slow) ease,
+    background-color var(--openbot-duration-slow) ease;
 }
 
 .order-form-choice:hover {
-  border-color: var(--whilo-border-strong);
+  border-color: var(--openbot-border-strong);
 }
 
 /* The chosen row: four corner marks in the accent colour close in around it, like a selection in a game. */
 .order-form-choice[data-checked] {
-  border-color: color-mix(in srgb, var(--order-accent) 25%, var(--whilo-transparent));
-  background-color: color-mix(in srgb, var(--order-accent) 5%, var(--whilo-bg-surface));
+  border-color: color-mix(in srgb, var(--order-accent) 25%, var(--openbot-transparent));
+  background-color: color-mix(in srgb, var(--order-accent) 5%, var(--openbot-bg-surface));
 }
 
 .order-form-choice::before {
@@ -362,7 +364,7 @@
   pointer-events: none;
   transform: scale(1.04);
   transition:
-    opacity var(--whilo-duration-slow) ease,
+    opacity var(--openbot-duration-slow) ease,
     transform var(--order-move) var(--order-spring);
 }
 
@@ -372,7 +374,7 @@
 }
 
 .order-form-choice:has(> input:focus-visible) {
-  outline: 2px solid var(--whilo-accent-strong);
+  outline: 2px solid var(--openbot-accent-strong);
   outline-offset: 2px;
 }
 
@@ -398,15 +400,15 @@
   flex: none;
   width: 18px;
   height: 18px;
-  border: 1.5px solid var(--whilo-border-strong);
-  border-radius: var(--whilo-radius-pill);
-  transition: border-color var(--whilo-duration-slow) ease;
+  border: 1.5px solid var(--openbot-border-strong);
+  border-radius: var(--openbot-radius-pill);
+  transition: border-color var(--openbot-duration-slow) ease;
 }
 
 .order-form-choice-dot::after {
   position: absolute;
   inset: 3px;
-  border-radius: var(--whilo-radius-pill);
+  border-radius: var(--openbot-radius-pill);
   background: var(--order-accent);
   content: "";
   transform: scale(0);
@@ -431,14 +433,14 @@
 }
 
 .order-form-row-name strong {
-  color: var(--whilo-text-primary);
-  font-size: var(--whilo-text-xl);
+  color: var(--openbot-text-primary);
+  font-size: var(--openbot-text-xl);
 }
 
 .order-form-row-name span:last-child {
   flex-basis: 100%;
-  color: var(--whilo-text-muted);
-  font-size: var(--whilo-text-md);
+  color: var(--openbot-text-muted);
+  font-size: var(--openbot-text-md);
   line-height: 1.4;
 }
 
@@ -448,13 +450,13 @@
   flex-direction: column;
   align-items: flex-end;
   gap: 2px;
-  text-align: right;
+  text-align: end;
 }
 
 .order-form-choice-amount {
   display: inline-flex;
   align-items: center;
-  color: var(--whilo-text-primary);
+  color: var(--openbot-text-primary);
   font-size: var(--order-text-choice-price);
   font-weight: 600;
   letter-spacing: -0.04em;
@@ -463,7 +465,7 @@
 }
 
 .order-form-choice-price .order-form-price-unit {
-  font-size: var(--whilo-text-sm);
+  font-size: var(--openbot-text-sm);
 }
 
 /* The monthly price, struck through in yearly billing. It opens to its own width, so the price beside it moves smoothly. */
@@ -473,7 +475,7 @@
   opacity: 0;
   transition:
     grid-template-columns var(--order-move) ease,
-    opacity var(--whilo-duration-slow) ease;
+    opacity var(--openbot-duration-slow) ease;
 }
 
 .order-form-was[data-shown] {
@@ -488,9 +490,9 @@
 
 .order-form-was s {
   display: inline-block;
-  margin-right: 8px;
-  color: var(--whilo-text-muted);
-  font-size: var(--whilo-text-xl);
+  margin-inline-end: 8px;
+  color: var(--openbot-text-muted);
+  font-size: var(--openbot-text-xl);
   font-weight: 500;
   letter-spacing: -0.01em;
   white-space: nowrap;
@@ -504,9 +506,10 @@
   border: 0;
   align-items: center;
   gap: 12px;
-  padding: 0 18px 16px 50px;
-  color: var(--whilo-text-primary);
-  font-size: var(--whilo-text-lg);
+  padding-block: 0 16px;
+  padding-inline: 50px 18px;
+  color: var(--openbot-text-primary);
+  font-size: var(--openbot-text-lg);
   font-variant-numeric: tabular-nums;
 }
 
@@ -521,21 +524,21 @@
   height: 32px;
   padding: 0;
   place-items: center;
-  border: 1px solid var(--whilo-border-strong);
-  border-radius: var(--whilo-radius-pill);
-  background: var(--whilo-bg-surface);
-  color: var(--whilo-text-primary);
+  border: 1px solid var(--openbot-border-strong);
+  border-radius: var(--openbot-radius-pill);
+  background: var(--openbot-bg-surface);
+  color: var(--openbot-text-primary);
   font: inherit;
-  font-size: var(--whilo-text-xl);
+  font-size: var(--openbot-text-xl);
   cursor: pointer;
   transition:
-    background-color var(--whilo-duration-fast) ease,
-    opacity var(--whilo-duration-fast) ease,
-    transform var(--whilo-duration-fast) ease;
+    background-color var(--openbot-duration-fast) ease,
+    opacity var(--openbot-duration-fast) ease,
+    transform var(--openbot-duration-fast) ease;
 }
 
 .order-form-stepper .order-form-step:hover:not(:disabled) {
-  background: var(--whilo-bg-surface-raised);
+  background: var(--openbot-bg-surface-raised);
 }
 
 .order-form-stepper .order-form-step:active:not(:disabled) {
@@ -548,7 +551,7 @@
 }
 
 .order-form-stepper .order-form-step:focus-visible {
-  outline: 2px solid var(--whilo-accent-strong);
+  outline: 2px solid var(--openbot-accent-strong);
   outline-offset: 2px;
 }
 
@@ -557,7 +560,7 @@
   display: grid;
   grid-column: 1 / -1;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  border-top: 1px solid var(--whilo-border);
+  border-top: 1px solid var(--openbot-border);
 }
 
 /* Without server plans the license fills the form. */
@@ -590,12 +593,12 @@
 }
 
 .order-form-summary-license:has([data-open]) {
-  border-left: 1px solid var(--whilo-border);
+  border-inline-start: 1px solid var(--openbot-border);
 }
 
 .order-form:not([data-servers]) .order-form-summary-license {
   grid-column: 1;
-  border-left: 0;
+  border-inline-start: 0;
 }
 
 .order-form-summary-personal {
@@ -609,7 +612,7 @@
   opacity: 0;
   transition:
     grid-template-rows var(--order-move) ease,
-    opacity var(--whilo-duration-slow) ease;
+    opacity var(--openbot-duration-slow) ease;
 }
 
 .order-form-summary-line[data-open] {
@@ -628,12 +631,12 @@
   align-items: baseline;
   gap: 24px;
   padding: 6px 0;
-  color: var(--whilo-text-secondary);
+  color: var(--openbot-text-secondary);
   font-size: var(--order-text-label);
 }
 
 .order-form-summary-line > div > div > span:last-child {
-  color: var(--whilo-text-primary);
+  color: var(--openbot-text-primary);
   font-size: var(--order-text-line);
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -644,12 +647,12 @@
 /* Discounts are smaller, success-toned lines under the part that they come off. */
 .order-form-summary-line[data-minus] > div > div {
   padding: 2px 0;
-  font-size: var(--whilo-text-lg);
+  font-size: var(--openbot-text-lg);
 }
 
 .order-form-summary-line[data-minus] > div > div > span:last-child {
-  color: var(--whilo-success);
-  font-size: var(--whilo-text-lg);
+  color: var(--openbot-success);
+  font-size: var(--openbot-text-lg);
   font-weight: 400;
   letter-spacing: 0;
 }
@@ -667,18 +670,18 @@
   align-items: center;
   gap: 16px 24px;
   padding: 20px var(--order-pad);
-  border-top: 1px solid var(--whilo-border);
-  background: var(--whilo-bg-surface-raised);
+  border-top: 1px solid var(--openbot-border);
+  background: var(--openbot-bg-surface-raised);
 }
 
 .order-form-total-label {
-  color: var(--whilo-text-secondary);
+  color: var(--openbot-text-secondary);
   font-size: var(--order-text-label);
   font-weight: 500;
 }
 
 .order-form-total .order-form-price {
-  margin-right: auto;
+  margin-inline-end: auto;
 }
 
 .order-form-action {
@@ -690,7 +693,7 @@
 @container order-form (max-width: 760px) {
   .order-form-controls {
     justify-content: flex-start;
-    margin-left: 0;
+    margin-inline-start: 0;
   }
 
   .order-form-frame,
@@ -699,8 +702,8 @@
   }
 
   .order-form-half + .order-form-half {
-    border-top: 1px solid var(--whilo-border);
-    border-left: 0;
+    border-top: 1px solid var(--openbot-border);
+    border-inline-start: 0;
   }
 
   .order-form-summary-lines {
@@ -709,8 +712,8 @@
   }
 
   .order-form-summary-license:has([data-open]) {
-    border-top: 1px solid var(--whilo-border);
-    border-left: 0;
+    border-top: 1px solid var(--openbot-border);
+    border-inline-start: 0;
   }
 
   .order-form-total {
@@ -731,8 +734,8 @@
   }
 
   .order-form-was s {
-    margin-right: 0;
-    font-size: var(--whilo-text-md);
+    margin-inline-end: 0;
+    font-size: var(--openbot-text-md);
   }
 
   .order-form-choice-price .order-form-price-unit {
@@ -740,7 +743,8 @@
   }
 
   .order-form-stepper {
-    padding: 0 14px 14px 46px;
+    padding-block: 0 14px;
+    padding-inline: 46px 14px;
   }
 }
 

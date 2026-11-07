@@ -1,11 +1,12 @@
-import type { AgentApproval, AgentContextState, AgentEvent, AgentTask } from "@whilo/contracts/ipc";
-import { isAgentTaskActive, taskApproval } from "@whilo/team-client/agent-tasks";
+import type { AgentApproval, AgentContextState, AgentEvent, AgentTask } from "@openbot/contracts/ipc";
+import { isAgentTaskActive, taskApproval } from "@openbot/team-client/agent-tasks";
+import type { AgentThreadOlderMessages } from "@openbot/ui/features/conversation/threads/AgentThreadView";
 import {
   activeThreadId,
   type ThreadListsInput,
   threadLists,
-} from "@whilo/ui/features/conversation/threads/thread-items";
-import { DRAFT_THREAD_ID, MAIN_THREAD_ID } from "@whilo/ui/features/conversation/threads/thread-types";
+} from "@openbot/ui/features/conversation/threads/thread-items";
+import { DRAFT_THREAD_ID, MAIN_THREAD_ID } from "@openbot/ui/features/conversation/threads/thread-types";
 import type { AgentTasks } from "../agent-tasks/agent-tasks-state";
 import type {
   BrowserTakeoverRequest,
@@ -67,6 +68,7 @@ export function conversationThreads(input: ConversationThreadsInput): Conversati
           : ofTaskThread(task, takeovers) !== undefined
             ? "takeover"
             : undefined,
+    unread: (task) => tasks.unreadCount(task),
   };
   const lists = threadLists({ ...listInput, open: tabs.openIds(agentId), draft: tabs.hasDraft(agentId) });
   const activeId = activeThreadId(lists.tabs, tabs.activeId(agentId));
@@ -78,6 +80,10 @@ export function conversationThreads(input: ConversationThreadsInput): Conversati
         : list.find((task) => task.id === activeId);
   const approval = open ? taskApproval(open, approvals) : undefined;
   const editable = tasks.editable();
+  const olderMessages = (taskId: string): AgentThreadOlderMessages | undefined => {
+    const older = tasks.olderMessages(taskId);
+    return older ? { loading: older.loading, onLoad: () => void tasks.loadOlderMessages(agentId, taskId) } : undefined;
+  };
   /** A thread in the side panel, with the actions of its own message box. */
   const sideThread = (id: string): SideThread | undefined => {
     const task = list.find((entry) => entry.id === id);
@@ -86,8 +92,10 @@ export function conversationThreads(input: ConversationThreadsInput): Conversati
     return {
       task,
       conversation: tasks.conversation(task.id),
+      olderMessages: olderMessages(task.id),
       approval: sideApproval,
-      onSend: (text, attachmentDraftIds) => tabs.send(agentId, task.id, text, attachmentDraftIds),
+      onSend: (text, attachmentDraftIds, replyToMessageId) =>
+        tabs.send(agentId, task.id, text, attachmentDraftIds, replyToMessageId),
       onStop: () => tasks.stopTask(agentId, task.id),
       onRead: (messageId) => tasks.markTaskRead(agentId, task.id, messageId),
       onRespondApproval: (decision, options) =>
@@ -150,13 +158,18 @@ export function conversationThreads(input: ConversationThreadsInput): Conversati
       onMove: (id, index) => tabs.moveSide(agentId, id, index),
     },
     open,
+    tasks: list,
     limit: snapshot?.limit ?? 1,
     running: list.filter(isAgentTaskActive).length,
     conversation: open ? tasks.conversation(open.id) : undefined,
+    olderMessages: open ? olderMessages(open.id) : undefined,
     approval,
     acceptsFiles: tasks.filesAccepted(),
-    onSend: (text, attachmentDraftIds) =>
-      open ? tabs.send(agentId, open.id, text, attachmentDraftIds) : tabs.sendDraft(agentId, text, attachmentDraftIds),
+    acceptsReplies: tasks.repliable(),
+    onSend: (text, attachmentDraftIds, replyToMessageId) =>
+      open
+        ? tabs.send(agentId, open.id, text, attachmentDraftIds, replyToMessageId)
+        : tabs.sendDraft(agentId, text, attachmentDraftIds),
     onStop: () => {
       if (open) tasks.stopTask(agentId, open.id);
     },
@@ -171,12 +184,54 @@ export function conversationThreads(input: ConversationThreadsInput): Conversati
     onCompactContext: open && onCompactContext ? () => onCompactContext(open.id) : undefined,
     // Only this computer moves a queued message to a new thread.
     onRunQueuedMessage: tasks.local() ? (deliveryId) => void tabs.runQueuedMessage(agentId, deliveryId) : undefined,
+    queueActions: tasks.queueActions()
+      ? {
+          cancel: (deliveryId) => tasks.cancelQueuedMessage(agentId, deliveryId),
+          steer: (task, deliveryId) => {
+            if (task.activeTurnId) tasks.steerQueuedMessage(agentId, task.id, deliveryId, task.activeTurnId);
+          },
+          reorder: (taskId, deliveryIds) => tasks.reorderQueue(agentId, taskId, deliveryIds),
+        }
+      : undefined,
     onBranch: tasks.canBranch()
       ? (sourceTaskId, messageId) => tabs.branch(agentId, sourceTaskId, messageId)
       : undefined,
+    onDeleteMessage: tasks.canDeleteMessage()
+      ? (taskId, messageId) => tasks.deleteTaskMessage(agentId, taskId, messageId)
+      : undefined,
     branchSource,
+    routineThread: (routineId) => {
+      const task = routineTask(list, routineId);
+      return task ? () => tabs.open(agentId, task.id) : undefined;
+    },
+    onOpenRoutineThread: async (routineId) => {
+      const listed = () => routineTask(tasks.snapshot(agentId)?.tasks ?? [], routineId);
+      if (!listed()) await tasks.loadTasks(agentId);
+      const task = listed();
+      if (task) tabs.open(agentId, task.id);
+      return task !== undefined;
+    },
+    onOpenRoutineRun: async (routineId, messageId) => {
+      // An archived thread of the routine keeps its runs too. `openAt` restores it.
+      const listed = () =>
+        (tasks.snapshot(agentId)?.tasks ?? [])
+          .filter((task) => task.routineId === routineId)
+          .sort((left, right) => Number(left.state === "closed") - Number(right.state === "closed"));
+      if (listed().length === 0) await tasks.loadTasks(agentId);
+      for (const task of listed()) {
+        if (!(await tasks.taskHasMessage(agentId, task.id, messageId))) continue;
+        await tabs.openAt(agentId, task.id, messageId);
+        return true;
+      }
+      return false;
+    },
     focusMessage: focus && list.some((task) => task.id === focus.taskId) ? focus : null,
   };
+}
+
+/** The open side thread where the routine runs. */
+function routineTask(list: readonly AgentTask[], routineId: string): AgentTask | undefined {
+  return list.find((task) => task.routineId === routineId && task.state !== "closed");
 }
 
 type TaskThread = { agentId: string; threadId: string };

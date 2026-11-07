@@ -1,9 +1,11 @@
 import { isNotFound } from "@tanstack/solid-router";
 import {
-  WHILO_SOCIAL_IMAGE_ALT,
-  WHILO_SOCIAL_IMAGE_META,
-  WHILO_SOCIAL_IMAGE_URL,
-  WHILO_X_HANDLE,
+  OPENBOT_SOCIAL_IMAGE_ALT,
+  OPENBOT_SOCIAL_IMAGE_META,
+  OPENBOT_SOCIAL_IMAGE_URL,
+  OPENBOT_X_HANDLE,
+  type PageSocialImage,
+  pageSocialImageMeta,
 } from "../../lib/site-metadata";
 import { isMarketplaceMissingData } from "./MarketplaceMissingPage";
 import type { MarketplaceHeadText, MarketplaceListingHeadText } from "./marketplace-page-text";
@@ -21,28 +23,30 @@ function pageMeta(url: string, text: MarketplaceHeadText) {
     { title: text.title },
     { name: "description", content: text.description },
     { property: "og:type", content: "website" },
-    { property: "og:site_name", content: "Whilo" },
+    { property: "og:site_name", content: "OpenBot" },
     { property: "og:url", content: url },
     { property: "og:title", content: text.title },
     { property: "og:description", content: text.description },
     { name: "twitter:card", content: "summary_large_image" },
-    { name: "twitter:site", content: WHILO_X_HANDLE },
+    { name: "twitter:site", content: OPENBOT_X_HANDLE },
     { name: "twitter:title", content: text.title },
     { name: "twitter:description", content: text.description },
   ];
 }
 
-/** `/marketplace`, `/marketplace/skills` and `/marketplace/apps`, with the site's own card. */
+/** The social card of the three index tabs. A listing has its own card. */
+const MARKETPLACE_SOCIAL_IMAGE: PageSocialImage = {
+  path: "/social/marketplace.jpg",
+  alt: "Your kind of team. Four OpenBot agents in front of a rainbow",
+};
+
+/** `/marketplace`, `/marketplace/skills` and `/marketplace/apps`, with the Marketplace card. */
 export function marketplaceIndexHead(route: string, siteUrl: string, text: MarketplaceHeadText | undefined) {
   const url = new URL(route, siteUrl).toString();
   if (!text) return { links: [{ rel: "canonical", href: url }] };
+  const image = pageSocialImageMeta(MARKETPLACE_SOCIAL_IMAGE, siteUrl);
   return {
-    meta: [
-      ...pageMeta(url, text),
-      ...WHILO_SOCIAL_IMAGE_META,
-      { name: "twitter:image", content: WHILO_SOCIAL_IMAGE_URL },
-      { name: "twitter:image:alt", content: WHILO_SOCIAL_IMAGE_ALT },
-    ],
+    meta: [...pageMeta(url, text), ...image.openGraph, ...image.twitter],
     links: [{ rel: "canonical", href: url }],
   };
 }
@@ -63,7 +67,7 @@ export interface MarketplaceListingHeadInput {
  */
 export async function marketplaceListingHead(input: MarketplaceListingHeadInput, siteUrl: string) {
   const url = new URL(input.path, siteUrl).toString();
-  const { AGENT_TEMPLATE_CARD } = await import("@whilo/contracts/ipc");
+  const { AGENT_TEMPLATE_CARD } = await import("@openbot/contracts/ipc");
   const cardUrl = input.cardUrl ? new URL(input.cardUrl, siteUrl).toString() : null;
   const card = cardUrl
     ? [
@@ -76,9 +80,9 @@ export async function marketplaceListingHead(input: MarketplaceListingHeadInput,
         { name: "twitter:image:alt", content: input.text.imageAlt },
       ]
     : [
-        ...WHILO_SOCIAL_IMAGE_META,
-        { name: "twitter:image", content: WHILO_SOCIAL_IMAGE_URL },
-        { name: "twitter:image:alt", content: WHILO_SOCIAL_IMAGE_ALT },
+        ...OPENBOT_SOCIAL_IMAGE_META,
+        { name: "twitter:image", content: OPENBOT_SOCIAL_IMAGE_URL },
+        { name: "twitter:image:alt", content: OPENBOT_SOCIAL_IMAGE_ALT },
       ];
   return {
     meta: [...pageMeta(url, input.text), ...(input.pending ? [NOINDEX] : []), ...card],

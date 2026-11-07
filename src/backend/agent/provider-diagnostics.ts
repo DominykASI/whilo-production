@@ -2,15 +2,15 @@
  * Whether a provider diagnostic is about an MCP server rather than about the agent's work.
  *
  * A CLI writes its MCP subsystem's failures to the same stderr as its own. OpenCode reads the user's
- * MCP list from their own files, so Whilo neither owns those servers nor can act on them, and a
+ * MCP list from their own files, so OpenBot neither owns those servers nor can act on them, and a
  * server that does not start leaves the turn running with fewer tools. Two of them arrive on every
- * restart, because a server spawns per session and Whilo opens a short session to read the model
+ * restart, because a server spawns per session and OpenBot opens a short session to read the model
  * list. That belongs in the log, not in an error the user is asked to read.
  *
- * Whilo's own bridge servers carry its name, and stay visible: a failure there is a failure of
- * this app. So does a server this app configured - the user asked for it here, and the reason it
- * does not start is something only they can fix. `configuredNames` is what separates the two: a
- * server the user configured in their own provider files is still nobody's failure but theirs.
+ * OpenBot's own bridge servers carry its name, and stay visible: a failure there is a failure of
+ * this app. A server this app configured is an MCP line too. The caller finds that server and
+ * reports it as the server's failure, not the provider's: the user asked for it here, and only they
+ * can fix it.
  *
  * Grok's CLI also loads the servers in `~/.claude.json`, `~/.cursor/mcp.json` and `.mcp.json`. One
  * there that asks for OAuth ends its transport with the `rmcp` worker's own sentence,
@@ -19,10 +19,22 @@
  * error" toast (#1199). The worker's sentence is matched as it stands, because no other part of a
  * provider writes it.
  */
-export function isMcpSubsystemDiagnostic(message: string, configuredNames: readonly string[] = []): boolean {
-  if (/whilo/i.test(message)) return false;
-  if (configuredNames.some((name) => name && message.includes(name))) return false;
+export function isMcpSubsystemDiagnostic(message: string): boolean {
+  if (/openbot/i.test(message)) return false;
   return /\b(mcp|rmcp)\b|\bworker quit with (?:fatal|join error|reason):/i.test(message);
+}
+
+/**
+ * Whether an MCP diagnostic says that the server refused the provider for want of a sign-in.
+ *
+ * Grok's `rmcp` worker writes `AuthRequired(…)` for an http server that answers 401 with an OAuth
+ * challenge. Other CLIs write the status next to `HTTP` or `status`, or the word. A bare `401` is
+ * not enough: a port, an id or a line number can be 401.
+ */
+export function isMcpSignInDiagnostic(message: string): boolean {
+  return /\bAuthRequired\b|\bunauthori[sz]ed\b|\bnot authenticated\b|\b(?:HTTP|status(?:\s+code)?)\W{0,3}401\b/i.test(
+    message,
+  );
 }
 
 /**
@@ -36,17 +48,17 @@ export function isMcpSubsystemDiagnostic(message: string, configuredNames: reado
  * nothing to do about it. No turn, model switch, or sign-in reads that export, so it belongs in the
  * log.
  *
- * Only the exporter's own subsystem names count. A message that names Whilo, or a network failure
+ * Only the exporter's own subsystem names count. A message that names OpenBot, or a network failure
  * that does not name telemetry, is the provider's work and stays visible.
  */
 export function isTelemetryExportDiagnostic(message: string): boolean {
-  if (/whilo/i.test(message)) return false;
+  if (/openbot/i.test(message)) return false;
   return /\b(?:batch(?:span|log|logrecord)processor|(?:span|log|logrecord|metric)exporter|opentelemetry|otlp|otel)\b/i.test(
     message,
   );
 }
 
-/** What Whilo keeps of one echo: the method and the error text, never the request body. */
+/** What OpenBot keeps of one echo: the method and the error text, never the request body. */
 export interface AcpRequestEcho {
   method: string | null;
   error: string | null;
@@ -57,11 +69,11 @@ export interface AcpRequestEcho {
  *
  * An agent built on the TypeScript ACP SDK, such as Cline's CLI, writes `Error handling request`
  * with the request and its error to stderr each time it answers a request with an error. The same
- * error reaches Whilo as the reply, and the call that waits for it reports it. A signed-out Cline
+ * error reaches OpenBot as the reply, and the call that waits for it reports it. A signed-out Cline
  * answers the model-list session with "Authentication required", and the user met the copy as a
  * "Provider error" toast just after the download. It belongs in the log.
  *
- * The SDK prints both objects over several lines, which reach Whilo as one record each, so the
+ * The SDK prints both objects over several lines, which reach OpenBot as one record each, so the
  * reader follows the brackets to the end of the error object. Call it with every record, before any
  * other filter: a line inside the echo, such as `message: "Internal error",`, reads as an error of
  * its own. It returns the echo when its last line arrives, `null` while one is still open, and
@@ -141,7 +153,7 @@ export function isToolCallDiagnostic(message: string): boolean {
 /**
  * Whether a provider diagnostic is Grok's own record of a failed usage reading.
  *
- * Whilo reads Grok's usage with `_x.ai/billing`, and the CLI fetches it from Grok's billing
+ * OpenBot reads Grok's usage with `_x.ai/billing`, and the CLI fetches it from Grok's billing
  * service. When that fetch fails, the CLI answers the request with the error and also logs
  * `ERROR billing: upstream request failed …` on stderr. The answer already shows the usage as
  * unavailable. The user met the stderr copy as a "Provider error" toast on each usage refresh, with
@@ -155,11 +167,25 @@ export function isUsageReadDiagnostic(message: string): boolean {
 }
 
 /**
+ * Whether a provider diagnostic is Grok's own record of a `git` command that could not start.
+ *
+ * Grok's CLI runs `git` to read the repository state, and logs `ERROR git_cli: Command::output()
+ * FAILED (spawn error) error=program not found` on stderr when `git` is not on the PATH, as on a
+ * Windows computer without Git. Grok continues without the repository state. The user met the line
+ * as a "Grok error" toast with nothing failing (#4789). It belongs in the log.
+ *
+ * Only a spawn failure counts. A `git` command that ran and failed stays visible.
+ */
+export function isGitSpawnDiagnostic(message: string): boolean {
+  return /\bERROR\s+git_cli:\s+Command::output\(\) FAILED \(spawn error\)/.test(message);
+}
+
+/**
  * Whether a provider diagnostic is the ACP SDK's own copy of an error that the agent also answered.
  *
  * The TypeScript ACP SDK that a Node agent is built on writes `Error handling request`, the whole
  * request and the error to stderr each time a handler fails, and then sends the same error as the
- * JSON-RPC answer. Whilo reports that answer where the request was made: a failed prompt in the
+ * JSON-RPC answer. OpenBot reports that answer where the request was made: a failed prompt in the
  * chat. The stderr copy reached the user as an `Error handling request {` toast, with nothing to act
  * on and the request's own fields in it (#1193). Newer SDKs write `Error handling notification` for a
  * notification, which has no answer and no action for the user either.
@@ -206,6 +232,25 @@ export function isGlogBelowErrorDiagnostic(message: string): boolean {
 }
 
 /**
+ * A Rust log record whose own level is below error, as in
+ * `2026-11-04T23:00:00.123456Z  INFO devin::acp: request failed, will retry` (`tracing`) or
+ * `[2026-11-04T23:00:00Z INFO  devin::acp] …` (`env_logger`).
+ *
+ * ACP gives stderr to the agent for its logs; a failure reaches OpenBot as an answer or as the exit.
+ * Devin CLI 3000.11.234 writes its info records to stderr, and a word such as "failed" in one let it
+ * through as a provider error (#5064). The level of the record decides instead.
+ *
+ * Only a record that opens with the level, after an optional timestamp, counts. An `ERROR` record,
+ * or text without a level - a Rust panic included - stays visible.
+ */
+const RUST_LOG_RECORD =
+  /^\[?(?:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?\s+)?(?:TRACE|DEBUG|INFO|WARN)\s/u;
+
+export function isRustLogBelowErrorDiagnostic(message: string): boolean {
+  return RUST_LOG_RECORD.test(message);
+}
+
+/**
  * The timestamp a CLI's log formatter writes before a record, as in
  * `2026-09-23T06:57:23.278161Z ERROR …`. It is removed from what the renderer shows: it is not
  * something to act on, and it makes every repeat of one failure a new message.
@@ -240,7 +285,9 @@ export function isUsageLimitDiagnostic(message: string): boolean {
  * plan's rolling, weekly and monthly windows name no reset: `429: {"type":"GoUsageLimitError",
  * "message":"Go usage limit exceeded"}` (#4256). The z.ai GLM Coding Plan writes "Usage limit reached
  * for 5 hour. Your limit will reset at 2026-11-02 17:37:38" and "Weekly/Monthly Limit Exhausted. Your
- * limit will reset at …" (#4469). Its reset names no zone, so it is not read. A spent credit
+ * limit will reset at …" (#4469). Its reset names no zone, so it is not read. Grok's free tier
+ * writes "subscription:free-usage-exhausted: You've used all the included free usage for model …
+ * Usage resets over a rolling 24-hour window" (#4869). A spent credit
  * balance or quota does not reset, so it is not one: holding work for it would wait forever and hide
  * the provider's reason. A short request-rate throttle says "rate limit".
  */
@@ -252,8 +299,32 @@ export function isPlanLimitDiagnostic(message: string): boolean {
     /\b(?:session|weekly) (?:usage )?limit\b.{0,80}\b(?:reached|resets?)\b/iu.test(message) ||
     /\b(?:GoUsageLimitError|Go usage limit exceeded)\b/u.test(message) ||
     /\busage limit reached for \d+ ?hours?\b/iu.test(message) ||
-    /\b(?:daily|weekly|monthly) limit exhausted\b/iu.test(message)
+    /\b(?:daily|weekly|monthly) limit exhausted\b/iu.test(message) ||
+    /\bsubscription:free-usage-exhausted\b/u.test(message)
   );
+}
+
+const RESET_DELAY_UNIT = "(?:days?|d|hours?|hrs?|h|minutes?|mins?|m|seconds?|secs?|s)(?![a-z])";
+const RESET_DELAY = new RegExp(
+  String.raw`\bresets? (?:in|after) ((?:\d+(?:\.\d+)?\s*${RESET_DELAY_UNIT}(?:,?\s*(?:and\s+)?))+)`,
+  "iu",
+);
+const RESET_DELAY_PART = new RegExp(String.raw`(\d+(?:\.\d+)?)\s*(${RESET_DELAY_UNIT})`, "giu");
+const RESET_DELAY_UNIT_MS: Record<string, number> = { d: 86_400_000, h: 3_600_000, m: 60_000, s: 1_000 };
+
+/**
+ * The wait until a limit resets that a provider error names, in milliseconds, or null. A spent
+ * Gemini quota reads "Your limit will reset in 2 days, 18 hours." (#4368), and an Antigravity
+ * capacity error "Your quota will reset after 18h31m10s".
+ */
+export function providerResetDelayMs(message: string): number | null {
+  const named = RESET_DELAY.exec(message)?.[1];
+  if (!named) return null;
+  let delay = 0;
+  for (const [, amount, unit] of named.matchAll(RESET_DELAY_PART)) {
+    delay += Number(amount) * (RESET_DELAY_UNIT_MS[unit?.[0]?.toLowerCase() ?? ""] ?? 0);
+  }
+  return delay > 0 ? delay : null;
 }
 
 /** Whether a provider's text names money or a quota, which no wait gives back. */

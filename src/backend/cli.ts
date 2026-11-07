@@ -4,10 +4,12 @@ import { access, readFile, stat } from "node:fs/promises";
 import { homedir } from "node:os";
 import { basename, delimiter, dirname, extname, isAbsolute, join, posix, resolve, win32 } from "node:path";
 import { promisify, stripVTControlCharacters } from "node:util";
-import { type AgentProviderId, agentProviderName } from "@whilo/contracts/ipc";
-import { isDynamicRecord } from "@whilo/contracts/runtime-values";
-import { sourceText } from "@whilo/i18n/source";
+import { type AgentProviderId, agentProviderName } from "@openbot/contracts/ipc";
+import { isDynamicRecord } from "@openbot/contracts/runtime-values";
+import { sourceText } from "@openbot/i18n/source";
 import { Deferred, Effect, Result } from "effect";
+import { providerCheckTimeoutMs } from "./disk-restore";
+import type { SignInRegion } from "./kimi-region";
 import { type ProviderClientOperationError, providerCall, providerFailure } from "./provider-client-effects";
 
 const execFileAsync = promisify(execFile);
@@ -16,7 +18,7 @@ const execFileAsync = promisify(execFile);
 const MINIMUM_CODEX_VERSION = [0, 156, 0] as const;
 const MINIMUM_CLAUDE_VERSION = [2, 1, 232] as const;
 const MINIMUM_GROK_VERSION = [1, 0, 5] as const;
-// The first Cline CLI that Whilo was checked with: its sessions run in-process and it answers a lost
+// The first Cline CLI that OpenBot was checked with: its sessions run in-process and it answers a lost
 // session with the ACP resource-not-found error.
 const MINIMUM_CLINE_VERSION = [3, 0, 68] as const;
 // The first checked Python Kimi CLI. Login capabilities are probed before code sign-in.
@@ -66,9 +68,10 @@ export interface KimiCliInfo extends ResolvedCli {
 }
 
 /**
- * Whilo never installs Hermes: the user's own `hermes` runs, with the user's own `~/.hermes`, and
- * `resolveHermesCli` gives only `system`. The type keeps `managed`, as each other CLI does, so a
- * `managed` test value does not narrow `AgentCliInfo`.
+ * The user's own `hermes` runs, with the user's own `~/.hermes`, and `resolveHermesCli` gives only
+ * `system`. The Download of `HermesInstaller` runs the official installer, which puts Hermes where a
+ * terminal install does, so OpenBot finds it as the user's CLI. The type keeps `managed`, as each
+ * other CLI does, so a `managed` test value does not narrow `AgentCliInfo`.
  */
 export interface HermesCliInfo extends ResolvedCli {
   source?: "system" | "managed";
@@ -96,7 +99,7 @@ export class CodexCliError extends Error {
 }
 
 /**
- * The managed CLI Whilo downloaded for each provider, keyed by provider id. `null` means Whilo
+ * The managed CLI OpenBot downloaded for each provider, keyed by provider id. `null` means OpenBot
  * has no managed copy and only the user's own installation is used. A missing key means the same as
  * an unset option: the resolver looks for the copy shipped inside the application itself.
  */
@@ -113,7 +116,7 @@ export const resolveCodexCli: (input?: {
       input.bundledExecutable === undefined ? bundledCodexExecutable() : input.bundledExecutable;
     const candidates = yield* cliCandidates("codex", input.systemCandidates, bundledExecutable);
     const failures: CodexCliError[] = [];
-    // The copy that Whilo tried first. The message for it tells the user which copy to repair.
+    // The copy that OpenBot tried first. The message for it tells the user which copy to repair.
     let firstFailedSource: "system" | "managed" | undefined;
 
     for (const candidate of candidates) {
@@ -179,7 +182,7 @@ export const resolveClaudeCli: (input?: {
       input.bundledExecutable === undefined ? bundledClaudeExecutable() : input.bundledExecutable;
     const candidates = yield* cliCandidates("claude", input.systemCandidates, bundledExecutable);
     const failures: CodexCliError[] = [];
-    // The copy that Whilo tried first. The message for it tells the user which copy to repair.
+    // The copy that OpenBot tried first. The message for it tells the user which copy to repair.
     let firstFailedSource: "system" | "managed" | undefined;
 
     for (const candidate of candidates) {
@@ -280,7 +283,7 @@ export const resolveGrokCli: (input?: {
 );
 
 /**
- * There is deliberately no minimum version here. Whilo downloads and pins OpenCode now, but a
+ * There is deliberately no minimum version here. OpenBot downloads and pins OpenCode now, but a
  * user who already has the CLI keeps it, and a floor would newly lock out an install that works.
  */
 export const resolveOpencodeCli: (input?: {
@@ -330,8 +333,8 @@ export function antigravityHarnessName(target: string): "localharness_external" 
 
 /**
  * The Antigravity server is never looked for on `PATH`: the Antigravity IDE installs an
- * `antigravity` command that is an editor, not this server. Only the copy Whilo downloaded, or the
- * path in `WHILO_ANTIGRAVITY_PATH`, is used. The server takes no `--version`, so the version comes
+ * `antigravity` command that is an editor, not this server. Only the copy OpenBot downloaded, or the
+ * path in `OPENBOT_ANTIGRAVITY_PATH`, is used. The server takes no `--version`, so the version comes
  * from the manifest two levels above the program, which a managed install writes. The server
  * still gets `cliLaunchPath`: the MCP servers that it starts are commands such as bare `node` (#3418).
  *
@@ -373,6 +376,10 @@ export const resolveAntigravityCli: (input?: {
 
       /* Try the remaining candidates. */
     }
+    // Only the managed copy is downloadable, so a path the user set that cannot run must not say
+    // "not downloaded": Download is refused while the override is set (#4978).
+    if (!found && override.length > 0)
+      throw new CodexCliError(sourceText("error.provider.antigravityOverrideInvalid"), "invalid");
     throw new CodexCliError(
       found ? sourceText("error.provider.antigravityNotStarted") : sourceText("error.provider.antigravityMissing"),
       found ? "invalid" : "missing",
@@ -437,7 +444,7 @@ export const resolveCursorCli: (input?: {
 );
 
 /**
- * Finds the user's own Hermes Agent. Whilo has no copy of its own: a newer Hermes moves the
+ * Finds the user's own Hermes Agent. OpenBot has no copy of its own: a newer Hermes moves the
  * user's `~/.hermes` database and settings forward, and the user's older Hermes then cannot read them.
  */
 export const resolveHermesCli: (input?: {
@@ -603,13 +610,18 @@ export const resolveKimiCli: (input?: {
   Effect.catchDefect((cause) => Effect.fail(providerFailure(cause))),
 );
 
-/** The Python CLI supports JSON; Kimi Code 2.x prints a device code as text. */
-export const kimiCodeLoginArgs = Effect.fn("Cli.kimiCodeLoginArgs")(function* (
+/**
+ * The arguments of `kimi login`. The Python CLI supports JSON, and takes its region from the
+ * variables of `kimiPythonLoginEnv`. Kimi Code 2.x prints a device code as text, and takes the
+ * region as an option: without it, a first sign-in goes to kimi.com.
+ */
+export const kimiLoginArgs = Effect.fn("Cli.kimiLoginArgs")(function* (
   cli: { executable: string; launchPath?: string },
   env: Readonly<Record<string, string>>,
+  options: { code: boolean; region: SignInRegion },
 ): Effect.fn.Return<readonly string[], ProviderClientOperationError> {
   const target = cliSpawnTarget(cli.executable, ["login", "--help"]);
-  const output = yield* Effect.tryPromise({
+  const probe = Effect.tryPromise({
     try: (signal) =>
       execFileAsync(target.command, target.args, {
         signal,
@@ -631,11 +643,14 @@ export const kimiCodeLoginArgs = Effect.fn("Cli.kimiCodeLoginArgs")(function* (
       );
     },
   });
+  // A browser sign-in needs no option, so a probe that fails keeps the plain `kimi login`.
+  const output = options.code ? yield* probe : yield* Effect.orElseSucceed(probe, () => ({ stdout: "", stderr: "" }));
   const help = stripVTControlCharacters(`${output.stdout}\n${output.stderr}`);
   if (/\bkimi\b/i.test(help)) {
-    if (/--json(?:\s|[,=]|$)/u.test(help)) return ["login", "--json"];
-    if (/--region\b/u.test(help) && /device-code/u.test(help)) return ["login"];
+    if (/--json(?:\s|[,=]|$)/u.test(help)) return options.code ? ["login", "--json"] : ["login"];
+    if (/--region\b/u.test(help) && /device-code/u.test(help)) return ["login", "--region", options.region];
   }
+  if (!options.code) return ["login"];
   return yield* providerFailure(
     new CodexCliError(sourceText("error.provider.noCodeSignIn", { provider: agentProviderName("kimi") }), "invalid"),
   );
@@ -766,9 +781,9 @@ function isMinimumVersion(version: string, minimum: readonly number[]): boolean 
   return true;
 }
 
-/** Resolves native RPC providers through the same explicit/managed/system precedence. */
+/** Resolves the native providers through the same explicit/managed/system precedence. */
 const resolveNativeCli = Effect.fn("Cli.resolveNativeCli")(function* (
-  provider: "pi" | "muse",
+  provider: NativeCliProvider,
   input: { systemCandidates?: string[]; bundledExecutable?: string | null | undefined } = {},
 ): Effect.fn.Return<AgentCliInfo, ProviderClientOperationError> {
   const candidates = yield* cliCandidates(provider, input.systemCandidates, input.bundledExecutable ?? null);
@@ -780,7 +795,7 @@ const resolveNativeCli = Effect.fn("Cli.resolveNativeCli")(function* (
     const attempt = yield* Effect.result(
       Effect.gen(function* () {
         const { stdout, launch } = yield* readCliVersion(candidate, provider);
-        const version = provider === "pi" ? parsePiVersion(stdout) : parseMuseVersion(stdout);
+        const version = NATIVE_VERSION_PARSERS[provider](stdout);
         if (provider === "pi" && !isMinimumVersion(version, [1, 1, 0]))
           throw new CodexCliError(sourceText("error.provider.piOutdated", { version }), "outdated");
         return { executable: candidate.executable, version, source: candidate.source, ...launch };
@@ -810,19 +825,57 @@ export const resolveMuseCli = (input?: {
   systemCandidates?: string[];
   bundledExecutable?: string | null | undefined;
 }) => resolveNativeCli("muse", input);
+export const resolveDevinCli = (input?: {
+  systemCandidates?: string[];
+  bundledExecutable?: string | null | undefined;
+}) => resolveNativeCli("devin", input);
+export const resolveCopilotCli = (input?: {
+  systemCandidates?: string[];
+  bundledExecutable?: string | null | undefined;
+}) => resolveNativeCli("copilot", input);
 
-export function parsePiVersion(output: string): string {
+function parsePiVersion(output: string): string {
   const match = output.trim().match(/(?:^|\s)v?(\d+\.\d+\.\d+)(?:[-+][\w.-]+)?(?:\s|$)/u);
   if (!match?.[1])
     throw new CodexCliError(sourceText("error.provider.nativeVersionUnreadable", { provider: "Pi" }), "invalid");
   return match[1];
 }
-export function parseMuseVersion(output: string): string {
+function parseMuseVersion(output: string): string {
   const match = output.match(/\b\d+\.\d+\.\d+-R\d+(?:\.\d+)?\b/u) ?? output.match(/\b\d+\.\d+\.\d+\b/u);
   if (!match)
     throw new CodexCliError(sourceText("error.provider.nativeVersionUnreadable", { provider: "Muse" }), "invalid");
   return match[0];
 }
+
+/** Devin CLI 3000.11.234 prints `devin 3000.11.234 (92c83011d113)`. */
+function parseDevinVersion(output: string): string {
+  const match = output.match(/\bdevin[ \t]+v?(\d+\.\d+\.\d+)\b/iu) ?? output.match(/\b\d+\.\d+\.\d+\b/u);
+  if (!match)
+    throw new CodexCliError(sourceText("error.provider.nativeVersionUnreadable", { provider: "Devin" }), "invalid");
+  return match[1] ?? match[0];
+}
+
+/** GitHub Copilot CLI 1.0.105 prints `GitHub Copilot CLI 1.0.105.` and a line about updates. */
+function parseCopilotVersion(output: string): string {
+  const match = output.match(/\bCopilot CLI[ \t]+v?(\d+\.\d+\.\d+)\b/iu) ?? output.match(/\b\d+\.\d+\.\d+\b/u);
+  if (!match)
+    throw new CodexCliError(
+      sourceText("error.provider.nativeVersionUnreadable", { provider: "GitHub Copilot" }),
+      "invalid",
+    );
+  return match[1] ?? match[0];
+}
+
+/** The providers whose CLI is one native program that OpenBot can download. */
+type NativeCliProvider = "pi" | "muse" | "devin" | "copilot";
+
+/** The version parser of each native provider CLI. */
+export const NATIVE_VERSION_PARSERS: Readonly<Record<NativeCliProvider, (output: string) => string>> = {
+  pi: parsePiVersion,
+  muse: parseMuseVersion,
+  devin: parseDevinVersion,
+  copilot: parseCopilotVersion,
+};
 
 export function isVersion(value: string): boolean {
   return /^\d+\.\d+\.\d+(?:(?:-\d{2}-\d{2}-\d{2})?-[0-9a-f]{7,40})?$/u.test(value);
@@ -842,7 +895,7 @@ export function compareReleases(a: string, b: string): number {
 }
 
 /**
- * Resolve a provider's CLI with Whilo's copy as `bundledExecutable`. The CLI the user installed
+ * Resolve a provider's CLI with OpenBot's copy as `bundledExecutable`. The CLI the user installed
  * wins over the copy when it is as new: the copy then runs nothing, and the Storage page can remove
  * it. A version that cannot be compared keeps the copy, as before. An update passes
  * `preferInstalled: false`, because it must start the copy it just downloaded.
@@ -879,7 +932,7 @@ function cliCommandName(provider: AgentProviderId): string {
 
 /** An explicit path remains under the user's control, including during managed updates. */
 export function configuredCliPath(provider: AgentProviderId): string | null {
-  return process.env[`WHILO_${provider.toUpperCase()}_PATH`]?.trim() || null;
+  return process.env[`OPENBOT_${provider.toUpperCase()}_PATH`]?.trim() || null;
 }
 
 const cliCandidates = Effect.fn("Cli.candidates")(function* (
@@ -1030,7 +1083,7 @@ const LOGIN_SHELL_MAX_OUTPUT_BYTES = 64 * 1024;
  *
  * The shell starts in a session of its own, with no controlling terminal. An interactive bash that
  * finds the terminal held by another process group sends SIGTTIN to its own group, and without a
- * session of its own that group is Whilo's. An Whilo started from a terminal then stopped as soon
+ * session of its own that group is OpenBot's. An OpenBot started from a terminal then stopped as soon
  * as two lookups overlapped, and only SIGKILL could end it (#766). With no terminal, the shell turns
  * job control off instead. `execFile` cannot do this: it does not pass `detached` on to `spawn`.
  *
@@ -1223,7 +1276,7 @@ function batchArgument(argument: string): string {
  * processor runs, so it is called through `cmd.exe` with the same verbatim quoting as
  * `readCliVersion`. Every other executable starts with no shell. That keeps a path that holds a
  * space runnable: a managed CLI lives under `userData`, which holds a space for a user such as
- * `C:\Users\Jane Doe` and for the `Whilo Dev` profile, and `cmd.exe` would split it there.
+ * `C:\Users\Jane Doe` and for the `OpenBot Dev` profile, and `cmd.exe` would split it there.
  */
 export function cliSpawnTarget(
   executable: string,
@@ -1268,20 +1321,21 @@ const readCliVersion = Effect.fn("Cli.readVersion")(function* (
   const launchPath = yield* cliLaunchPath(candidate, source);
   const launch = launchPath ? { launchPath } : {};
   const target = process.platform === "win32" && [".bat", ".cmd"].includes(extname(candidate).toLowerCase());
+  const timeout = providerCheckTimeoutMs(CLI_VERSION_TIMEOUT_MS);
   const output = yield* providerCall(() =>
     target
       ? execFileAsync(
           process.env.ComSpec?.trim() || "cmd.exe",
           ["/d", "/s", "/c", `""${candidate.replaceAll("%", "%%")}" --version"`],
           {
-            timeout: CLI_VERSION_TIMEOUT_MS,
+            timeout,
             maxBuffer: 64 * 1024,
             windowsHide: true,
             windowsVerbatimArguments: true,
           },
         )
       : execFileAsync(candidate, ["--version"], {
-          timeout: CLI_VERSION_TIMEOUT_MS,
+          timeout,
           maxBuffer: 64 * 1024,
           windowsHide: process.platform === "win32",
           env: { ...process.env, ...cliPathEnvironment(launch) },
@@ -1302,7 +1356,7 @@ const readCliVersion = Effect.fn("Cli.readVersion")(function* (
 });
 
 /** `X_OK` also passes for a folder, and a login-shell `PATH` folder can hold one with the CLI's name. */
-const isExecutable = Effect.fn("Cli.isExecutable")((path: string) =>
+export const isExecutable = Effect.fn("Cli.isExecutable")((path: string) =>
   providerCall(async () => {
     await access(path, process.platform === "win32" ? constants.F_OK : constants.X_OK);
     return (await stat(path)).isFile();

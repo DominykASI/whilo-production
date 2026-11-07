@@ -7,17 +7,22 @@
 import { type JSX, Portal } from "@solidjs/web";
 import { createStore, onSettled, Show, untrack } from "solid-js";
 import { App } from "../src/App";
-import { createMockWhilo, type MockWhiloControls, type MockWhiloOptions } from "../src/preview/mock-whilo";
-import { WhiloPlayground } from "../src/preview/WhiloPlayground";
+import { skipStartupSplash } from "../src/AppView";
+import { createMockOpenBot, type MockOpenBotControls, type MockOpenBotOptions } from "../src/preview/mock-openbot";
+import { OpenBotPlayground } from "../src/preview/OpenBotPlayground";
 
-/** The real app on the preview mock. `setup` adds data to the mock before the app reads it. */
-export function PrototypeApp(props: { options?: MockWhiloOptions; setup?: (mock: MockWhiloControls) => void }) {
+/**
+ * The real app on the preview mock. `setup` adds data to the mock before the app reads it. The
+ * startup splash fades as soon as the app is ready, so each page load does not play it through.
+ */
+export function PrototypeApp(props: { options?: MockOpenBotOptions; setup?: (mock: MockOpenBotControls) => void }) {
+  skipStartupSplash();
   return (
-    <WhiloPlayground
+    <OpenBotPlayground
       options={props.options}
       dependencies={{
         createMock: (options) => {
-          const mock = createMockWhilo(options);
+          const mock = createMockOpenBot(options);
           untrack(() => props.setup)?.(mock);
           return mock;
         },

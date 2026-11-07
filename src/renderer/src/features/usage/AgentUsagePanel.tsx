@@ -4,8 +4,8 @@ import {
   type HostAnalytics,
   type HostAnalyticsInput,
   WORKFLOWS_USAGE_ID,
-} from "@whilo/contracts/ipc";
-import type { AppTextKey } from "@whilo/i18n";
+} from "@openbot/contracts/ipc";
+import type { AppTextKey } from "@openbot/i18n";
 import {
   ArrowLeft,
   Button,
@@ -17,8 +17,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@whilo/ui";
-import { AgentUsageReport } from "@whilo/ui/features/usage/AgentUsageReport";
+} from "@openbot/ui";
+import { AgentUsageReport } from "@openbot/ui/features/usage/AgentUsageReport";
 import {
   type UsageAgentLabel,
   type UsageMetric,
@@ -28,9 +28,10 @@ import {
   usagePeriodDays,
   usagePeriodLabels,
   usagePeriods,
-} from "@whilo/ui/features/usage/usage-format";
-import { useText } from "@whilo/ui/text";
-import { errorReference } from "@whilo/user-errors";
+} from "@openbot/ui/features/usage/usage-format";
+import { useText } from "@openbot/ui/text";
+import { errorReference } from "@openbot/user-errors";
+import type { JSX } from "@solidjs/web";
 import { createEffect, createStore, onSettled, Show } from "solid-js";
 import { desktopAnalytics } from "../../analytics";
 import { type UsagePort, usagePort } from "./usage-port";
@@ -44,6 +45,8 @@ interface AgentUsagePanelProps {
   onBack: () => void;
   /** The web client reads the host through its own connection. The default is the desktop bridge. */
   port?: UsagePort;
+  /** The machine use of the server, before the filters. The desktop app shows it to owners and admins. */
+  machine?: JSX.Element;
 }
 interface UsageState {
   range: HostAnalyticsInput;
@@ -192,6 +195,7 @@ export function AgentUsagePanel(props: AgentUsagePanelProps) {
           </h2>
         </div>
         <div class="agent-usage-controls">
+          {props.machine}
           <Select
             options={[
               "all",

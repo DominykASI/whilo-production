@@ -1,9 +1,9 @@
 import { constants } from "node:fs";
 import { lstat, open, realpath } from "node:fs/promises";
 import { basename, isAbsolute } from "node:path";
-import { sortConversationMessages } from "@whilo/contracts/conversation-order";
-import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
-import type { AgentEvent, ConversationSnapshot } from "@whilo/contracts/ipc";
+import { sortConversationMessages } from "@openbot/contracts/conversation-order";
+import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import type { AgentEvent, ConversationSnapshot } from "@openbot/contracts/ipc";
 import { Deferred, Effect, Result } from "effect";
 import {
   type AttachmentOperationError,
@@ -15,7 +15,7 @@ import {
 import type { GeneratedAttachmentSource, MailboxStore } from "../mailbox-store";
 import { isWithin, rebaseLegacyWorkspacePath, sharedPathFromInput, workspacePathFromInput } from "../workspace-paths";
 import type { ConversationRuntime } from "./conversation-runtime";
-import { type WhiloToolResponse, whiloToolResult } from "./routine-tools";
+import { type OpenBotToolResponse, openBotToolResult } from "./routine-tools";
 
 export interface AttachmentGatewayHooks {
   emit(event: AgentEvent): void;
@@ -26,9 +26,9 @@ export interface AttachmentGatewayHooks {
  * Where a path a tool named is allowed to point.
  *
  * The default is the attachment policy: the file must resolve inside this agent's own workspace or the
- * Whilo shared directory, and a symlink anywhere on the way is refused outright.
+ * OpenBot shared directory, and a symlink anywhere on the way is refused outright.
  *
- * `allowAnyReadablePath` is the browser-upload policy. `whilo_browser.upload_files` hands a local
+ * `allowAnyReadablePath` is the browser-upload policy. `openbot_browser.upload_files` hands a local
  * file to a page, and the file the user names is almost never one the agent already copied into its
  * workspace, so containment would make the tool unusable. It grants no capability an agent does not
  * already have -- every agent can read any file its user can, and Workspace only limits writes, not
@@ -73,7 +73,7 @@ export class AttachmentGateway {
   readonly #mailbox: MailboxStore;
   readonly #sharedRoot: string;
   readonly #hooks: AttachmentGatewayHooks;
-  readonly #inFlight = new Map<string, Deferred.Deferred<WhiloToolResponse, AttachmentOperationError>>();
+  readonly #inFlight = new Map<string, Deferred.Deferred<OpenBotToolResponse, AttachmentOperationError>>();
 
   constructor(options: AttachmentGatewayOptions) {
     this.#conversation = options.conversation;
@@ -91,7 +91,7 @@ export class AttachmentGateway {
   ) {
     const inFlight = this.#inFlight.get(messageId);
     if (inFlight) return yield* Deferred.await(inFlight);
-    const completion = Deferred.makeUnsafe<WhiloToolResponse, AttachmentOperationError>();
+    const completion = Deferred.makeUnsafe<OpenBotToolResponse, AttachmentOperationError>();
     this.#inFlight.set(messageId, completion);
     const exit = yield* Effect.exit(this.#attachFilesToResponse(senderAgentId, params, paths, messageId));
     yield* Deferred.done(completion, exit);
@@ -178,7 +178,7 @@ export class AttachmentGateway {
     );
   }, Effect.uninterruptible).bind(this);
 
-  pendingCommands(): Effect.Effect<WhiloToolResponse, AttachmentOperationError>[] {
+  pendingCommands(): Effect.Effect<OpenBotToolResponse, AttachmentOperationError>[] {
     return [...this.#inFlight.values()].map(Deferred.await);
   }
 
@@ -192,13 +192,13 @@ export class AttachmentGateway {
     params: { threadId: string; turnId: string; callId: string },
     paths: string[],
     messageId: string,
-  ): Effect.fn.Return<WhiloToolResponse, AttachmentOperationError> {
+  ): Effect.fn.Return<OpenBotToolResponse, AttachmentOperationError> {
     const publicThreadId = this.#conversation.publicThreadId(senderAgentId, params.threadId);
     const snapshot = this.#conversation.ensureSnapshot(senderAgentId, publicThreadId);
     const existing = snapshot.messages.find((message) => message.id === messageId);
     if (existing) {
       return yield* attachmentCall(() =>
-        whiloToolResult({
+        openBotToolResult({
           status: "attached",
           messageId,
           attachments: (existing.attachments ?? []).map((attachment) => ({
@@ -264,7 +264,7 @@ export class AttachmentGateway {
             }
           }
           return yield* attachmentCall(() =>
-            whiloToolResult({
+            openBotToolResult({
               status: "attached",
               messageId,
               attachments: attachments.map((attachment) => ({ id: attachment.id, name: attachment.name })),
@@ -318,7 +318,7 @@ export class AttachmentGateway {
       ),
     );
     const normalized = value.replaceAll("\\", "/");
-    const sharedReference = ["~/Whilo/Shared/", "Whilo/Shared/", "Shared/"].some((prefix) =>
+    const sharedReference = ["~/OpenBot/Shared/", "OpenBot/Shared/", "Shared/"].some((prefix) =>
       normalized.startsWith(prefix),
     );
     // An absolute path may be one the provider's own transcript still names under this agent's pre-rename
@@ -330,22 +330,30 @@ export class AttachmentGateway {
         ? [sharedPathFromInput(this.#sharedRoot, value)]
         : [workspacePathFromInput(agent.workspacePath, agent.id, value), sharedPathFromInput(this.#sharedRoot, value)];
 
+    // Why each candidate failed, so the agent and the log get the real cause (#4564).
+    const reasons: string[] = [];
     for (const candidate of candidates) {
       try {
         if (
           !scope.allowAnyReadablePath &&
           attachmentResult(yield* Effect.result(attachmentCall(() => lstat(candidate)))).isSymbolicLink()
-        )
+        ) {
+          reasons.push("the path is a symbolic link");
           continue;
+        }
         const resolved = attachmentResult(yield* Effect.result(attachmentCall(() => realpath(candidate))));
         if (
           !scope.allowAnyReadablePath &&
           ![workspaceRoot, sharedRoot, ...folderRoots].some((root) => isWithin(root, resolved))
         ) {
+          reasons.push("the file is outside these folders");
           continue;
         }
         const authorizedMetadata = attachmentResult(yield* Effect.result(attachmentCall(() => lstat(resolved))));
-        if (authorizedMetadata.isSymbolicLink() || !authorizedMetadata.isFile()) continue;
+        if (authorizedMetadata.isSymbolicLink() || !authorizedMetadata.isFile()) {
+          reasons.push("the path is not a regular file");
+          continue;
+        }
         let retained = false;
         return attachmentResult(
           yield* Effect.result(
@@ -368,16 +376,27 @@ export class AttachmentGateway {
             ),
           ),
         );
-      } catch {
+      } catch (error) {
         // Try the other permitted root for relative paths.
+        reasons.push(sourceFailureReason(error));
       }
     }
     return yield* attachmentFailure(
       new Error(
-        scope.allowAnyReadablePath
-          ? "Upload files must exist, be regular files, and be readable by Whilo."
-          : "Attachment files must exist inside this agent's workspace or the Whilo shared directory.",
+        `${
+          scope.allowAnyReadablePath
+            ? "Upload files must exist, be regular files, and be readable by OpenBot."
+            : "Attachment files must exist inside this agent's workspace or the OpenBot shared directory."
+        } Reason: ${[...new Set(reasons)].join("; ")}.`,
       ),
     );
   });
+}
+
+/** A Node error names its code and call, not the path, so the reason does not repeat a local path. */
+function sourceFailureReason(error: unknown): string {
+  if (error instanceof Error && "code" in error && typeof error.code === "string") {
+    return "syscall" in error && typeof error.syscall === "string" ? `${error.code} from ${error.syscall}` : error.code;
+  }
+  return error instanceof Error ? error.message.replace(/\.$/, "") : String(error);
 }

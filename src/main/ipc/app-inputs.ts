@@ -1,9 +1,13 @@
 import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import type {
   AgentDefaults,
+  AgentDockAction,
+  AgentDockDragPhase,
+  AgentDockPresentation,
   AgentMemoryLimitPreference,
   AgentProviderId,
   AppBehaviorPreferenceChange,
+  AvatarColor,
   BrowserDockAction,
   BrowserDockFrame,
   BrowserDockPresentation,
@@ -30,8 +34,10 @@ import type {
   PublishHostedSiteInput,
   RemoteNetworkRoutePreference,
   RemoteSessionReusePreference,
+  RendererTimingReport,
   ReplaceHostedSiteInput,
   SaveSetupInput,
+  SetAgentDockInteractiveInput,
   SetAnalyticsPreferenceInput,
   SetAppAppearancePreferenceInput,
   SetAppInterfaceLookPreferenceInput,
@@ -50,6 +56,10 @@ import {
   decodeExternalLinkTarget,
   IDLE_RESTART_TARGETS,
   isAgentDefaults,
+  isAgentDockAction,
+  isAgentDockDragPhase,
+  isAgentDockInteractive,
+  isAgentDockPresentation,
   isAgentMemoryLimit,
   isAgentModel,
   isAgentProvider,
@@ -59,6 +69,8 @@ import {
   isAppInterfaceSize,
   isAppLanguage,
   isAppLogoColor,
+  isAppThemePaletteId,
+  isAvatarColor,
   isBrowserDockAction,
   isBrowserDockFrame,
   isBrowserDockPresentation,
@@ -71,6 +83,7 @@ import {
   isRemoteNetworkRoute,
   isSkillCategory,
   MAC_AUTOMATION_TARGETS,
+  RENDERER_TIMING_LIMITS,
 } from "@whilo/contracts/ipc";
 import {
   type DynamicRecord,
@@ -106,6 +119,27 @@ export function parseAnalyticsPreference(input: unknown): SetAnalyticsPreference
   return { enabled: input.enabled, ...(input.chosen ? { chosen: true } : {}) };
 }
 
+function isCount(value: unknown, max: number): value is number {
+  return isNumber(value) && Number.isSafeInteger(value) && value >= 0 && value <= max;
+}
+
+/** Counts and delays only. Each value has a bound, so one window cannot fill the daily summary. */
+export function parseRendererTimingReport(input: unknown): RendererTimingReport {
+  if (!isDynamicRecord(input)) throw new Error("Renderer timing is required.");
+  const { workspaceReady, longTasks, inputs, inputDelaysMs } = input;
+  if (workspaceReady !== undefined && workspaceReady !== true) throw new Error("Workspace ready is not valid.");
+  if (!isCount(longTasks, RENDERER_TIMING_LIMITS.longTasks) || !isCount(inputs, RENDERER_TIMING_LIMITS.inputs))
+    throw new Error("Renderer timing is not valid.");
+  if (
+    !Array.isArray(inputDelaysMs) ||
+    inputDelaysMs.length > Math.min(RENDERER_TIMING_LIMITS.inputDelays, inputs) ||
+    !inputDelaysMs.every((delay) => isCount(delay, RENDERER_TIMING_LIMITS.inputDelayMs))
+  ) {
+    throw new Error("Input delays are not valid.");
+  }
+  return { ...(workspaceReady ? { workspaceReady } : {}), longTasks, inputs, inputDelaysMs: [...inputDelaysMs] };
+}
+
 export function parseBusyMessageModePreference(input: unknown): BusyMessageModePreference {
   if (!isDynamicRecord(input) || !isBusyMessageMode(input.mode)) throw new Error("Busy message mode is required.");
   return { mode: input.mode };
@@ -117,6 +151,8 @@ export function parseAgentDefaults(input: unknown): AgentDefaults {
     allowAutomation: input.allowAutomation,
     allowNewChat: input.allowNewChat,
     quickAcknowledgement: input.quickAcknowledgement,
+    planStartAfterMs: input.planStartAfterMs,
+    automationRunsPerHour: input.automationRunsPerHour,
   };
 }
 
@@ -165,14 +201,18 @@ export function parseAppLogoColorPreference(input: unknown): SetAppLogoColorPref
 
 export function parseAppAppearancePreference(input: unknown): SetAppAppearancePreferenceInput {
   if (!isDynamicRecord(input)) throw new Error("Appearance is required.");
-  const { appearance, transparentWindow } = input;
+  const { appearance, transparentWindow, palette } = input;
   if (appearance !== undefined && !isAppAppearance(appearance)) throw new Error("Appearance is invalid.");
   if (transparentWindow !== undefined && typeof transparentWindow !== "boolean")
     throw new Error("Transparent window must be true or false.");
-  if (appearance === undefined && transparentWindow === undefined) throw new Error("Appearance is required.");
+  if (palette !== undefined && palette !== null && !isAppThemePaletteId(palette))
+    throw new Error("Theme palette is invalid.");
+  if (appearance === undefined && transparentWindow === undefined && palette === undefined)
+    throw new Error("Appearance is required.");
   return {
     ...(appearance === undefined ? {} : { appearance }),
     ...(transparentWindow === undefined ? {} : { transparentWindow }),
+    ...(palette === undefined ? {} : { palette }),
   };
 }
 
@@ -279,6 +319,26 @@ export function parseBrowserDockFrame(input: unknown): BrowserDockFrame {
   throw new Error("Browser dock frame is invalid.");
 }
 
+export function parseAgentDockPresentation(input: unknown): AgentDockPresentation | null {
+  if (input === null || isAgentDockPresentation(input)) return input;
+  throw new Error("Agent dock presentation is invalid.");
+}
+
+export function parseAgentDockAction(input: unknown): AgentDockAction {
+  if (isAgentDockAction(input)) return input;
+  throw new Error("Agent dock action is invalid.");
+}
+
+export function parseAgentDockInteractive(input: unknown): SetAgentDockInteractiveInput {
+  if (isAgentDockInteractive(input)) return input;
+  throw new Error("Agent dock interaction state is required.");
+}
+
+export function parseAgentDockDragPhase(input: unknown): AgentDockDragPhase {
+  if (isAgentDockDragPhase(input)) return input;
+  throw new Error("Agent dock drag phase is invalid.");
+}
+
 export function parseMacPermission(input: unknown): MacPermissionId {
   if (input !== "screen-recording" && input !== "accessibility") {
     throw new Error("Unknown macOS permission.");
@@ -292,6 +352,26 @@ export function parseMacAutomationTargets(input: unknown): readonly MacAutomatio
     throw new Error("Unknown Apple app.");
   }
   return [...new Set(input)];
+}
+
+const SOCIAL_DESTINATIONS = [
+  "threads",
+  "instagram",
+  "tiktok",
+  "facebook",
+  "linkedin",
+  "reddit",
+  "x-post",
+  "threads-post",
+  "linkedin-post",
+  "reddit-post",
+  "facebook-post",
+  "instagram-post",
+  "tiktok-post",
+] as const satisfies readonly ExternalDestination[];
+
+function isSocialDestination(input: unknown): input is (typeof SOCIAL_DESTINATIONS)[number] {
+  return SOCIAL_DESTINATIONS.some((destination) => destination === input);
 }
 
 export function parseExternalDestination(input: unknown): ExternalDestination {
@@ -308,6 +388,7 @@ export function parseExternalDestination(input: unknown): ExternalDestination {
     input !== "discord" &&
     input !== "github" &&
     input !== "x" &&
+    !isSocialDestination(input) &&
     input !== "grok-bot-export" &&
     input !== "hosted-server-contact" &&
     input !== "mac-screen-recording"
@@ -331,6 +412,13 @@ export function parseProfileName(input: unknown): string {
     throw new Error(`name must contain ${INPUT_LIMITS.profileNameMin} to ${INPUT_LIMITS.profileName} safe characters.`);
   }
   return validation.name;
+}
+
+/** The chat color of the account: a lower-case `#rrggbb`, or null for no chat color. */
+export function parseChatColor(input: unknown): AvatarColor | null {
+  if (input === null) return null;
+  if (!isAvatarColor(input)) throw new Error("chatColor must be null or a lower-case #rrggbb color.");
+  return input;
 }
 
 // The two marketplaces share query fields and validate their category filters at the boundary.

@@ -4,11 +4,11 @@ import type {
   AskSideQuestionInput,
   AttachmentSummary,
   FilePreview,
-  WhiloDesktopApi,
+  OpenBotDesktopApi,
   ResetAgentSessionSettingInput,
   SetAgentSessionSettingInput,
-} from "@whilo/contracts/ipc";
-import type { AttachmentMediaSource } from "@whilo/ui/features/conversation/AttachmentCards";
+} from "@openbot/contracts/ipc";
+import type { AttachmentMediaSource } from "@openbot/ui/features/conversation/AttachmentCards";
 import type { AgentSkillCalls } from "../../skills-port";
 import type { AgentTemplatePublishCalls } from "../agent-templates/agent-templates-port";
 import type { BrowserProfileCalls } from "../browser/browser-profiles-port";
@@ -19,7 +19,7 @@ import type { AgentRoutinesApi } from "./routines-port";
 
 export interface ConversationRuntime {
   agent: Pick<
-    WhiloDesktopApi["agent"],
+    OpenBotDesktopApi["agent"],
     | "discardDraftAttachment"
     | "importAttachmentData"
     | "downloadAttachments"
@@ -37,9 +37,13 @@ export interface ConversationRuntime {
     | "setMessageReaction"
   > &
     // A joined server's sign-in link that the host relays. Absent, a link opens with `openUrl`.
-    Partial<Pick<WhiloDesktopApi["agent"], "openMessageLink" | "pasteMessageLink" | "cancelMessageLink">>;
+    Partial<Pick<OpenBotDesktopApi["agent"], "openMessageLink" | "pasteMessageLink" | "cancelMessageLink">> &
+    // The progress and stop of an attachment download from a joined server. Absent, a card shows no progress.
+    Partial<Pick<OpenBotDesktopApi["agent"], "stopAttachmentDownload" | "onAttachmentDownload">> &
+    // Retry and remove of a failed file import. Absent, a failed upload chip has only its remove button.
+    Partial<Pick<OpenBotDesktopApi["agent"], "retryAttachmentImport" | "discardAttachmentImport">>;
   browser: Pick<
-    WhiloDesktopApi["browser"],
+    OpenBotDesktopApi["browser"],
     | "capturePreview"
     | "closePictureInPicture"
     | "navigate"
@@ -53,7 +57,7 @@ export interface ConversationRuntime {
     | "takeControl"
   >;
   voice: Pick<
-    WhiloDesktopApi["voice"],
+    OpenBotDesktopApi["voice"],
     | "getSettings"
     | "getServer"
     | "onModelStatus"
@@ -65,7 +69,7 @@ export interface ConversationRuntime {
     | "cancelStream"
     | "onStreamTranscript"
   >;
-  openUrl: WhiloDesktopApi["openUrl"];
+  openUrl: OpenBotDesktopApi["openUrl"];
   /** Asks the connected host a side question. Absent, the host does not serve `side-question-v1`. */
   askSideQuestion?: ((input: AskSideQuestionInput) => Promise<string>) | undefined;
   previewAttachment?: (attachment: AttachmentSummary) => Promise<FilePreview>;
@@ -117,5 +121,5 @@ export interface AgentNotificationLevelCalls {
 }
 
 export function conversationRuntime(props: Pick<ConversationProps, "runtime">): ConversationRuntime {
-  return props.runtime ?? window.whilo;
+  return props.runtime ?? window.openbot;
 }

@@ -1,4 +1,4 @@
-import { APP_INTERFACE_SIZES, type AppInterfaceSize, type AppVariant } from "@whilo/contracts/ipc";
+import { APP_INTERFACE_SIZES, type AppInterfaceSize, type AppVariant, type AvatarColor } from "@whilo/contracts/ipc";
 import {
   Item,
   ItemActions,
@@ -13,11 +13,11 @@ import {
   SelectValue,
   SettingsSection,
   SwitchField,
+  toast,
 } from "@whilo/ui";
 import { AppearanceSelect } from "@whilo/ui/features/settings/AppearanceSelect";
-import { AccentPicker } from "@whilo/ui/features/settings/AccentPicker";
-import { CornerRadiusSelect } from "@whilo/ui/features/settings/CornerRadiusSelect";
 import type { GeneralSettingsValue } from "@whilo/ui/features/settings/app-settings";
+import { OwnChatColorTrigger } from "@whilo/ui/features/settings/ChatColorSetting";
 import { LanguageSelect } from "@whilo/ui/features/settings/LanguageSelect";
 import { LogoColorPicker } from "@whilo/ui/features/settings/LogoColorPicker";
 import { SendShortcutSelect } from "@whilo/ui/features/settings/SendShortcutSelect";
@@ -42,6 +42,9 @@ interface SettingsGeneralTabProps {
   selectMount: HTMLElement | undefined;
   onUpdateSetting: <Key extends keyof GeneralSettingsValue>(key: Key, value: GeneralSettingsValue[Key]) => void;
   onUpdateSettings: (patch: Partial<GeneralSettingsValue>) => void;
+  /** The chat color of the account, or null for none. */
+  chatColor: AvatarColor | null;
+  onSetChatColor: (color: AvatarColor | null) => Promise<void>;
 }
 
 export function SettingsGeneralTab(props: SettingsGeneralTabProps) {
@@ -49,8 +52,13 @@ export function SettingsGeneralTab(props: SettingsGeneralTabProps) {
   const appearance = useAppearanceChoice();
   const logoColor = useLogoColorChoice();
   const interfaceSize = useInterfaceSizeChoice();
-  const look = useInterfaceLookChoice();
-  const { format } = useText();
+  const { format, errorMessage } = useText();
+  const saveChatColor = (color: AvatarColor | null) =>
+    void props
+      .onSetChatColor(color)
+      .catch((error: unknown) =>
+        toast.error(errorMessage(error, i18n.t("settings.preferences.saveFailed")), { error }),
+      );
   const interfaceSizeLabel = (value: AppInterfaceSize | undefined) =>
     value === undefined ? "" : format.percent(value / 100);
   /** macOS always keeps running after the window closes. There the switch moves Whilo from the Dock to the menu bar. */
@@ -69,8 +77,9 @@ export function SettingsGeneralTab(props: SettingsGeneralTabProps) {
             </ItemContent>
             <ItemActions>
               <AppearanceSelect
-                value={appearance.appearance()}
-                onChange={appearance.changeAppearance}
+                value={appearance.theme()}
+                onChange={appearance.changeTheme}
+                palettes={appearance.palettes()}
                 mount={props.selectMount}
               />
             </ItemActions>
@@ -146,6 +155,15 @@ export function SettingsGeneralTab(props: SettingsGeneralTabProps) {
             </ItemContent>
             <LogoColorPicker value={logoColor.color()} onChange={logoColor.changeColor} />
           </Item>
+          <Item data-settings-row="settings.chatColor.title" class="settings-modal-row">
+            <ItemContent>
+              <ItemTitle>{i18n.t("settings.chatColor.title")}</ItemTitle>
+              <ItemDescription>{i18n.t("settings.chatColor.description")}</ItemDescription>
+            </ItemContent>
+            <ItemActions>
+              <OwnChatColorTrigger value={props.chatColor} onChange={saveChatColor} />
+            </ItemActions>
+          </Item>
         </ItemGroup>
       </SettingsSection>
 
@@ -171,6 +189,13 @@ export function SettingsGeneralTab(props: SettingsGeneralTabProps) {
             onChange={(checked) => props.onUpdateSetting("showAgentSteps", checked)}
             label={i18n.t("settings.showAgentSteps.title")}
             description={i18n.t("settings.showAgentSteps.description")}
+          />
+          <SwitchField
+            data-settings-row="settings.compactMessageActions.title"
+            checked={props.value.compactMessageActions}
+            onChange={(checked) => props.onUpdateSetting("compactMessageActions", checked)}
+            label={i18n.t("settings.compactMessageActions.title")}
+            description={i18n.t("settings.compactMessageActions.description")}
           />
           <Item data-settings-row="settings.externalLinks.title" class="settings-modal-row">
             <ItemContent>

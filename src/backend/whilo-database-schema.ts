@@ -1,35 +1,43 @@
 import type { DatabaseSync } from "node:sqlite";
-import { COMPUTER_USE_MCP_SERVER_NAME } from "@whilo/contracts/ipc";
-import { type DynamicRecord, isDynamicRecord, isNumber, isString } from "@whilo/contracts/runtime-values";
-import { isGeneratedAgentId } from "@whilo/contracts/validation";
-import { sourceText } from "@whilo/i18n/source";
-import { createWhiloLogger, toLogValue } from "@whilo/logging";
+import { COMPUTER_USE_MCP_SERVER_NAME } from "@openbot/contracts/ipc";
+import { type DynamicRecord, isDynamicRecord, isNumber, isString } from "@openbot/contracts/runtime-values";
+import { isGeneratedAgentId } from "@openbot/contracts/validation";
+import { sourceText } from "@openbot/i18n/source";
+import { createOpenBotLogger, toLogValue } from "@openbot/logging";
 import { AGENT_MEMORY_SELECTION_SCHEMA_SQL, migrateAgentMemorySelection } from "./agent-memory-selection";
 import { AGENT_TASK_SCHEMA_SQL } from "./agent-tasks/agent-task-schema";
 import {
   AGENT_THREAD_MIGRATION_SQL,
   AGENT_THREAD_SCHEMA_SQL,
   V48_AGENT_THREAD_BRANCH_COLUMNS_SQL,
+  V54_AGENT_THREAD_ROUTINE_COLUMN_SQL,
+  V54_AGENT_THREAD_ROUTINE_INDEX_SQL,
 } from "./agent-threads/agent-thread-schema";
 import { AGENT_WAIT_SCHEMA_SQL } from "./agent-waits/agent-wait-schema";
 import { BROWSER_PROFILE_SCHEMA_SQL } from "./browser-profiles/browser-profile-schema";
+import { BROWSER_PROXY_SCHEMA_SQL } from "./browser-profiles/browser-proxy-schema";
 import { CHANNEL_SCHEMA_SQL, CHANNEL_SETTINGS_SCHEMA_SQL } from "./channel-schema";
+import { AGENT_SKILL_LOADS_SCHEMA_SQL } from "./database/agent-skill-loads-schema";
+import { DELETED_THREAD_MESSAGES_SCHEMA_SQL } from "./database/deleted-thread-messages-schema";
 import { PROVIDER_HISTORY_SCHEMA_SQL } from "./database/provider-history-schema";
 import { MCP_SERVERS_SCHEMA_SQL } from "./mcp-schema";
 import {
   MESSAGING_ALLOWED_ROLES_SCHEMA_SQL,
+  MESSAGING_ALLOWED_SENDERS_SCHEMA_SQL,
   MESSAGING_MEMORY_SCHEMA_SQL,
   MESSAGING_SCHEMA_SQL,
 } from "./messaging/messaging-schema";
 import { ROUTINE_FLOW_SCHEMA_SQL } from "./routine-flows/routine-flow-schema";
 import { ROUTINE_RESULT_SCHEMA_SQL } from "./routine-results/routine-result-schema";
-import { addDiscordWorkflows, V50_WORKFLOW_RUN_SOURCE_SQL } from "./workflows/workflow-discord-schema";
+import { addDiscordWorkflows } from "./workflows/workflow-discord-schema";
 import {
   addGitHubWorkflows,
   V46_WORKFLOW_RUN_SOURCE_SQL,
   WORKFLOW_GITHUB_SCHEMA_SQL,
 } from "./workflows/workflow-github-schema";
 import { WORKFLOW_SCHEMA_SQL } from "./workflows/workflow-schema";
+import { addSlackWorkflows, V53_WORKFLOW_RUN_SOURCE_SQL } from "./workflows/workflow-slack-schema";
+import { addTelegramWorkflows } from "./workflows/workflow-telegram-schema";
 
 const BASELINE_SCHEMA_VERSION = 8;
 
@@ -351,7 +359,7 @@ const BASELINE_V8_SCHEMA_SQL = `
 // v12 rewrites `projection_reactions`, so the fresh schema is no longer the v8 baseline. It is derived
 // from that baseline by substituting the one table that changed rather than by copying all of it, so a
 // table added to the baseline still reaches new installs from a single declaration.
-// `whilo-database-schema-parity.test.ts` proves the result matches what the migrations produce.
+// `openbot-database-schema-parity.test.ts` proves the result matches what the migrations produce.
 const BASELINE_REACTIONS_TABLE_SQL = `  CREATE TABLE IF NOT EXISTS projection_reactions (
     agent_id TEXT NOT NULL,
     message_id TEXT NOT NULL,
@@ -405,7 +413,7 @@ const V28_PROVIDER_SESSIONS_COLUMN_SQL = `provider TEXT NOT NULL,`;
 // schema puts it last as well. Both routine tables end with a column, not a table constraint.
 const V27_ROUTINE_LIMIT_POLICY_COLUMN_SQL = `limit_policy TEXT NOT NULL DEFAULT 'wait' CHECK(limit_policy IN ('wait', 'skip'))`;
 
-// Migration 33 adds what a routine does with the occurrences that came due while Whilo was closed, and
+// Migration 33 adds what a routine does with the occurrences that came due while OpenBot was closed, and
 // the run columns that record those occurrences on one cancelled run. Frozen with the migration. The policy
 // goes after the migration 27 column. ADD COLUMN puts a run column before the UNIQUE constraint that ends
 // the run tables, so the latest schema puts the two run columns there as well.
@@ -419,6 +427,11 @@ const V33_ROUTINE_RUN_MISSED_COLUMNS_SQL = [
 // migration. A run from before it has no source, and a scheduled run never has one. ADD COLUMN puts it after
 // the migration 33 columns, before the UNIQUE constraint.
 const V35_ROUTINE_RUN_SOURCE_COLUMN_SQL = `run_source TEXT CHECK(run_source IS NULL OR run_source IN ('test', 'script', 'webhook'))`;
+
+// Migration 57 adds where the runs of an agent routine run: in the agent's chat, or in the routine's own
+// thread. Frozen with the migration. Every existing routine gets 'chat', as before 0.61. Channel routines
+// run in their channel and have no such column. ADD COLUMN puts it after the migration 33 column.
+const V57_AGENT_ROUTINE_RUN_IN_COLUMN_SQL = `run_in TEXT NOT NULL DEFAULT 'chat' CHECK(run_in IN ('chat', 'thread'))`;
 
 // Migration 40 stores the shown-order keys of each thread message, so a page reads an index range rather
 // than sorting the whole thread (#2226). Frozen with the migration; `database/thread-message-order.ts`
@@ -580,7 +593,7 @@ const LATEST_SCHEMA_SQL =
         V28_PROVIDER_SESSIONS_COLUMN_SQL,
       ),
       BASELINE_AGENT_ROUTINES_END_SQL,
-      withRoutinePolicies(BASELINE_AGENT_ROUTINES_END_SQL),
+      withAgentRoutineRunPlace(withRoutinePolicies(BASELINE_AGENT_ROUTINES_END_SQL)),
     ),
     BASELINE_ROUTINE_RUNS_END_SQL,
     withRunAddedColumns(BASELINE_ROUTINE_RUNS_END_SQL),
@@ -612,9 +625,13 @@ const LATEST_SCHEMA_SQL =
   V43_THREAD_EVENT_TYPE_INDEX_SQL +
   MESSAGING_ALLOWED_ROLES_SCHEMA_SQL +
   BROWSER_PROFILE_SCHEMA_SQL +
-  substituteOnce(WORKFLOW_SCHEMA_SQL, V46_WORKFLOW_RUN_SOURCE_SQL, V50_WORKFLOW_RUN_SOURCE_SQL) +
+  substituteOnce(WORKFLOW_SCHEMA_SQL, V46_WORKFLOW_RUN_SOURCE_SQL, V53_WORKFLOW_RUN_SOURCE_SQL) +
   AGENT_THREAD_SCHEMA_SQL +
-  WORKFLOW_GITHUB_SCHEMA_SQL;
+  WORKFLOW_GITHUB_SCHEMA_SQL +
+  MESSAGING_ALLOWED_SENDERS_SCHEMA_SQL +
+  DELETED_THREAD_MESSAGES_SCHEMA_SQL +
+  BROWSER_PROXY_SCHEMA_SQL +
+  AGENT_SKILL_LOADS_SCHEMA_SQL;
 
 /** The end of the thread message table with the migration 40 columns before its PRIMARY KEY constraint. */
 function withThreadMessageOrderColumns(tableEnd: string): string {
@@ -632,6 +649,14 @@ function withRoutinePolicies(tableEnd: string): string {
   );
 }
 
+/** The end of the agent routine table with the migration 57 column after the migration 33 one. */
+function withAgentRoutineRunPlace(tableEnd: string): string {
+  return tableEnd.replace(
+    `${V33_ROUTINE_MISSED_POLICY_COLUMN_SQL}\n`,
+    `${V33_ROUTINE_MISSED_POLICY_COLUMN_SQL},\n    ${V57_AGENT_ROUTINE_RUN_IN_COLUMN_SQL}\n`,
+  );
+}
+
 /** The end of a routine run table with the migration 33 and 35 columns before its UNIQUE constraint. */
 function withRunAddedColumns(tableEnd: string): string {
   return tableEnd.replace(
@@ -645,28 +670,28 @@ function withRunAddedColumns(tableEnd: string): string {
 function substituteOnce(source: string, search: string, replacement: string): string {
   const index = source.indexOf(search);
   if (index === -1 || source.indexOf(search, index + search.length) !== -1) {
-    throw new Error("The latest Whilo schema could not be derived from the v8 baseline.");
+    throw new Error("The latest OpenBot schema could not be derived from the v8 baseline.");
   }
   return `${source.slice(0, index)}${replacement}${source.slice(index + search.length)}`;
 }
 
-export interface WhiloMigrationOptions {
+export interface OpenBotMigrationOptions {
   appliedAt?: string;
   warn?: (message: string, error: unknown) => void;
   /** The last connection closed cleanly, so SQLite removed the write-ahead log. */
   closedCleanly?: boolean;
 }
 
-const logger = createWhiloLogger("whilo-database-schema");
+const logger = createOpenBotLogger("openbot-database-schema");
 
-interface WhiloMigration {
+interface OpenBotMigration {
   version: number;
   disableForeignKeys?: boolean;
   vacuumAfterCommit?: boolean;
   up: (db: DatabaseSync, appliedAt: string) => void;
 }
 
-const MIGRATIONS: readonly WhiloMigration[] = [
+const MIGRATIONS: readonly OpenBotMigration[] = [
   {
     version: BASELINE_SCHEMA_VERSION,
     disableForeignKeys: true,
@@ -822,7 +847,7 @@ const MIGRATIONS: readonly WhiloMigration[] = [
   {
     version: 37,
     // Only creates tables, so no foreign-key pause and no vacuum. No routine has a destination yet, so every
-    // routine keeps its answers in Whilo, which is what it did before.
+    // routine keeps its answers in OpenBot, which is what it did before.
     up: (db) => db.exec(ROUTINE_RESULT_SCHEMA_SQL),
   },
   {
@@ -862,7 +887,7 @@ const MIGRATIONS: readonly WhiloMigration[] = [
   {
     version: 44,
     // Only creates a table, so no foreign-key pause and no vacuum. No connection has a role list yet, so
-    // everyone can still mention Whilo, which is what they could before.
+    // everyone can still mention OpenBot, which is what they could before.
     up: (db) => db.exec(MESSAGING_ALLOWED_ROLES_SCHEMA_SQL),
   },
   {
@@ -905,11 +930,61 @@ const MIGRATIONS: readonly WhiloMigration[] = [
     disableForeignKeys: true,
     up: addDiscordWorkflows,
   },
+  {
+    version: 51,
+    // Only creates a table, so no foreign-key pause and no vacuum. No WhatsApp connection exists before
+    // it, so no connection loses senders.
+    up: (db) => db.exec(MESSAGING_ALLOWED_SENDERS_SCHEMA_SQL),
+  },
+  {
+    version: 52,
+    // Rebuilds the run table again to add the Telegram run source, as migration 50 did, so foreign keys
+    // pause and run ids do not change. Few rows, so no vacuum. No table is added.
+    disableForeignKeys: true,
+    up: addTelegramWorkflows,
+  },
+  {
+    version: 53,
+    // Rebuilds the run table again to add the Slack run source, as migrations 50 and 52 did, so foreign
+    // keys pause and run ids do not change. Few rows, so no vacuum. No table is added.
+    disableForeignKeys: true,
+    up: addSlackWorkflows,
+  },
+  {
+    version: 54,
+    // Adds one column with no default and an index: no rebuild, so no foreign-key pause and no vacuum.
+    // Every existing thread gets null, which is a thread of no routine, as it was before.
+    up: addAgentThreadRoutine,
+  },
+  {
+    version: 55,
+    // Only creates a table, so no foreign-key pause and no vacuum. No message was deleted before it,
+    // so the table starts empty and no thread loses a message.
+    up: (db) => db.exec(DELETED_THREAD_MESSAGES_SCHEMA_SQL),
+  },
+  {
+    version: 56,
+    // Only creates tables, so no foreign-key pause and no vacuum. No profile has a proxy yet, so every
+    // profile keeps the proxy settings of the computer, which is what it used before.
+    up: (db) => db.exec(BROWSER_PROXY_SCHEMA_SQL),
+  },
+  {
+    version: 57,
+    // Adds one column with a constant default: no rebuild, so no foreign-key pause and no vacuum. Every
+    // existing agent routine gets 'chat', so its runs go back to the agent's chat, as before 0.61.
+    up: addAgentRoutineRunPlace,
+  },
+  {
+    version: 58,
+    // Only creates a table and its indexes, so no foreign-key pause and no vacuum. No skill load was
+    // recorded before it, so the table starts empty and no usage row changes.
+    up: (db) => db.exec(AGENT_SKILL_LOADS_SCHEMA_SQL),
+  },
 ];
 
 const LATEST_SCHEMA_VERSION = MIGRATIONS[MIGRATIONS.length - 1]?.version ?? BASELINE_SCHEMA_VERSION;
 
-export function migrateWhiloDatabase(db: DatabaseSync, options: WhiloMigrationOptions = {}): void {
+export function migrateOpenBotDatabase(db: DatabaseSync, options: OpenBotMigrationOptions = {}): void {
   validateMigrationRegistry();
   const appliedAt = options.appliedAt ?? new Date().toISOString();
   if (!hasExistingSchema(db)) {
@@ -933,8 +1008,8 @@ export function migrateWhiloDatabase(db: DatabaseSync, options: WhiloMigrationOp
       violations = runMigration(db, migration, appliedAt, violations);
     } catch (error) {
       // The startup log keeps only the message, so the cause is logged here.
-      logger.error(`Whilo database migration to version ${migration.version} failed.`, toLogValue(error));
-      throw new Error(`Whilo database migration to version ${migration.version} failed.`, {
+      logger.error(`OpenBot database migration to version ${migration.version} failed.`, toLogValue(error));
+      throw new Error(`OpenBot database migration to version ${migration.version} failed.`, {
         cause: error,
       });
     }
@@ -946,7 +1021,7 @@ export function migrateWhiloDatabase(db: DatabaseSync, options: WhiloMigrationOp
         db.exec("PRAGMA wal_checkpoint(TRUNCATE)");
       } catch (error) {
         const warn = options.warn ?? ((message: string, cause: unknown) => logger.warn(message, toLogValue(cause)));
-        warn(`Whilo database migration to version ${migration.version} succeeded, but VACUUM failed.`, error);
+        warn(`OpenBot database migration to version ${migration.version} succeeded, but VACUUM failed.`, error);
       }
     }
   }
@@ -1006,7 +1081,7 @@ function validateMigrationRegistry(): void {
   for (const migration of MIGRATIONS) {
     if (!Number.isInteger(migration.version) || migration.version !== expectedVersion) {
       throw new Error(
-        `Whilo database migrations must be contiguous from version ${BASELINE_SCHEMA_VERSION}; expected ${expectedVersion}.`,
+        `OpenBot database migrations must be contiguous from version ${BASELINE_SCHEMA_VERSION}; expected ${expectedVersion}.`,
       );
     }
     expectedVersion += 1;
@@ -1043,18 +1118,26 @@ function readAppliedVersions(db: DatabaseSync): number[] {
     .all()
     .map((row) => {
       if (!isDynamicRecord(row) || !isNumber(row.version) || !Number.isInteger(row.version)) {
-        throw new Error("Whilo database contains an invalid schema migration version.");
+        throw new Error("OpenBot database contains an invalid schema migration version.");
       }
       return row.version;
     });
 }
 
+/**
+ * A newer OpenBot migrated the database. This build stops before it writes anything; the start can
+ * recover by installing a release that knows the version (`src/main/newer-database-recovery.ts`).
+ */
+export class NewerDatabaseError extends Error {
+  constructor(databaseVersion: number, supportedVersion: number) {
+    super(`OpenBot database version ${databaseVersion} is newer than this application supports (${supportedVersion}).`);
+  }
+}
+
 function validateAppliedVersions(versions: number[]): void {
   const newestVersion = versions.at(-1) ?? 0;
   if (newestVersion > LATEST_SCHEMA_VERSION) {
-    throw new Error(
-      `Whilo database version ${newestVersion} is newer than this application supports (${LATEST_SCHEMA_VERSION}).`,
-    );
+    throw new NewerDatabaseError(newestVersion, LATEST_SCHEMA_VERSION);
   }
 
   const baselineAndLater = versions.filter((version) => version >= BASELINE_SCHEMA_VERSION);
@@ -1062,7 +1145,7 @@ function validateAppliedVersions(versions: number[]): void {
   const applied = new Set(baselineAndLater);
   for (let version = BASELINE_SCHEMA_VERSION; version <= newestVersion; version += 1) {
     if (!applied.has(version)) {
-      throw new Error(`Whilo database migration history is missing version ${version}.`);
+      throw new Error(`OpenBot database migration history is missing version ${version}.`);
     }
   }
 }
@@ -1074,7 +1157,7 @@ function latestAppliedVersion(versions: number[]): number {
 
 function runMigration(
   db: DatabaseSync,
-  migration: WhiloMigration,
+  migration: OpenBotMigration,
   appliedAt: string,
   violationsBefore: ReadonlyMap<string, number>,
 ): Map<string, number> {
@@ -1102,7 +1185,7 @@ function assertForeignKeys(db: DatabaseSync, before: ReadonlyMap<string, number>
   if (added.length > 0) {
     const total = added.reduce((sum, [, count]) => sum + count, 0);
     const references = added.map(([reference]) => reference).join(", ");
-    throw new Error(`Whilo database migration produced ${total} foreign-key violation(s) in ${references}.`);
+    throw new Error(`OpenBot database migration produced ${total} foreign-key violation(s) in ${references}.`);
   }
   return violations;
 }
@@ -1124,7 +1207,7 @@ function readForeignKeyViolations(db: DatabaseSync): Map<string, number> {
 function readOldForeignKeyViolations(db: DatabaseSync): Map<string, number> {
   const violations = readForeignKeyViolations(db);
   if (violations.size > 0) {
-    logger.warn("The Whilo database has foreign-key violations from before this upgrade. They stay as they are.", {
+    logger.warn("The OpenBot database has foreign-key violations from before this upgrade. They stay as they are.", {
       violations: Object.fromEntries(violations),
     });
   }
@@ -1138,7 +1221,7 @@ function assertQuickCheck(db: DatabaseSync): void {
     .map((row) => (isDynamicRecord(row) ? row.quick_check : row));
   if (problems.length === 1 && problems[0] === "ok") return;
   // The lines name the damaged pages and tables, which tell a page left by a disk save from a bad index.
-  logger.error("The Whilo database failed its integrity check.", { problems });
+  logger.error("The OpenBot database failed its integrity check.", { problems });
   throw new Error(sourceText("error.backend.databaseIntegrity"));
 }
 
@@ -1296,6 +1379,23 @@ function addAgentThreadBranch(db: DatabaseSync): void {
   }
 }
 
+// Migration 54 links a side thread to the routine whose runs go to it.
+function addAgentThreadRoutine(db: DatabaseSync): void {
+  // A development profile that ran this version before it shipped has the column already.
+  const columns = db.prepare("PRAGMA table_info(projection_agent_threads)").all();
+  if (!columns.some((existing) => isDynamicRecord(existing) && existing.name === "routine_id"))
+    db.exec(`ALTER TABLE projection_agent_threads ADD COLUMN ${V54_AGENT_THREAD_ROUTINE_COLUMN_SQL}`);
+  db.exec(V54_AGENT_THREAD_ROUTINE_INDEX_SQL);
+}
+
+// Migration 57 adds where the runs of an agent routine run.
+function addAgentRoutineRunPlace(db: DatabaseSync): void {
+  // A development profile that ran this version before it shipped has the column already.
+  const columns = db.prepare("PRAGMA table_info(projection_agent_routines)").all();
+  if (columns.some((existing) => isDynamicRecord(existing) && existing.name === "run_in")) return;
+  db.exec(`ALTER TABLE projection_agent_routines ADD COLUMN ${V57_AGENT_ROUTINE_RUN_IN_COLUMN_SQL}`);
+}
+
 // Migration 28 removes the provider CHECK. It rebuilds the table with no guard: every shipped table has the
 // CHECK, and a rebuild of a table that has none, which a replay over a new database meets, keeps every row.
 function removeProviderSessionsCheck(db: DatabaseSync): void {
@@ -1352,8 +1452,8 @@ function rebuildProviderSessions(db: DatabaseSync, providerColumnSql: string, st
  * Moves a saved MCP server off the name the Computer Use driver now takes.
  *
  * The name was free until the driver arrived, so a database written by a shipped release can hold a
- * server the user named `computer_use`. Whilo appends its own entry under that name at spawn, and
- * all four providers key servers by name: Codex and Claude would hand the agent Whilo's server in
+ * server the user named `computer_use`. OpenBot appends its own entry under that name at spawn, and
+ * all four providers key servers by name: Codex and Claude would hand the agent OpenBot's server in
  * place of the user's, and an ACP provider would receive two servers with one name. The row is
  * renamed rather than removed, so the user keeps the server, its command and its secrets, and sees
  * the new name where they configured it. A later save cannot take the name back: `mcpConfigErrors`
@@ -1511,7 +1611,7 @@ function seedLiteral(seed: string): string {
 }
 
 function seedSentinel(index: number): string {
-  return String.raw`"avatarSeed":"\u0000whilo-avatar-seed-` + index + String.raw`\u0000"`;
+  return String.raw`"avatarSeed":"\u0000openbot-avatar-seed-` + index + String.raw`\u0000"`;
 }
 
 function readAgentIdRenames(db: DatabaseSync): readonly AgentIdRename[] {
@@ -1576,19 +1676,19 @@ function containedInAnotherId(agentId: string, taken: ReadonlySet<string>): bool
   return false;
 }
 
-// The workspace root moves from `Whilo/Bots` to `Whilo/Agents`; the id in the leaf is rewritten by the
+// The workspace root moves from `OpenBot/Bots` to `OpenBot/Agents`; the id in the leaf is rewritten by the
 // id substitution that follows. The root is only ever substituted with its full absolute prefix attached,
 // derived from a path this database actually stored, so a user whose own checkout sits at
-// `~/Projects/Whilo/Bots` does not get their files silently repointed.
+// `~/Projects/OpenBot/Bots` does not get their files silently repointed.
 function legacyWorkspaceRoots(renames: readonly AgentIdRename[]): readonly { from: string; to: string }[] {
   const roots = new Map<string, { from: string; to: string }>();
   for (const rename of renames) {
     if (rename.workspacePath === null) continue;
     // A Windows profile stores this path with backslashes. Matching only the POSIX form would leave the
-    // root behind and rewrite the leaf alone, giving `Whilo\Bots\agent-<uuid>` -- a name no reader
+    // root behind and rewrite the leaf alone, giving `OpenBot\Bots\agent-<uuid>` -- a name no reader
     // recognizes, since rebasing a path out of a resumed provider transcript looks for an `Agents` parent.
     for (const separator of ["/", "\\"]) {
-      const root = ["Whilo", "Bots", ""].join(separator);
+      const root = ["OpenBot", "Bots", ""].join(separator);
       const suffix = `${separator}${root}${rename.oldId}`;
       if (!rename.workspacePath.endsWith(suffix)) continue;
       const from = `${rename.workspacePath.slice(0, -suffix.length)}${separator}${root}`;

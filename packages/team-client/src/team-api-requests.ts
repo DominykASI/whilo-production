@@ -11,6 +11,7 @@ import {
   type AgentMemorySelectionState,
   type AgentTask,
   type AgentTaskInput,
+  type AgentTaskPage,
   type AgentTaskReadState,
   type AgentTasksSnapshot,
   type ApplyAgentImportInput,
@@ -42,6 +43,7 @@ import {
   isAgentMemory,
   isAgentMemorySelectionState,
   isAgentTask,
+  isAgentTaskPage,
   isAgentTaskReadState,
   isAgentTasksSnapshot,
   isAttachmentSummary,
@@ -53,48 +55,59 @@ import {
   isRoutineRun,
   type LocalBrowserSecretResponse,
   type MarkAgentTaskReadInput,
-  type WhiloDesktopApi,
+  type OpenBotDesktopApi,
   type QueuedMessageReceipt,
+  type ReadAgentTaskPageInput,
   type RemoteAgentImportResult,
   type RemoteInstanceTransferResult,
   type RenameAgentTaskInput,
   type ReorderQueueInput,
   type RespondToApprovalInput,
   type RespondToBrowserTakeoverInput,
+  type Routine,
+  type RoutineRunPlace,
   remoteBrowserSecretResponse,
   type SetAgentMemoryInclusionInput,
   type StartAgentTaskInput,
   type SteerQueuedMessageInput,
   type UpdateQueuedMessageInput,
-} from "@whilo/contracts/ipc";
-import { guardedDecoder, guardedListDecoder } from "@whilo/contracts/ipc-decoding";
-import { isDynamicRecord, isString } from "@whilo/contracts/runtime-values";
-import { TEAM_API_ROUTES } from "@whilo/contracts/team-api-routes";
-import { AGENT_IMPORT_ROUTES, AGENT_IMPORT_UPLOAD_BYTES } from "@whilo/contracts/team-protocol/agent-import-v1";
+} from "@openbot/contracts/ipc";
+import { guardedDecoder, guardedListDecoder } from "@openbot/contracts/ipc-decoding";
+import { isDynamicRecord, isString } from "@openbot/contracts/runtime-values";
+import { TEAM_API_ROUTES } from "@openbot/contracts/team-api-routes";
+import { AGENT_IMPORT_ROUTES, AGENT_IMPORT_UPLOAD_BYTES } from "@openbot/contracts/team-protocol/agent-import-v1";
 import {
   AGENT_MEMORIES_PAGE_ROUTE,
   AGENT_MEMORIES_PAGE_SIZE,
   AGENT_MEMORY_INCLUSION_ROUTE,
   AGENT_MEMORY_SELECTION_PAGE_ROUTE,
-} from "@whilo/contracts/team-protocol/agent-memories-v1";
-import { AGENT_TASKS_ROUTES } from "@whilo/contracts/team-protocol/agent-tasks-v1";
+} from "@openbot/contracts/team-protocol/agent-memories-v1";
+import { AGENT_TASKS_ROUTES } from "@openbot/contracts/team-protocol/agent-tasks-v1";
 import {
   AGENT_THREAD_BRANCHES_ROUTES,
   type AgentThreadBranchLink,
   isAgentThreadBranchLinks,
-} from "@whilo/contracts/team-protocol/agent-thread-branches-v1";
-import { AGENT_THREAD_FILES_ROUTES } from "@whilo/contracts/team-protocol/agent-thread-files-v1";
-import { AGENT_THREAD_READS_ROUTES } from "@whilo/contracts/team-protocol/agent-thread-reads-v1";
-import { AGENT_THREADS_ROUTES } from "@whilo/contracts/team-protocol/agent-threads-v1";
-import { BROWSER_SECRET_VAULT_ROUTES } from "@whilo/contracts/team-protocol/browser-secret-vault-v1";
-import { CHANNEL_ROUTES } from "@whilo/contracts/team-protocol/channels-v1";
-import { CONTEXT_RESET_ROUTES } from "@whilo/contracts/team-protocol/context-reset-v1";
+} from "@openbot/contracts/team-protocol/agent-thread-branches-v1";
+import { AGENT_THREAD_FILES_ROUTES } from "@openbot/contracts/team-protocol/agent-thread-files-v1";
+import { AGENT_THREAD_PAGES_ROUTES } from "@openbot/contracts/team-protocol/agent-thread-pages-v1";
+import { AGENT_THREAD_READS_ROUTES } from "@openbot/contracts/team-protocol/agent-thread-reads-v1";
+import { AGENT_THREAD_REPLIES_ROUTES } from "@openbot/contracts/team-protocol/agent-thread-replies-v1";
+import { AGENT_THREADS_ROUTES } from "@openbot/contracts/team-protocol/agent-threads-v1";
+import { BROWSER_SECRET_VAULT_ROUTES } from "@openbot/contracts/team-protocol/browser-secret-vault-v1";
+import { CHANNEL_ROUTES } from "@openbot/contracts/team-protocol/channels-v1";
+import { CONTEXT_RESET_ROUTES } from "@openbot/contracts/team-protocol/context-reset-v1";
 import {
   INSTANCE_TRANSFER_REMOTE_BYTES,
   INSTANCE_TRANSFER_ROUTES,
-} from "@whilo/contracts/team-protocol/instance-transfer-v1";
-import { ROUTINE_FLOWS_ROUTES } from "@whilo/contracts/team-protocol/routine-flows-v1";
-import { decodeTeamProtocolV2Json, type TeamProtocolV2Json } from "@whilo/contracts/team-protocol/v2";
+} from "@openbot/contracts/team-protocol/instance-transfer-v1";
+import { ROUTINE_FLOWS_ROUTES } from "@openbot/contracts/team-protocol/routine-flows-v1";
+import {
+  decodeRoutineRunPlace,
+  decodeRoutineRunPlaces,
+  ROUTINE_RUN_PLACE_ROUTES,
+  type RoutineRunPlaceEntry,
+} from "@openbot/contracts/team-protocol/routine-run-place-v1";
+import { decodeTeamProtocolV2Json, type TeamProtocolV2Json } from "@openbot/contracts/team-protocol/v2";
 import type { RemoteFileUpload } from "./file-upload";
 
 export class TeamRequestError extends Schema.TaggedError<TeamRequestError>()("TeamRequestError", {
@@ -194,6 +207,7 @@ export const clearAgentContext = Effect.fn("TeamClient.clearAgentContext")(funct
 const decodeAgentTasks = guardedDecoder(isAgentTasksSnapshot, "agent tasks response");
 const decodeAgentTask = guardedDecoder(isAgentTask, "agent task response");
 const decodeTaskConversation = guardedDecoder(isConversationSnapshot, "task conversation response");
+const decodeTaskPage = guardedDecoder(isAgentTaskPage, "thread page response");
 const decodeTaskReceipt = guardedDecoder(isQueuedMessageReceipt, "task message receipt");
 
 /**
@@ -212,6 +226,16 @@ export const readAgentTask = Effect.fn("TeamClient.readAgentTask")(function* (
   { agentId, taskId }: AgentTaskInput,
 ): Effect.fn.Return<ConversationSnapshot, TeamRequestError> {
   return yield* teamCall(() => request("POST", AGENT_TASKS_ROUTES.read, decodeTaskConversation, { agentId, taskId }));
+});
+
+/** Older messages of a task, before a message that the client holds. Send it only to a host with `agent-thread-pages-v1`. */
+export const readAgentThreadPage = Effect.fn("TeamClient.readAgentThreadPage")(function* (
+  request: TeamApiRequest,
+  { agentId, taskId, beforeMessageId, limit }: ReadAgentTaskPageInput,
+): Effect.fn.Return<AgentTaskPage, TeamRequestError> {
+  return yield* teamCall(() =>
+    request("POST", AGENT_THREAD_PAGES_ROUTES.readOlder, decodeTaskPage, { agentId, taskId, beforeMessageId, limit }),
+  );
 });
 
 /**
@@ -238,7 +262,10 @@ export const startAgentTask = Effect.fn("TeamClient.startAgentTask")(function* (
   );
 });
 
-/** Sends to a task. With files it uses `agent-thread-files-v1`, as `startAgentTask` does. */
+/**
+ * Sends to a task. With files it uses `agent-thread-files-v1`, as `startAgentTask` does. A reply uses
+ * `agent-thread-replies-v1`, so send a reply only to a host that serves it.
+ */
 export const sendAgentTaskMessage = Effect.fn("TeamClient.sendAgentTaskMessage")(function* (
   request: TeamApiRequest,
   {
@@ -246,24 +273,39 @@ export const sendAgentTaskMessage = Effect.fn("TeamClient.sendAgentTaskMessage")
     taskId,
     text,
     attachmentDraftIds,
+    replyToMessageId,
     clientMessageId,
-  }: AgentTaskInput & { text: string; attachmentDraftIds?: string[]; clientMessageId?: string },
+  }: AgentTaskInput & {
+    text: string;
+    attachmentDraftIds?: string[];
+    replyToMessageId?: string;
+    clientMessageId?: string;
+  },
 ): Effect.fn.Return<QueuedMessageReceipt, TeamRequestError> {
   return yield* teamCall(() =>
-    attachmentDraftIds?.length
-      ? request("POST", AGENT_THREAD_FILES_ROUTES.send, decodeTaskReceipt, {
+    replyToMessageId
+      ? request("POST", AGENT_THREAD_REPLIES_ROUTES.send, decodeTaskReceipt, {
           agentId,
           taskId,
           text,
-          attachmentDraftIds,
+          attachmentDraftIds: attachmentDraftIds ?? [],
+          replyToMessageId,
           ...(clientMessageId === undefined ? {} : { clientMessageId }),
         })
-      : request("POST", AGENT_TASKS_ROUTES.send, decodeTaskReceipt, {
-          agentId,
-          taskId,
-          text,
-          ...(clientMessageId === undefined ? {} : { clientMessageId }),
-        }),
+      : attachmentDraftIds?.length
+        ? request("POST", AGENT_THREAD_FILES_ROUTES.send, decodeTaskReceipt, {
+            agentId,
+            taskId,
+            text,
+            attachmentDraftIds,
+            ...(clientMessageId === undefined ? {} : { clientMessageId }),
+          })
+        : request("POST", AGENT_TASKS_ROUTES.send, decodeTaskReceipt, {
+            agentId,
+            taskId,
+            text,
+            ...(clientMessageId === undefined ? {} : { clientMessageId }),
+          }),
   );
 });
 
@@ -408,7 +450,7 @@ export const downloadInstanceTransfer = Effect.fn("TeamClient.downloadInstanceTr
   );
 });
 
-/** Sends an Whilo transfer file to the host. Send it only to a host that serves `instance-transfer-v1`. */
+/** Sends an OpenBot transfer file to the host. Send it only to a host that serves `instance-transfer-v1`. */
 export const stageInstanceTransfer = Effect.fn("TeamClient.stageInstanceTransfer")(function* (
   request: TeamApiRequest,
   upload: RemoteFileUpload,
@@ -487,7 +529,7 @@ export const respondToBrowserSecret = Effect.fn("TeamClient.respondToBrowserSecr
 
 /** The channel calls of the desktop IPC surface, which a remote desktop sends to the host the same way. */
 export type TeamChannelsApi = Pick<
-  WhiloDesktopApi["agent"],
+  OpenBotDesktopApi["agent"],
   | "listChannels"
   | "readChannel"
   | "channelCommand"
@@ -533,22 +575,76 @@ const decodeRoutineRuns = guardedListDecoder(isRoutineRun, "routine run list");
 
 /** The agent routine calls of the desktop IPC surface, which a remote desktop sends to the host the same way. */
 export type TeamAgentRoutinesApi = Pick<
-  WhiloDesktopApi["agent"],
+  OpenBotDesktopApi["agent"],
   "listRoutines" | "createRoutine" | "updateRoutine" | "deleteRoutine" | "testRoutine" | "listRoutineRuns"
 >;
 
-/** The frozen v1 agent routine routes. Every host serves them. */
-export function teamAgentRoutinesApi(request: TeamApiRequest): TeamAgentRoutinesApi {
+/** Gives each routine the place where the host runs it, from the `routine-run-place-v1` list. */
+export function withRoutineRunPlaces<R extends { id: string; runIn?: RoutineRunPlace }>(
+  routines: readonly R[],
+  places: readonly RoutineRunPlaceEntry[],
+): R[] {
+  const placeOf = new Map(places.map((place) => [place.routineId, place.runIn]));
+  return routines.map((routine) => {
+    const runIn = placeOf.get(routine.id);
+    return runIn ? { ...routine, runIn } : routine;
+  });
+}
+
+/**
+ * The frozen v1 agent routine routes. Every host serves them. They leave out where a routine runs, so
+ * with `runPlaces`, for a host with `routine-run-place-v1`, the place goes on its own routes.
+ */
+export function teamAgentRoutinesApi(
+  request: TeamApiRequest,
+  runPlaces: () => boolean = () => false,
+): TeamAgentRoutinesApi {
+  // The new routine exists, so a failed place does not fail a create: the routine runs in the chat,
+  // and a second save does not make a second routine.
+  const withRunPlace = async (
+    routine: Routine,
+    runIn: RoutineRunPlace | undefined,
+    created = false,
+  ): Promise<Routine> => {
+    if (!runIn || !runPlaces()) return routine;
+    const placed = request("POST", ROUTINE_RUN_PLACE_ROUTES.set, decodeRoutineRunPlace, {
+      agentId: routine.agentId,
+      routineId: routine.id,
+      runIn,
+    });
+    const place = created ? await placed.catch(() => ({ runIn: "chat" as const })) : await placed;
+    return { ...routine, runIn: place.runIn };
+  };
   return {
-    listRoutines: (agentId) => request("GET", TEAM_API_ROUTES.agent.routines(agentId), decodeRoutines),
-    createRoutine: (input) =>
-      request("POST", TEAM_API_ROUTES.agent.routines(input.agentId), decodeRoutine, decodeTeamProtocolV2Json(input)),
-    updateRoutine: (input) =>
-      request(
-        "PATCH",
-        TEAM_API_ROUTES.agent.routine(input.agentId, input.routineId),
-        decodeRoutine,
-        decodeTeamProtocolV2Json(input),
+    listRoutines: async (agentId) => {
+      const routines = request("GET", TEAM_API_ROUTES.agent.routines(agentId), decodeRoutines);
+      if (!runPlaces()) return routines;
+      const [list, places] = await Promise.all([
+        routines,
+        request("POST", ROUTINE_RUN_PLACE_ROUTES.list, decodeRoutineRunPlaces, { agentId }),
+      ]);
+      return withRoutineRunPlaces(list, places);
+    },
+    createRoutine: async ({ runIn, ...input }) =>
+      withRunPlace(
+        await request(
+          "POST",
+          TEAM_API_ROUTES.agent.routines(input.agentId),
+          decodeRoutine,
+          decodeTeamProtocolV2Json(input),
+        ),
+        runIn,
+        true,
+      ),
+    updateRoutine: async ({ runIn, ...input }) =>
+      withRunPlace(
+        await request(
+          "PATCH",
+          TEAM_API_ROUTES.agent.routine(input.agentId, input.routineId),
+          decodeRoutine,
+          decodeTeamProtocolV2Json(input),
+        ),
+        runIn,
       ),
     deleteRoutine: ({ agentId, routineId }) =>
       request("DELETE", TEAM_API_ROUTES.agent.routine(agentId, routineId), ignoreResponse),
@@ -560,7 +656,7 @@ export function teamAgentRoutinesApi(request: TeamApiRequest): TeamAgentRoutines
 }
 
 /** The routine canvas calls of the desktop IPC surface. Send them only to a host that serves `routine-flows-v1`. */
-export type TeamRoutineFlowsApi = WhiloDesktopApi["routineFlows"];
+export type TeamRoutineFlowsApi = OpenBotDesktopApi["routineFlows"];
 
 const decodeRoutineFlowCanvas = guardedDecoder(isRoutineFlowCanvas, "routine flow canvas");
 const decodeRoutineFlowLink = guardedDecoder(isRoutineFlowLink, "routine flow link");

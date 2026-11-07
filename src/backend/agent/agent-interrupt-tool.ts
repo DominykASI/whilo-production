@@ -1,6 +1,6 @@
-import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
-import type { AgentSummary } from "@whilo/contracts/ipc";
-import { sourceText } from "@whilo/i18n/source";
+import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import type { AgentSummary } from "@openbot/contracts/ipc";
+import { sourceText } from "@openbot/i18n/source";
 import { Effect } from "effect";
 import { z } from "zod";
 import type { AgentStore } from "../agent-store";
@@ -10,7 +10,7 @@ import type { DynamicToolCallParams } from "../protocol";
 import type { ConversationRuntime } from "./conversation-runtime";
 import type { DrainScheduler } from "./drain-scheduler";
 import type { MailboxSync } from "./mailbox-sync";
-import { whiloToolFailure, whiloToolResult } from "./routine-tools";
+import { openBotToolFailure, openBotToolResult } from "./routine-tools";
 import { toolCallIdempotencyKey } from "./tool-call-idempotency";
 import { ToolOperationFailed, toolStep, toToolOperationFailed } from "./tool-operation";
 
@@ -39,7 +39,7 @@ export interface AgentInterruptToolOptions {
 }
 
 /**
- * `whilo.interrupt_agent`: one agent stops work that it delegated to another agent.
+ * `openbot.interrupt_agent`: one agent stops work that it delegated to another agent.
  *
  * Agents have no ownership of each other, so the only proof that the caller may stop a turn is that
  * every delivery the turn runs came from the caller. A turn that the user, a routine, a channel or
@@ -72,9 +72,9 @@ export class AgentInterruptTool {
     callerAgentId: string,
   ) {
     const { agentId, reason } = yield* toolStep(() => interruptAgentToolSchema.parse(params.arguments));
-    if (agentId === callerAgentId) return whiloToolFailure(sourceText("error.backend.interruptSelf"));
+    if (agentId === callerAgentId) return openBotToolFailure(sourceText("error.backend.interruptSelf"));
     if (!this.#hooks.listAgents().some((agent) => agent.id === agentId)) {
-      return yield* new ToolOperationFailed({ cause: new Error(`Unknown Whilo agent: ${agentId}`) });
+      return yield* new ToolOperationFailed({ cause: new Error(`Unknown OpenBot agent: ${agentId}`) });
     }
 
     // A delivery on its way to a turn has no turn id yet. Wait for the drain that starts it, as
@@ -84,7 +84,7 @@ export class AgentInterruptTool {
       if (task) yield* task.pipe(toToolOperationFailed);
     }
     if (this.#mailbox.startingDeliveryForAgent(agentId, null)) {
-      return whiloToolFailure(sourceText("error.backend.interruptStarting"));
+      return openBotToolFailure(sourceText("error.backend.interruptStarting"));
     }
 
     const turnId = this.#activeTurnId(agentId);
@@ -96,29 +96,29 @@ export class AgentInterruptTool {
         (snapshot?.activeTurnId === turnId && this.#conversation.isExecutionThread(snapshot.threadId)) ||
         deliveries.some((context) => this.#channels.store.assignmentForDelivery(context.delivery.id))
       ) {
-        return whiloToolFailure(sourceText("error.backend.useChannelTaskControlsWork"));
+        return openBotToolFailure(sourceText("error.backend.useChannelTaskControlsWork"));
       }
       if (!ownedBy(deliveries, callerAgentId)) {
-        return whiloToolFailure(sourceText("error.backend.interruptOtherWork"));
+        return openBotToolFailure(sourceText("error.backend.interruptOtherWork"));
       }
-      if (!this.#store.activeProviderSession(agentId) && !this.#conversation.routineSession(agentId)) {
-        return whiloToolFailure(sourceText("error.backend.interruptNoSession"));
+      if (!this.#store.activeProviderSession(agentId) && !this.#conversation.hasRoutineSession(agentId)) {
+        return openBotToolFailure(sourceText("error.backend.interruptNoSession"));
       }
     }
 
     // Before the interrupt: the interrupted turn schedules the next drain as it completes, and that
     // drain would start the next of these messages.
     const cancelledMessages = yield* toolStep(() => this.#cancelQueuedFrom(agentId, callerAgentId));
-    if (!turnId) return whiloToolResult({ interruptedTurnId: null, cancelledMessages });
+    if (!turnId) return openBotToolResult({ interruptedTurnId: null, cancelledMessages });
 
     // The turn can end, or the user can steer a message into it, while the stop is on its way. The
     // check then runs again on the deliveries the turn has at that moment. No stop, no notice.
     const mayStop = () => ownedBy(this.#mailbox.findDeliveriesByTurn(agentId, turnId), callerAgentId);
     if (!(yield* this.#hooks.interrupt(agentId, turnId, mayStop).pipe(toToolOperationFailed))) {
-      return whiloToolResult({ interruptedTurnId: null, cancelledMessages });
+      return openBotToolResult({ interruptedTurnId: null, cancelledMessages });
     }
     yield* this.#notifyEffect(params, callerAgentId, agentId, deliveries[0]?.delivery.messageId ?? null, reason);
-    return whiloToolResult({ interruptedTurnId: turnId, cancelledMessages });
+    return openBotToolResult({ interruptedTurnId: turnId, cancelledMessages });
   }, Effect.uninterruptible);
 
   #activeTurnId(agentId: string): string | null {

@@ -1,4 +1,4 @@
-import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
 import type {
   ConfigureHostInput,
   CreateTeamInviteInput,
@@ -18,9 +18,14 @@ import type {
   SetTeamTypingInput,
   UpdateHostIdentityInput,
   UpdateTeamMemberInput,
-} from "@whilo/contracts/ipc";
-import { SERVER_MUTE_DURATIONS_MS, SERVER_NOTIFICATION_LEVELS } from "@whilo/contracts/ipc";
-import { isBoolean, isNumber, isOneOf, isString } from "@whilo/contracts/runtime-values";
+} from "@openbot/contracts/ipc";
+import {
+  isRemoteControlAccess,
+  type RemoteControlPolicy,
+  SERVER_MUTE_DURATIONS_MS,
+  SERVER_NOTIFICATION_LEVELS,
+} from "@openbot/contracts/ipc";
+import { isBoolean, isNumber, isOneOf, isString } from "@openbot/contracts/runtime-values";
 import { parseAvatarImage } from "./avatar-inputs";
 import { isObject, requireString } from "./validation";
 
@@ -218,6 +223,12 @@ export function parseSetServerNotificationLevel(value: unknown): SetServerNotifi
     throw new Error("Invalid server notification level.");
   }
   return { serverId: requireString(value.serverId, "serverId", INPUT_LIMITS.identifier), level: value.level };
+}
+
+export function parseRemoteControlPolicy(value: unknown): RemoteControlPolicy {
+  if (!isObject(value) || !isRemoteControlAccess(value.access) || !isBoolean(value.askOnHost))
+    throw new Error("Invalid remote control policy.");
+  return { access: value.access, askOnHost: value.askOnHost };
 }
 
 export function parseRemoteDesktopSetupAction(value: unknown): RemoteDesktopSetupAction {

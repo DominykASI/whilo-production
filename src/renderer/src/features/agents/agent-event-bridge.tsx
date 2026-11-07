@@ -1,11 +1,12 @@
-import { providerDisplayName } from "@whilo/contracts/agent-providers";
-import type { AgentEvent, AgentRuntimeSnapshot } from "@whilo/contracts/ipc";
-import { cleanAgentMessageText } from "@whilo/team-client/agent-message-text";
-import { reconcileQueuesWithRuntimeWork } from "@whilo/team-client/dynamic-island-coordinator";
-import { classifyFailure } from "@whilo/telemetry";
-import { toast } from "@whilo/ui";
-import { currentText } from "@whilo/ui/text";
-import { classifyUserError } from "@whilo/user-errors";
+import { providerDisplayName } from "@openbot/contracts/agent-providers";
+import type { AgentEvent, AgentRuntimeSnapshot } from "@openbot/contracts/ipc";
+import { MCP_SERVERS_CAPABILITY } from "@openbot/contracts/ipc";
+import { cleanAgentMessageText } from "@openbot/team-client/agent-message-text";
+import { reconcileQueuesWithRuntimeWork } from "@openbot/team-client/dynamic-island-coordinator";
+import { classifyFailure } from "@openbot/telemetry";
+import { toast } from "@openbot/ui";
+import { currentText } from "@openbot/ui/text";
+import { classifyUserError } from "@openbot/user-errors";
 import { flush, onSettled } from "solid-js";
 import { withoutAgent } from "../../app-message-projection";
 import { playCompletionSoundForAgentEvent } from "../../completion-sound";
@@ -22,7 +23,10 @@ import { useConversation } from "../conversation/conversation-context";
 import { useConversationController } from "../conversation/conversation-controller-context";
 import { agentConversationKey, composerDraftKey, promptRequestKey } from "../conversation/conversation-keys";
 import { latestIncomingConversationMessage } from "../conversation/conversation-read-state";
+import { noteSocialFollowReplyCompleted } from "../conversation/social-follow-prompt";
 import { appendTurnStepLine } from "../conversation/turn-step-lines";
+import { serverCanAdminister } from "../servers/server-capabilities";
+import { useServerSettings } from "../servers/server-settings";
 import { useServers } from "../servers/servers-context";
 import { useSidebar } from "../sidebar/sidebar-context";
 import { readDictatedReplies } from "../speech/speech-replies";
@@ -57,6 +61,7 @@ export function AgentEventBridge() {
   const channels = useChannels();
   const platform = usePlatform();
   const { activeServer, activeServerId } = useServers();
+  const { openServerSettings } = useServerSettings();
   const { applyAccountUsage } = useAuth();
   const { applyAgentStatus, refreshAgentProviders } = useProviders();
   const { agentList, setModelOptions, explicitlyOpenedAgentChatId, applyStoredAgents, applyUserHiddenAgents } =
@@ -71,6 +76,7 @@ export function AgentEventBridge() {
     agentChatsToRetryRead,
     scheduleConversation,
     isAgentChatReadable,
+    isAgentChatOpen,
     autoMarkAgentMessageRead,
     applyConversationDelta,
     applyConversationPage,
@@ -83,6 +89,7 @@ export function AgentEventBridge() {
     setTurnStepLines,
     setFailedTurns,
     setUsageLimits,
+    setSubagentTurns,
     setUsageLimitedModels,
     setWaitedUsageLimits,
     setContextStates,
@@ -184,7 +191,12 @@ export function AgentEventBridge() {
       case "turn-progress":
         setTurnProgress((current) => ({
           ...current,
-          [event.agentId]: { turnId: event.turnId, detail: cleanAgentMessageText(event.detail) },
+          [event.agentId]: {
+            turnId: event.turnId,
+            detail: cleanAgentMessageText(event.detail),
+            ...(event.running ? { running: true } : {}),
+            ...(event.activity ? { activity: event.activity } : {}),
+          },
         }));
         setTurnStepLines((current) => appendTurnStepLine(current, event.turnId, cleanAgentMessageText(event.detail)));
         return;
@@ -270,7 +282,13 @@ export function AgentEventBridge() {
         if (event.status === "completed") {
           markReplyCompleted(event.agentId);
           if (soundLevel() === "all" && !platform.chatWindow) playCompletionSoundForAgentEvent(event, agentList());
+          // A finished reply is a good moment to ask for a post. A chat window has no toasts.
+          if (!platform.chatWindow && !event.quiet && !event.continues) noteSocialFollowReplyCompleted();
         }
+        return;
+      case "routine-thread-turn-completed":
+        // The chat's turn state stays: the run's own `turn-completed` did not leave its thread.
+        if (soundLevel() === "all" && !platform.chatWindow) playCompletionSoundForAgentEvent(event.turn, agentList());
         return;
       case "prompt":
         setPendingPrompts((current) => ({ ...current, [attentionEventKey(event)]: event }));
@@ -311,6 +329,21 @@ export function AgentEventBridge() {
           event.approval,
         ]);
         return;
+      case "subagent-failed": {
+        // The chat shows the failure in the subagent card. The toast tells the user who looks at
+        // another chat; the desktop notification tells the user who is not in the app. A failure does
+        // not need the user, so it shows only at the "all" level, as the completion sound does.
+        const agent = agentList().find((candidate) => candidate.id === event.agentId);
+        if (!agent?.notifications || soundLevel() !== "all" || platform.chatWindow) return;
+        if (!platform.appFocused() || isAgentChatOpen(event.agentId)) return;
+        const { t } = currentText();
+        toast.error(agent.name, {
+          description: event.title
+            ? t("notification.subagentFailedFor", { task: event.title })
+            : t("notification.subagentFailed"),
+        });
+        return;
+      }
       case "runtime-snapshot":
         void channels.refresh();
         applyAgentRuntimeSnapshot(event.snapshot);
@@ -366,13 +399,22 @@ export function AgentEventBridge() {
         // one stays global. The message is already redacted in the main process.
         const toastKey = readableAgentError(event.message);
         if (claimErrorToast(toastKey)) {
-          // An MCP server left out at hand-off is not the provider failing, and calling it a
-          // provider error sends the user to the wrong settings page.
+          // An MCP server that a provider was not given or could not use is not the provider failing,
+          // and calling it a provider error sends the user to the wrong settings page. The button
+          // shows only to a user who can see the server's MCP settings.
           const { t } = currentText();
-          const title =
-            event.code === "mcp_server_not_started" ? t("agent.error.mcpNotStarted") : providerErrorTitle(event.code);
-          toast.error(title, {
+          const mcp = event.code === "mcp_server_not_started";
+          const serverId = activeServerId();
+          toast.error(mcp ? t("agent.error.mcpNotStarted") : providerErrorTitle(event.code), {
             ...{ description: toastKey },
+            ...(mcp && serverCanAdminister(activeServer(), MCP_SERVERS_CAPABILITY)
+              ? {
+                  action: {
+                    label: t("agent.error.openMcpSettings"),
+                    onClick: () => openServerSettings(serverId, null, "mcp"),
+                  },
+                }
+              : {}),
             report: { operation: "provider", source: "provider", cause_code: classifyFailure(event.message) },
           });
         }
@@ -402,6 +444,7 @@ export function AgentEventBridge() {
       Object.fromEntries(Object.entries(current).filter(([agentId]) => agentId in usageLimits)),
     );
     setUsageLimitedModels(snapshot.usageLimitedModels ?? []);
+    setSubagentTurns(Object.fromEntries((snapshot.subagentTurns ?? []).map((turn) => [turn.agentId, turn.turnId])));
     setQueues((current) => reconcileQueuesWithRuntimeWork(current, snapshot.work, runtimeTurns));
     setPendingPrompts((current) => reconcileAttentionPrompts(current, snapshot, submittedPromptRequests()));
     setApprovals((current) => reconcileAttentionApprovals(current, snapshot));

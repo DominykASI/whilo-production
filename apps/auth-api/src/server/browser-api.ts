@@ -1,21 +1,24 @@
-import { isAvatarMimeType } from "@whilo/contracts/avatar-images";
-import { parseBillingPortalRequest } from "@whilo/contracts/billing";
-import { parseHostedServerLifecycleInput } from "@whilo/contracts/hosted-servers";
+import { isAvatarMimeType } from "@openbot/contracts/avatar-images";
+import { parseBillingPortalRequest } from "@openbot/contracts/billing";
+import { WEB_APP_COMPANY_SIGN_IN_ERROR_PARAM } from "@openbot/contracts/company-sign-in";
+import { parseHostedServerLifecycleInput } from "@openbot/contracts/hosted-servers";
 import {
   LICENSE_UNAVAILABLE_STATE,
   parseLicenseCheckoutRequest,
   parseLicensePlanRequest,
   parseLicenseRenewalRequest,
   parseLicenseUsersRequest,
-} from "@whilo/contracts/license";
-import { type DynamicRecord, isBoolean, isNumber, isString } from "@whilo/contracts/runtime-values";
-import { sourceText } from "@whilo/i18n/source";
+} from "@openbot/contracts/license";
+import { type DynamicRecord, isBoolean, isNumber, isString } from "@openbot/contracts/runtime-values";
+import { sourceText } from "@openbot/i18n/source";
 import { Cause, Effect } from "effect";
 import { type AccountAttribution, requestFirstTouch } from "./account-attribution";
-import { type AuthService, AuthServiceError, readAnalyticsAnswer } from "./auth-service";
+import { type AuthService, AuthServiceError, readAnalyticsAnswer, readChatColor } from "./auth-service";
 import { AvatarUploadError, readAvatarUpload, removeAccountAvatar, storeAccountAvatar } from "./avatar-storage";
 import { BILLING_UNAVAILABLE_STATE, BillingError, type BillingService } from "./billing-service";
-import { sha256 } from "./crypto";
+import { companySignInApiOrigin } from "./canonical-redirect";
+import { CompanySignInError, type CompanySignInService, WEB_RETURN_PATH } from "./company-sign-in";
+import { randomToken, sha256 } from "./crypto";
 import { runApiResponse } from "./effect-runtime";
 import type { readHostLogo } from "./host-logo";
 import type { HostedServerService } from "./hosted-server-service";
@@ -26,9 +29,15 @@ import { type RemoteControlPlane, RemoteControlPlaneError } from "./remote-contr
 import { sendTeamInviteEmail } from "./team-invite-email";
 import type { AuthUser, TeamInviteEmailDelivery } from "./types";
 
-const COOKIE = "__Host-whilo-web";
+const COOKIE = "__Host-openbot-web";
 const PREFIX = "/api/browser/";
 const COOKIE_ATTRIBUTES = "Path=/; Secure; HttpOnly; SameSite=Lax";
+/**
+ * The company sign-in that this browser started: its state and verifier. Only this browser can finish
+ * it, so a provider page that someone else opened cannot sign this browser in.
+ */
+const COMPANY_COOKIE = "__Host-openbot-company";
+const COMPANY_FLOW_SECONDS = 600;
 
 export interface BrowserApiServices {
   auth: Pick<
@@ -38,6 +47,7 @@ export interface BrowserApiServices {
     | "authenticate"
     | "enforceTeamInviteRateLimit"
     | "updateAnalytics"
+    | "updateChatColor"
     | "updateName"
     | "updateAvatar"
     | "listAccountSessions"
@@ -61,6 +71,8 @@ export interface BrowserApiServices {
     | "hostAsset"
     | "emailableInvite"
   >;
+  /** The methods bind their service, so this is the whole service. */
+  companySignIn: () => CompanySignInService;
   /** The stored logo of one host version, or null. The handler checks membership and the version first. */
   hostLogo: (hostId: string, version: string) => ReturnType<typeof readHostLogo>;
   hosting: () => Pick<
@@ -114,15 +126,19 @@ function refuseWith(refusal: abstract new (...args: never) => { status: number; 
     );
 }
 
-function browserSessionToken(request: Request): string | null {
+function cookieValue(request: Request, name: string): string | null {
   const values = (request.headers.get("Cookie") ?? "")
     .split(";")
     .map((part) => part.trim())
-    .filter((part) => part.startsWith(`${COOKIE}=`));
+    .filter((part) => part.startsWith(`${name}=`));
   const [value] = values;
   if (values.length !== 1 || value === undefined) return null;
-  const token = value.slice(COOKIE.length + 1);
-  return /^[A-Za-z0-9_-]{20,512}$/u.test(token) ? token : null;
+  return value.slice(name.length + 1);
+}
+
+function browserSessionToken(request: Request): string | null {
+  const token = cookieValue(request, COOKIE);
+  return token !== null && /^[A-Za-z0-9_-]{20,512}$/u.test(token) ? token : null;
 }
 
 const METHODS: ReadonlySet<string> = new Set(["GET", "POST", "PUT", "PATCH", "DELETE"]);
@@ -130,7 +146,7 @@ const AVATAR_PATH = "v1/me/avatar";
 
 /**
  * Every write sends JSON, except an avatar upload, which sends the image bytes as the bearer route
- * does. The `X-Whilo-Browser` header and the same-origin check still apply to it: a cross-site
+ * does. The `X-OpenBot-Browser` header and the same-origin check still apply to it: a cross-site
  * page cannot send that header without a CORS preflight, which this API never answers.
  */
 function browserWriteContentTypeAllowed(request: Request, path: string): boolean {
@@ -153,14 +169,61 @@ export function handleBrowserApi(request: Request, services: BrowserApiServices)
   if (
     request.method !== "GET" &&
     (request.headers.get("Origin") !== new URL(request.url).origin ||
-      request.headers.get("X-Whilo-Browser") !== "1" ||
+      request.headers.get("X-OpenBot-Browser") !== "1" ||
       !browserWriteContentTypeAllowed(request, path))
   )
     return Promise.resolve(failure(403, "browser_request_refused", "The browser request was refused."));
+  // The company provider sends the browser here, so this navigation is cross-site. The flow cookie
+  // of the browser that started the sign-in is its check.
+  if (path === "company/return" && request.method === "GET")
+    return runApiResponse(finishCompanySignIn(request, services), services.errorResponse);
   if (request.headers.get("Sec-Fetch-Site") === "cross-site")
     return Promise.resolve(failure(403, "browser_request_refused", "The browser request was refused."));
   return runApiResponse(handleBrowserOperation(request, path, services), services.errorResponse);
 }
+
+/**
+ * The provider's return through the account service. A sign-in that finished gets the session cookie,
+ * as an email code does. Every answer goes back to the web app and removes the flow cookie.
+ */
+const finishCompanySignIn = Effect.fn("BrowserApi.finishCompanySignIn")(function* (
+  request: Request,
+  services: BrowserApiServices,
+) {
+  const url = new URL(request.url);
+  const cookies = [`${COMPANY_COOKIE}=; ${COOKIE_ATTRIBUTES}; Max-Age=0`];
+  const back = (error?: string) => {
+    const target = new URL("/app", url.origin);
+    if (error) target.searchParams.set(WEB_APP_COMPANY_SIGN_IN_ERROR_PARAM, error);
+    const headers = new Headers({
+      Location: target.toString(),
+      "Cache-Control": "no-store",
+      "Referrer-Policy": "no-referrer",
+    });
+    for (const cookie of cookies) headers.append("Set-Cookie", cookie);
+    return new Response(null, { status: 303, headers });
+  };
+  const [clientState, verifier] = cookieValue(request, COMPANY_COOKIE)?.split(".") ?? [];
+  if (!clientState || !verifier || url.searchParams.get("state") !== clientState)
+    return back("invalid_company_sign_in_code");
+  const error = url.searchParams.get("error");
+  if (error) return back(/^[a-z_]{1,64}$/u.test(error) ? error : "company_sign_in_failed");
+  const result = yield* services
+    .companySignIn()
+    .exchange({ code: url.searchParams.get("code") ?? "", codeVerifier: verifier })
+    .pipe(
+      Effect.map((session) => ({ session })),
+      Effect.catchTag("CompanySignInError", (refusal) => Effect.succeed({ error: refusal.code })),
+    );
+  if ("error" in result) return back(result.error);
+  const previous = browserSessionToken(request);
+  if (previous) {
+    const user = yield* services.auth.authenticate(previous);
+    if (user) yield* services.remote.endAccountSession(user.id, yield* sha256(previous));
+  }
+  cookies.push(`${COOKIE}=${result.session.sessionToken}; ${COOKIE_ATTRIBUTES}; Max-Age=34560000`);
+  return back();
+});
 
 const handleBrowserOperation = Effect.fn("BrowserApi.handleOperation")(function* (
   request: Request,
@@ -194,6 +257,38 @@ const handleBrowserOperation = Effect.fn("BrowserApi.handleOperation")(function*
     const response = json({ user: result.user });
     response.headers.set("Set-Cookie", `${COOKIE}=${result.sessionToken}; ${COOKIE_ATTRIBUTES}; Max-Age=34560000`);
     return response;
+  }
+  if (path === "company/start" && request.method === "POST") {
+    // The email start answered `company_sign_in_required`. The page goes to the answer in this tab.
+    const body = yield* readJsonObject(request);
+    const email = yield* requiredString(body, "email");
+    const site = new URL(request.url);
+    const clientState = randomToken(24);
+    const verifier = randomToken(32);
+    return yield* services
+      .companySignIn()
+      .startSignIn(
+        {
+          email,
+          returnTo: new URL(WEB_RETURN_PATH, site.origin).toString(),
+          clientState,
+          clientChallenge: yield* sha256(verifier),
+          sourceIp: services.sourceIp(request),
+        },
+        companySignInApiOrigin(site),
+        site.origin,
+      )
+      .pipe(
+        Effect.map(({ authorizationUrl }) => {
+          const response = json({ authorizationUrl });
+          response.headers.set(
+            "Set-Cookie",
+            `${COMPANY_COOKIE}=${clientState}.${verifier}; ${COOKIE_ATTRIBUTES}; Max-Age=${COMPANY_FLOW_SECONDS}`,
+          );
+          return response;
+        }),
+        refuseWith(CompanySignInError),
+      );
   }
   if (path === "checkout-attribution" && request.method === "POST") {
     // The page after a desktop checkout. The session ID that Stripe put in its URL is the only proof.
@@ -305,6 +400,12 @@ const handleAccount = Effect.fn("BrowserApi.handleAccount")(function* (
     if (!answer)
       return yield* new AuthServiceError(400, "invalid_analytics_preference", "The analytics setting is not valid.");
     return json(yield* services.auth.updateAnalytics(token, answer));
+  }
+  if (path === "v1/me/chat-color" && request.method === "PUT") {
+    const chatColor = readChatColor(yield* readJsonObject(request));
+    if (chatColor === undefined)
+      return yield* new AuthServiceError(400, "invalid_chat_color", "The chat color is not valid.");
+    return json(yield* services.auth.updateChatColor(token, chatColor));
   }
   if (path === AVATAR_PATH && request.method === "PUT") {
     return yield* Effect.gen(function* () {

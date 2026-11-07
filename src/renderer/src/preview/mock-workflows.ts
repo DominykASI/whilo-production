@@ -4,10 +4,9 @@
 // condition answers yes, an approval waits for `decide`, and a node with the field `mockFail` fails.
 
 import {
-  isGitHubRepositoryName,
   isWorkflowStepKind,
   nodeAgentId,
-  type WhiloDesktopApi,
+  type OpenBotDesktopApi,
   type StartWorkflowRunInput,
   WORKFLOW_AUTO_VERSION_INTERVAL_MS,
   WORKFLOW_MAX_VERSIONS,
@@ -25,9 +24,10 @@ import {
   type WorkflowSummary,
   type WorkflowTriggerState,
   type WorkflowVersion,
-} from "@whilo/contracts/ipc";
-import { sourceText } from "@whilo/i18n/source";
-import { nextValidRoutineOccurrence } from "@whilo/team-client/routine-schedule";
+  workflowGitHubTriggerRepositories,
+} from "@openbot/contracts/ipc";
+import { sourceText } from "@openbot/i18n/source";
+import { nextValidRoutineOccurrence } from "@openbot/team-client/routine-schedule";
 
 const PREVIEW_HOOKS = "https://hooks.openbot.run/wf";
 
@@ -35,8 +35,8 @@ const PREVIEW_HOOKS = "https://hooks.openbot.run/wf";
 const PREVIEW_GITHUB_CATALOG: WorkflowGitHubCatalog = {
   connected: true,
   repositories: [
-    { fullName: "whilo-preview/app", private: false, canWrite: true, events: true },
-    { fullName: "whilo-preview/docs", private: true, canWrite: false, events: true },
+    { fullName: "openbot-preview/app", private: false, canWrite: true, events: true },
+    { fullName: "openbot-preview/docs", private: true, canWrite: false, events: true },
   ],
 };
 
@@ -49,11 +49,14 @@ const PREVIEW_GITHUB_OPTIONS: WorkflowGitHubRepositoryOptions = {
   people: ["octocat", "hubot"],
 };
 
-/** An issue of the repository that a GitHub trigger watches, or of the first preview repository. */
+/**
+ * An issue of a repository that a GitHub trigger watches, or of the first preview repository. The items
+ * take the trigger's repositories in turn, so a trigger with more than one shows events of each.
+ */
 function previewItem(node: WorkflowNode, number: number, title: string): WorkflowGitHubItem {
-  const repository = node.fields.repository;
+  const repositories = workflowGitHubTriggerRepositories(node.fields);
   return {
-    repository: isGitHubRepositoryName(repository) ? repository : "whilo-preview/app",
+    repository: repositories[number % Math.max(repositories.length, 1)] ?? "openbot-preview/app",
     number,
     pullRequest: false,
     title,
@@ -111,7 +114,7 @@ function mockAnswer(node: WorkflowNode, input: string): string {
 export function mockWorkflows(
   seeds: readonly MockWorkflowSeed[],
   emit: (workflowId: string) => void,
-): WhiloDesktopApi["workflows"] {
+): OpenBotDesktopApi["workflows"] {
   const records = new Map<string, MockWorkflowRecord>();
   const stamp = () => new Date().toISOString();
   /** The webhook triggers that have a secret, as `<workflowId>/<nodeId>`. The host makes a route only then. */
