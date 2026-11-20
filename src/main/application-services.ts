@@ -415,6 +415,7 @@ const LANGUAGE_PREFERENCE_FILE = "whilo-language-preference-v1.json";
 const LOGO_COLOR_PREFERENCE_FILE = "whilo-logo-color-preference-v1.json";
 export const APPEARANCE_PREFERENCE_FILE = "whilo-appearance-preference-v1.json";
 const INTERFACE_SIZE_PREFERENCE_FILE = "whilo-interface-size-preference-v1.json";
+const INTERFACE_LOOK_PREFERENCE_FILE = "whilo-interface-look-preference-v1.json";
 const NOTIFICATION_PREFERENCE_FILE = "whilo-notification-preference-v1.json";
 const PUSH_NOTIFICATION_FILE = "whilo-push-notifications-v1.json";
 const BUSY_MESSAGE_MODE_PREFERENCE_FILE = "whilo-busy-message-mode-v1.json";

@@ -180,7 +180,7 @@ const COMPETITORS_DONE = thread("competitors", "Competitor scan", "2026-08-19T10
  * Chief has unread agent messages in three side threads. "Competitor scan" has finished, so Chief does
  * not work and the sidebar shows the unread count. "Pricing FAQ" has no tab: only the menu shows its dot.
  */
-export const UNREAD_OPTIONS: MockOpenBotOptions = {
+export const UNREAD_OPTIONS: MockWhiloOptions = {
   ...THREAD_OPTIONS,
   tasks: { [AGENT_ID]: THREADS.map((task) => (task.id === COMPETITORS_DONE.id ? COMPETITORS_DONE : task)) },
   taskConversations: {

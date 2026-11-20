@@ -9,7 +9,7 @@ export const messages = {
   "remoteDesktop.workspaceLabel": "التحكم عن بُعد",
   "remoteDesktop.displayLabel": "الشاشة البعيدة",
   "remoteDesktop.selectDisplay": "اختيار الشاشة",
-  "remoteDesktop.backToOpenBot": "الرجوع إلى Whilo",
+  "remoteDesktop.backToWhilo": "الرجوع إلى Whilo",
   "remoteDesktop.disconnect": "قطع الاتصال",
   "remoteDesktop.viewerTitle": "سطح المكتب البعيد Sunshine",
   "remoteDesktop.viewerLoadFailed": "تعذّر تحميل عارض Moonlight.",

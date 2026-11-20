@@ -54,7 +54,7 @@ const meta = {
   component: PricingPage,
   args: {
     text: pricingPageText(translateFor("en")),
-    offer: { plans: LIST_PRICE_PLANS, inEu: false },
+    offer: { plans: LIST_PRICE_PLANS, inEu: false, checkoutConfigured: true },
     lang: "en",
     locale: "en",
   },
@@ -70,5 +70,10 @@ export const OutsideEu: Story = {};
 
 /** A visitor in the EU: the unit beside the total says "excl. VAT". */
 export const InEu: Story = {
-  args: { offer: { plans: LIST_PRICE_PLANS, inEu: true } },
+  args: { offer: { plans: LIST_PRICE_PLANS, inEu: true, checkoutConfigured: true } },
+};
+
+/** A deployment with no Stripe key: the buying action is disabled and the page says payments are not available. */
+export const CheckoutUnavailable: Story = {
+  args: { offer: { plans: LIST_PRICE_PLANS, inEu: false, checkoutConfigured: false } },
 };

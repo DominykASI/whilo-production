@@ -55,7 +55,7 @@ import {
   isRoutineRun,
   type LocalBrowserSecretResponse,
   type MarkAgentTaskReadInput,
-  type OpenBotDesktopApi,
+  type WhiloDesktopApi,
   type QueuedMessageReceipt,
   type ReadAgentTaskPageInput,
   type RemoteAgentImportResult,
@@ -529,7 +529,7 @@ export const respondToBrowserSecret = Effect.fn("TeamClient.respondToBrowserSecr
 
 /** The channel calls of the desktop IPC surface, which a remote desktop sends to the host the same way. */
 export type TeamChannelsApi = Pick<
-  OpenBotDesktopApi["agent"],
+  WhiloDesktopApi["agent"],
   | "listChannels"
   | "readChannel"
   | "channelCommand"
@@ -575,7 +575,7 @@ const decodeRoutineRuns = guardedListDecoder(isRoutineRun, "routine run list");
 
 /** The agent routine calls of the desktop IPC surface, which a remote desktop sends to the host the same way. */
 export type TeamAgentRoutinesApi = Pick<
-  OpenBotDesktopApi["agent"],
+  WhiloDesktopApi["agent"],
   "listRoutines" | "createRoutine" | "updateRoutine" | "deleteRoutine" | "testRoutine" | "listRoutineRuns"
 >;
 
@@ -656,7 +656,7 @@ export function teamAgentRoutinesApi(
 }
 
 /** The routine canvas calls of the desktop IPC surface. Send them only to a host that serves `routine-flows-v1`. */
-export type TeamRoutineFlowsApi = OpenBotDesktopApi["routineFlows"];
+export type TeamRoutineFlowsApi = WhiloDesktopApi["routineFlows"];
 
 const decodeRoutineFlowCanvas = guardedDecoder(isRoutineFlowCanvas, "routine flow canvas");
 const decodeRoutineFlowLink = guardedDecoder(isRoutineFlowLink, "routine flow link");

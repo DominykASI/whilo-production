@@ -29,7 +29,7 @@ function RailButton(props: {
   card?: () => JSX.Element;
   current?: boolean;
   class?: string;
-  onClick: (button: HTMLElement) => void;
+  onClick?: ((button: HTMLElement) => void) | undefined;
   children: JSX.Element;
 }) {
   const button = () => (
@@ -39,7 +39,7 @@ function RailButton(props: {
       class={props.class ? `window-rail-button ${props.class}` : "window-rail-button"}
       aria-label={props.label}
       aria-current={props.current ? "page" : undefined}
-      onClick={(event) => props.onClick(event.currentTarget)}
+      onClick={(event) => props.onClick?.(event.currentTarget)}
     >
       {props.children}
     </Button>
@@ -74,7 +74,7 @@ const RING = { size: 34, stroke: 2.25, spacing: 4.5 };
 function UsageRings(props: {
   row: AccountUsageProviderRow;
   shared: readonly AccountUsageProviderRow[];
-  onOpen: (button: HTMLElement) => void;
+  onOpen?: ((button: HTMLElement) => void) | undefined;
 }) {
   const { t, format } = useText();
   const rows = () => [props.row, ...props.shared];
@@ -151,7 +151,10 @@ export interface CustomAgentUsageRailRow {
  * The plan usage of one custom agent: the agent logo, with no ring. The hover card shows the answer
  * as the agent wrote it.
  */
-function CustomAgentUsageButton(props: { row: CustomAgentUsageRailRow; onOpen: (button: HTMLElement) => void }) {
+function CustomAgentUsageButton(props: {
+  row: CustomAgentUsageRailRow;
+  onOpen?: ((button: HTMLElement) => void) | undefined;
+}) {
   const { t } = useText();
   return (
     <RailButton
@@ -228,6 +231,8 @@ export interface PageRailProps {
   settingsNotice?: string | undefined;
   /** The Help menu, between Marketplace and Settings. */
   help: JSX.Element;
+  /** The Pets/Dots switch of the web app, above the Help menu. The desktop shell has its own. */
+  modeToggle?: JSX.Element | undefined;
   /**
    * The Whilo logo in the top row, for a window that has no macOS window buttons there. With
    * `href`, the logo is a link to the Whilo site.
@@ -432,6 +437,7 @@ export function PageRail(props: PageRailProps) {
             </RailButton>
           )}
         </Show>
+        {props.modeToggle}
         {props.help}
         <RailButton
           label={

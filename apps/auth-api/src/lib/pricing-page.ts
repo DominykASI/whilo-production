@@ -60,6 +60,12 @@ export interface PricingOffer {
   inEu: boolean;
   /** A license bought now is free until this time, in milliseconds since the epoch. */
   licenseTrialEnd?: number;
+  /**
+   * Whether this deployment can start a Checkout. It is false on a preview Worker with no Stripe key,
+   * and the page then shows a disabled action with the `sitePage.pricing.unavailable` note instead of
+   * a link into a Checkout that would fail.
+   */
+  checkoutConfigured: boolean;
 }
 
 /**

@@ -71,7 +71,7 @@ export const messages = {
   "status.agent.diskSpaceChecking": "Проверка свободного места на диске…",
   "status.agent.processesChecking": "Проверка запущенных процессов…",
   "status.agent.gitChecking": "Проверка репозитория Git…",
-  "status.agent.commandRunning": "Запуск {program}…",
+  "status.agent.commandRunningProgram": "Запуск {program}…",
   "status.agent.memoryChanges": "Память: сохранено {saved}, обновлено {updated}, забыто {forgotten}.",
   "status.agent.memoryChangesWithConflicts":
     "Память: сохранено {saved}, обновлено {updated}, забыто {forgotten}, не изменено {notChanged}, потому что другая ветка изменила их раньше.",

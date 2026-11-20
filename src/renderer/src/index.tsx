@@ -9,6 +9,7 @@ import { startActionSounds } from "./action-sounds";
 import { syncAppearance } from "./appearance-choice";
 import { readChatWindowTarget } from "./features/window/chat-window";
 import { syncLogoColor } from "./logo-color";
+import { syncInterfaceLook } from "./interface-look";
 import { startRendererTiming } from "./renderer-timing";
 import "./styles.css";
 

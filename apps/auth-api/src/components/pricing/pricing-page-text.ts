@@ -26,6 +26,7 @@ export function pricingPageText(t: AppTranslate) {
       body: t("sitePage.pricing.enterprise.body", { count: PRICING_MAX_MEMBERS }),
       contact: t("sitePage.pricing.enterprise.contact"),
     },
+    unavailable: t("sitePage.pricing.unavailable"),
   };
 }
 

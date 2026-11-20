@@ -1,4 +1,4 @@
-import type { CompanySignInSettings, OpenBotDesktopApi } from "@whilo/contracts/ipc";
+import type { CompanySignInSettings, WhiloDesktopApi } from "@whilo/contracts/ipc";
 import {
   Badge,
   Button,
@@ -29,7 +29,7 @@ import type { ServerSettingsSectionHost } from "./server-settings-section";
 
 /** What the section calls in main. Only the desktop app manages company sign-in. */
 export type CompanySignInCalls = Pick<
-  OpenBotDesktopApi["auth"],
+  WhiloDesktopApi["auth"],
   | "getCompanySignIn"
   | "testCompanySignIn"
   | "cancelCompanySignInTest"

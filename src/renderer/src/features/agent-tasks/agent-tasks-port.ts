@@ -1,9 +1,9 @@
-import type { AgentTaskInput, OpenBotDesktopApi } from "@whilo/contracts/ipc";
+import type { AgentTaskInput, WhiloDesktopApi } from "@whilo/contracts/ipc";
 
 /** What the side thread state reaches on a server: the list, a thread's conversation, and the thread actions. */
 export interface AgentTasksPort
   extends Pick<
-    OpenBotDesktopApi["agent"],
+    WhiloDesktopApi["agent"],
     | "closeTask"
     | "deleteTask"
     | "listTasks"
@@ -18,7 +18,7 @@ export interface AgentTasksPort
    * The person's read mark of each open thread of an agent. Missing where the client does not read the
    * marks: no thread then shows as unread.
    */
-  listTaskReads?: OpenBotDesktopApi["agent"]["listTaskReads"];
+  listTaskReads?: WhiloDesktopApi["agent"]["listTaskReads"];
   /** Steers the thread's running turn, or queues the message in the thread. */
   sendToTask(
     input: AgentTaskInput & {
@@ -29,18 +29,18 @@ export interface AgentTasksPort
     },
   ): Promise<unknown>;
   /** Missing where the server cannot move a queued message of the agent's own chat to a new thread. */
-  runQueuedMessageAsTask?: OpenBotDesktopApi["agent"]["runQueuedMessageAsTask"];
+  runQueuedMessageAsTask?: WhiloDesktopApi["agent"]["runQueuedMessageAsTask"];
   /** The older messages of a thread, page by page. Missing where the server cannot read them. */
-  readTaskPage?: OpenBotDesktopApi["agent"]["readTaskPage"];
+  readTaskPage?: WhiloDesktopApi["agent"]["readTaskPage"];
   /** Missing where the server cannot branch a conversation. The branch actions then do not show. */
-  branchTask?: OpenBotDesktopApi["agent"]["branchTask"];
+  branchTask?: WhiloDesktopApi["agent"]["branchTask"];
   /** Deletes one message of a thread. Missing where the server cannot delete messages. */
   deleteTaskMessage?: ((input: { agentId: string; taskId: string; messageId: string }) => Promise<void>) | undefined;
   /**
    * The actions of a thread's queue. Missing where the server sends no queue of a thread: only this
    * computer does, `agent-tasks-v1` sends the start of each message alone.
    */
-  queue?: Pick<OpenBotDesktopApi["agent"], "cancelQueuedMessage" | "steerQueuedMessage" | "reorderQueue"> | undefined;
+  queue?: Pick<WhiloDesktopApi["agent"], "cancelQueuedMessage" | "steerQueuedMessage" | "reorderQueue"> | undefined;
 }
 
 /**

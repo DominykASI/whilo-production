@@ -106,4 +106,10 @@ export const messages = {
     "{name} krijgt volledige toegang. De agent voert commando’s en tools uit, wijzigt bestanden, publiceert sites en verruimt zijn eigen bestandssysteem- en netwerktoegang op de computer waarop hij draait, zonder het opnieuw te vragen. Je kunt dit wijzigen in de instellingen voor Machtigingen van de agent.",
   "app.standingApproval.descriptionUnnamed":
     "Deze agent krijgt volledige toegang. De agent voert commando’s en tools uit, wijzigt bestanden, publiceert sites en verruimt zijn eigen bestandssysteem- en netwerktoegang op de computer waarop hij draait, zonder het opnieuw te vragen. Je kunt dit wijzigen in de instellingen voor Machtigingen van de agent.",
+  "app.mode.label": "Whilo: {mode}",
+  "app.mode.title": "Whilo-ervaring",
+  "app.mode.pets": "Huisdieren",
+  "app.mode.dots": "Stippen",
+  "app.mode.petsHint": "Focus op het essentiële: chat en je huisdieren",
+  "app.mode.dotsHint": "Alle tools en de volledige zijbalk",
 } as const satisfies PartialTranslation<typeof source>;

@@ -6,11 +6,11 @@ import { createSignal, lazy, onSettled, Show } from "solid-js";
 // The demo follows the visitor's language. Its catalogs load with the code, so the demo does not
 // start in English; if they fail, the demo shows English. The route in `app-preview.tsx` links the
 // app stylesheet.
-const OpenBotPlayground = lazy(() =>
+const WhiloPlayground = lazy(() =>
   Promise.all([
     import("@whilo/renderer-preview"),
     loadLocale(resolveLocale(DEFAULT_APP_LANGUAGE, navigator.language)).catch(() => undefined),
-  ]).then(([module]) => ({ default: module.OpenBotPlayground })),
+  ]).then(([module]) => ({ default: module.WhiloPlayground })),
 );
 
 export const Route = createLazyFileRoute("/app-preview")({ component: AppPreviewPage });
@@ -27,7 +27,7 @@ export function AppPreviewPage() {
         when={mounted()}
         fallback={<div class="whilo-playground-loading" role="status" aria-label="Loading Whilo preview" />}
       >
-        <OpenBotPlayground variant="landing" />
+        <WhiloPlayground variant="landing" />
       </Show>
     </div>
   );

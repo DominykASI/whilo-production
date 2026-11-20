@@ -72,7 +72,7 @@ export const messages = defineMessages("status.agent", {
   "status.agent.diskSpaceChecking": "Checking free disk space…",
   "status.agent.processesChecking": "Checking running processes…",
   "status.agent.gitChecking": "Checking the Git repository…",
-  "status.agent.commandRunning": "Running the {program} command…",
+  "status.agent.commandRunningProgram": "Running the {program} command…",
   "status.agent.memoryChanges": "Memory: {saved} saved, {updated} updated, {forgotten} forgotten.",
   "status.agent.memoryChangesWithConflicts":
     "Memory: {saved} saved, {updated} updated, {forgotten} forgotten, {notChanged} not changed because another thread changed it first.",

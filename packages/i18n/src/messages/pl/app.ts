@@ -108,4 +108,10 @@ export const messages = {
     "Agent {name} przechodzi na Pełny dostęp. Będzie uruchamiać polecenia i narzędzia, zmieniać pliki, publikować witryny oraz rozszerzać własny dostęp do systemu plików i sieci na komputerze, na którym działa, bez ponownego pytania. Możesz to zmienić w ustawieniach Dostęp agenta.",
   "app.standingApproval.descriptionUnnamed":
     "Ten agent przechodzi na Pełny dostęp. Będzie uruchamiać polecenia i narzędzia, zmieniać pliki, publikować witryny oraz rozszerzać własny dostęp do systemu plików i sieci na komputerze, na którym działa, bez ponownego pytania. Możesz to zmienić w ustawieniach Dostęp agenta.",
+  "app.mode.label": "Whilo: {mode}",
+  "app.mode.title": "Doświadczenie Whilo",
+  "app.mode.pets": "Zwierzaki",
+  "app.mode.dots": "Kropki",
+  "app.mode.petsHint": "Skup się na najważniejszym: czacie i swoich zwierzakach",
+  "app.mode.dotsHint": "Wszystkie narzędzia i pełny pasek boczny",
 } as const satisfies PartialTranslation<typeof source>;

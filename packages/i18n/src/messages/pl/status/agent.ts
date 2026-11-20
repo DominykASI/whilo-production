@@ -72,7 +72,7 @@ export const messages = {
   "status.agent.diskSpaceChecking": "Sprawdzanie wolnego miejsca na dysku…",
   "status.agent.processesChecking": "Sprawdzanie uruchomionych procesów…",
   "status.agent.gitChecking": "Sprawdzanie repozytorium Git…",
-  "status.agent.commandRunning": "Uruchamianie polecenia {program}…",
+  "status.agent.commandRunningProgram": "Uruchamianie polecenia {program}…",
   "status.agent.memoryChanges": "Wspomnienia: zapisane {saved}, zaktualizowane {updated}, zapomniane {forgotten}.",
   "status.agent.memoryChangesWithConflicts":
     "Wspomnienia: zapisane {saved}, zaktualizowane {updated}, zapomniane {forgotten}, niezmienione {notChanged}, bo inny wątek zmienił je wcześniej.",

@@ -106,4 +106,10 @@ export const messages = {
     "{name} wechselt zu Voller Zugriff. Der Agent führt dann Befehle und Tools aus, ändert Dateien, veröffentlicht Websites und erweitert den eigenen Dateisystem- und Netzwerkzugriff auf dem ausführenden Computer ohne erneute Rückfrage. Du kannst das in den Zugriff-Einstellungen des Agenten ändern.",
   "app.standingApproval.descriptionUnnamed":
     "Dieser Agent wechselt zu Voller Zugriff. Er führt dann Befehle und Tools aus, ändert Dateien, veröffentlicht Websites und erweitert den eigenen Dateisystem- und Netzwerkzugriff auf dem ausführenden Computer ohne erneute Rückfrage. Du kannst das in den Zugriff-Einstellungen des Agenten ändern.",
+  "app.mode.label": "Whilo: {mode}",
+  "app.mode.title": "Whilo-Erlebnis",
+  "app.mode.pets": "Pets",
+  "app.mode.dots": "Dots",
+  "app.mode.petsHint": "Konzentriere dich auf das Wesentliche: Chat und deine Pets",
+  "app.mode.dotsHint": "Alle Werkzeuge und die vollständige Seitenleiste",
 } as const satisfies PartialTranslation<typeof source>;

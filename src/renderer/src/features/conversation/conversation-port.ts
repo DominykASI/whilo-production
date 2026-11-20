@@ -1,4 +1,4 @@
-import type { DeleteSharedTableInput, OpenBotDesktopApi, SharedTable } from "@whilo/contracts/ipc";
+import type { DeleteSharedTableInput, WhiloDesktopApi, SharedTable } from "@whilo/contracts/ipc";
 
 /**
  * What the conversation domain reaches in main: agent and direct message pages, sends, reads,
@@ -6,7 +6,7 @@ import type { DeleteSharedTableInput, OpenBotDesktopApi, SharedTable } from "@wh
  */
 export interface ConversationPort {
   agent: Pick<
-    OpenBotDesktopApi["agent"],
+    WhiloDesktopApi["agent"],
     | "readAgentSessionSettings"
     | "listAgentNotificationLevels"
     | "askSideQuestion"
@@ -26,7 +26,7 @@ export interface ConversationPort {
     | "sendMessage"
   >;
   browser: Pick<
-    OpenBotDesktopApi["browser"],
+    WhiloDesktopApi["browser"],
     | "capturePreview"
     | "finishLocalSignIn"
     | "onLiveViewEvent"
@@ -36,7 +36,7 @@ export interface ConversationPort {
     | "stopLiveView"
   >;
   servers: Pick<
-    OpenBotDesktopApi["servers"],
+    WhiloDesktopApi["servers"],
     | "listDirectThreads"
     | "markDirectRead"
     | "onDirectMessage"
@@ -45,10 +45,10 @@ export interface ConversationPort {
     | "sendDirectMessage"
     | "setDirectTyping"
   >;
-  storage: Pick<OpenBotDesktopApi["storage"], "openLocation">;
+  storage: Pick<WhiloDesktopApi["storage"], "openLocation">;
   /** The reader's level for each agent of a joined server, which decides what Delete offers. */
-  hostAdmin: Pick<OpenBotDesktopApi["hostAdmin"], "getAgentAccess">;
-  browserDock: Pick<OpenBotDesktopApi["browserDock"], "publishPresentation" | "onAction" | "onShown">;
+  hostAdmin: Pick<WhiloDesktopApi["hostAdmin"], "getAgentAccess">;
+  browserDock: Pick<WhiloDesktopApi["browserDock"], "publishPresentation" | "onAction" | "onShown">;
 }
 
 /** Read on each call: tests and stories replace `window.whilo` per case. */

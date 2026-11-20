@@ -63,6 +63,13 @@ export const messages = defineMessages("app", {
   "app.rail.settingsNotice": "Settings. {notice}",
   "app.rail.more": "More",
   "app.rail.pinPage": "Pin {name} to the rail",
+  // The Pets/Dots experience switch of the rail.
+  "app.mode.label": "Whilo: {mode}",
+  "app.mode.title": "Whilo experience",
+  "app.mode.pets": "Pets",
+  "app.mode.dots": "Dots",
+  "app.mode.petsHint": "Focus on the essentials: chat and your pets",
+  "app.mode.dotsHint": "Every tool and the full sidebar",
   "app.page.serverFallback": "Server",
   "app.help.label": "Help",
   "app.help.whatsNew": "What’s new",

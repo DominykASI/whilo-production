@@ -3,14 +3,14 @@ import { MESSAGE_DELETE_CAPABILITY } from "@whilo/contracts/team-protocol/messag
 import { ROUTINE_FLOWS_CAPABILITY } from "@whilo/contracts/team-protocol/routine-flows-v1";
 import type { WebRuntimeFactory } from "../features/web-client/web-client-context";
 import type { WebRuntimeEvents, WebWorkspaceRuntime } from "../features/web-client/web-runtime";
-import { createMockOpenBot, type MockOpenBotControls } from "./mock-whilo";
+import { createMockWhilo, type MockWhiloControls } from "./mock-whilo";
 
 /** Use the desktop preview's data and actions for the browser composition too. */
 export const createMockWebRuntime: WebRuntimeFactory = (_accountId, events) =>
-  mockWebRuntimeFor(createMockOpenBot(), events);
+  mockWebRuntimeFor(createMockWhilo(), events);
 
 /** The browser composition over a given mock host, for a fixture that also drives that host. */
-export function mockWebRuntimeFor(mock: MockOpenBotControls, events: WebRuntimeEvents): WebWorkspaceRuntime {
+export function mockWebRuntimeFor(mock: MockWhiloControls, events: WebRuntimeEvents): WebWorkspaceRuntime {
   const agent = mock.api.agent;
   const host = {
     hostId: "preview-host",

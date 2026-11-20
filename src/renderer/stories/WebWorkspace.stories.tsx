@@ -100,7 +100,7 @@ const SLOW_CONNECT_MS = 6_000;
 
 /** The last visit saved a frame of the workspace, and the host answers slowly. */
 const savedFrameSlowRuntime: WebRuntimeFactory = (accountId, events) => {
-  const mock = createMockOpenBot();
+  const mock = createMockWhilo();
   const runtime = mockWebRuntimeFor(mock, events);
   const saved = mock.api.agent.listAgents().then((agents) => {
     saveRemoteWorkspaceFrame(accountId, "preview-host", { agents, selectedAgentId: agents[0]?.id ?? null });

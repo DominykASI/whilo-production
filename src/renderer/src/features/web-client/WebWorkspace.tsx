@@ -235,9 +235,10 @@ import { RailHelpMenu } from "../window/RailHelpMenu";
 import { ServerSettingsPageTitle, SettingsPageFrame } from "../window/SettingsPageFrame";
 import type { SettingsKind, WindowPage } from "../window/window-page-context";
 import { WebAgentSettings } from "./WebAgentSettings";
-import { WebConnectComputer } from "./WebConnectComputer";
 import { WebCloudUsage } from "./WebCloudUsage";
+import { WebConnectComputer } from "./WebConnectComputer";
 import { WebMobileNavigation, type WebMobilePane } from "./WebMobileNavigation";
+import { WebModeToggle } from "./WebModeToggle";
 import { WebServerOtherTab } from "./WebServerOtherTab";
 import { createWebAccountCalls } from "./web-account";
 import { createWebAccountUsage } from "./web-account-usage";
@@ -2051,6 +2052,7 @@ function WebWorkspaceFrame(props: WebWorkspaceProps) {
               onUsage={whiloMode() === "dots" ? (button) => openHostPageOrConnect("usage", button) : undefined}
               onMarketplace={workspace.state.status === "online" ? openMarketplace : undefined}
               onSettings={openAccountSettings}
+              modeToggle={<WebModeToggle />}
               help={
                 <RailHelpMenu
                   version={null}

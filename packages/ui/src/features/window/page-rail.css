@@ -234,3 +234,27 @@
   > .agent-context-icon {
   color: var(--whilo-text-primary);
 }
+
+/* The Pets/Dots switch in the rail: a two-line item, the active one checked. */
+.window-rail-more-menu .window-rail-mode-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--whilo-space-2);
+}
+
+.window-rail-mode-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.window-rail-mode-hint {
+  color: var(--whilo-text-secondary);
+  font-size: var(--whilo-text-sm);
+  white-space: normal;
+}
+
+.window-rail-mode-check {
+  color: var(--whilo-accent);
+}

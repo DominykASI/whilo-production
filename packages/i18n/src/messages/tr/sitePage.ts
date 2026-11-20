@@ -87,6 +87,7 @@ export const messages = {
   "sitePage.pricing.enterprise.body":
     "Daha büyük sunucular, {count} üyeden fazlası veya ihtiyacınız olan her şey. Kurumsal destekle.",
   "sitePage.pricing.enterprise.contact": "Satış ekibine ulaşın",
+  "sitePage.pricing.unavailable": "Ödemeler henüz kullanılamıyor. Bu sayfa, ödemeler kullanılabilir olduğunda fiyatları yeniden gösterecek.",
   "sitePage.marketplace.agents.title": "Ajanlar — Whilo Pazaryeri",
   "sitePage.marketplace.agents.description":
     "Başkalarının Whilo'ta yaptığı ajanlar. Birini becerileri ve rutinleriyle birlikte Whilo'a ekle.",
@@ -145,4 +146,8 @@ export const messages = {
   "sitePage.marketplace.missing.title": "Pazaryerinde yok",
   "sitePage.marketplace.missing.body": "Yapan kişi kaldırdı, Whilo onaylamadı ya da bağlantı yanlış.",
   "sitePage.marketplace.missing.open": "Pazaryerini aç",
+  "sitePage.billing.unavailableTitle": "Ödemeler kullanılamıyor",
+  "sitePage.billing.unavailableBody": "Ödeme hizmeti henüz kurulmadı, bu yüzden hiçbir şeyi onaylayamıyoruz. Hiçbir ücret alınmadı. Whilo'ya dönün.",
+  "sitePage.billing.pendingTitle": "Ödeme sürüyor",
+  "sitePage.billing.pendingBody": "Ödemenizi onaylıyoruz. Bu biraz sürebilir. Sunucunuzu görmek için Whilo'ya dönün veya bekleyip tekrar deneyin.",
 } as const satisfies PartialTranslation<typeof source>;

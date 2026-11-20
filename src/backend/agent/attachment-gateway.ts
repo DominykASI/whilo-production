@@ -15,7 +15,7 @@ import {
 import type { GeneratedAttachmentSource, MailboxStore } from "../mailbox-store";
 import { isWithin, rebaseLegacyWorkspacePath, sharedPathFromInput, workspacePathFromInput } from "../workspace-paths";
 import type { ConversationRuntime } from "./conversation-runtime";
-import { type OpenBotToolResponse, openBotToolResult } from "./routine-tools";
+import { type WhiloToolResponse, whiloToolResult } from "./routine-tools";
 
 export interface AttachmentGatewayHooks {
   emit(event: AgentEvent): void;
@@ -73,7 +73,7 @@ export class AttachmentGateway {
   readonly #mailbox: MailboxStore;
   readonly #sharedRoot: string;
   readonly #hooks: AttachmentGatewayHooks;
-  readonly #inFlight = new Map<string, Deferred.Deferred<OpenBotToolResponse, AttachmentOperationError>>();
+  readonly #inFlight = new Map<string, Deferred.Deferred<WhiloToolResponse, AttachmentOperationError>>();
 
   constructor(options: AttachmentGatewayOptions) {
     this.#conversation = options.conversation;
@@ -91,7 +91,7 @@ export class AttachmentGateway {
   ) {
     const inFlight = this.#inFlight.get(messageId);
     if (inFlight) return yield* Deferred.await(inFlight);
-    const completion = Deferred.makeUnsafe<OpenBotToolResponse, AttachmentOperationError>();
+    const completion = Deferred.makeUnsafe<WhiloToolResponse, AttachmentOperationError>();
     this.#inFlight.set(messageId, completion);
     const exit = yield* Effect.exit(this.#attachFilesToResponse(senderAgentId, params, paths, messageId));
     yield* Deferred.done(completion, exit);
@@ -178,7 +178,7 @@ export class AttachmentGateway {
     );
   }, Effect.uninterruptible).bind(this);
 
-  pendingCommands(): Effect.Effect<OpenBotToolResponse, AttachmentOperationError>[] {
+  pendingCommands(): Effect.Effect<WhiloToolResponse, AttachmentOperationError>[] {
     return [...this.#inFlight.values()].map(Deferred.await);
   }
 
@@ -192,13 +192,13 @@ export class AttachmentGateway {
     params: { threadId: string; turnId: string; callId: string },
     paths: string[],
     messageId: string,
-  ): Effect.fn.Return<OpenBotToolResponse, AttachmentOperationError> {
+  ): Effect.fn.Return<WhiloToolResponse, AttachmentOperationError> {
     const publicThreadId = this.#conversation.publicThreadId(senderAgentId, params.threadId);
     const snapshot = this.#conversation.ensureSnapshot(senderAgentId, publicThreadId);
     const existing = snapshot.messages.find((message) => message.id === messageId);
     if (existing) {
       return yield* attachmentCall(() =>
-        openBotToolResult({
+        whiloToolResult({
           status: "attached",
           messageId,
           attachments: (existing.attachments ?? []).map((attachment) => ({
@@ -264,7 +264,7 @@ export class AttachmentGateway {
             }
           }
           return yield* attachmentCall(() =>
-            openBotToolResult({
+            whiloToolResult({
               status: "attached",
               messageId,
               attachments: attachments.map((attachment) => ({ id: attachment.id, name: attachment.name })),

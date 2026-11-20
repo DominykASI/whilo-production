@@ -70,7 +70,7 @@ export const messages = {
   "status.agent.diskSpaceChecking": "Verificando o espaço livre em disco…",
   "status.agent.processesChecking": "Verificando os processos em execução…",
   "status.agent.gitChecking": "Verificando o repositório Git…",
-  "status.agent.commandRunning": "Executando {program}…",
+  "status.agent.commandRunningProgram": "Executando {program}…",
   "status.agent.memoryChanges": "Memórias: {saved} salvas, {updated} atualizadas, {forgotten} esquecidas.",
   "status.agent.memoryChangesWithConflicts":
     "Memórias: {saved} salvas, {updated} atualizadas, {forgotten} esquecidas, {notChanged} não alteradas porque outro tópico as alterou antes.",

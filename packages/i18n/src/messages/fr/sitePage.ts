@@ -90,6 +90,7 @@ export const messages = {
   "sitePage.pricing.enterprise.body":
     "Des serveurs plus grands, plus de {count} membres ou tout autre besoin. Avec un support entreprise.",
   "sitePage.pricing.enterprise.contact": "Contacter les ventes",
+  "sitePage.pricing.unavailable": "Les paiements ne sont pas encore disponibles. Cette page affichera de nouveau les prix lorsqu’ils le seront.",
   "sitePage.marketplace.agents.title": "Agents — Whilo Marketplace",
   "sitePage.marketplace.agents.description":
     "Des agents créés par d’autres personnes dans Whilo. Ajoutez-en un à Whilo avec ses compétences et ses routines.",
@@ -149,4 +150,8 @@ export const messages = {
   "sitePage.marketplace.missing.body":
     "Son créateur l’a retiré, Whilo ne l’a pas approuvé, ou le lien est incorrect.",
   "sitePage.marketplace.missing.open": "Ouvrir le Marketplace",
+  "sitePage.billing.unavailableTitle": "Les paiements ne sont pas disponibles",
+  "sitePage.billing.unavailableBody": "Le service de paiement n’est pas encore configuré, nous ne pouvons donc rien confirmer. Rien n’a été débité. Revenez à Whilo.",
+  "sitePage.billing.pendingTitle": "Paiement en cours",
+  "sitePage.billing.pendingBody": "Nous confirmons votre paiement. Cela peut prendre un instant. Revenez à Whilo pour voir votre serveur, ou attendez et réessayez.",
 } as const satisfies PartialTranslation<typeof source>;

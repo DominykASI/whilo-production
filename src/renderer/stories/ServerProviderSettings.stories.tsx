@@ -23,7 +23,7 @@ import { ServerSettingsModal } from "../src/features/servers/ServerSettingsModal
 import type { HostProviderSettings } from "../src/features/settings/ProviderSettingsSection";
 import { STORY_HOST_STATUS, STORY_INVITES, STORY_PRESENCE, STORY_SERVERS } from "../src/preview/fixtures";
 import { createStoryDetection, STORY_DETECTED_PROVIDERS } from "./detected-providers-fixture";
-import { createMockOpenBot } from "./mock-whilo";
+import { createMockWhilo } from "./mock-whilo";
 import { createFakeConnection } from "./provider-connection-fixture";
 import { SettingsPageStory } from "./settings-page-story";
 
@@ -225,7 +225,7 @@ function ServerProvidersStory(props: {
           ],
         };
   const previousApi = window.whilo;
-  const mock = createMockOpenBot({
+  const mock = createMockWhilo({
     ...(props.providerUpdate
       ? {
           providerRuntimeSnapshot: {

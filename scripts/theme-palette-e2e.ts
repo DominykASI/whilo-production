@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import { mkdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import type { AppThemePaletteColor } from "@whilo/contracts/app-appearance";
-import type { OpenBotDesktopApi } from "@whilo/contracts/ipc";
+import type { WhiloDesktopApi } from "@whilo/contracts/ipc";
 import { en } from "@whilo/i18n";
 import { createWhiloLogger } from "@whilo/logging";
 import type { Page } from "playwright-core";
@@ -20,7 +20,7 @@ import { resolveDevelopmentAppDataRoot } from "./development-state-paths";
 // The page functions below run in the app window, where the preload bridge sets this.
 declare global {
   interface Window {
-    whilo: OpenBotDesktopApi;
+    whilo: WhiloDesktopApi;
   }
 }
 

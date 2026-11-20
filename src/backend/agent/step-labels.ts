@@ -117,15 +117,15 @@ function programLabel(program: string, args: string[]): string {
     const sub = args.find((arg) => !arg.startsWith("-"));
     return sub && ["status", "log", "diff", "show", "blame", "branch"].includes(sub)
       ? sourceText("status.agent.gitChecking")
-      : sourceText("status.agent.commandRunning", { program: "git" });
+      : sourceText("status.agent.commandRunningProgram", { program: "git" });
   }
   if (program === "curl" || program === "wget") {
     const host = args.map(urlHost).find(isString);
     return host
       ? sourceText("status.agent.urlFetching", { host })
-      : sourceText("status.agent.commandRunning", { program });
+      : sourceText("status.agent.commandRunningProgram", { program });
   }
-  return sourceText("status.agent.commandRunning", { program: quote(program) });
+  return sourceText("status.agent.commandRunningProgram", { program: quote(program) });
 }
 
 function urlHost(value: string): string | null {

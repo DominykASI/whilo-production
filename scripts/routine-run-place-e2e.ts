@@ -11,7 +11,7 @@ import { resolve } from "node:path";
 import {
   type CreateRoutineInput,
   canAdministerServer,
-  type OpenBotDesktopApi,
+  type WhiloDesktopApi,
   type UpdateRoutineInput,
 } from "@whilo/contracts/ipc";
 import type { SaveEventRoutineInput } from "@whilo/contracts/ipc-events";
@@ -23,7 +23,7 @@ import { readDevInstanceRecords } from "./dev-automation/instance-registry";
 // The page functions below run in the app window, where the preload bridge sets this.
 declare global {
   interface Window {
-    whilo: OpenBotDesktopApi;
+    whilo: WhiloDesktopApi;
   }
 }
 

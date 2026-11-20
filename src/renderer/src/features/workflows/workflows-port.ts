@@ -1,7 +1,7 @@
 import {
   type AgentAccessLevels,
   MESSAGING_LIMITS,
-  type OpenBotDesktopApi,
+  type WhiloDesktopApi,
   type ServerSummary,
 } from "@whilo/contracts/ipc";
 import type {
@@ -17,7 +17,7 @@ import {
 } from "../connectors/github-connector-port";
 import { serverRoleCanAdminister, serverSupportsCapability } from "../servers/server-capabilities";
 
-type WorkflowsApi = OpenBotDesktopApi["workflows"];
+type WorkflowsApi = WhiloDesktopApi["workflows"];
 /** The methods that take only the server. */
 type NoInputMethod = "list" | "githubCatalog";
 /** Each method with its input only; `list` and `githubCatalog` take none. */

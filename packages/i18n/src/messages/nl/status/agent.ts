@@ -75,7 +75,7 @@ export const messages = {
   "status.agent.diskSpaceChecking": "Controleert de vrije schijfruimte…",
   "status.agent.processesChecking": "Controleert de actieve processen…",
   "status.agent.gitChecking": "Controleert de Git-repository…",
-  "status.agent.commandRunning": "Voert {program} uit…",
+  "status.agent.commandRunningProgram": "Voert {program} uit…",
   "status.agent.memoryChanges": "Geheugen: {saved} opgeslagen, {updated} bijgewerkt, {forgotten} vergeten.",
   "status.agent.memoryChangesWithConflicts":
     "Geheugen: {saved} opgeslagen, {updated} bijgewerkt, {forgotten} vergeten, {notChanged} niet gewijzigd omdat een andere thread ze eerst heeft gewijzigd.",

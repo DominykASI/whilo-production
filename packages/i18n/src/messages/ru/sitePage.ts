@@ -88,6 +88,7 @@ export const messages = {
   "sitePage.pricing.enterprise.body":
     "Более крупные серверы, участников больше {count} или всё остальное, что вам нужно. С корпоративной поддержкой.",
   "sitePage.pricing.enterprise.contact": "Связаться с отделом продаж",
+  "sitePage.pricing.unavailable": "Платежи пока недоступны. Эта страница снова покажет цены, когда они станут доступны.",
   "sitePage.marketplace.agents.title": "Агенты — каталог Whilo",
   "sitePage.marketplace.agents.description":
     "Агенты, которых другие люди создали в Whilo. Добавьте агента в Whilo вместе с его навыками и регулярными задачами.",
@@ -147,4 +148,8 @@ export const messages = {
   "sitePage.marketplace.missing.title": "Нет в каталоге",
   "sitePage.marketplace.missing.body": "Автор удалил это, Whilo не одобрил это, или ссылка неверна.",
   "sitePage.marketplace.missing.open": "Открыть каталог",
+  "sitePage.billing.unavailableTitle": "Платежи недоступны",
+  "sitePage.billing.unavailableBody": "Платёжный сервис ещё не настроен, поэтому мы ничего не можем подтвердить. Ничего не было списано. Вернитесь в Whilo.",
+  "sitePage.billing.pendingTitle": "Платёж обрабатывается",
+  "sitePage.billing.pendingBody": "Мы подтверждаем ваш платёж. Это может занять некоторое время. Вернитесь в Whilo, чтобы увидеть свой сервер, или подождите и попробуйте снова.",
 } as const satisfies PartialTranslation<typeof source>;

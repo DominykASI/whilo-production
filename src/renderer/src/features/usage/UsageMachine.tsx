@@ -1,4 +1,4 @@
-import type { MachineMetrics, OpenBotDesktopApi } from "@whilo/contracts/ipc";
+import type { MachineMetrics, WhiloDesktopApi } from "@whilo/contracts/ipc";
 import { MACHINE_RESOURCES_CAPABILITY } from "@whilo/contracts/team-protocol/machine-resources-v1";
 import { UsageMachineMeter } from "@whilo/ui/features/usage/UsageMachineMeter";
 import { createMemo, createSignal, Show, untrack } from "solid-js";
@@ -13,7 +13,7 @@ const MACHINE_REFRESH_MS = 60_000;
 /** The poll compares the age often, so a reading is at most this much later than the minute. */
 const MACHINE_REFRESH_CHECK_MS = 10_000;
 
-type MachinePort = Pick<OpenBotDesktopApi["storage"], "getMachineMetrics">;
+type MachinePort = Pick<WhiloDesktopApi["storage"], "getMachineMetrics">;
 
 /** Read on each call: tests and stories replace `window.whilo` per case. */
 function machinePort(): MachinePort {

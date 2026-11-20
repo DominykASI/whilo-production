@@ -263,6 +263,8 @@ export const HOSTED_SERVER_ENTRY_POINTS = [
   "drawer",
   "onboarding",
   "pricing_page",
+  /** A landing link that carries `?buy=cloud` and opens the plan picker after sign-in. */
+  "deep_link",
 ] as const;
 export type HostedServerEntryPoint = (typeof HOSTED_SERVER_ENTRY_POINTS)[number];
 

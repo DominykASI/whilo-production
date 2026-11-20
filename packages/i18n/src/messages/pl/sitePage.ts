@@ -87,6 +87,7 @@ export const messages = {
   "sitePage.pricing.enterprise.body":
     "Większe serwery, ponad {count} członków lub cokolwiek innego, czego potrzebujesz. Ze wsparciem dla firm.",
   "sitePage.pricing.enterprise.contact": "Kontakt ze sprzedażą",
+  "sitePage.pricing.unavailable": "Płatności nie są jeszcze dostępne. Ta strona ponownie pokaże ceny, gdy będą dostępne.",
   "sitePage.teams.title": "Whilo dla zespołów",
   "sitePage.teams.description":
     "Uruchom Whilo na zarządzanej infrastrukturze albo pozwól nam zaprojektować wdrożenie dopasowane do Twojego zespołu, procesów i istniejących systemów.",
@@ -200,7 +201,7 @@ export const messages = {
   "sitePage.marketplace.emptySkillsQuery": "Żadna umiejętność nie pasuje do „{query}”.",
   "sitePage.marketplace.emptyApps": "Żadna aplikacja nie pasuje.",
   "sitePage.marketplace.breadcrumb": "Ścieżka nawigacji",
-  "sitePage.marketplace.addToOpenBot": "Dodaj do Whilo",
+  "sitePage.marketplace.addToWhilo": "Dodaj do Whilo",
   "sitePage.marketplace.addFromApp":
     "{name} dodajesz w Whilo. Pobierz aplikację, a potem otwórz ten link jeszcze raz.",
   "sitePage.marketplace.downloadFor": "Pobierz na {platform}",
@@ -447,4 +448,8 @@ export const messages = {
   "sitePage.site.footer.available": "Dostępne na macOS, Windows, Linux, iOS i Androida",
   "sitePage.site.footer.made": "Zrobione z {love} w Polsce",
   "sitePage.site.footer.love": "miłością",
+  "sitePage.billing.unavailableTitle": "Płatności są niedostępne",
+  "sitePage.billing.unavailableBody": "Usługa płatności nie jest jeszcze skonfigurowana, więc nie możemy niczego potwierdzić. Nic nie zostało pobrane. Wróć do Whilo.",
+  "sitePage.billing.pendingTitle": "Płatność w toku",
+  "sitePage.billing.pendingBody": "Potwierdzamy Twoją płatność. To może chwilę potrwać. Wróć do Whilo, aby zobaczyć swój serwer, lub poczekaj i spróbuj ponownie.",
 } as const satisfies PartialTranslation<typeof source>;

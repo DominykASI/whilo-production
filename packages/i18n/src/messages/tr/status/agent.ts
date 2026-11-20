@@ -70,7 +70,7 @@ export const messages = {
   "status.agent.diskSpaceChecking": "Boş disk alanı kontrol ediliyor…",
   "status.agent.processesChecking": "Çalışan işlemler kontrol ediliyor…",
   "status.agent.gitChecking": "Git deposu kontrol ediliyor…",
-  "status.agent.commandRunning": "{program} çalıştırılıyor…",
+  "status.agent.commandRunningProgram": "{program} çalıştırılıyor…",
   "status.agent.memoryChanges": "Bellek: {saved} kaydedildi, {updated} güncellendi, {forgotten} unutuldu.",
   "status.agent.memoryChangesWithConflicts":
     "Bellek: {saved} kaydedildi, {updated} güncellendi, {forgotten} unutuldu, {notChanged} değiştirilmedi çünkü önce başka bir mesaj dizisi değiştirdi.",

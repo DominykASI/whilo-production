@@ -1,7 +1,7 @@
 // The routines twin of `memories-port.ts`: one settings panel, two owners.
 
 import type {
-  OpenBotDesktopApi,
+  WhiloDesktopApi,
   RoutineFields,
   RoutineLimitPolicy,
   RoutineMissedPolicy,
@@ -104,7 +104,7 @@ function agentRoutineResults(agentId: string): RoutineResultsPort {
 
 /** The host calls an agent's routines make. The desktop sends them through preload. */
 export type AgentRoutinesApi = Pick<
-  OpenBotDesktopApi["agent"],
+  WhiloDesktopApi["agent"],
   "listRoutines" | "listRoutineRuns" | "createRoutine" | "updateRoutine" | "deleteRoutine" | "testRoutine" | "onEvent"
 >;
 
@@ -153,7 +153,7 @@ export function agentRoutinesPort(
 
 /** The host calls a channel's routines make. The desktop sends them through preload. */
 export type ChannelRoutinesApi = Pick<
-  OpenBotDesktopApi["agent"],
+  WhiloDesktopApi["agent"],
   | "listChannelRoutines"
   | "listChannelRoutineRuns"
   | "createChannelRoutine"

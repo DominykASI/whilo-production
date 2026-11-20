@@ -17,7 +17,7 @@ import assert from "node:assert/strict";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { createWebAppInvitePath, parseInviteUrl } from "@whilo/contracts/invite-links";
-import type { OpenBotDesktopApi, ServerSummary } from "@whilo/contracts/ipc";
+import type { WhiloDesktopApi, ServerSummary } from "@whilo/contracts/ipc";
 import { en } from "@whilo/i18n";
 import { createWhiloLogger } from "@whilo/logging";
 import { chromium, type Page } from "playwright-core";
@@ -27,7 +27,7 @@ import { readDevInstanceRecords } from "./dev-automation/instance-registry";
 // The page functions below run in the app window, where the preload bridge sets this.
 declare global {
   interface Window {
-    whilo: OpenBotDesktopApi;
+    whilo: WhiloDesktopApi;
   }
 }
 

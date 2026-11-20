@@ -29,6 +29,13 @@ export const OPENBOT_LINKS = {
   /** The contact form page. */
   contact: "/contact",
   x: "https://x.com/Whilo_",
+  /** The other networks the footer marks list, each keyed by its `SocialNetworkId`. */
+  threads: "https://www.threads.com/@whilo.onerall",
+  linkedin: "https://www.linkedin.com/company/whilo-onerall/",
+  reddit: "https://www.reddit.com/r/Whilo_/",
+  instagram: "https://www.instagram.com/whilo.onerall/",
+  tiktok: "https://www.tiktok.com/@whilo.onerall",
+  facebook: "https://www.facebook.com/profile.php?id=61595425259628",
   /** A Redirect Rule in the whilo.onerall.com Cloudflare zone sends this to the current Discord invite. */
   discord: "https://discord.whilo.onerall.com",
   download: "#download",
@@ -36,6 +43,16 @@ export const OPENBOT_LINKS = {
   guides: "/guides",
   marketplace: "/marketplace",
   changelog: "/changelog",
+  /**
+   * Where the installers are published. Both links name `nightly-labs/openbot` because that is the
+   * repository that exists: `nightly-labs/whilo` returns 404, so a link under `whilo` breaks for a
+   * reader and a release published under `whilo` cannot be fetched. The repository name is not the
+   * product name, and the product still presents as Whilo through the installer names.
+   *
+   * Move this pair to `whilo` in one step with the GitHub rename, together with `publish.owner` and
+   * `publish.repo` in `electron-builder.yml`, `README.md`, `scripts/install-server.sh` and the feed
+   * URL in `src/main/host-release-service.ts`.
+   */
   releases: "https://github.com/nightly-labs/openbot/releases",
   repository: "https://github.com/nightly-labs/openbot",
   license: "https://github.com/nightly-labs/openbot/blob/main/LICENSE",

@@ -65,7 +65,7 @@ export const messages = {
   "status.agent.diskSpaceChecking": "正在检查磁盘可用空间…",
   "status.agent.processesChecking": "正在检查正在运行的进程…",
   "status.agent.gitChecking": "正在检查 Git 仓库…",
-  "status.agent.commandRunning": "正在运行 {program}…",
+  "status.agent.commandRunningProgram": "正在运行 {program}…",
   "status.agent.memoryChanges": "记忆：已保存 {saved} 条，已更新 {updated} 条，已忘记 {forgotten} 条。",
   "status.agent.memoryChangesWithConflicts":
     "记忆：已保存 {saved} 条，已更新 {updated} 条，已忘记 {forgotten} 条，{notChanged} 条因另一个话题先更改而未更改。",

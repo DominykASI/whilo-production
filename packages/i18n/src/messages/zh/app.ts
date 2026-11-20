@@ -108,4 +108,10 @@ export const messages = {
     "{name} 将升级为完全访问权限。它会在运行它的电脑上直接执行命令和工具、修改文件、发布站点，并扩大自身的文件系统与网络访问范围，不再询问。你可以在该助手的权限设置中更改。",
   "app.standingApproval.descriptionUnnamed":
     "该助手将升级为完全访问权限。它会在运行它的电脑上直接执行命令和工具、修改文件、发布站点，并扩大自身的文件系统与网络访问范围，不再询问。你可以在该助手的权限设置中更改。",
+  "app.mode.label": "Whilo：{mode}",
+  "app.mode.title": "Whilo 体验",
+  "app.mode.pets": "宠物",
+  "app.mode.dots": "圆点",
+  "app.mode.petsHint": "专注于核心：聊天和你的宠物",
+  "app.mode.dotsHint": "所有工具和完整侧边栏",
 } as const satisfies PartialTranslation<typeof source>;

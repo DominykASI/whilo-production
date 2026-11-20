@@ -1,11 +1,11 @@
-import type { AgentModelId, AgentProviderId, OpenBotDesktopApi, ProviderModelVisibility } from "@whilo/contracts/ipc";
+import type { AgentModelId, AgentProviderId, WhiloDesktopApi, ProviderModelVisibility } from "@whilo/contracts/ipc";
 import type { ProviderModelVisibilityControl } from "@whilo/ui/features/settings/ProviderSettingsPage";
 import { useText } from "@whilo/ui/text";
 import { createEffect, createStore, untrack } from "solid-js";
 
 /** The model list calls of one server's host. The desktop reaches them through main. */
 export type HostModelVisibilityCalls = Pick<
-  OpenBotDesktopApi["hostAdmin"],
+  WhiloDesktopApi["hostAdmin"],
   "getModelVisibility" | "setModelVisibility"
 >;
 

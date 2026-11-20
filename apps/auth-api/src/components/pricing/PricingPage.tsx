@@ -60,7 +60,14 @@ function OrderAction(props: { order: Accessor<OrderFormOrder>; configured: boole
       <Show
         when={props.configured}
         fallback={
-          <ButtonLink to="/pricing" variant="primary" size="md" class="pricing-cta" aria-disabled="true">
+          <ButtonLink
+            to="/pricing"
+            variant="primary"
+            size="md"
+            icon="arrow-right"
+            class="pricing-cta"
+            aria-disabled="true"
+          >
             {label()}
           </ButtonLink>
         }

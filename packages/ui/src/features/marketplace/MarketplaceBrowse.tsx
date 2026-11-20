@@ -5,6 +5,7 @@ import { AgentLibrary, agentFromSource } from "./MarketplaceAgents";
 import { AppRow } from "./MarketplaceCards";
 import { MarketplaceNoMatchPlush } from "./MarketplaceNoMatchPlush";
 import { MissingNotice } from "./MarketplaceParts";
+import { PluginsLibrary } from "./MarketplacePlugins";
 import { SkillLibrary } from "./MarketplaceSkills";
 import { CATEGORY_LABELS } from "./marketplace-listing";
 import {

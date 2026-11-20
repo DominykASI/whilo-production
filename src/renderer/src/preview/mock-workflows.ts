@@ -6,7 +6,7 @@
 import {
   isWorkflowStepKind,
   nodeAgentId,
-  type OpenBotDesktopApi,
+  type WhiloDesktopApi,
   type StartWorkflowRunInput,
   WORKFLOW_AUTO_VERSION_INTERVAL_MS,
   WORKFLOW_MAX_VERSIONS,
@@ -114,7 +114,7 @@ function mockAnswer(node: WorkflowNode, input: string): string {
 export function mockWorkflows(
   seeds: readonly MockWorkflowSeed[],
   emit: (workflowId: string) => void,
-): OpenBotDesktopApi["workflows"] {
+): WhiloDesktopApi["workflows"] {
   const records = new Map<string, MockWorkflowRecord>();
   const stamp = () => new Date().toISOString();
   /** The webhook triggers that have a secret, as `<workflowId>/<nodeId>`. The host makes a route only then. */

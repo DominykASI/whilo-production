@@ -1,8 +1,8 @@
-import type { HostPersonality, OpenBotDesktopApi, ResponseStyle } from "@whilo/contracts/ipc";
+import type { HostPersonality, WhiloDesktopApi, ResponseStyle } from "@whilo/contracts/ipc";
 import { createSignal } from "solid-js";
 
 /** The personality calls of one server's host. The desktop reaches them through main. */
-export type HostPersonalityCalls = Pick<OpenBotDesktopApi["hostAdmin"], "getPersonality" | "setPersonality">;
+export type HostPersonalityCalls = Pick<WhiloDesktopApi["hostAdmin"], "getPersonality" | "setPersonality">;
 
 /** The last known response style of each server, by server id. One copy for the page. */
 const [styles, setStyles] = createSignal<ReadonlyMap<string, ResponseStyle>>(new Map());

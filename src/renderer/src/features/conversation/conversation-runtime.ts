@@ -4,7 +4,7 @@ import type {
   AskSideQuestionInput,
   AttachmentSummary,
   FilePreview,
-  OpenBotDesktopApi,
+  WhiloDesktopApi,
   ResetAgentSessionSettingInput,
   SetAgentSessionSettingInput,
 } from "@whilo/contracts/ipc";
@@ -19,7 +19,7 @@ import type { AgentRoutinesApi } from "./routines-port";
 
 export interface ConversationRuntime {
   agent: Pick<
-    OpenBotDesktopApi["agent"],
+    WhiloDesktopApi["agent"],
     | "discardDraftAttachment"
     | "importAttachmentData"
     | "downloadAttachments"
@@ -37,13 +37,13 @@ export interface ConversationRuntime {
     | "setMessageReaction"
   > &
     // A joined server's sign-in link that the host relays. Absent, a link opens with `openUrl`.
-    Partial<Pick<OpenBotDesktopApi["agent"], "openMessageLink" | "pasteMessageLink" | "cancelMessageLink">> &
+    Partial<Pick<WhiloDesktopApi["agent"], "openMessageLink" | "pasteMessageLink" | "cancelMessageLink">> &
     // The progress and stop of an attachment download from a joined server. Absent, a card shows no progress.
-    Partial<Pick<OpenBotDesktopApi["agent"], "stopAttachmentDownload" | "onAttachmentDownload">> &
+    Partial<Pick<WhiloDesktopApi["agent"], "stopAttachmentDownload" | "onAttachmentDownload">> &
     // Retry and remove of a failed file import. Absent, a failed upload chip has only its remove button.
-    Partial<Pick<OpenBotDesktopApi["agent"], "retryAttachmentImport" | "discardAttachmentImport">>;
+    Partial<Pick<WhiloDesktopApi["agent"], "retryAttachmentImport" | "discardAttachmentImport">>;
   browser: Pick<
-    OpenBotDesktopApi["browser"],
+    WhiloDesktopApi["browser"],
     | "capturePreview"
     | "closePictureInPicture"
     | "navigate"
@@ -57,7 +57,7 @@ export interface ConversationRuntime {
     | "takeControl"
   >;
   voice: Pick<
-    OpenBotDesktopApi["voice"],
+    WhiloDesktopApi["voice"],
     | "getSettings"
     | "getServer"
     | "onModelStatus"
@@ -69,7 +69,7 @@ export interface ConversationRuntime {
     | "cancelStream"
     | "onStreamTranscript"
   >;
-  openUrl: OpenBotDesktopApi["openUrl"];
+  openUrl: WhiloDesktopApi["openUrl"];
   /** Asks the connected host a side question. Absent, the host does not serve `side-question-v1`. */
   askSideQuestion?: ((input: AskSideQuestionInput) => Promise<string>) | undefined;
   previewAttachment?: (attachment: AttachmentSummary) => Promise<FilePreview>;

@@ -153,6 +153,7 @@ export type HostedServerBindings = Pick<
   | "DB"
   | "HOSTED_SERVERS_ENABLED"
   | "HOSTED_SERVERS_ALLOWED_USER_IDS"
+  | "HOSTED_SERVERS_MAX_PER_ACCOUNT"
   | "HOSTED_SERVERS_DEVELOPER_KEY"
   | "HOSTED_SERVER_TEMPLATE"
   | "BOAT_API_KEY"
@@ -2755,7 +2756,7 @@ function parseWebhookEvent(
       : payload.type === "sandbox.error"
         ? "error"
         : payload.type === "sandbox.hydrated"
-          ? "starting"
+          ? "provisioning"
           : payload.type === "sandbox.ready" && isBoatState(payload.data.state)
             ? payload.data.state
             : null;

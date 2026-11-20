@@ -534,14 +534,14 @@ export class AttentionRegistry {
         .map((pending) => ({
           requestId: this.#localHandle(pending),
           questions: structuredClone(pending.questions),
-          requiresOpenBot: pending.questions.some(localQuestionNeedsOpenBot),
+          requiresWhilo: pending.questions.some(localQuestionNeedsWhilo),
         })),
       approvals: [...this.#approvals.values()]
         .filter((pending) => pending.approval.agentId === agentId)
         .map((pending) => ({ ...structuredClone(pending.approval), requestId: this.#localHandle(pending) })),
       browserTakeovers: [...this.#takeovers.values()]
         .filter((pending) => pending.request.agentId === agentId)
-        .map((pending) => ({ requestId: this.#localHandle(pending), requiresOpenBot: true })),
+        .map((pending) => ({ requestId: this.#localHandle(pending), requiresWhilo: true })),
     };
   }
 
@@ -554,7 +554,7 @@ export class AttentionRegistry {
       const pending = [...this.#prompts.values()].find(
         (entry) => entry.agentId === agentId && this.#localHandles.get(entry) === input.requestId,
       );
-      if (!pending || pending.questions.some(localQuestionNeedsOpenBot)) {
+      if (!pending || pending.questions.some(localQuestionNeedsWhilo)) {
         return yield* attentionStep(() => {
           throw new InactiveAttentionRequest(sourceText("error.backend.promptInactive"));
         });
@@ -2203,7 +2203,7 @@ class AttentionOperationFailed extends Schema.TaggedError<AttentionOperationFail
 }) {}
 
 /** Redacted choice labels and IDs cannot be sent back as the provider's original values. */
-function localQuestionNeedsOpenBot(question: AgentPromptQuestion): boolean {
+function localQuestionNeedsWhilo(question: AgentPromptQuestion): boolean {
   return (
     question.isSecret ||
     redactText(question.id) !== question.id ||

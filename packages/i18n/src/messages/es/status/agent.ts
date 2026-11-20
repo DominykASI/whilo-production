@@ -70,7 +70,7 @@ export const messages = {
   "status.agent.diskSpaceChecking": "Comprobando el espacio libre en disco…",
   "status.agent.processesChecking": "Comprobando los procesos en ejecución…",
   "status.agent.gitChecking": "Comprobando el repositorio Git…",
-  "status.agent.commandRunning": "Ejecutando {program}…",
+  "status.agent.commandRunningProgram": "Ejecutando {program}…",
   "status.agent.memoryChanges": "Recuerdos: {saved} guardados, {updated} actualizados, {forgotten} olvidados.",
   "status.agent.memoryChangesWithConflicts":
     "Recuerdos: {saved} guardados, {updated} actualizados, {forgotten} olvidados, {notChanged} sin cambios porque otro hilo los cambió antes.",

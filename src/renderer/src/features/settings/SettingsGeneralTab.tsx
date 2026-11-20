@@ -15,9 +15,11 @@ import {
   SwitchField,
   toast,
 } from "@whilo/ui";
+import { AccentPicker } from "@whilo/ui/features/settings/AccentPicker";
 import { AppearanceSelect } from "@whilo/ui/features/settings/AppearanceSelect";
 import type { GeneralSettingsValue } from "@whilo/ui/features/settings/app-settings";
 import { OwnChatColorTrigger } from "@whilo/ui/features/settings/ChatColorSetting";
+import { CornerRadiusSelect } from "@whilo/ui/features/settings/CornerRadiusSelect";
 import { LanguageSelect } from "@whilo/ui/features/settings/LanguageSelect";
 import { LogoColorPicker } from "@whilo/ui/features/settings/LogoColorPicker";
 import { SendShortcutSelect } from "@whilo/ui/features/settings/SendShortcutSelect";
@@ -52,6 +54,7 @@ export function SettingsGeneralTab(props: SettingsGeneralTabProps) {
   const appearance = useAppearanceChoice();
   const logoColor = useLogoColorChoice();
   const interfaceSize = useInterfaceSizeChoice();
+  const look = useInterfaceLookChoice();
   const { format, errorMessage } = useText();
   const saveChatColor = (color: AvatarColor | null) =>
     void props

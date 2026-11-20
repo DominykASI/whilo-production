@@ -69,7 +69,7 @@ export const messages = {
   "status.agent.diskSpaceChecking": "디스크 여유 공간 확인 중…",
   "status.agent.processesChecking": "실행 중인 프로세스 확인 중…",
   "status.agent.gitChecking": "Git 저장소 확인 중…",
-  "status.agent.commandRunning": "{program} 실행 중…",
+  "status.agent.commandRunningProgram": "{program} 실행 중…",
   "status.agent.memoryChanges": "메모리: {saved}개 저장, {updated}개 업데이트, {forgotten}개 삭제.",
   "status.agent.memoryChangesWithConflicts":
     "메모리: {saved}개 저장, {updated}개 업데이트, {forgotten}개 삭제, {notChanged}개는 다른 스레드가 먼저 변경해서 변경 안 됨.",

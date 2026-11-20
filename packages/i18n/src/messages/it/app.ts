@@ -107,4 +107,10 @@ export const messages = {
     "{name} passa ad Accesso completo. Eseguirà comandi e tool, modificherà file, pubblicherà siti e amplierà il proprio accesso al file system e alla rete sul computer che lo esegue, senza chiedere di nuovo. Puoi cambiarlo nelle impostazioni Permessi dell'agente.",
   "app.standingApproval.descriptionUnnamed":
     "Questo agente passa ad Accesso completo. Eseguirà comandi e tool, modificherà file, pubblicherà siti e amplierà il proprio accesso al file system e alla rete sul computer che lo esegue, senza chiedere di nuovo. Puoi cambiarlo nelle impostazioni Permessi dell'agente.",
+  "app.mode.label": "Whilo: {mode}",
+  "app.mode.title": "Esperienza Whilo",
+  "app.mode.pets": "Animali",
+  "app.mode.dots": "Punti",
+  "app.mode.petsHint": "Concentrati sull’essenziale: la chat e i tuoi animali",
+  "app.mode.dotsHint": "Tutti gli strumenti e la barra laterale completa",
 } as const satisfies PartialTranslation<typeof source>;

@@ -76,7 +76,7 @@ export const messages = {
   "status.agent.diskSpaceChecking": "جارٍ التحقق من المساحة الفارغة على القرص…",
   "status.agent.processesChecking": "جارٍ التحقق من العمليات قيد التشغيل…",
   "status.agent.gitChecking": "جارٍ التحقق من مستودع Git…",
-  "status.agent.commandRunning": "جارٍ تشغيل {program}…",
+  "status.agent.commandRunningProgram": "جارٍ تشغيل {program}…",
   "status.agent.memoryChanges": "الذاكرة: حُفظ {saved}، وحُدّث {updated}، ونُسي {forgotten}.",
   "status.agent.memoryChangesWithConflicts":
     "الذاكرة: حُفظ {saved}، وحُدّث {updated}، ونُسي {forgotten}، ولم يتغير {notChanged} لأن سلسلة أخرى غيّرته أولًا.",

@@ -4,7 +4,7 @@ import { createWhiloLogger } from "@whilo/logging";
 import { Effect } from "effect";
 import type { DynamicToolCallParams } from "../protocol";
 import { requestedRuntime, requestedToolModel } from "./model-tools";
-import type { WhiloToolRouterHooks } from "./whilo-tool-router";
+import type { OpenBotToolRouterHooks } from "./whilo-tool-router";
 import {
   profileToolErrorMessage,
   restrictionInput,
@@ -44,7 +44,7 @@ export const handleUpdateAgentsTool = Effect.fn("UpdateAgentsTool.handle")(
   function* (
     params: DynamicToolCallParams,
     senderAgentId: string,
-    hooks: Pick<WhiloToolRouterHooks, "listAgents" | "listModels" | "updateAgent" | "redactMcp">,
+    hooks: Pick<OpenBotToolRouterHooks, "listAgents" | "listModels" | "updateAgent" | "redactMcp">,
   ): Effect.fn.Return<WhiloToolResponse, ToolOperationFailed> {
     const { agentIds, provider, model, reasoningEffort, access, computerUse, notifications } =
       updateAgentsToolSchema.parse(params.arguments, { reportInput: true });

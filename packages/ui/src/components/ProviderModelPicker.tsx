@@ -57,6 +57,7 @@ import { type TextValue, useText } from "../text";
 import { createScrollFades } from "./createScrollFades";
 import { EffortTrack } from "./EffortTrack";
 import { REASONING_LABEL, reasoningLabel } from "./model-effort";
+export { REASONING_LABEL, reasoningLabel };
 import { findModelOption, providerAccountName } from "./provider-accounts";
 import {
   customProviderIds,

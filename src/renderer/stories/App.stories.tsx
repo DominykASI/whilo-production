@@ -58,10 +58,10 @@ function SlowRemotePlayground() {
   useStoredLayoutValue(LEFT_PANEL_COLLAPSED_STORAGE_KEY, "false");
   useStoredLayoutValue(SERVER_VIEW_STORAGE_KEY, "rail");
   return (
-    <OpenBotPlayground
+    <WhiloPlayground
       dependencies={{
         createMock: (options) => {
-          const mock = createMockOpenBot(options);
+          const mock = createMockWhilo(options);
           const listAgents = mock.api.agent.listAgents;
           mock.api.agent.listAgents = async (serverId) => {
             if (serverId === storyRemoteServer?.id)

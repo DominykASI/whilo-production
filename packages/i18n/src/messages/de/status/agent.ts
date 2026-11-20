@@ -72,7 +72,7 @@ export const messages = {
   "status.agent.diskSpaceChecking": "Freier Speicherplatz wird geprüft…",
   "status.agent.processesChecking": "Laufende Prozesse werden geprüft…",
   "status.agent.gitChecking": "Git-Repository wird geprüft…",
-  "status.agent.commandRunning": "{program} wird ausgeführt…",
+  "status.agent.commandRunningProgram": "{program} wird ausgeführt…",
   "status.agent.memoryChanges": "Erinnerungen: {saved} gespeichert, {updated} aktualisiert, {forgotten} vergessen.",
   "status.agent.memoryChangesWithConflicts":
     "Erinnerungen: {saved} gespeichert, {updated} aktualisiert, {forgotten} vergessen, {notChanged} nicht geändert, weil ein anderer Thread sie zuerst geändert hat.",

@@ -106,4 +106,10 @@ export const messages = {
     "{name} Tam erişime geçer. Onu çalıştıran bilgisayarda tekrar sormadan komut ve araç çalıştıracak, dosyaları değiştirecek, site yayımlayacak ve kendi dosya sistemi ile ağ erişimini genişletecektir. Bunu ajanın İzinler ayarlarından değiştirebilirsiniz.",
   "app.standingApproval.descriptionUnnamed":
     "Bu ajan Tam erişime geçer. Onu çalıştıran bilgisayarda tekrar sormadan komut ve araç çalıştıracak, dosyaları değiştirecek, site yayımlayacak ve kendi dosya sistemi ile ağ erişimini genişletecektir. Bunu ajanın İzinler ayarlarından değiştirebilirsiniz.",
+  "app.mode.label": "Whilo: {mode}",
+  "app.mode.title": "Whilo deneyimi",
+  "app.mode.pets": "Evcil hayvanlar",
+  "app.mode.dots": "Noktalar",
+  "app.mode.petsHint": "Öze odaklan: sohbet ve evcil hayvanların",
+  "app.mode.dotsHint": "Tüm araçlar ve tam kenar çubuğu",
 } as const satisfies PartialTranslation<typeof source>;

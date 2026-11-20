@@ -1,11 +1,11 @@
 import {
   disconnectedPasswordManager,
-  type OpenBotDesktopApi,
+  type WhiloDesktopApi,
   type PasswordManagerId,
   type PasswordManagerStatus,
 } from "@whilo/contracts/ipc";
 
-type PasswordManagersApi = OpenBotDesktopApi["passwordManagers"];
+type PasswordManagersApi = WhiloDesktopApi["passwordManagers"];
 
 /** How long the mock sign-in takes in the browser, and to make the vault and its key. */
 const MOCK_SIGN_IN_MS = 2_500;

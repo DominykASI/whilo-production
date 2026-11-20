@@ -1,4 +1,4 @@
-import type { OpenBotDesktopApi, VoiceLiveEvent } from "@whilo/contracts/ipc";
+import type { WhiloDesktopApi, VoiceLiveEvent } from "@whilo/contracts/ipc";
 import type { VoicePanelPhase } from "@whilo/ui/features/conversation/VoicePanel";
 import { currentText } from "@whilo/ui/text";
 import { createStore, onCleanup } from "solid-js";
@@ -13,7 +13,7 @@ const LEVEL_RANGE_DB = 50;
 /** The data channel that the realtime model sends its events on, and takes commands from. */
 const EVENTS_CHANNEL = "oai-events";
 
-export type CodexLivePort = Pick<OpenBotDesktopApi["voice"], "startLive" | "stopLive" | "onLiveEvent">;
+export type CodexLivePort = Pick<WhiloDesktopApi["voice"], "startLive" | "stopLive" | "onLiveEvent">;
 
 /** Read on each call: tests and stories replace `window.whilo` per case. */
 function codexLivePort(): CodexLivePort {

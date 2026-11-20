@@ -21,7 +21,7 @@ import {
   UPDATE_INSTALL_TIMEOUT_MS,
   UpdateService,
 } from "./update-service";
-import { listSiblingOpenBotInstances } from "./update-sibling-instances";
+import { listSiblingWhiloInstances } from "./update-sibling-instances";
 
 const logger = createWhiloLogger("update");
 // The time that the user has to read the download dialog after a stalled install, before the app exits.
@@ -86,7 +86,7 @@ async function createRecoveryUpdater(
     // The forced exit waits longer, so the download dialog can show after a stalled install.
     beforeInstall: () => beforeInstall(UPDATE_INSTALL_TIMEOUT_MS + STALLED_INSTALL_DIALOG_MS),
     checkSiblingInstances: () =>
-      listSiblingOpenBotInstances({
+      listSiblingWhiloInstances({
         executablePath: app.getPath("exe"),
         currentPid: process.pid,
         platform: process.platform,

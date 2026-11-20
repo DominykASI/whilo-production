@@ -106,4 +106,10 @@ export const messages = {
     "{name} はフルアクセスに変わります。実行しているコンピューター上で、確認なしにコマンドやツールを実行し、ファイルを変更し、サイトを公開し、自身のファイルシステムとネットワークへのアクセスを広げます。これはエージェントの権限設定で変更できます。",
   "app.standingApproval.descriptionUnnamed":
     "このエージェントはフルアクセスに変わります。実行しているコンピューター上で、確認なしにコマンドやツールを実行し、ファイルを変更し、サイトを公開し、自身のファイルシステムとネットワークへのアクセスを広げます。これはエージェントの権限設定で変更できます。",
+  "app.mode.label": "Whilo: {mode}",
+  "app.mode.title": "Whilo の体験",
+  "app.mode.pets": "ペット",
+  "app.mode.dots": "ドット",
+  "app.mode.petsHint": "チャットとペットに集中",
+  "app.mode.dotsHint": "すべてのツールと完全なサイドバー",
 } as const satisfies PartialTranslation<typeof source>;

@@ -23,7 +23,7 @@ import { CUSTOM_AGENT_LIMITS, type CustomAgentCheckResult } from "@whilo/contrac
 import { isDynamicRecord } from "@whilo/contracts/runtime-values";
 import { sourceText } from "@whilo/i18n/source";
 import { redactText } from "@whilo/logging";
-import { WHILO_ACP_CLIENT_CAPABILITIES, WHILO_ACP_CLIENT_INFO } from "./acp-client";
+import { OPENBOT_ACP_CLIENT_CAPABILITIES, OPENBOT_ACP_CLIENT_INFO } from "./acp-client";
 import { type AcpModel, modelsFromSessionSetup } from "./acp-configuration";
 import { cliSpawnTarget } from "./cli";
 import { stopWindowsProcessTree } from "./windows-process-tree";
@@ -103,8 +103,8 @@ export const checkAcpAgent = Effect.fn("AcpAgent.check")((target: AgentCheckTarg
           const initialization = yield* providerCall(() =>
             connection.initialize({
               protocolVersion: WHILO_ACP_PROTOCOL_VERSION,
-              clientCapabilities: WHILO_ACP_CLIENT_CAPABILITIES,
-              clientInfo: WHILO_ACP_CLIENT_INFO,
+              clientCapabilities: OPENBOT_ACP_CLIENT_CAPABILITIES,
+              clientInfo: OPENBOT_ACP_CLIENT_INFO,
             }),
           ).pipe(
             Effect.raceFirst(Deferred.await(ended)),

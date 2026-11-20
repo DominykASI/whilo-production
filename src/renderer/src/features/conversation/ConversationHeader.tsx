@@ -7,7 +7,7 @@ import {
   DEFAULT_PROVIDER_ACCOUNT_ID,
   providerDisplayName,
 } from "@whilo/contracts/ipc";
-import { reasoningLabel } from "@whilo/ui/components/ProviderModelPicker";
+import { reasoningLabel } from "@whilo/ui/components/model-effort";
 import { findModelOption, providerAccountName } from "@whilo/ui/components/provider-accounts";
 import { ConversationHeader as SharedConversationHeader } from "@whilo/ui/features/conversation/ConversationHeader";
 import { ThreadHeader } from "@whilo/ui/features/conversation/threads/ThreadHeader";

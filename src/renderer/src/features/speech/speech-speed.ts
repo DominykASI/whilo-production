@@ -1,4 +1,4 @@
-import { nextSpeechSpeed, type OpenBotDesktopApi, type SpeechSettings, type SpeechSpeed } from "@whilo/contracts/ipc";
+import { nextSpeechSpeed, type WhiloDesktopApi, type SpeechSettings, type SpeechSpeed } from "@whilo/contracts/ipc";
 import { toast } from "@whilo/ui";
 import { currentText } from "@whilo/ui/text";
 import { createSignal } from "solid-js";
@@ -24,7 +24,7 @@ function apply(next: SpeechSpeed): void {
  * again, so that it keeps a change that another control made since its own load.
  */
 export function updateSpeechSettings(
-  voice: Pick<OpenBotDesktopApi["voice"], "getSpeechSettings" | "setSpeechSettings">,
+  voice: Pick<WhiloDesktopApi["voice"], "getSpeechSettings" | "setSpeechSettings">,
   patch: Partial<SpeechSettings>,
 ): Promise<SpeechSettings> {
   const next = saving.then(async () => voice.setSpeechSettings({ ...(await voice.getSpeechSettings()), ...patch }));

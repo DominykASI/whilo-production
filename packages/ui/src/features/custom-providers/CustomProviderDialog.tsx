@@ -51,7 +51,7 @@ import {
   untrack,
 } from "solid-js";
 import { createScrollFades } from "../../components/createScrollFades";
-import { REASONING_LABEL } from "../../components/ProviderModelPicker";
+import { REASONING_LABEL } from "../../components/model-effort";
 import { useText } from "../../text";
 import {
   blankModel,

@@ -11,7 +11,7 @@ import type {
   HostStatus,
   InviteSummary,
   JoinServerInput,
-  OpenBotDesktopApi,
+  WhiloDesktopApi,
   RemoteControlPolicy,
   RemoteDesktopSession,
   SendDirectMessageInput,
@@ -132,7 +132,7 @@ export function createMockTeam(
     emit(remoteDesktopListeners, sessionsValue);
   }
 
-  const serversApi: OpenBotDesktopApi["servers"] = {
+  const serversApi: WhiloDesktopApi["servers"] = {
     setMuted: async ({ serverId, muted, durationMs }) => {
       if (!servers.some((server) => server.id === serverId)) throw new Error("Remote server not found.");
       const notificationsMutedUntil = muted && durationMs !== undefined ? Date.now() + durationMs : null;
@@ -345,7 +345,7 @@ export function createMockTeam(
     },
   };
 
-  const host: OpenBotDesktopApi["host"] = {
+  const host: WhiloDesktopApi["host"] = {
     getStatus: async () => clone(hostStatus),
     configure: async (input: ConfigureHostInput) => {
       hostStatus = {
@@ -433,7 +433,7 @@ export function createMockTeam(
     },
   };
 
-  const remoteDesktop: OpenBotDesktopApi["remoteDesktop"] = {
+  const remoteDesktop: WhiloDesktopApi["remoteDesktop"] = {
     checkSetup: async () => ({
       platform: "darwin",
       hostName: "Mac mini",
@@ -478,7 +478,7 @@ export function createMockTeam(
     },
   };
 
-  const localServersApi: OpenBotDesktopApi["localServers"] = {
+  const localServersApi: WhiloDesktopApi["localServers"] = {
     create: async (name) => {
       const server: ServerSummary = {
         id: `local-server-${servers.length + 1}`,

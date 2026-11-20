@@ -16,15 +16,18 @@ export const readPricingOffer = createServerFn({ method: "GET" }).handler(async 
     import("../server/billing-errors"),
   ]);
   const inEu = isEuCountry(getRequestHeader("cf-ipcountry"));
+  // Building the service can throw too: a Worker without the remote ticket key (the preview) cannot make one.
+  const billing = requestBillingService();
+  // Whether a Checkout can start is decided by the key alone, not by whether the catalog loaded, so a
+  // transient catalog failure keeps the buying action enabled.
+  const checkoutConfigured = billing !== null;
+  if (!billing) return { plans: LIST_PRICE_PLANS, inEu, checkoutConfigured };
   try {
-    // Building the service can throw too: a Worker without the remote ticket key (the preview) cannot make one.
-    const billing = requestBillingService();
-    if (!billing) return { plans: LIST_PRICE_PLANS, inEu };
     const catalog = await runApiEffect(billing.catalog());
     const licenseTrialEnd = billing.license.trialEnd();
-    return { plans: catalog.plans, inEu, ...(licenseTrialEnd === null ? {} : { licenseTrialEnd }) };
+    return { plans: catalog.plans, inEu, checkoutConfigured, ...(licenseTrialEnd === null ? {} : { licenseTrialEnd }) };
   } catch (error) {
     console.warn("pricing: server prices did not load", error instanceof BillingError ? error.code : "unexpected");
-    return { plans: LIST_PRICE_PLANS, inEu };
+    return { plans: LIST_PRICE_PLANS, inEu, checkoutConfigured };
   }
 });

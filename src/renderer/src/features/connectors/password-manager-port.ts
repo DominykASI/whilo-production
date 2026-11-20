@@ -1,12 +1,12 @@
 import type {
-  OpenBotDesktopApi,
+  WhiloDesktopApi,
   PasswordManagerConnectInput,
   PasswordManagerId,
   PasswordManagerStatus,
 } from "@whilo/contracts/ipc";
 import { sourceText } from "@whilo/i18n/source";
 
-type DesktopPasswordManagers = OpenBotDesktopApi["passwordManagers"];
+type DesktopPasswordManagers = WhiloDesktopApi["passwordManagers"];
 
 /**
  * What a password manager page reaches: the managers of one place, this computer or a joined server.
