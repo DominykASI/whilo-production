@@ -1,4 +1,4 @@
-import { type HostPersonality, RESPONSE_STYLES, type ResponseStyle } from "@openbot/contracts/ipc";
+import { type HostPersonality, RESPONSE_STYLES, type ResponseStyle } from "@whilo/contracts/ipc";
 import {
   Item,
   ItemActions,
@@ -10,13 +10,13 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@openbot/ui";
-import { useText } from "@openbot/ui/text";
+} from "@whilo/ui";
+import { useText } from "@whilo/ui/text";
 import { createEffect, createSignal, Show, untrack } from "solid-js";
 import { type HostPersonalityCalls, rememberServerPersonality } from "./server-personality";
 
 export interface ServerPersonalityOptions {
-  /** The calls of a client with no `window.openbot`, such as the web client. */
+  /** The calls of a client with no `window.whilo`, such as the web client. */
   calls?: HostPersonalityCalls;
 }
 
@@ -34,7 +34,7 @@ export function ServerPersonalitySetting(
   },
 ) {
   const { t, errorMessage } = useText();
-  const calls = (): HostPersonalityCalls => props.calls ?? window.openbot.hostAdmin;
+  const calls = (): HostPersonalityCalls => props.calls ?? window.whilo.hostAdmin;
   const [settings, setSettings] = createSignal<HostPersonality | null>(null);
   const [loadError, setLoadError] = createSignal<string | null>(null);
   /** Bumped for each server, so an answer for an earlier one is dropped. */

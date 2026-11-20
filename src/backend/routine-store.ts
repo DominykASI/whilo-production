@@ -1098,7 +1098,7 @@ export class RoutineStore {
   }
 
   /** The column exists only on the agent table, so it is written apart from the shared insert. */
-  #writeRunIn(db: OpenBotDatabase["connection"], routineId: string, runIn: RoutineRunPlace): void {
+  #writeRunIn(db: WhiloDatabase["connection"], routineId: string, runIn: RoutineRunPlace): void {
     if (!this.tables.runInColumn) return;
     db.prepare(`UPDATE ${this.tables.routineTable} SET run_in = ? WHERE routine_id = ?`).run(runIn, routineId);
   }

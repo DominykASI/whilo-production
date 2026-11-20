@@ -77,12 +77,12 @@ export const messages = {
   "remoteDesktop.setup.finishTest": "Test beenden",
   "remoteDesktop.host.questionTitle": "{name} möchte diesen Computer steuern",
   "remoteDesktop.host.questionDetail":
-    "{name} sieht deinen Bildschirm und kann Maus und Tastatur verwenden. Wenn du nicht innerhalb von 30 Sekunden antwortest, lehnt OpenBot die Anfrage ab.",
+    "{name} sieht deinen Bildschirm und kann Maus und Tastatur verwenden. Wenn du nicht innerhalb von 30 Sekunden antwortest, lehnt Whilo die Anfrage ab.",
   "remoteDesktop.host.allow": "Erlauben",
   "remoteDesktop.host.deny": "Ablehnen",
   "remoteDesktop.host.startedTitle": "Fernsteuerung gestartet",
   "remoteDesktop.host.startedBody": "{name} steuert jetzt diesen Computer.",
-  "remoteDesktop.host.trayTooltip": "OpenBot: Fernsteuerung aktiv",
+  "remoteDesktop.host.trayTooltip": "Whilo: Fernsteuerung aktiv",
   "remoteDesktop.host.trayControlledBy": "{name} steuert diesen Computer",
   "remoteDesktop.host.stopAll": "Alle Fernsteuerungen beenden",
 } as const satisfies PartialTranslation<typeof source>;

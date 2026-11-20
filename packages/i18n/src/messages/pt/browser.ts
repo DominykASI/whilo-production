@@ -178,7 +178,7 @@ export const messages = {
   "browser.proxies.addTitle": "Adicionar proxy",
   "browser.proxies.editTitle": "Editar {name}",
   "browser.proxies.dialogDescription":
-    "Use socks5, http ou https. Nome de usuário e senha são opcionais em qualquer tipo. A senha fica criptografada no computador que executa o OpenBot.",
+    "Use socks5, http ou https. Nome de usuário e senha são opcionais em qualquer tipo. A senha fica criptografada no computador que executa o Whilo.",
   "browser.proxies.address": "Endereço",
   "browser.proxies.addressPlaceholder": "socks5://user:password@host:1080",
   "browser.proxies.deleteUsed": {
@@ -188,7 +188,7 @@ export const messages = {
   "browser.proxies.deleteUnused": "Nenhum perfil usa este proxy.",
   "browser.proxies.failing": "{name} não responde",
   "browser.proxies.signInRefused": "{name} recusou o início de sessão",
-  "browser.proxies.unsupported": "Este servidor não pode usar proxies. Atualize o OpenBot nesse servidor.",
+  "browser.proxies.unsupported": "Este servidor não pode usar proxies. Atualize o Whilo nesse servidor.",
   "browser.proxies.yourComputer": "Seu computador",
   "browser.proxies.memberComputer": "Computador de {name}",
   "browser.proxies.unknownComputer": "Computador de um membro",
@@ -199,7 +199,7 @@ export const messages = {
   "browser.proxies.offlineBadge": "{name} está offline",
   "browser.proxies.shareTitle": "Compartilhar a conexão deste computador?",
   "browser.proxies.shareDescription":
-    "Os perfis que usam seu computador abrem sites públicos pela conexão de internet deste computador. Isso só funciona enquanto o OpenBot estiver aberto aqui. O servidor não pode abrir endereços da sua rede local.",
+    "Os perfis que usam seu computador abrem sites públicos pela conexão de internet deste computador. Isso só funciona enquanto o Whilo estiver aberto aqui. O servidor não pode abrir endereços da sua rede local.",
   "browser.proxies.share": "Compartilhar",
   "browser.proxies.stopSharing": "Parar de compartilhar",
   "browser.proxies.closesTabs": {

@@ -17,16 +17,7 @@ import type {
   ServerSummary,
   UpdateStatus,
 } from "@whilo/contracts/ipc";
-import {
-  Alert,
-  AlertActions,
-  AlertContent,
-  AlertDescription,
-  AlertIcon,
-  Button,
-  Tabs,
-  TriangleAlert,
-} from "@whilo/ui";
+import { Alert, AlertActions, AlertContent, AlertDescription, AlertIcon, Button, Tabs, TriangleAlert } from "@whilo/ui";
 import { BillingPanel } from "@whilo/ui/features/billing/BillingPanel";
 import { createBillingStore } from "@whilo/ui/features/billing/billing-store";
 import { LicenseSection } from "@whilo/ui/features/billing/LicenseSection";

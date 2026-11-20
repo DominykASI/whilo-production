@@ -41,8 +41,8 @@ export function SettingsIdentityHeader({
   subtitle: ReactNode;
 }) {
   const foreground = useThemeColor("foreground");
-  const muted = String(useCSSVariable("--openbot-text-grouped-secondary"));
-  const grouped = String(useCSSVariable("--openbot-bg-grouped"));
+  const muted = String(useCSSVariable("--whilo-text-grouped-secondary"));
+  const grouped = String(useCSSVariable("--whilo-bg-grouped"));
   const nameInput = useRef<TextInputInstance>(null);
   const [editing, setEditing] = useState(false);
   return (

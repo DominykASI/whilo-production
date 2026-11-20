@@ -1,5 +1,5 @@
-import { installPointerFocusGuard } from "@whilo/ui/pointer-focus";
 import { render } from "@solidjs/web";
+import { installPointerFocusGuard } from "@whilo/ui/pointer-focus";
 // Copying a selection with a formula in it gives its LaTeX source, not the typeset glyphs twice.
 import "katex/contrib/copy-tex";
 // Copying a selection gives clean HTML, without the theme colors of the app.

@@ -110,3 +110,6 @@ export function WhiloHostedServers() {
     </>
   );
 }
+
+/** Older pages import this guide under the OpenBot name. */
+export const OpenBotHostedServers = WhiloHostedServers;

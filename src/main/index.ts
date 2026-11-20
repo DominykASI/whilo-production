@@ -31,7 +31,7 @@ import {
 } from "electron";
 import { setDiskRestoreProbe } from "../backend/disk-restore";
 import { runCauseEffect } from "../backend/effect-boundary";
-import { NewerDatabaseError } from "../backend/openbot-database-schema";
+import { NewerDatabaseError } from "../backend/whilo-database-schema";
 import { OWNER_NOTIFICATION_KEY } from "./agent-notification-level-store";
 import { watchAppArchive } from "./app-archive-watch";
 import { readAppVariant, resolveAppIconPath, resolveLogoColorIconPath, resolveMenuBarIconPath } from "./app-icon";
@@ -333,7 +333,7 @@ if (hasSingleInstanceLock) {
   // A file request that never finishes must not keep the process and its lock after an exit.
   stopStuckExitAfterLimit(join(app.getPath("userData"), "logs"));
   if (startedOnXWayland)
-    logger.warn("The Wayland session had no monitor, so OpenBot uses XWayland until the next start.");
+    logger.warn("The Wayland session had no monitor, so Whilo uses XWayland until the next start.");
 }
 // Linux: the GPU stays on until it fails on this computer (#992). `userData` has its final path here.
 configureLinuxGpu({
@@ -1578,7 +1578,7 @@ if (!hasSingleInstanceLock) {
           })
         ) {
           void runCauseEffect(built.centralAuthInitialization.pipe(Effect.flatMap(() => host.start(true)))).catch(
-            (error) => logger.error("Unable to republish this OpenBot:", toLogValue(error)),
+            (error) => logger.error("Unable to republish this Whilo:", toLogValue(error)),
           );
         }
       };
@@ -1807,7 +1807,7 @@ if (!hasSingleInstanceLock) {
         // The services, and with them the saved language, may not exist yet. Then the system language applies.
         const locale = services?.language.locale ?? resolveLocale("system", app.getLocale());
         const translate = services?.language.translate ?? translateFor(locale);
-        // A newer OpenBot migrated the data: install that release instead of a dead-end error (#4969).
+        // A newer Whilo migrated the data: install that release instead of a dead-end error (#4969).
         if (error instanceof NewerDatabaseError) {
           recoverFromNewerDatabase({
             window: windowHolder.current,

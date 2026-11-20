@@ -1,3 +1,4 @@
+import type { JSX } from "@solidjs/web";
 import {
   type AgentModelId,
   type AgentProviderId,
@@ -57,7 +58,6 @@ import {
   ProviderSettingsPage,
 } from "@whilo/ui/features/settings/ProviderSettingsPage";
 import { useText } from "@whilo/ui/text";
-import type { JSX } from "@solidjs/web";
 import { createEffect, createMemo, createSignal, createStore, Show, untrack } from "solid-js";
 import { ProviderSignInDialogs } from "../../components/ProviderSignInDialogs";
 import type { ProviderConnectionApi } from "../../components/provider-connection-api";

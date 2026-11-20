@@ -1,7 +1,7 @@
+import type { JSX } from "@solidjs/web";
 import { isManagedRuntimeProvider, type ManagedProviderId } from "@whilo/contracts/agent-providers";
 import type { AgentProviderId, AgentProviderStatus, AgentStatus, ProviderRuntimeStatus } from "@whilo/contracts/ipc";
 import { Toaster, toast } from "@whilo/ui";
-import type { JSX } from "@solidjs/web";
 import { createSignal, onCleanup, untrack } from "solid-js";
 import { fn } from "storybook/test";
 import type { FirstRunFlowProps } from "../src/features/onboarding/FirstRunFlow";

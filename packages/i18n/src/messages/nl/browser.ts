@@ -187,7 +187,7 @@ export const messages = {
   "browser.proxies.addTitle": "Proxy toevoegen",
   "browser.proxies.editTitle": "{name} bewerken",
   "browser.proxies.dialogDescription":
-    "Gebruik socks5, http of https. Een gebruikersnaam en een wachtwoord zijn bij elk type optioneel. Het wachtwoord blijft versleuteld op de computer waarop OpenBot draait.",
+    "Gebruik socks5, http of https. Een gebruikersnaam en een wachtwoord zijn bij elk type optioneel. Het wachtwoord blijft versleuteld op de computer waarop Whilo draait.",
   "browser.proxies.address": "Adres",
   "browser.proxies.addressPlaceholder": "socks5://user:password@host:1080",
   "browser.proxies.deleteUsed": {
@@ -197,7 +197,7 @@ export const messages = {
   "browser.proxies.deleteUnused": "Geen enkel profiel gebruikt deze proxy.",
   "browser.proxies.failing": "{name} reageert niet",
   "browser.proxies.signInRefused": "{name} heeft de aanmelding geweigerd",
-  "browser.proxies.unsupported": "Deze server kan geen proxy's gebruiken. Werk OpenBot op die server bij.",
+  "browser.proxies.unsupported": "Deze server kan geen proxy's gebruiken. Werk Whilo op die server bij.",
   "browser.proxies.yourComputer": "Je computer",
   "browser.proxies.memberComputer": "Computer van {name}",
   "browser.proxies.unknownComputer": "Computer van een lid",
@@ -208,7 +208,7 @@ export const messages = {
   "browser.proxies.offlineBadge": "{name} is offline",
   "browser.proxies.shareTitle": "De verbinding van deze computer delen?",
   "browser.proxies.shareDescription":
-    "De profielen die je computer gebruiken, openen openbare sites via de internetverbinding van deze computer. Dit werkt alleen zolang OpenBot hier open is. De server kan geen adressen in je lokale netwerk openen.",
+    "De profielen die je computer gebruiken, openen openbare sites via de internetverbinding van deze computer. Dit werkt alleen zolang Whilo hier open is. De server kan geen adressen in je lokale netwerk openen.",
   "browser.proxies.share": "Delen",
   "browser.proxies.stopSharing": "Stoppen met delen",
   "browser.proxies.closesTabs": {

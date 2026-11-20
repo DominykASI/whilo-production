@@ -126,11 +126,11 @@ is missing, out of date, or belongs to no article.
 The home page beam is a SolidJS port of
 [LaserFlow from React Bits](https://reactbits.dev/animations/laser-flow). Its license lets the
 website use it, but does not let this public repository contain it. The port is in the private
-`nightly-labs/openbot-laser-flow` repository. Git ignores its path here, and a checkout without it
+`nightly-labs/whilo-laser-flow` repository. Git ignores its path here, and a checkout without it
 builds a home page with no beam. To see the beam locally, clone it into that path:
 
 ```bash
-git clone git@github.com:nightly-labs/openbot-laser-flow.git apps/auth-api/src/vendor/laser-flow
+git clone git@github.com:nightly-labs/whilo-laser-flow.git apps/auth-api/src/vendor/laser-flow
 ```
 
 CI checks it out with the read-only deploy key in the `LASER_FLOW_DEPLOY_KEY` secret. Pull request
@@ -167,7 +167,7 @@ make it an alias of the `EMAIL_SMTP_USERNAME` mailbox. An empty value uses `EMAI
 
 Production does not open the SMTP socket itself. From some Cloudflare locations, such as FSD, a
 socket to the mail host fails at once (#4578). The production Worker sends each email through the
-`openbot-email-relay` Worker (`wrangler.email-relay.jsonc`) over the `EMAIL_RELAY` service binding.
+`whilo-email-relay` Worker (`wrangler.email-relay.jsonc`) over the `EMAIL_RELAY` service binding.
 Cloudflare places that Worker near the mail host. The relay has no route and keeps no secret: the
 binding request carries the SMTP settings and the message. CI and `bun run api:deploy` deploy the
 relay before the production Worker. When you change `EMAIL_SMTP_HOST` or `EMAIL_SMTP_PORT`, also

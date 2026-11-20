@@ -7,11 +7,11 @@ export const messages = {
   "mobile.settings.language.row": "应用语言",
   "mobile.settings.language.system": "跟随系统",
   "mobile.settings.language.footer": "“跟随系统”会使用手机设置中的首选语言。尚未翻译的文案将以英文显示。",
-  "mobile.settings.language.restartTitle": "重启 OpenBot？",
+  "mobile.settings.language.restartTitle": "重启 Whilo？",
   "mobile.settings.language.restartBody":
-    "该语言的阅读方向相反。OpenBot 下次启动时，界面会切换方向。如果重启后界面仍不正常，请在应用切换器中关闭 OpenBot，然后重新打开。",
+    "该语言的阅读方向相反。Whilo 下次启动时，界面会切换方向。如果重启后界面仍不正常，请在应用切换器中关闭 Whilo，然后重新打开。",
   "mobile.settings.language.restartNow": "立即重启",
-  "mobile.settings.language.restartFailed": "无法重启 OpenBot。下次打开 OpenBot 时，界面会切换方向。",
+  "mobile.settings.language.restartFailed": "无法重启 Whilo。下次打开 Whilo 时，界面会切换方向。",
   "mobile.settings.dictation.language": "听写语言",
   "mobile.settings.about.development": "开发",
   "mobile.settings.about.openFailed": "无法打开该链接，请重试。",
@@ -257,10 +257,10 @@ export const messages = {
   "mobile.settings.voice.pause.title": "发送前的停顿",
   "mobile.settings.voice.pause.label": "等待新词",
   "mobile.settings.voice.pause.footer":
-    "在语音对话中，如果在这段时间内没有识别到新词，OpenBot 会发送你的话。没有词语的噪音不会让它继续聆听。如果你说话较慢或会停下来思考，请选择更长的停顿。",
+    "在语音对话中，如果在这段时间内没有识别到新词，Whilo 会发送你的话。没有词语的噪音不会让它继续聆听。如果你说话较慢或会停下来思考，请选择更长的停顿。",
   "mobile.settings.voice.pause.seconds": "{seconds} 秒",
   "mobile.settings.voice.speed.title": "回复速度",
-  "mobile.settings.voice.speed.footer": "OpenBot 朗读回复的速度，语音对话中也适用。",
+  "mobile.settings.voice.speed.footer": "Whilo 朗读回复的速度，语音对话中也适用。",
   "mobile.settings.voice.speed.value": "{speed}×",
   "mobile.settings.voice.elevenLabs.recognitionFooter":
     "Whilo 使用一次性令牌将你的语音流式传输给 ElevenLabs，费用由 ElevenLabs 从你的账户扣除。密钥保存在此手机上。",

@@ -1,6 +1,6 @@
-import { AppLogo } from "@openbot/brand";
-import { SocialNetworkMark } from "@openbot/ui/features/social-follow/social-marks";
-import { SOCIAL_NETWORKS, type SocialNetworkId } from "@openbot/ui/features/social-follow/social-networks";
+import { AppLogo } from "@whilo/brand";
+import { SocialNetworkMark } from "@whilo/ui/features/social-follow/social-marks";
+import { SOCIAL_NETWORKS, type SocialNetworkId } from "@whilo/ui/features/social-follow/social-networks";
 import type { JSX } from "@solidjs/web";
 import { Link } from "@tanstack/solid-router";
 import { For, Show } from "solid-js";
@@ -73,7 +73,7 @@ export function LandingFooter() {
               aria-label={chrome().text.home}
             >
               <AppLogo variant="production" class="landing-footer-logo" />
-              <span>OpenBot</span>
+              <span>Whilo</span>
             </Link>
 
             <p class="landing-footer-description">{text().description}</p>

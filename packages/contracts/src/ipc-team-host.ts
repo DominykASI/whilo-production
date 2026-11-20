@@ -193,7 +193,7 @@ export interface TeamMemberSummary {
   email: string | null;
   name: string | null;
   avatarUrl?: string | null;
-  /** The chat colour from the member's OpenBot account. Absent means no chat colour. Peers read it through `chat-colors-v1`. */
+  /** The chat colour from the member's Whilo account. Absent means no chat colour. Peers read it through `chat-colors-v1`. */
   chatColor?: AvatarColor;
   role: TeamRole;
   createdAt: string;

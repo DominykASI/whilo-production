@@ -41,7 +41,7 @@ export const messages = {
   "status.messaging.telegramOrchestratorName": "Telegram-Orchestrator",
   "status.messaging.telegramOrchestratorTitle": "Antwortet in Telegram und fragt das Team",
   "status.messaging.whatsappNoAgent":
-    "Hier kann noch kein Agent antworten. Füge den WhatsApp-Orchestrator in OpenBot hinzu.",
+    "Hier kann noch kein Agent antworten. Füge den WhatsApp-Orchestrator in Whilo hinzu.",
   "status.messaging.whatsappApprovalMenu": "Antworte 1 zum Genehmigen oder 2 zum Ablehnen.",
   "status.messaging.whatsappStopMenu": "Antworte „stop“, um zu stoppen.",
   "status.messaging.whatsappPairingCode":
@@ -49,9 +49,9 @@ export const messages = {
   "status.messaging.whatsappPairingApproved": "Du kannst jetzt Anfragen an diese Nummer senden.",
   "status.messaging.whatsappOwnChat": "Nachricht an dich selbst",
   "status.messaging.whatsappWelcomeOwn":
-    "👋 *OpenBot ist verbunden*\n\nSchreib hier, um deine Agenten zu fragen. Der WhatsApp Orchestrator antwortet oder gibt die Arbeit an den passenden Agenten.\n\nSende *stop*, um eine Anfrage zu stoppen.",
+    "👋 *Whilo ist verbunden*\n\nSchreib hier, um deine Agenten zu fragen. Der WhatsApp Orchestrator antwortet oder gibt die Arbeit an den passenden Agenten.\n\nSende *stop*, um eine Anfrage zu stoppen.",
   "status.messaging.whatsappWelcomeDedicated":
-    "👋 *OpenBot ist verbunden*\n\nDie Personen, die du in OpenBot erlaubst, können dieser Nummer jetzt schreiben. Eine neue Person bekommt einen Code: Genehmige ihn in OpenBot unter Anfragen.\n\nSende *stop*, um eine Anfrage zu stoppen.",
+    "👋 *Whilo ist verbunden*\n\nDie Personen, die du in Whilo erlaubst, können dieser Nummer jetzt schreiben. Eine neue Person bekommt einen Code: Genehmige ihn in Whilo unter Anfragen.\n\nSende *stop*, um eine Anfrage zu stoppen.",
   "status.messaging.whatsappOrchestratorName": "WhatsApp-Orchestrator",
   "status.messaging.whatsappOrchestratorTitle": "Antwortet in WhatsApp und fragt das Team",
 } as const satisfies PartialTranslation<typeof source>;

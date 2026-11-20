@@ -6,11 +6,11 @@
 /* Ring ------------------------------------------------------------------- */
 
 .context-meter-trigger {
-  color: var(--openbot-text-muted);
+  color: var(--whilo-text-muted);
 }
 
 .context-meter-ring {
-  width: var(--openbot-icon-md);
+  width: var(--whilo-icon-md);
 }
 
 .context-meter-ring .ui-radial-progress-track,
@@ -19,16 +19,16 @@
 }
 
 .context-meter-ring[data-level="quiet"] {
-  --ui-radial-progress-color: var(--openbot-text-dim);
+  --ui-radial-progress-color: var(--whilo-text-dim);
 }
 
 .context-meter-ring[data-level="normal"] {
-  --ui-radial-progress-color: var(--openbot-text-secondary);
+  --ui-radial-progress-color: var(--whilo-text-secondary);
 }
 
 /* The colour of the compaction notice above the input, so one state keeps one colour. */
 .context-meter-ring[data-compacting] {
-  --ui-radial-progress-color: var(--openbot-warning);
+  --ui-radial-progress-color: var(--whilo-warning);
 }
 
 .context-meter-ring[data-compacting] .ui-radial-progress-chart {
@@ -44,14 +44,14 @@
 /* Popover ---------------------------------------------------------------- */
 
 .context-meter-popover {
-  z-index: var(--openbot-layer-popover);
+  z-index: var(--whilo-layer-popover);
   display: flex;
   width: 280px;
   flex-direction: column;
-  gap: var(--openbot-space-3);
-  padding: var(--openbot-space-3) var(--openbot-space-4) var(--openbot-space-4);
-  font-size: var(--openbot-text-md);
-  line-height: var(--openbot-leading-md);
+  gap: var(--whilo-space-3);
+  padding: var(--whilo-space-3) var(--whilo-space-4) var(--whilo-space-4);
+  font-size: var(--whilo-text-md);
+  line-height: var(--whilo-leading-md);
   transform-origin: var(--kb-popover-content-transform-origin);
   animation: ui-menu-in var(--ui-menu-duration) var(--ui-menu-ease) both;
 }
@@ -72,55 +72,55 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: var(--openbot-space-2);
+  gap: var(--whilo-space-2);
 }
 
 .context-meter-title {
   margin: 0;
-  font-size: var(--openbot-text-lg);
-  font-weight: var(--openbot-weight-semibold);
+  font-size: var(--whilo-text-lg);
+  font-weight: var(--whilo-weight-semibold);
 }
 
 .context-meter-percent {
-  color: var(--openbot-text-secondary);
+  color: var(--whilo-text-secondary);
   font-variant-numeric: tabular-nums;
 }
 
 .context-meter-percent[data-level="warning"] {
-  color: var(--openbot-warning-text);
+  color: var(--whilo-warning-text);
 }
 
 .context-meter-percent[data-level="danger"] {
-  color: var(--openbot-danger-text);
+  color: var(--whilo-danger-text);
 }
 
 .context-meter-tokens,
 .context-meter-note {
   margin: 0;
-  color: var(--openbot-text-muted);
-  font-size: var(--openbot-text-sm);
-  line-height: var(--openbot-leading-sm);
+  color: var(--whilo-text-muted);
+  font-size: var(--whilo-text-sm);
+  line-height: var(--whilo-leading-sm);
 }
 
 /* The New chat and Compact rows sit under a full-width divider, in the shape of menu items. */
 .context-meter-footer {
   display: flex;
   flex-direction: column;
-  gap: var(--openbot-space-1-5);
-  margin: 0 calc(-1 * var(--openbot-space-4)) calc(-1 * var(--openbot-space-4));
-  border-top: 1px solid var(--openbot-border);
-  padding: var(--openbot-space-1-5);
+  gap: var(--whilo-space-1-5);
+  margin: 0 calc(-1 * var(--whilo-space-4)) calc(-1 * var(--whilo-space-4));
+  border-top: 1px solid var(--whilo-border);
+  padding: var(--whilo-space-1-5);
 }
 
 .context-meter-action {
   width: 100%;
-  height: var(--openbot-control-md);
+  height: var(--whilo-control-md);
   justify-content: flex-start;
-  gap: var(--openbot-space-2);
+  gap: var(--whilo-space-2);
   border-radius: var(--ui-menu-item-radius);
   padding: 0 var(--ui-menu-inset);
-  color: var(--openbot-text-primary);
-  font-weight: var(--openbot-weight-regular);
+  color: var(--whilo-text-primary);
+  font-weight: var(--whilo-weight-regular);
 }
 
 .context-meter-action:is(:hover, :focus-visible):not(:disabled) {
@@ -128,14 +128,14 @@
 }
 
 .context-meter-action > svg {
-  width: var(--openbot-icon-md);
-  height: var(--openbot-icon-md);
+  width: var(--whilo-icon-md);
+  height: var(--whilo-icon-md);
   flex: 0 0 auto;
-  color: var(--openbot-text-secondary);
+  color: var(--whilo-text-secondary);
 }
 
 .context-meter-tokens {
-  margin-top: calc(-1 * var(--openbot-space-2));
+  margin-top: calc(-1 * var(--whilo-space-2));
   font-variant-numeric: tabular-nums;
 }
 
@@ -144,62 +144,62 @@
 .context-usage-bar {
   position: relative;
   display: flex;
-  height: var(--openbot-space-2);
-  gap: var(--openbot-space-0-5);
+  height: var(--whilo-space-2);
+  gap: var(--whilo-space-0-5);
   /* A meter: the script places the compaction tick with a physical `left`, so the bar stays LTR. */
   direction: ltr;
 }
 
 .context-usage-segment {
-  min-width: var(--openbot-space-1);
+  min-width: var(--whilo-space-1);
   flex-basis: 0;
-  border-radius: var(--openbot-radius-xs);
+  border-radius: var(--whilo-radius-xs);
   background: var(--context-color);
 }
 
 .context-usage-segment[data-category="used"] {
-  --context-color: var(--openbot-text-secondary);
+  --context-color: var(--whilo-text-secondary);
 }
 
 .context-meter-popover:has(.context-meter-percent[data-level="warning"]) [data-category="used"] {
-  --context-color: var(--openbot-warning);
+  --context-color: var(--whilo-warning);
 }
 
 .context-meter-popover:has(.context-meter-percent[data-level="danger"]) [data-category="used"] {
-  --context-color: var(--openbot-danger);
+  --context-color: var(--whilo-danger);
 }
 
 .context-usage-segment[data-category="free"] {
   min-width: 0;
-  background: var(--openbot-border);
+  background: var(--whilo-border);
 }
 
 /* Breakdown -------------------------------------------------------------- */
 
 /* The storage bar hues in its order; the conversation itself stays neutral. */
 .context-meter-popover [data-category="systemPrompt"] {
-  --context-color: var(--openbot-chart-storage-workspaces);
+  --context-color: var(--whilo-chart-storage-workspaces);
 }
 .context-meter-popover [data-category="memoryFiles"] {
-  --context-color: var(--openbot-chart-storage-chats);
+  --context-color: var(--whilo-chart-storage-chats);
 }
 .context-meter-popover [data-category="tools"] {
-  --context-color: var(--openbot-chart-storage-downloads);
+  --context-color: var(--whilo-chart-storage-downloads);
 }
 .context-meter-popover [data-category="skills"] {
-  --context-color: var(--openbot-chart-storage-runtimes);
+  --context-color: var(--whilo-chart-storage-runtimes);
 }
 .context-meter-popover [data-category="toolResults"] {
-  --context-color: var(--openbot-chart-storage-files);
+  --context-color: var(--whilo-chart-storage-files);
 }
 .context-meter-popover [data-category="messages"] {
-  --context-color: var(--openbot-text-secondary);
+  --context-color: var(--whilo-text-secondary);
 }
 .context-meter-popover [data-category="other"] {
-  --context-color: var(--openbot-text-dim);
+  --context-color: var(--whilo-text-dim);
 }
 .context-meter-popover .context-meter-category[data-category="free"] {
-  --context-color: var(--openbot-border);
+  --context-color: var(--whilo-border);
 }
 
 .context-meter-categories {
@@ -214,40 +214,40 @@
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: baseline;
-  gap: var(--openbot-space-2);
-  padding: var(--openbot-space-0-5) 0;
-  font-size: var(--openbot-text-sm);
-  line-height: var(--openbot-leading-sm);
+  gap: var(--whilo-space-2);
+  padding: var(--whilo-space-0-5) 0;
+  font-size: var(--whilo-text-sm);
+  line-height: var(--whilo-leading-sm);
 }
 
 .context-meter-swatch {
-  width: var(--openbot-space-2);
-  height: var(--openbot-space-2);
+  width: var(--whilo-space-2);
+  height: var(--whilo-space-2);
   align-self: center;
-  border-radius: var(--openbot-radius-pill);
+  border-radius: var(--whilo-radius-pill);
   background: var(--context-color);
 }
 
 .context-meter-category-label {
   overflow: hidden;
-  color: var(--openbot-text-secondary);
+  color: var(--whilo-text-secondary);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .context-meter-category-tokens {
-  color: var(--openbot-text-primary);
+  color: var(--whilo-text-primary);
   font-variant-numeric: tabular-nums;
 }
 
 /* The automatic compaction point: a tick that stands just past the bar's edges. */
 .context-usage-threshold {
   position: absolute;
-  top: calc(-1 * var(--openbot-space-1));
-  bottom: calc(-1 * var(--openbot-space-1));
-  width: var(--openbot-space-0-5);
-  border-radius: var(--openbot-radius-xs);
-  background: var(--openbot-text-primary);
+  top: calc(-1 * var(--whilo-space-1));
+  bottom: calc(-1 * var(--whilo-space-1));
+  width: var(--whilo-space-0-5);
+  border-radius: var(--whilo-radius-xs);
+  background: var(--whilo-text-primary);
   transform: translateX(-50%);
 }
 
@@ -255,8 +255,8 @@
 
 /* The end is a result, not a wait, so it takes the tone the conversation row gives a completed compaction. */
 .context-compaction-notice[data-tone="success"] {
-  --notice-accent: var(--openbot-success-text);
-  --notice-surface: var(--openbot-success-soft);
+  --notice-accent: var(--whilo-success-text);
+  --notice-surface: var(--whilo-success-soft);
 }
 
 /*
@@ -265,7 +265,7 @@
  * the animation to end.
  */
 .context-compaction-notice[data-leaving] {
-  animation: context-compaction-notice-out var(--openbot-duration-toast-exit) var(--openbot-ease-in-out) forwards;
+  animation: context-compaction-notice-out var(--whilo-duration-toast-exit) var(--whilo-ease-in-out) forwards;
 }
 
 @keyframes context-compaction-notice-out {
@@ -288,9 +288,9 @@
 }
 
 .context-compaction-notice .composer-notice-icon {
-  width: var(--openbot-icon-md);
-  height: var(--openbot-icon-md);
-  stroke-width: var(--openbot-icon-stroke);
+  width: var(--whilo-icon-md);
+  height: var(--whilo-icon-md);
+  stroke-width: var(--whilo-icon-stroke);
 }
 
 .context-compaction-notice-copy {
@@ -298,8 +298,8 @@
   flex: 1;
   margin: 0;
   overflow: hidden;
-  color: var(--openbot-text-secondary);
-  font-size: var(--openbot-text-sm);
+  color: var(--whilo-text-secondary);
+  font-size: var(--whilo-text-sm);
   line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -319,10 +319,10 @@
 }
 
 .context-compaction-notice .composer-notice-dismiss {
-  width: var(--openbot-control-xs);
-  height: var(--openbot-control-xs);
+  width: var(--whilo-control-xs);
+  height: var(--whilo-control-xs);
   min-height: 0;
-  margin-block: calc(-1 * var(--openbot-space-1));
+  margin-block: calc(-1 * var(--whilo-space-1));
   padding: 0;
   align-self: center;
 }
@@ -330,7 +330,7 @@
 .context-compaction-notice-percent {
   flex: none;
   color: var(--notice-accent);
-  font-size: var(--openbot-text-sm);
+  font-size: var(--whilo-text-sm);
   font-variant-numeric: tabular-nums;
   line-height: 1.35;
 }
@@ -343,7 +343,7 @@
   max-width: 100%;
   flex-direction: column;
   align-items: center;
-  gap: var(--openbot-space-2);
+  gap: var(--whilo-space-2);
 }
 
 .context-compaction-icon {
@@ -352,16 +352,16 @@
 }
 
 .context-compaction-icon svg {
-  width: var(--openbot-icon-xs);
-  height: var(--openbot-icon-xs);
+  width: var(--whilo-icon-xs);
+  height: var(--whilo-icon-xs);
 }
 
 .context-compaction-marker[data-status="completed"] .context-compaction-icon {
-  color: var(--openbot-success-text);
+  color: var(--whilo-success-text);
 }
 
 .context-compaction-marker[data-status="failed"] .context-compaction-icon {
-  color: var(--openbot-warning-text);
+  color: var(--whilo-warning-text);
 }
 
 .context-compaction-marker .chat-action-marker-content {

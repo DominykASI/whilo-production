@@ -1902,7 +1902,7 @@ function projectV1RoutineSchedule(value: DynamicRecord): TeamProtocolV1JsonObjec
 // frozen list cannot name is a route no client can be answered on. Classification only: it reads the
 // list below and decides nothing, so exporting it leaves every released response meaning what it did.
 export function teamProtocolV1HttpRoute(method: string, path: string): TeamProtocolV1HttpRoute | null {
-  const pathname = new URL(path, "http://openbot.invalid").pathname;
+  const pathname = new URL(path, "http://whilo.invalid").pathname;
   const exact: Record<string, TeamProtocolV1HttpRoute> = {
     "GET /v1/compatibility": "GET compatibility",
     "GET /v1/identity": "GET identity",

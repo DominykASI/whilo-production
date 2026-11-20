@@ -1,6 +1,6 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import { isCanonicalInviteUrl } from "@openbot/contracts/invite-links";
-import { isValidHostname as isSharedValidHostname } from "@openbot/contracts/validation";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import { isCanonicalInviteUrl } from "@whilo/contracts/invite-links";
+import { isValidHostname as isSharedValidHostname } from "@whilo/contracts/validation";
 import { Effect, Fiber, Option, Result, Schema } from "effect";
 import {
   type ContactMessageEmailInput,
@@ -15,7 +15,7 @@ import {
 } from "./email-templates";
 
 /**
- * The `EMAIL_RELAY` service binding: the `openbot-email-relay` Worker in `src/email-relay-entry.ts`.
+ * The `EMAIL_RELAY` service binding: the `whilo-email-relay` Worker in `src/email-relay-entry.ts`.
  * Cloudflare runs that Worker near the mail host, because some Cloudflare locations cannot open a
  * socket to it (#4578).
  */
@@ -126,7 +126,7 @@ const SMTP_TIMEOUT_MS = 7_500;
 const SMTP_CLOSE_TIMEOUT_MS = 250;
 const SMTP_MAX_ATTEMPTS = 3;
 // A service binding needs an absolute URL. The relay reads only the body.
-const RELAY_URL = "https://openbot-email-relay.internal/send";
+const RELAY_URL = "https://whilo-email-relay.internal/send";
 // The relay ends its own attempts inside the delivery budget, so its result must arrive before this
 // limit. The margin covers the binding hop and a cold start. Only a relay that hangs reaches it.
 const RELAY_TIMEOUT_MS = EMAIL_CODE_DELIVERY_BUDGET_MS + 5_000;
@@ -516,7 +516,7 @@ function createMimeMessage(from: string, message: PreparedEmailMessage): string 
       ...(message.replyTo ? [`Reply-To: <${message.replyTo}>`] : []),
       `Subject: ${encodeHeaderValue(message.content.subject)}`,
       `Date: ${new Date().toUTCString()}`,
-      `Message-ID: <${crypto.randomUUID()}@openbot.run>`,
+      `Message-ID: <${crypto.randomUUID()}@whilo.onerall.com>`,
       ...Object.entries(AUTOMATED_EMAIL_HEADERS).map(([name, value]) => `${name}: ${value}`),
       "MIME-Version: 1.0",
       "Content-Type: multipart/alternative;",

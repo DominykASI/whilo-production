@@ -5,11 +5,11 @@ import {
   APP_THEME_PALETTE_COLOR_PATTERN,
   type AppThemePalette,
   isAppThemePaletteId,
-} from "@openbot/contracts/app-appearance";
-import { createOpenBotLogger, toLogValue } from "@openbot/logging";
+} from "@whilo/contracts/app-appearance";
+import { createWhiloLogger, toLogValue } from "@whilo/logging";
 import { Effect, Option, Schema } from "effect";
 
-const logger = createOpenBotLogger("theme-palette-files");
+const logger = createWhiloLogger("theme-palette-files");
 
 /** The folder in `userData` where other programs, such as Omarchy, write palette files. */
 export const THEME_PALETTE_DIRECTORY = "themes";

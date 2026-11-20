@@ -1,9 +1,9 @@
-import { CHANNEL_CHATS_CAPABILITY } from "@openbot/contracts/ipc";
-import { MESSAGE_DELETE_CAPABILITY } from "@openbot/contracts/team-protocol/message-delete-v1";
-import { ROUTINE_FLOWS_CAPABILITY } from "@openbot/contracts/team-protocol/routine-flows-v1";
+import { CHANNEL_CHATS_CAPABILITY } from "@whilo/contracts/ipc";
+import { MESSAGE_DELETE_CAPABILITY } from "@whilo/contracts/team-protocol/message-delete-v1";
+import { ROUTINE_FLOWS_CAPABILITY } from "@whilo/contracts/team-protocol/routine-flows-v1";
 import type { WebRuntimeFactory } from "../features/web-client/web-client-context";
 import type { WebRuntimeEvents, WebWorkspaceRuntime } from "../features/web-client/web-runtime";
-import { createMockOpenBot, type MockOpenBotControls } from "./mock-openbot";
+import { createMockOpenBot, type MockOpenBotControls } from "./mock-whilo";
 
 /** Use the desktop preview's data and actions for the browser composition too. */
 export const createMockWebRuntime: WebRuntimeFactory = (_accountId, events) =>
@@ -108,9 +108,9 @@ export function mockWebRuntimeFor(mock: MockOpenBotControls, events: WebRuntimeE
     },
     cancelUpload: async () => {},
     discard: (id) => agent.discardDraftAttachment(id),
-    download: async () => ({ name: "preview.txt", mimeType: "text/plain", base64: btoa("OpenBot file preview") }),
-    sharedFile: async () => ({ name: "preview.txt", mimeType: "text/plain", base64: btoa("OpenBot file preview") }),
-    workspaceFile: async () => ({ name: "preview.txt", mimeType: "text/plain", base64: btoa("OpenBot file preview") }),
+    download: async () => ({ name: "preview.txt", mimeType: "text/plain", base64: btoa("Whilo file preview") }),
+    sharedFile: async () => ({ name: "preview.txt", mimeType: "text/plain", base64: btoa("Whilo file preview") }),
+    workspaceFile: async () => ({ name: "preview.txt", mimeType: "text/plain", base64: btoa("Whilo file preview") }),
     workspaceDirectory: (agentId, path) => agent.listWorkspaceDirectory({ agentId, path }),
     routineFlows: mock.api.routineFlows,
     updateRoutine: (input) => agent.updateRoutine(input),

@@ -1,7 +1,7 @@
 # Social kit — Reddit (8) + X/Twitter (12)
 
 Status: draft for review. Scope: Reddit and X only. No other channel.
-Owner: marketing. Product repo: `nightly-labs/openbot`. Product name: Whilo.
+Owner: marketing. Product repo: `nightly-labs/whilo`. Product name: Whilo.
 
 This file is copy plus the claim rules behind the copy. Read the claim ledger before you edit a
 sentence: most of the risk in this kit is not tone, it is a sentence that quietly turns a
@@ -81,7 +81,7 @@ Read it before writing a new post.
 - Computer Use on macOS, Windows and Linux through the shipped `cua-driver` binary, with the
   vendor's own telemetry and update check forced off.
 - Self-hosted control plane: your own account Worker + Signal + TURN, and a Docker image at
-  `ghcr.io/nightly-labs/openbot` (`docs/self-hosting.md`, `docs/docker.md`).
+  `ghcr.io/nightly-labs/whilo` (`docs/self-hosting.md`, `docs/docker.md`).
 - Channels and messaging: shared channel chats, plus Slack, Discord and Telegram connectors.
 - Licensing: PolyForm Noncommercial 1.0.0. Source-available, not OSI open source.
 

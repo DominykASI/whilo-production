@@ -807,7 +807,23 @@ function sameUser(left: CentralAuthUser, right: CentralAuthUser): boolean {
   );
 }
 
+function apiErrorCode(value: unknown): string | null {
+  if (!isDynamicRecord(value) || !isDynamicRecord(value.error)) return null;
+  const e = value.error as Record<string, unknown>;
+  const code = e.code ?? e.type;
+  return isString(code) && code.length <= 80 ? code : null;
+}
+
 function apiErrorMessage(value: unknown): string | null {
-  if (!isDynamicRecord(value) || !isDynamicRecord(value.error) || !isString(value.error.message)) return null;
-  return value.error.message.length <= 240 ? value.error.message : null;
+  if (!isDynamicRecord(value) || !isDynamicRecord(value.error)) return null;
+  const e = value.error as Record<string, unknown>;
+  const code = isString(e.code) ? e.code : isString(e.type) ? e.type : "";
+  if (code === "hosting_unavailable" || code === "hosting_not_ready") {
+    return "Whilo hosting/Dots is unavailable right now (configuration pending).";
+  }
+  if (code === "oauth_not_configured") {
+    return "This sign-in provider is not configured for this Whilo deployment yet.";
+  }
+  if (!isString(e.message)) return null;
+  return e.message.length <= 240 ? e.message : null;
 }

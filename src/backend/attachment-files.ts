@@ -14,16 +14,16 @@ import {
   writeFile,
 } from "node:fs/promises";
 import { basename, dirname, extname, isAbsolute, join, relative } from "node:path";
-import { attachmentMimeTypeForName, isSupportedAttachmentName } from "@openbot/contracts/attachment-files";
-import { ATTACHMENT_LIMITS, INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { attachmentMimeTypeForName, isSupportedAttachmentName } from "@whilo/contracts/attachment-files";
+import { ATTACHMENT_LIMITS, INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import type {
   AttachmentDataInput,
   AttachmentKind,
   AttachmentPreviewKind,
   AttachmentSummary,
   QueueDelivery,
-} from "@openbot/contracts/ipc";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/ipc";
+import { sourceText } from "@whilo/i18n/source";
 import { Effect, Result } from "effect";
 import { isHeldTargetError } from "./atomic-json-file";
 import { type AttachmentOperationError, attachmentCall, attachmentFailure, attachmentSync } from "./attachment-effects";
@@ -33,7 +33,7 @@ import { isWithin } from "./workspace-paths";
 const MAX_ATTACHMENTS = INPUT_LIMITS.attachments;
 const MAX_FILE_BYTES = ATTACHMENT_LIMITS.fileBytes;
 const MAX_TOTAL_BYTES = ATTACHMENT_LIMITS.totalBytes;
-const TRANSFER_MANIFEST_FILE = ".openbot-transfer.json";
+const TRANSFER_MANIFEST_FILE = ".whilo-transfer.json";
 /**
  * The waits before each new rename of a transfer folder when Windows answers `EPERM`, `EACCES` or
  * `EBUSY`. Antivirus and the search indexer open the files just copied into the folder for a moment,
@@ -733,7 +733,7 @@ function attachmentMetadata(
 }
 
 function attachmentPreviewUrl(id: string): string {
-  return `openbot-attachment://file/${id}`;
+  return `whilo-attachment://file/${id}`;
 }
 
 export function toAttachmentSummary(attachment: StoredAttachment): AttachmentSummary {

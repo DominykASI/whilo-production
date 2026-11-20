@@ -231,11 +231,11 @@ export const Trigger: Story = {
         "github-empty": { trigger: "github", event: "issue.opened", filters: "notBot" },
         "github-many": {
           trigger: "github",
-          repository: "openbot-preview/app",
+          repository: "whilo-preview/app",
           repositories: [
-            "openbot-preview/app",
-            "openbot-preview/desktop-release-pipeline-and-installers",
-            "openbot-preview-labs/team-api-gateway",
+            "whilo-preview/app",
+            "whilo-preview/desktop-release-pipeline-and-installers",
+            "whilo-preview-labs/team-api-gateway",
           ].join("\n"),
           event: "issue.opened",
           filters: "notBot",

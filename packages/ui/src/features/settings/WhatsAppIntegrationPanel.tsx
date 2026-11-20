@@ -6,10 +6,10 @@ import type {
   WhatsAppLinkState,
   WhatsAppPairingRequest,
   WhatsAppSender,
-} from "@openbot/contracts/ipc";
-import { MESSAGING_LIMITS, parseWhatsAppPhoneNumber } from "@openbot/contracts/ipc";
-import { WHATSAPP_ORCHESTRATOR_AVATAR } from "@openbot/contracts/whatsapp-app";
-import type { AppTextKey } from "@openbot/i18n";
+} from "@whilo/contracts/ipc";
+import { MESSAGING_LIMITS, parseWhatsAppPhoneNumber } from "@whilo/contracts/ipc";
+import { WHATSAPP_ORCHESTRATOR_AVATAR } from "@whilo/contracts/whatsapp-app";
+import type { AppTextKey } from "@whilo/i18n";
 import {
   Alert,
   AlertContent,
@@ -36,7 +36,7 @@ import {
   Text,
   UserRound,
   UsersRound,
-} from "@openbot/ui";
+} from "@whilo/ui";
 import type { JSX } from "@solidjs/web";
 import { createEffect, createSignal, createStore, For, Match, onCleanup, Show, Switch, untrack } from "solid-js";
 import { useText } from "../../text";
@@ -218,7 +218,7 @@ type DialogStart = "number" | "agent";
 /**
  * Marketplace > Apps > WhatsApp. Each number links this computer as a device from WhatsApp on the
  * phone, and one WhatsApp Orchestrator agent receives the messages of all numbers, asks the team and
- * answers. Only the allowed contacts and groups reach it; on a number only for OpenBot, an unknown
+ * answers. Only the allowed contacts and groups reach it; on a number only for Whilo, an unknown
  * person gets a code that the owner approves here.
  */
 export function WhatsAppIntegrationPanel(props: WhatsAppIntegrationPanelProps) {
@@ -529,7 +529,7 @@ function SendersSection(props: {
   );
 }
 
-/** The people who wrote to a number only for OpenBot and wait for the owner. */
+/** The people who wrote to a number only for Whilo and wait for the owner. */
 function RequestsSection(props: {
   connection: MessagingConnection;
   requests: readonly WhatsAppPairingRequest[];

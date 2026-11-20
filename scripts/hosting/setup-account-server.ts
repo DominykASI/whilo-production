@@ -39,7 +39,8 @@ const BOAT_API_URL = "https://boat.dev/api/v1";
 const BOAT_EVENTS = ["sandbox.ready", "sandbox.error", "sandbox.archived", "sandbox.hydrated"];
 const GITHUB_ENVIRONMENT = "cloudflare-production";
 const TARGETS = {
-  production: { api: "https://api.openbot.run" },
+  production: { api: "https://api.whilo.onerall.com" },
+  // The `whilo-auth-api-test` Worker has workers_dev enabled; override with --api if this host differs.
   test: { api: "https://whilo-auth-api-test.internal9671.workers.dev" },
 } as const;
 

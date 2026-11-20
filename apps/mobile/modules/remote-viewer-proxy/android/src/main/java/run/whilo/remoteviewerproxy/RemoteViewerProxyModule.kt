@@ -1,4 +1,4 @@
-package run.openbot.remoteviewerproxy
+package run.whilo.remoteviewerproxy
 
 import android.util.Base64
 import android.view.WindowManager
@@ -128,11 +128,11 @@ private class Request(val method: String, val target: String, val headers: Map<S
 internal class RemoteViewerServer(private val emit: (String, Map<String, Any?>) -> Unit) {
   private val pool =
     Executors.newCachedThreadPool { runnable ->
-      Thread(runnable, "openbot-remote-viewer").apply { isDaemon = true }
+      Thread(runnable, "whilo-remote-viewer").apply { isDaemon = true }
     }
   private val timers =
     Executors.newSingleThreadScheduledExecutor { runnable ->
-      Thread(runnable, "openbot-remote-viewer-timer").apply { isDaemon = true }
+      Thread(runnable, "whilo-remote-viewer-timer").apply { isDaemon = true }
     }
   private val lock = Any()
 

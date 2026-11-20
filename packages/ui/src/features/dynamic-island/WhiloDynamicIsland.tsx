@@ -1,5 +1,5 @@
-import { AppLogo } from "@openbot/brand";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { AppLogo } from "@whilo/brand";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import type {
   AppVariant,
   DynamicIslandAction,
@@ -9,14 +9,14 @@ import type {
   DynamicIslandPresentation,
   DynamicIslandPromptItem,
   DynamicIslandTakeoverItem,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   DEFAULT_DYNAMIC_ISLAND_PREFERENCE,
   DYNAMIC_ISLAND_DEFAULT_COMPACT_HEIGHT,
   DYNAMIC_ISLAND_SIZE_LIMITS,
   dynamicIslandCompactHeight,
-} from "@openbot/contracts/ipc";
-import type { AppTextKey, AppTranslate } from "@openbot/i18n";
+} from "@whilo/contracts/ipc";
+import type { AppTextKey, AppTranslate } from "@whilo/i18n";
 import {
   ArrowUp,
   Badge,
@@ -37,10 +37,10 @@ import {
   Monitor,
   OctagonX,
   Spinner,
-} from "@openbot/ui";
-import { useText } from "@openbot/ui/text";
-import { prefersReducedMotion } from "@openbot/ui/utils";
-import type { UserErrorDetails } from "@openbot/user-errors";
+} from "@whilo/ui";
+import { useText } from "@whilo/ui/text";
+import { prefersReducedMotion } from "@whilo/ui/utils";
+import type { UserErrorDetails } from "@whilo/user-errors";
 import { Dynamic, type JSX } from "@solidjs/web";
 import {
   createEffect,
@@ -71,7 +71,7 @@ import {
   primeCompactModeLayerPositions,
   restoreModeTransitionFocus,
   waitForAnimations,
-} from "./openbot-dynamic-island-motion";
+} from "./whilo-dynamic-island-motion";
 
 export interface OpenBotDynamicIslandProps {
   presentation: DynamicIslandPresentation;
@@ -624,7 +624,7 @@ export function OpenBotDynamicIsland(props: OpenBotDynamicIslandProps): JSX.Elem
   return (
     <div
       ref={transitionRoot}
-      class="openbot-dynamic-island-transition-root"
+      class="whilo-dynamic-island-transition-root"
       data-mode-transitioning={modeTransitioning() ? "true" : undefined}
     >
       <DynamicIsland
@@ -653,7 +653,7 @@ export function OpenBotDynamicIsland(props: OpenBotDynamicIslandProps): JSX.Elem
         onHoverChange={setHovered}
         pointerToggle={config().badge ? false : undefined}
         class={[
-          "openbot-dynamic-island",
+          "whilo-dynamic-island",
           `dynamic-island-${visiblePresentation().mode === "message" ? "message-first" : visiblePresentation().mode}`,
           config().badge ? "dynamic-island-status" : undefined,
           visiblePresentation().mode !== "idle" && visiblePresentation().mode !== "working"
@@ -1860,3 +1860,9 @@ function permissionSummary(
   ].filter(Boolean);
   return parts.length > 0 ? parts.join(", ") : t("island.permission.limited");
 }
+
+/** The island under the Whilo name, for the pages written after the rename. */
+export const WhiloDynamicIsland = OpenBotDynamicIsland;
+
+/** The idle width under the Whilo name. */
+export const whiloIdleCompactWidth = openBotIdleCompactWidth;

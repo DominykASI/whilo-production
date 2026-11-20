@@ -291,7 +291,7 @@ export const messages = {
   "mobile.chat.imageGallery.saveAll": "Zapisz wszystkie",
   "mobile.chat.imageGallery.saved": "Zapisano w Zdjęciach",
   "mobile.chat.imageGallery.shareAll": "Udostępnij wszystkie",
-  "mobile.chat.imageGallery.photosPermission": "Pozwól OpenBot dodawać zdjęcia w Ustawieniach, aby zapisać te obrazy.",
+  "mobile.chat.imageGallery.photosPermission": "Pozwól Whilo dodawać zdjęcia w Ustawieniach, aby zapisać te obrazy.",
   "mobile.chat.imageGallery.saveFailed": "Nie udało się zapisać obrazów",
   "mobile.chat.imageGallery.shareFailed": "Nie udało się udostępnić obrazów",
   "mobile.chat.imageGallery.shareNeedsUpdate": "Udostępnianie wielu obrazów wymaga najnowszej wersji aplikacji.",

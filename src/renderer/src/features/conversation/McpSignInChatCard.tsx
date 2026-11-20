@@ -1,7 +1,7 @@
-import type { McpServerConfig } from "@openbot/contracts/ipc";
-import type { AgentMessage } from "@openbot/ui/data";
-import { McpSignInCard, type McpSignInCardState } from "@openbot/ui/features/conversation/McpSignInCard";
-import { useText } from "@openbot/ui/text";
+import type { McpServerConfig } from "@whilo/contracts/ipc";
+import type { AgentMessage } from "@whilo/ui/data";
+import { McpSignInCard, type McpSignInCardState } from "@whilo/ui/features/conversation/McpSignInCard";
+import { useText } from "@whilo/ui/text";
 import { createMemo, createSignal, Show } from "solid-js";
 import { useConversationViewScope } from "./conversation-scope";
 

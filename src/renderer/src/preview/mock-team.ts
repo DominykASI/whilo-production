@@ -22,9 +22,9 @@ import type {
   TeamPresenceSnapshot,
   TeamSessionSummary,
   UpdateTeamMemberInput,
-} from "@openbot/contracts/ipc";
-import { DEFAULT_REMOTE_CONTROL_POLICY } from "@openbot/contracts/ipc";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/ipc";
+import { DEFAULT_REMOTE_CONTROL_POLICY } from "@whilo/contracts/ipc";
+import { sourceText } from "@whilo/i18n/source";
 import {
   STORY_DIRECT_SNAPSHOTS,
   STORY_DIRECT_THREADS,
@@ -437,7 +437,7 @@ export function createMockTeam(
     checkSetup: async () => ({
       platform: "darwin",
       hostName: "Mac mini",
-      username: "openbot",
+      username: "whilo",
       checkedAt: new Date().toISOString(),
       screenRecording: hostStatus.remoteDesktopScreenRecordingDenied ? "blocked" : "allowed",
       accessibility: "blocked",

@@ -7,22 +7,22 @@
 // secret, a routine name or body text; and that at most 60 delivery events go each minute, the next
 // one with the count of those that did not go. The minute is moved forward through `Date.now`.
 // It also checks that the renderer gives `webhook_route_limit` for the host's route limit failure.
-// `bun scripts/webhook-analytics-e2e.ts`. Writes .openbot-build/webhook-analytics-e2e/report.json.
+// `bun scripts/webhook-analytics-e2e.ts`. Writes .whilo-build/webhook-analytics-e2e/report.json.
 import assert from "node:assert/strict";
 import { createHmac, randomUUID } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { AGENT_PROVIDERS } from "@openbot/contracts/ipc";
-import { WEBHOOK_DELIVERY_BODY_BYTES_LIMIT } from "@openbot/contracts/signal-protocol/messages";
-import { WEBHOOK_ROUTES_LIMIT } from "@openbot/contracts/signal-protocol/webhook-route";
+import { AGENT_PROVIDERS } from "@whilo/contracts/ipc";
+import { WEBHOOK_DELIVERY_BODY_BYTES_LIMIT } from "@whilo/contracts/signal-protocol/messages";
+import { WEBHOOK_ROUTES_LIMIT } from "@whilo/contracts/signal-protocol/webhook-route";
 import { Effect } from "effect";
 import type { AgentBrowserHost } from "../src/backend/agent/turn-lifecycle";
 import type { HostOpenPanelClient } from "../src/main/analytics";
 
-const OUT = resolve(import.meta.dirname, "../.openbot-build/webhook-analytics-e2e");
-const root = await mkdtemp(join(tmpdir(), "openbot-webhook-analytics-"));
+const OUT = resolve(import.meta.dirname, "../.whilo-build/webhook-analytics-e2e");
+const root = await mkdtemp(join(tmpdir(), "whilo-webhook-analytics-"));
 const userData = join(root, "user-data");
 const home = join(root, "home");
 const fakeCodex = join(root, "codex");
@@ -37,7 +37,7 @@ const { AgentService } = await import("../src/backend/agent-service");
 const { AgentStore } = await import("../src/backend/agent-store");
 const { runCauseEffect } = await import("../src/backend/effect-boundary");
 const { MailboxStore } = await import("../src/backend/mailbox-store");
-const { OpenBotDatabase } = await import("../src/backend/openbot-database");
+const { WhiloDatabase } = await import("../src/backend/whilo-database");
 const { HostAnalytics } = await import("../src/main/analytics");
 const { agentWebhookRoutineWriter, HostEventsService } = await import("../src/main/host-events-service");
 const { webhookFailureCode } = await import("../src/renderer/src/webhook-failure-code");
@@ -193,7 +193,7 @@ const DELIVERY_KEYS = new Set([
 ]);
 
 await writeFile(fakeCodex, FAKE_CODEX, { mode: 0o755 });
-const database = new OpenBotDatabase(userData);
+const database = new WhiloDatabase(userData);
 const store = new AgentStore(userData, home, database);
 const mailbox = new MailboxStore(userData, store.sharedRoot, store.database);
 let principal: string | null = "account-1";
@@ -325,7 +325,7 @@ try {
   pass(
     "The started request reports its owner, result, status and size",
     started.owner_kind === "agent" &&
-      started.format === "openbot" &&
+      started.format === "whilo" &&
       started.result === "started" &&
       started.status_code === 202 &&
       typeof started.body_bytes === "number" &&

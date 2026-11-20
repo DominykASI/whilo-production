@@ -4,8 +4,8 @@ import type {
   BrowserProfileSummary,
   BrowserProxyComputer,
   BrowserProxySummary,
-} from "@openbot/contracts/ipc";
-import { currentText } from "@openbot/ui/text";
+} from "@whilo/contracts/ipc";
+import { currentText } from "@whilo/ui/text";
 import { createStore } from "solid-js";
 import type { BrowserProfileCalls } from "../browser-profiles-port";
 

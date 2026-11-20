@@ -1,5 +1,5 @@
 import { createEffect, createSignal, For, flush, onCleanup } from "solid-js";
-import { APP_LOGO_CORNER, APP_LOGO_SIZE, APP_LOGO_SPARKLES, APP_LOGO_W_PATH } from "./app-logo-shape";
+import { APP_LOGO_CORNER, APP_LOGO_EYES, APP_LOGO_SIZE, APP_LOGO_SPARKLES, APP_LOGO_W_PATH } from "./app-logo-shape";
 
 /** A four-point star: each arm is a curve that pinches at the center, so the points stay sharp. */
 function sparklePath(cx: number, cy: number, arm: number): string {
@@ -195,6 +195,12 @@ export function AppLogo(props: AppLogoProps) {
       onPointerLeave={handlePointerLeave}
       onPointerMove={handlePointerMove}
     >
+      <defs>
+        <filter id="whilo-mustache-fuzz" x="-30%" y="-40%" width="160%" height="180%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.05 0.09" numOctaves="2" seed="7" result="noise" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </defs>
       <rect
         class="app-logo-background"
         width={APP_LOGO_SIZE}
@@ -203,7 +209,17 @@ export function AppLogo(props: AppLogoProps) {
         ry={APP_LOGO_CORNER}
       />
       <g class="app-logo-mark-motion">
-        <path class="app-logo-mark" d={APP_LOGO_W_PATH} />
+        <path class="app-logo-mark app-logo-mustache" d={APP_LOGO_W_PATH} filter="url(#whilo-mustache-fuzz)" />
+      </g>
+      <g class="app-logo-eyes">
+        <For each={APP_LOGO_EYES}>
+          {(eye, index) => (
+            <g class={index() === 0 ? "app-logo-eye app-logo-eye-left" : "app-logo-eye app-logo-eye-right"}>
+              <ellipse cx={eye.cx} cy={eye.cy} rx={eye.rx} ry={eye.ry} />
+              <circle class="app-logo-pupil" cx={eye.pupil.cx} cy={eye.pupil.cy} r={eye.pupil.r} />
+            </g>
+          )}
+        </For>
       </g>
       <For each={APP_LOGO_SPARKLES}>
         {(sparkle, index) => (

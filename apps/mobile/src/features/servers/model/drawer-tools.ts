@@ -1,5 +1,5 @@
-import { isString } from "@openbot/contracts/runtime-values";
-import * as SecureStore from "expo-secure-store";
+import { isString } from "@whilo/contracts/runtime-values";
+import * as SecureStore from "../../../shared/lib/persistent-storage";
 import { create } from "zustand";
 
 /** The tools of the drawer that the user can move and unpin. Server settings stays last and always shows. */
@@ -15,7 +15,7 @@ interface DrawerToolLayout {
   hidden: DrawerToolId[];
 }
 
-const key = "openbot.mobile.drawer-tools.v1";
+const key = "whilo.mobile.drawer-tools.v1";
 
 export function isDrawerToolId(value: unknown): value is DrawerToolId {
   return DRAWER_TOOL_IDS.some((id) => id === value);

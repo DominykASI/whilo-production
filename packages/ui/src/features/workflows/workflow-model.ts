@@ -31,9 +31,9 @@ export interface WorkflowFeatures {
   presence: boolean;
 }
 
-/** Image and file steps, file outputs and message triggers do not run in this version. */
+/** Image steps run in this version; file/asset steps and file outputs do not. */
 export const WORKFLOW_FEATURES_V1: WorkflowFeatures = {
-  kinds: WORKFLOW_NODE_KINDS.filter((kind) => kind !== "image" && kind !== "asset"),
+  kinds: WORKFLOW_NODE_KINDS.filter((kind) => kind !== "asset"),
   triggers: ["manual", "schedule", "webhook"],
   outputs: ["notify", "channel"],
   uploads: false,

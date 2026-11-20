@@ -16,8 +16,8 @@ import { WebHostIncompatibleError } from "../src/features/web-client/web-runtime
 import { createBenchWebRuntime } from "../src/preview/bench-web-runtime";
 import { mockAccountCatalogFetch } from "../src/preview/mock-account-catalog";
 import { MOCK_HOSTED_SERVER_CATALOG } from "../src/preview/mock-hosted-servers";
-import { createMockWhilo } from "../src/preview/mock-whilo";
 import { createMockWebRuntime, mockWebRuntimeFor } from "../src/preview/mock-web-runtime";
+import { createMockWhilo } from "../src/preview/mock-whilo";
 import { AGENT_ID, TABS_KEY, THREAD_OPTIONS } from "./agent-threads-fixtures";
 import "../src/features/web-client/web-client.css";
 

@@ -1,6 +1,6 @@
 // Runs the real account server hosted-server service on a migrated SQLite database, with a boat API
 // that answers as during a stop that boat cannot finish. boat runs the pre-stop hook, which stops
-// OpenBot, and then cannot save the disk. It reports `stop.status: "failing"` and tries the stop again
+// Whilo, and then cannot save the disk. It reports `stop.status: "failing"` and tries the stop again
 // until a save works, while the sandbox keeps a usable state (`idle`). On 2026-11-05 a server stayed so
 // for 18 hours: the Worker read the sandbox as running, and the fault stayed hidden.
 //
@@ -11,18 +11,18 @@
 // gets no command.
 //
 // Run: bun run test:hosted-failing-stop
-// It writes .openbot-build/hosted-failing-stop-e2e/report.json and exits non-zero on a failure.
+// It writes .whilo-build/hosted-failing-stop-e2e/report.json and exits non-zero on a failure.
 import { readdirSync, readFileSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { DatabaseSync } from "node:sqlite";
-import { isDynamicRecord, isString } from "@openbot/contracts/runtime-values";
+import { isDynamicRecord, isString } from "@whilo/contracts/runtime-values";
 import { Effect } from "effect";
 import { HostedServerService } from "../src/server/hosted-server-service";
 import { sqliteD1 } from "./sqlite-d1";
 
 const ROOT = resolve(import.meta.dirname, "../../..");
-const OUT = join(ROOT, ".openbot-build", "hosted-failing-stop-e2e");
+const OUT = join(ROOT, ".whilo-build", "hosted-failing-stop-e2e");
 const MIGRATIONS = join(ROOT, "apps", "auth-api", "migrations");
 const SERVER_ID = "server-1";
 const SANDBOX_ID = "bx_1";
@@ -35,7 +35,7 @@ const OWNER = {
   analyticsEnabled: null,
   chatColor: null,
 };
-const FLAG = "/run/openbot-pre-stop";
+const FLAG = "/run/whilo-pre-stop";
 const MINUTE = 60_000;
 const NOW = Date.UTC(2026, 10, 5, 21);
 const WARNING = "Hosted server stop is failing.";
@@ -179,14 +179,14 @@ async function runWith(options: {
   };
 }
 
-/** The command of a failed stop: it starts OpenBot only for a flag older than 5 minutes. */
+/** The command of a failed stop: it starts Whilo only for a flag older than 5 minutes. */
 function failedStopStart(commands: { body: unknown }[]) {
   const body = commands[0]?.body;
   const text = isDynamicRecord(body) && isString(body.command) ? body.command : "";
   return (
     commands.length === 1 &&
     text.startsWith(`if find ${FLAG} -mmin +5 `) &&
-    text.includes("sudo -n systemctl start --no-block openbot.service")
+    text.includes("sudo -n systemctl start --no-block whilo.service")
   );
 }
 

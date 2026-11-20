@@ -75,8 +75,8 @@ export const messages = {
   "settings.launchAtLogin.description": "Ouvrir l’application lorsque vous vous connectez à cet ordinateur.",
   "settings.keepRunning.title": "Garder Whilo actif en arrière-plan",
   "settings.keepRunning.description": "Poursuivre les tâches en cours après la fermeture de la fenêtre.",
-  "settings.menuBar.title": "Afficher OpenBot dans la barre des menus",
-  "settings.menuBar.description": "Ouvrir ou quitter OpenBot depuis une icône dans la barre des menus.",
+  "settings.menuBar.title": "Afficher Whilo dans la barre des menus",
+  "settings.menuBar.description": "Ouvrir ou quitter Whilo depuis une icône dans la barre des menus.",
   "settings.keepAwake.title": "Empêcher la mise en veille",
   "settings.keepAwake.description":
     "Les routines s’exécutent à l’heure tant que l’ordinateur est branché. L’écran peut quand même s’éteindre.",
@@ -235,13 +235,13 @@ export const messages = {
   "settings.agentDock.show.description": "Affiche vos agents sur le bord de l’écran, prêts pour une discussion rapide.",
   "settings.agentDock.placement.title": "Position",
   "settings.agentDock.placement.description":
-    "« Au-dessus des autres apps » garde le dock à l’écran quand OpenBot est en arrière-plan.",
+    "« Au-dessus des autres apps » garde le dock à l’écran quand Whilo est en arrière-plan.",
   "settings.agentDock.placement.screen": "Au-dessus des autres apps",
-  "settings.agentDock.placement.window": "Dans la fenêtre OpenBot",
+  "settings.agentDock.placement.window": "Dans la fenêtre Whilo",
   "settings.agentDock.display.title": "Écran",
   "settings.agentDock.display.description":
-    "Si cet écran n’est pas connecté, le dock passe sur l’écran de la fenêtre OpenBot.",
-  "settings.agentDock.display.window": "Avec la fenêtre OpenBot",
+    "Si cet écran n’est pas connecté, le dock passe sur l’écran de la fenêtre Whilo.",
+  "settings.agentDock.display.window": "Avec la fenêtre Whilo",
   "settings.agentDock.display.primary": "Écran principal",
   "settings.agentDock.display.all": "Tous les écrans",
   "settings.agentDock.display.unnamed": "Écran {number}",
@@ -265,7 +265,7 @@ export const messages = {
     "Activé : les métadonnées d’utilisation et de fiabilité sont envoyées aux services analytiques auto-hébergés d’Whilo avec l’identifiant et l’e-mail de votre compte. Désactivé : les mêmes métadonnées sont envoyées avec un identifiant d’installation aléatoire uniquement. Les conversations, fichiers et prompts ne sont jamais envoyés. Ce réglage s’applique à ce navigateur.",
   // The Settings window shell: its tab list, headers and save bar.
   "settings.tab.general.title": "Général",
-  "settings.tab.general.description": "Contrôler le comportement d’OpenBot sur cet ordinateur.",
+  "settings.tab.general.description": "Contrôler le comportement d’Whilo sur cet ordinateur.",
   "settings.tab.agents.title": "Agents",
   "settings.tab.agents.description":
     "Choisir ce que les agents de cet ordinateur peuvent faire quand vous ne le réglez pas pour un agent.",

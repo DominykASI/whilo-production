@@ -40,7 +40,7 @@ export const messages = {
   "status.messaging.telegramOrchestratorName": "Telegram-orchestrator",
   "status.messaging.telegramOrchestratorTitle": "Antwoordt in Telegram en vraagt het team",
   "status.messaging.whatsappNoAgent":
-    "Er kan hier nog geen agent antwoorden. Voeg de WhatsApp-orchestrator toe in OpenBot.",
+    "Er kan hier nog geen agent antwoorden. Voeg de WhatsApp-orchestrator toe in Whilo.",
   "status.messaging.whatsappApprovalMenu": "Antwoord 1 om goed te keuren of 2 om te weigeren.",
   "status.messaging.whatsappStopMenu": "Antwoord “stop” om te stoppen.",
   "status.messaging.whatsappPairingCode":
@@ -48,9 +48,9 @@ export const messages = {
   "status.messaging.whatsappPairingApproved": "Je kunt nu verzoeken naar dit nummer sturen.",
   "status.messaging.whatsappOwnChat": "Bericht aan jezelf",
   "status.messaging.whatsappWelcomeOwn":
-    "👋 *OpenBot is verbonden*\n\nSchrijf hier om je agents iets te vragen. De WhatsApp Orchestrator antwoordt, of geeft het werk aan de juiste agent.\n\nStuur *stop* om een verzoek te stoppen.",
+    "👋 *Whilo is verbonden*\n\nSchrijf hier om je agents iets te vragen. De WhatsApp Orchestrator antwoordt, of geeft het werk aan de juiste agent.\n\nStuur *stop* om een verzoek te stoppen.",
   "status.messaging.whatsappWelcomeDedicated":
-    "👋 *OpenBot is verbonden*\n\nDe mensen die je in OpenBot toestaat, kunnen nu naar dit nummer schrijven. Een nieuw persoon krijgt een code: keur die goed in OpenBot onder Verzoeken.\n\nStuur *stop* om een verzoek te stoppen.",
+    "👋 *Whilo is verbonden*\n\nDe mensen die je in Whilo toestaat, kunnen nu naar dit nummer schrijven. Een nieuw persoon krijgt een code: keur die goed in Whilo onder Verzoeken.\n\nStuur *stop* om een verzoek te stoppen.",
   "status.messaging.whatsappOrchestratorName": "WhatsApp-orchestrator",
   "status.messaging.whatsappOrchestratorTitle": "Antwoordt in WhatsApp en vraagt het team",
 } as const satisfies PartialTranslation<typeof source>;

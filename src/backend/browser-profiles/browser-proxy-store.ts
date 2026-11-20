@@ -1,6 +1,6 @@
 import { randomBytes } from "node:crypto";
-import { BROWSER_PROXY_SCHEMES, type BrowserProxyScheme } from "@openbot/contracts/ipc";
-import type { DynamicRecord } from "@openbot/contracts/runtime-values";
+import { BROWSER_PROXY_SCHEMES, type BrowserProxyScheme } from "@whilo/contracts/ipc";
+import type { DynamicRecord } from "@whilo/contracts/runtime-values";
 import {
   checkedColumn,
   databaseRows,
@@ -8,7 +8,7 @@ import {
   requiredNumberColumn,
   requiredStringColumn,
 } from "../database/database-rows";
-import type { OpenBotDatabase } from "../openbot-database";
+import type { WhiloDatabase } from "../whilo-database";
 
 /** A saved proxy address without its password. */
 export interface BrowserProxyAddressRecord {
@@ -21,7 +21,7 @@ export interface BrowserProxyAddressRecord {
   hasPassword: boolean;
 }
 
-/** The computer of one member: the pages go out through the OpenBot desktop app of that member. */
+/** The computer of one member: the pages go out through the Whilo desktop app of that member. */
 export interface BrowserProxyComputerRecord {
   kind: "computer";
   id: string;
@@ -58,9 +58,9 @@ export interface BrowserProxyRow {
  * as `BrowserProfileStore` does.
  */
 export class BrowserProxyStore {
-  readonly #database: OpenBotDatabase;
+  readonly #database: WhiloDatabase;
 
-  constructor(database: OpenBotDatabase) {
+  constructor(database: WhiloDatabase) {
     this.#database = database;
   }
 

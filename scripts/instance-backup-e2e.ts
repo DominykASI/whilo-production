@@ -170,7 +170,7 @@ async function main(): Promise<void> {
     const fixtureCopied = run("docker", ["cp", `${fixture}/.`, `${dind}:/fixture`]);
     if (fixtureCopied.status !== 0) throw new Error(`The instance fixture did not copy: ${fixtureCopied.stderr}`);
     must(`mkdir -p /stand-in && cat >/stand-in/Dockerfile <<'EOF'\n${standIn}EOF`);
-    must("docker build --quiet --tag ghcr.io/nightly-labs/openbot:latest /stand-in >/dev/null");
+    must("docker build --quiet --tag ghcr.io/nightly-labs/whilo:latest /stand-in >/dev/null");
 
     // The layout of `whilo-instance create`, without systemd: an ext4 image mounted as /data.
     must(`mkdir -p /srv/whilo/main/data /backups
@@ -179,7 +179,7 @@ async function main(): Promise<void> {
       mount -o loop /srv/whilo/main/data.img ${data}
       cp -a /fixture/. ${data}/ && chown -R 1000:1000 ${data} && chmod 0700 ${data}
       printf 'WHILO_NAME=main\\nWHILO_CPUS=1\\nWHILO_MEM=1g\\nWHILO_DISK=256M\\nWHILO_BACKUP_DIR=/backups\\nWHILO_BACKUP_KEEP=2\\nWHILO_BACKUP_MAX_AGE=24\\n' >/opt/whilo-docker/instances/main.env
-      docker run --detach --name whilo-main --stop-timeout 20 -v ${data}:/data ghcr.io/nightly-labs/openbot:latest >/dev/null`);
+      docker run --detach --name whilo-main --stop-timeout 20 -v ${data}:/data ghcr.io/nightly-labs/whilo:latest >/dev/null`);
     const dataHash = must(`sha256sum ${data}/.config/Whilo/openbot.db | cut -d ' ' -f 1`);
 
     let result = instance("backups", "main");
@@ -439,7 +439,7 @@ async function main(): Promise<void> {
       `sed -n 's/^  "whiloVersion": "\\(.*\\)",$/\\1/p' /backups/main/${removedBackup}/manifest.json`,
     );
     must(
-      `docker run --detach --name whilo-main --stop-timeout 20 -v ${data}:/data ghcr.io/nightly-labs/openbot:latest >/dev/null`,
+      `docker run --detach --name whilo-main --stop-timeout 20 -v ${data}:/data ghcr.io/nightly-labs/whilo:latest >/dev/null`,
     );
     check(
       "a backup without a container has the version of the image",

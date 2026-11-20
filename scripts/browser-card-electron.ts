@@ -32,10 +32,10 @@ const CARD: VaultCardSecret = {
   nameOnCard: "Ada Lovelace",
 };
 const CARD_ID = "card-fixture";
-const CHECKOUT = "https://checkout.openbot.test";
-const SCRIPTED = "https://scripted.openbot.test";
+const CHECKOUT = "https://checkout.whilo.test";
+const SCRIPTED = "https://scripted.whilo.test";
 // A refused evaluate still marks the checkout site as scripted, so later fills use another site.
-const SHOP = "https://shop.openbot.test";
+const SHOP = "https://shop.whilo.test";
 const PAYMENTS = "https://payments.cardfixture.test";
 
 const snapshotSchema = z.object({

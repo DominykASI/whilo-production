@@ -6,20 +6,20 @@
 //    `error.provider.codexStateBusy`, not the CLI's words.
 // 3. An update whose new copy fails the same way keeps the copy, and does not report
 //    `error.provider.cliUpdateFailed`.
-// `bun run test:codex-state-busy`. Writes .openbot-build/codex-state-busy-e2e/report.json.
+// `bun run test:codex-state-busy`. Writes .whilo-build/codex-state-busy-e2e/report.json.
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { chmod, mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { sourceText } from "@openbot/i18n/source";
+import { sourceText } from "@whilo/i18n/source";
 import { Effect, Result } from "effect";
 
-const OUT = resolve(import.meta.dirname, "../.openbot-build/codex-state-busy-e2e");
+const OUT = resolve(import.meta.dirname, "../.whilo-build/codex-state-busy-e2e");
 const REQUEST_TIMEOUT_MS = 1_000;
 /** Longer than the request timeout, and shorter than the long start timeout below. */
 const SLOW_INITIALIZE_MS = 2_500;
 const LONG_START_TIMEOUT_MS = 8_000;
-const root = await mkdtemp(join(tmpdir(), "openbot-codex-state-busy-"));
+const root = await mkdtemp(join(tmpdir(), "whilo-codex-state-busy-"));
 const home = join(root, "home");
 const logPath = join(root, "protocol.jsonl");
 const modePath = join(root, "mode.json");
@@ -39,7 +39,7 @@ const { ConversationRuntime } = await import("../src/backend/agent/conversation-
 const { ProviderRuntime } = await import("../src/backend/agent/provider-runtime");
 const { AgentStore } = await import("../src/backend/agent-store");
 const { runCauseEffect } = await import("../src/backend/effect-boundary");
-const { OpenBotDatabase } = await import("../src/backend/openbot-database");
+const { WhiloDatabase } = await import("../src/backend/whilo-database");
 const { BUILT_IN_PROVIDER_DRIVERS, NO_PROVIDER_CREDENTIALS } = await import("../src/backend/provider-drivers");
 
 // The mode applies to each process that starts while it is set: `slow` answers `initialize` late,
@@ -134,7 +134,7 @@ async function installFakeCodex(directory: string): Promise<string> {
 }
 
 function runtime(executable: string) {
-  const store = new AgentStore(join(root, "profile"), home, new OpenBotDatabase(join(root, "profile")));
+  const store = new AgentStore(join(root, "profile"), home, new WhiloDatabase(join(root, "profile")));
   const providers = new ProviderRuntime({
     offProviders: BUILT_IN_PROVIDER_DRIVERS.map((driver) => driver.id).filter(
       (id) => id !== "codex" && id !== "opencode",

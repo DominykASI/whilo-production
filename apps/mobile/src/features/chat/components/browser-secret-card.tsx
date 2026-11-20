@@ -1,6 +1,6 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import type { BrowserTakeoverRequest, RespondToBrowserSecretInput } from "@openbot/contracts/ipc";
-import { markdownInlinePlainText } from "@openbot/contracts/markdown-preview-text";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import type { BrowserTakeoverRequest, RespondToBrowserSecretInput } from "@whilo/contracts/ipc";
+import { markdownInlinePlainText } from "@whilo/contracts/markdown-preview-text";
 import { GlassView } from "expo-glass-effect";
 import { Button, Spinner, Typography } from "heroui-native";
 import { useThemeColor } from "heroui-native/hooks";

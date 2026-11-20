@@ -1,8 +1,8 @@
-import type { OpenBotDesktopApi } from "@openbot/contracts/ipc";
+import type { OpenBotDesktopApi } from "@whilo/contracts/ipc";
 
 /**
  * What provider state reaches in main: connecting, signing in and refreshing providers, and the
- * runtimes OpenBot installs for them, on this computer or on a host the account administers.
+ * runtimes Whilo installs for them, on this computer or on a host the account administers.
  */
 export interface ProvidersPort {
   cancelProviderCodeLogin: OpenBotDesktopApi["cancelProviderCodeLogin"];
@@ -26,7 +26,7 @@ export interface ProvidersPort {
   providerAdmin: OpenBotDesktopApi["providerAdmin"];
 }
 
-/** Read on each call: tests and stories replace `window.openbot` per case. */
+/** Read on each call: tests and stories replace `window.whilo` per case. */
 export function providersPort(): ProvidersPort {
-  return window.openbot;
+  return window.whilo;
 }

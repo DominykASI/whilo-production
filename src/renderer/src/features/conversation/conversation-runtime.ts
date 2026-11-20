@@ -7,8 +7,8 @@ import type {
   OpenBotDesktopApi,
   ResetAgentSessionSettingInput,
   SetAgentSessionSettingInput,
-} from "@openbot/contracts/ipc";
-import type { AttachmentMediaSource } from "@openbot/ui/features/conversation/AttachmentCards";
+} from "@whilo/contracts/ipc";
+import type { AttachmentMediaSource } from "@whilo/ui/features/conversation/AttachmentCards";
 import type { AgentSkillCalls } from "../../skills-port";
 import type { AgentTemplatePublishCalls } from "../agent-templates/agent-templates-port";
 import type { BrowserProfileCalls } from "../browser/browser-profiles-port";
@@ -121,5 +121,5 @@ export interface AgentNotificationLevelCalls {
 }
 
 export function conversationRuntime(props: Pick<ConversationProps, "runtime">): ConversationRuntime {
-  return props.runtime ?? window.openbot;
+  return props.runtime ?? window.whilo;
 }

@@ -92,7 +92,7 @@ baixar, `chmod +x`, e conviver com atualização manual. `.deb` resolve isso com
 `INFERIDO` que a ausência é escolha, não esquecimento: o alvo está isolado em `target:` e o
 arquivo tem 20 linhas de comentário justificando só o AppImage.
 
-**Correção já feita no rebrand:** `build/linux/openbot.apparmor` foi deletado e
+**Correção já feita no rebrand:** `build/linux/whilo.apparmor` foi deletado e
 `build/linux/whilo.apparmor` é o referenciado. `VERIFICADO` no `git status`.
 
 ---

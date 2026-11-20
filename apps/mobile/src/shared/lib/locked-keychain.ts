@@ -1,4 +1,4 @@
-import * as SecureStore from "expo-secure-store";
+import * as SecureStore from "./persistent-storage";
 
 /**
  * Keychain items that the app can read while the phone is locked: the session, the server keys and

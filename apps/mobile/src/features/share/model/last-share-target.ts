@@ -1,6 +1,6 @@
 import { isDynamicRecord, isString } from "@whilo/contracts/runtime-values";
 import { remoteHostFingerprint } from "@whilo/team-client";
-import * as SecureStore from "expo-secure-store";
+import * as SecureStore from "../../../shared/lib/persistent-storage";
 
 /** The agent that got the last share, which the next share selects first. */
 export interface ShareTarget {

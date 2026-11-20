@@ -11,21 +11,21 @@ export default defineConfig({
     plugins: [
       externalizeDepsPlugin({
         exclude: [
-          "@openbot/brand",
-          "@openbot/contracts",
-          "@openbot/i18n",
-          "@openbot/logging",
-          "@openbot/team-client",
-          "@openbot/telemetry",
-          "@openbot/user-errors",
+          "@whilo/brand",
+          "@whilo/contracts",
+          "@whilo/i18n",
+          "@whilo/logging",
+          "@whilo/team-client",
+          "@whilo/telemetry",
+          "@whilo/user-errors",
           // Its vendored Baileys source is TypeScript too. Baileys' own dependencies stay external.
-          "@openbot/whatsapp",
+          "@whilo/whatsapp",
         ],
       }),
     ],
     build: {
       rollupOptions: {
-        // Optional peers of the vendored Baileys that OpenBot does not install: Baileys imports them
+        // Optional peers of the vendored Baileys that Whilo does not install: Baileys imports them
         // when it runs and goes on without them (no thumbnails, link previews or audio waveforms).
         external: ["jimp", "sharp", "audio-decode", "link-preview-js"],
         input: {
@@ -42,7 +42,7 @@ export default defineConfig({
     },
   },
   preload: {
-    plugins: [externalizeDepsPlugin({ exclude: ["@openbot/contracts"] })],
+    plugins: [externalizeDepsPlugin({ exclude: ["@whilo/contracts"] })],
     build: {
       rollupOptions: {
         input: {

@@ -1,6 +1,6 @@
 import * as Crypto from "expo-crypto";
 import * as Device from "expo-device";
-import * as SecureStore from "expo-secure-store";
+import * as SecureStore from "../../../shared/lib/persistent-storage";
 
 const MOBILE_DEVICE_ID_KEY = "whilo.mobile.device-id.v1";
 

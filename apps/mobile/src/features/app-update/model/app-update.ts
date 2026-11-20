@@ -5,7 +5,7 @@ import {
   parseMobileReleaseNotes,
 } from "@whilo/contracts/mobile-features";
 import { useQuery } from "@tanstack/react-query";
-import * as SecureStore from "expo-secure-store";
+import * as SecureStore from "../../../shared/lib/persistent-storage";
 import * as Updates from "expo-updates";
 import { useEffect } from "react";
 import { AppState, Linking } from "react-native";

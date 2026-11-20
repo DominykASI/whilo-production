@@ -599,7 +599,7 @@ function isAccessRefusal(status: number | null): boolean {
 }
 
 /**
- * Whether the server refused to register OpenBot. Only an error from a registration counts: the
+ * Whether the server refused to register Whilo. Only an error from a registration counts: the
  * same error classes from the token endpoint mean that the server refused a client it issued.
  *
  * The SDK keeps the status only when the refusal body is not an OAuth error. A body such as

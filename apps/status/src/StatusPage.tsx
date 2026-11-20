@@ -32,7 +32,7 @@ import {
 } from "./model";
 import "./status.css";
 
-export const ISSUES_URL = "https://github.com/nightly-labs/openbot/issues?q=label%3Astatus";
+export const ISSUES_URL = "https://github.com/nightly-labs/whilo/issues?q=label%3Astatus";
 const SITE_URL = "https://openbot.run";
 /** A scheduled run can start late, but a check older than this means that the checks stopped. */
 const LATE_CHECK_MS = 30 * 60_000;

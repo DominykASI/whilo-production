@@ -4,6 +4,7 @@ import { type AuthRetentionResult, pruneExpiredAuthData } from "./auth-data-rete
 import { BillingSales } from "./billing-sales";
 import { captureBillingSnapshot } from "./billing-snapshots";
 import { canonicalHostRedirect, permanentTrailingSlashRedirect } from "./canonical-redirect";
+import { applyCors, corsPreflight } from "./cors";
 import { runApiEffect } from "./effect-runtime";
 import { createHostedBilling } from "./hosted-billing";
 import type { HostedServerBindings } from "./hosted-server-service";
@@ -19,7 +20,6 @@ import {
 } from "./remote-control-plane";
 import { SalesAnalyticsDelivery } from "./sales-analytics-delivery";
 import { checkSignalEntry, SIGNAL_ENTRY_CRON, type SignalEntryBindings } from "./signal-entry-failover";
-import { applyCors, corsPreflight } from "./cors";
 import type { WorkerBindings } from "./types";
 
 type WorkerFetch = (request: Request) => Response | Promise<Response>;
@@ -285,7 +285,7 @@ function serveLocalHostedSite(
   if (!/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/u.test(label)) return Effect.succeed(null);
   const hostedUrl = new URL(requestUrl);
   hostedUrl.protocol = "https:";
-  hostedUrl.hostname = `${label}.openbot.site`;
+  hostedUrl.hostname = `${label}.whilo.site`;
   hostedUrl.port = "";
   return routeHostedSiteRequest(
     new Request(hostedUrl, request),

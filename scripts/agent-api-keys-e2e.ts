@@ -106,10 +106,10 @@ const registryHost = {
 };
 const registry = new AttentionRegistry({ ...registryHost, apiKeys });
 
-/** A registry with its own key folder and a real Vault, as OpenBot wires them when the Vault is ready. */
+/** A registry with its own key folder and a real Vault, as Whilo wires them when the Vault is ready. */
 async function vaultRegistry(name: string) {
   const vault = new VaultService({
-    store: new VaultStore(join(root, `openbot-vault-${name}.json`), REVERSING_CIPHER),
+    store: new VaultStore(join(root, `whilo-vault-${name}.json`), REVERSING_CIPHER),
     canPersist: () => true,
   });
   await Effect.runPromise(vault.load());

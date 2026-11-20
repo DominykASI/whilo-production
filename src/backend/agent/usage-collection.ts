@@ -1,13 +1,13 @@
 import { randomUUID } from "node:crypto";
-import { accountUsageCoversModel, isKeyOnlyProvider } from "@openbot/contracts/agent-providers";
-import { type AgentSummary, isAgentModel, type UsageTokens, WORKFLOWS_USAGE_ID } from "@openbot/contracts/ipc";
-import { type DynamicRecord, isDynamicRecord } from "@openbot/contracts/runtime-values";
-import { createOpenBotLogger } from "@openbot/logging";
+import { accountUsageCoversModel, isKeyOnlyProvider } from "@whilo/contracts/agent-providers";
+import { type AgentSummary, isAgentModel, type UsageTokens, WORKFLOWS_USAGE_ID } from "@whilo/contracts/ipc";
+import { type DynamicRecord, isDynamicRecord } from "@whilo/contracts/runtime-values";
+import { createWhiloLogger } from "@whilo/logging";
 import type { AgentUsage } from "../database/agent-usage";
 import type { ProviderSession } from "../database/provider-sessions";
 import { getRecord, getString } from "../protocol";
 
-const logger = createOpenBotLogger("usage-collection");
+const logger = createWhiloLogger("usage-collection");
 const GROK_USD_TICKS = 10_000_000_000;
 
 function count(value: unknown): number | null {
@@ -33,7 +33,7 @@ export function collectProviderUsage(
     if (turnId && isAgentModel(model)) usage.reroute(agent.id, session.id, turnId, model);
     return;
   }
-  if (method !== "thread/tokenUsage/updated" && method !== "openbot/usage") return;
+  if (method !== "thread/tokenUsage/updated" && method !== "whilo/usage") return;
   const turnId = getString(params, "turnId") ?? "baseline";
   if (session.provider === "codex") {
     const tokenUsage = getRecord(params, "tokenUsage");

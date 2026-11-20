@@ -1,13 +1,13 @@
-import { canPreviewAttachment } from "@openbot/contracts/ipc";
-import type { AppTextKey } from "@openbot/i18n";
-import { classifyFailure } from "@openbot/telemetry";
-import { Input } from "@openbot/ui";
-import type { AgentMessage } from "@openbot/ui/data";
-import { ChatSearch } from "@openbot/ui/features/conversation/ChatSearch";
-import { contextUsageView } from "@openbot/ui/features/conversation/ContextUsage";
-import { AgentThreadView, type AgentThreadVoice } from "@openbot/ui/features/conversation/threads/AgentThreadView";
-import type { AgentThreadBranchSource } from "@openbot/ui/features/conversation/threads/BranchDivider";
-import { useText } from "@openbot/ui/text";
+import { canPreviewAttachment } from "@whilo/contracts/ipc";
+import type { AppTextKey } from "@whilo/i18n";
+import { classifyFailure } from "@whilo/telemetry";
+import { Input } from "@whilo/ui";
+import type { AgentMessage } from "@whilo/ui/data";
+import { ChatSearch } from "@whilo/ui/features/conversation/ChatSearch";
+import { contextUsageView } from "@whilo/ui/features/conversation/ContextUsage";
+import { AgentThreadView, type AgentThreadVoice } from "@whilo/ui/features/conversation/threads/AgentThreadView";
+import type { AgentThreadBranchSource } from "@whilo/ui/features/conversation/threads/BranchDivider";
+import { useText } from "@whilo/ui/text";
 import { createEffect, createMemo, createProjection, createSignal, Show, untrack } from "solid-js";
 import { actionToast } from "../../action-toast";
 import { useShowAgentSteps } from "../../agent-steps-preference";
@@ -232,7 +232,7 @@ export function ConversationThread() {
       {(current) => (
         <>
           <Show when={current().threads.acceptsFiles}>
-            <Input ref={setPicker} type="file" multiple hidden tabindex={-1} data-openbot-attachment-picker="true" />
+            <Input ref={setPicker} type="file" multiple hidden tabindex={-1} data-whilo-attachment-picker="true" />
           </Show>
           <Show when={threadSearchOpen()}>
             <ChatSearch

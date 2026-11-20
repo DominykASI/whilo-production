@@ -64,7 +64,7 @@ const NOW = args.now ?? new Date().toISOString();
 if (Number.isNaN(Date.parse(NOW))) throw new Error(`--now: "${NOW}" is not a time.`);
 const RETRY_DELAY_MS = Number(args["retry-delay"] ?? 10_000);
 
-const REPOSITORY = process.env.GITHUB_REPOSITORY ?? "nightly-labs/openbot";
+const REPOSITORY = process.env.GITHUB_REPOSITORY ?? "nightly-labs/whilo";
 const TOKEN = process.env.GITHUB_TOKEN?.trim() || null;
 if (TOKEN) registerSecretValue(TOKEN);
 if (!DRY_RUN && !TOKEN && !args["issues-file"]) throw new Error("GITHUB_TOKEN is necessary to write issues.");
@@ -108,7 +108,7 @@ const jsonBody = (body: string, test: (value: unknown) => boolean) => {
   }
 };
 
-const RELEASE_PATH = "/nightly-labs/openbot/releases/latest/download";
+const RELEASE_PATH = "/nightly-labs/whilo/releases/latest/download";
 const PROBES: Record<ServiceId, Probe> = {
   accounts: { origin: "api", paths: ["/health/ready"], healthy: (b) => jsonBody(b, isReady) },
   connections: {

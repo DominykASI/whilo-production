@@ -1,7 +1,7 @@
 import type { RemoteDesktopDisplay } from "./remote-desktop-api";
 
 // The app's own script in the viewer page. The page is the host's Moonlight Web viewer (2.10, with
-// OpenBot's patch). The script runs at the start of each page load and only sets values in the
+// Whilo's patch). The script runs at the start of each page load and only sets values in the
 // page: it has no way to call the app. The app calls it with `injectJavaScript`.
 //
 // - Settings: Moonlight reads `mlSettings` from local storage when its stream page starts.
@@ -310,7 +310,7 @@ true;`;
 }
 
 /** The file name that the page posts its stats to. The proxy answers it and sends it to no host. */
-export const VIEWER_STATS_FILE = "openbot-phone-stats";
+export const VIEWER_STATS_FILE = "whilo-phone-stats";
 
 /** A call into the page's script. Each value is JSON, so no value can end the call early. */
 export function viewerCall(

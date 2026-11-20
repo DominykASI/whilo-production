@@ -5,7 +5,7 @@
 // the status post; the plain-text fallback and a status post still mention nobody.
 //
 // Run: bun scripts/messaging-telegram-mentions-e2e.ts
-// Writes .openbot-build/messaging-telegram-mentions-e2e/report.json and exits non-zero on a failure.
+// Writes .whilo-build/messaging-telegram-mentions-e2e/report.json and exits non-zero on a failure.
 import assert from "node:assert/strict";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -13,7 +13,7 @@ import type {
   TelegramCallMethod,
   TelegramCallParams,
   TelegramCallResult,
-} from "@openbot/contracts/signal-protocol/telegram-route";
+} from "@whilo/contracts/signal-protocol/telegram-route";
 import { Effect } from "effect";
 import { runCauseEffect } from "../src/backend/effect-boundary";
 import {
@@ -23,7 +23,7 @@ import {
 } from "../src/backend/messaging/messaging-types";
 import { telegramDriver } from "../src/backend/messaging/telegram/telegram-driver";
 
-const OUT = resolve(import.meta.dirname, "../.openbot-build/messaging-telegram-mentions-e2e");
+const OUT = resolve(import.meta.dirname, "../.whilo-build/messaging-telegram-mentions-e2e");
 const BOT = "7000000001";
 const CHAT = "-1001234567890";
 const WORD_JOINER = "⁠";

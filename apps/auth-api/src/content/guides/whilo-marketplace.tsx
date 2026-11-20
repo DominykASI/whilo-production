@@ -104,3 +104,6 @@ export function WhiloMarketplace() {
     </>
   );
 }
+
+/** Older pages import this guide under the OpenBot name. */
+export const OpenBotMarketplace = WhiloMarketplace;

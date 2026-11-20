@@ -1,7 +1,7 @@
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { CustomProviderReasoningEffort } from "@openbot/contracts/ipc";
+import type { CustomProviderReasoningEffort } from "@whilo/contracts/ipc";
 import { Effect } from "effect";
 import { type CustomProviderConfig, customModelOutputLimit } from "./opencode-config";
 import type { PiMcpExtension } from "./pi-mcp";
@@ -41,7 +41,7 @@ type PiThinkingLevelMap = Readonly<
  * The `reasoning_effort` that Pi sends for each of its levels, and null for a level that the endpoint
  * does not accept. Pi lists only the levels that are not null (`getSupportedThinkingLevels`, Pi 1.1.0:
  * https://github.com/earendil-works/pi/blob/abe508e1b89912adde45528136c3221eb69acdd7/packages/ai/src/models.ts#L1224-L1233).
- * Pi's `off` is OpenBot's `none`.
+ * Pi's `off` is Whilo's `none`.
  */
 function thinkingLevelMap(efforts: readonly CustomProviderReasoningEffort[]): PiThinkingLevelMap {
   const accepted = (effort: CustomProviderReasoningEffort) => (efforts.includes(effort) ? effort : null);

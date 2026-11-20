@@ -1,7 +1,7 @@
 // @vitest-environment node
 
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import { AGENT_DOCK_LIMITS, type AgentDockPresentation } from "@openbot/contracts/ipc";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import { AGENT_DOCK_LIMITS, type AgentDockPresentation } from "@whilo/contracts/ipc";
 import { describe, expect, it } from "vitest";
 import {
   decodeAgentDockAction,

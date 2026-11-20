@@ -192,7 +192,7 @@ export const messages = {
   "workflow.telegram.anyChat": "Elke gekoppelde chat",
   "workflow.telegram.sameChat": "Zelfde als trigger",
   "workflow.telegram.event": "Gebeurtenis",
-  "workflow.telegram.event.mention": "OpenBot genoemd",
+  "workflow.telegram.event.mention": "Whilo genoemd",
   "workflow.telegram.text": "Tekst bevat",
   "workflow.telegram.anyText": "Elke tekst",
   "workflow.telegram.on": "Op",

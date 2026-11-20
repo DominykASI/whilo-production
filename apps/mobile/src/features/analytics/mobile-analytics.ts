@@ -48,6 +48,8 @@ function filterMobilePayload(event: TrackHandlerPayload): boolean {
 export const mobileAnalytics = new MobileAnalytics(() => {
   const clientId = process.env.EXPO_PUBLIC_OPENPANEL_CLIENT_ID;
   const clientSecret = process.env.EXPO_PUBLIC_OPENPANEL_CLIENT_SECRET;
+  // Explicit web behavior: no mobile analytics transport on web (no silent enablement).
+  // Consent/preference is still persisted via persistent-storage; see preference.ts.
   if (
     __DEV__ ||
     process.env.EXPO_PUBLIC_APP_ENV !== "production" ||
@@ -58,7 +60,7 @@ export const mobileAnalytics = new MobileAnalytics(() => {
     return null;
   const client = new OpenPanel({
     // Analytics endpoint: override via EXPO_PUBLIC_OPENPANEL_API_URL when a Whilo analytics host exists.
-    apiUrl: process.env.EXPO_PUBLIC_OPENPANEL_API_URL || "https://analytics.openbot.run/api",
+    apiUrl: process.env.EXPO_PUBLIC_OPENPANEL_API_URL || "https://analytics.whilo.onerall.com/api",
     clientId,
     clientSecret,
     filter: filterMobilePayload,

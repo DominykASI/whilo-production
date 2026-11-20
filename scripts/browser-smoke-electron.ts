@@ -4127,8 +4127,8 @@ async function runCookieBannerScenario(browser: BrowserHost, origin: string): Pr
       takeoverTab: "stopped",
       personTab: { output: personOutput, consentScript: personScript },
     };
-    await mkdir(".openbot-build", { recursive: true });
-    await writeFile(".openbot-build/browser-cookie-banner.json", JSON.stringify(report, null, 2));
+    await mkdir(".whilo-build", { recursive: true });
+    await writeFile(".whilo-build/browser-cookie-banner.json", JSON.stringify(report, null, 2));
     if (report.status !== "passed") throw new Error(`A cookie banner was changed: ${JSON.stringify(report)}`);
   } finally {
     await runCauseEffect(browser.close(agent.tab.id));

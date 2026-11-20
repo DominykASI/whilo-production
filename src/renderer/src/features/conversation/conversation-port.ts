@@ -1,4 +1,4 @@
-import type { DeleteSharedTableInput, OpenBotDesktopApi, SharedTable } from "@openbot/contracts/ipc";
+import type { DeleteSharedTableInput, OpenBotDesktopApi, SharedTable } from "@whilo/contracts/ipc";
 
 /**
  * What the conversation domain reaches in main: agent and direct message pages, sends, reads,
@@ -51,9 +51,9 @@ export interface ConversationPort {
   browserDock: Pick<OpenBotDesktopApi["browserDock"], "publishPresentation" | "onAction" | "onShown">;
 }
 
-/** Read on each call: tests and stories replace `window.openbot` per case. */
+/** Read on each call: tests and stories replace `window.whilo` per case. */
 export function conversationPort(): ConversationPort {
-  return window.openbot;
+  return window.whilo;
 }
 
 /** Cleanup can run after IPC shuts down; process shutdown also frees these in-memory pages. */

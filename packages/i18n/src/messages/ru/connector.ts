@@ -384,14 +384,14 @@ export const messages = {
   "connector.whatsapp.numbersTitle": "Номера",
   "connector.whatsapp.linkNumber": "Привязать номер",
   "connector.whatsapp.ownNumberNote":
-    "OpenBot получает сообщения из вашего чата «Сообщение себе» и от людей, которым вы разрешили писать.",
+    "Whilo получает сообщения из вашего чата «Сообщение себе» и от людей, которым вы разрешили писать.",
   "connector.whatsapp.dedicatedNote":
-    "OpenBot получает сообщения от людей, которым вы разрешили писать. Остальные получают код, который нужно передать вам.",
+    "Whilo получает сообщения от людей, которым вы разрешили писать. Остальные получают код, который нужно передать вам.",
   "connector.whatsapp.helpLoggedOut": "WhatsApp удалил этот компьютер из связанных устройств. Привяжите номер заново.",
   "connector.whatsapp.helpLoggedOutHost": "WhatsApp удалил этот сервер из связанных устройств. Привяжите номер заново.",
   "connector.whatsapp.helpError":
-    "OpenBot не может связаться с WhatsApp на этом номере. Переподключите или отключите номер.",
-  "connector.whatsapp.retryAt": "WhatsApp попросил OpenBot подождать. Следующая попытка в {time}.",
+    "Whilo не может связаться с WhatsApp на этом номере. Переподключите или отключите номер.",
+  "connector.whatsapp.retryAt": "WhatsApp попросил Whilo подождать. Следующая попытка в {time}.",
   "connector.whatsapp.pause": "Приостановить",
   "connector.whatsapp.resume": "Возобновить",
   "connector.whatsapp.reconnect": "Переподключить",
@@ -401,14 +401,14 @@ export const messages = {
   "connector.whatsapp.disconnectAllSummary":
     "Все номера будут отключены. Связаться с вашими агентами через WhatsApp будет нельзя.",
   "connector.whatsapp.disconnectAllSummaryOrchestrator":
-    "Все номера будут отключены. Оркестратор WhatsApp и его разговоры будут удалены из OpenBot.",
+    "Все номера будут отключены. Оркестратор WhatsApp и его разговоры будут удалены из Whilo.",
   "connector.whatsapp.rowAction": "{action}: {name}",
   "connector.whatsapp.ownNumber": "Личный номер",
   "connector.whatsapp.ownNumberDescription":
-    "Писать могут только вы в чате «Сообщение себе» и люди, которым вы разрешили. Выключите, если номер только для OpenBot.",
+    "Писать могут только вы в чате «Сообщение себе» и люди, которым вы разрешили. Выключите, если номер только для Whilo.",
   "connector.whatsapp.orchestratorTitle": "Оркестратор WhatsApp",
   "connector.whatsapp.orchestratorDescription":
-    "Этот агент получает сообщения для OpenBot со всех ваших привязанных номеров. Короткие он обрабатывает сам, остальную работу передаёт нужному агенту и отвечает в WhatsApp.",
+    "Этот агент получает сообщения для Whilo со всех ваших привязанных номеров. Короткие он обрабатывает сам, остальную работу передаёт нужному агенту и отвечает в WhatsApp.",
   "connector.whatsapp.orchestratorNone": "Пока никто не отвечает",
   "connector.whatsapp.orchestratorNoneDescription": "Добавьте Оркестратора WhatsApp, иначе WhatsApp не получит ответа.",
   "connector.whatsapp.note":
@@ -421,8 +421,8 @@ export const messages = {
   "connector.whatsapp.kindLabel": "Номер",
   "connector.whatsapp.kindPersonal": "Мой личный номер",
   "connector.whatsapp.kindPersonalDescription":
-    "OpenBot отвечает только в вашем чате «Сообщение себе» и людям, которым вы разрешили.",
-  "connector.whatsapp.kindDedicated": "Номер только для OpenBot",
+    "Whilo отвечает только в вашем чате «Сообщение себе» и людям, которым вы разрешили.",
+  "connector.whatsapp.kindDedicated": "Номер только для Whilo",
   "connector.whatsapp.kindDedicatedDescription":
     "Незнакомые люди получают код, который нужно передать вам. Вы одобряете их здесь.",
   "connector.whatsapp.methodLabel": "Способ привязки",
@@ -450,26 +450,26 @@ export const messages = {
   "connector.whatsapp.failedTimeout": "Срок действия кода истёк до того, как телефон его использовал.",
   "connector.whatsapp.failedRefused": "WhatsApp отклонил привязку. Подождите несколько минут и повторите попытку.",
   "connector.whatsapp.failedBusy": "Уже идёт другая привязка. Дождитесь её завершения и повторите попытку.",
-  "connector.whatsapp.failedUnavailable": "OpenBot не может связаться с WhatsApp. Проверьте подключение к интернету.",
+  "connector.whatsapp.failedUnavailable": "Whilo не может связаться с WhatsApp. Проверьте подключение к интернету.",
   "connector.whatsapp.tryAgain": "Повторить",
   "connector.whatsapp.agentStepTitle": "Добавьте Оркестратора WhatsApp",
   "connector.whatsapp.agentStepDescription":
-    "Этот новый агент отвечает на сообщения для OpenBot на {number} и на каждом номере, который вы привяжете позже.",
+    "Этот новый агент отвечает на сообщения для Whilo на {number} и на каждом номере, который вы привяжете позже.",
   "connector.whatsapp.orchestratorName": "Оркестратор WhatsApp",
   "connector.whatsapp.orchestratorRole": "Отвечает в WhatsApp и обращается к команде",
-  "connector.whatsapp.orchestratorDoesReceive": "Первым получает каждое сообщение WhatsApp для OpenBot",
+  "connector.whatsapp.orchestratorDoesReceive": "Первым получает каждое сообщение WhatsApp для Whilo",
   "connector.whatsapp.orchestratorDoesDelegate": "Передаёт каждую задачу наиболее подходящему агенту",
   "connector.whatsapp.orchestratorDoesAnswer": "Отвечает в чате WhatsApp",
   "connector.whatsapp.orchestratorModel": "Модель",
-  "connector.whatsapp.doneTitle": "OpenBot привязан к {number}",
+  "connector.whatsapp.doneTitle": "Whilo привязан к {number}",
   "connector.whatsapp.done": "Готово",
   "connector.whatsapp.disconnectTitle": "Отключить {number}?",
   "connector.whatsapp.disconnectDescription":
-    "OpenBot выйдет из WhatsApp на {number}. Если OpenBot был выключен, также удалите устройство в WhatsApp > Связанные устройства.",
+    "Whilo выйдет из WhatsApp на {number}. Если Whilo был выключен, также удалите устройство в WhatsApp > Связанные устройства.",
   "connector.whatsapp.disconnectEffect": "Люди больше не смогут обращаться к вашим агентам через {number}.",
-  "connector.whatsapp.removeEffectKept": "Диалоги и Оркестратор WhatsApp останутся в OpenBot.",
+  "connector.whatsapp.removeEffectKept": "Диалоги и Оркестратор WhatsApp останутся в Whilo.",
   "connector.whatsapp.removeEffectDeleted":
-    "Это последний номер, поэтому Оркестратор WhatsApp и его диалоги будут удалены из OpenBot.",
+    "Это последний номер, поэтому Оркестратор WhatsApp и его диалоги будут удалены из Whilo.",
   "connector.whatsapp.keep": "Оставить привязанным",
   "connector.whatsapp.close": "Закрыть",
   "connector.whatsapp.sendersTitle": "Кто может писать на {number}",
@@ -489,7 +489,7 @@ export const messages = {
   "connector.whatsapp.groupDescription": "Участники этой группы могут поручать работу вашим агентам.",
   "connector.whatsapp.groupSearch": "Поиск групп",
   "connector.whatsapp.groupsLoading": "Загрузка групп…",
-  "connector.whatsapp.groupsLoadFailed": "OpenBot не смог прочитать группы",
+  "connector.whatsapp.groupsLoadFailed": "Whilo не смог прочитать группы",
   "connector.whatsapp.groupsEmpty": "Этот номер не состоит ни в одной группе.",
   "connector.whatsapp.groupsNoMatch": "Нет группы с таким названием.",
   "connector.whatsapp.groupAdded": "Добавлена",
@@ -605,19 +605,19 @@ export const messages = {
   "connector.protonPass.keyPlaceholder": "pst_…",
   "connector.protonPass.setupTitle": "Настройка",
   "connector.protonPass.setupDescription":
-    "Кнопка «Подключить» открывает вход в Proton в браузере. Затем OpenBot создаёт общее хранилище и хранит только ключ для чтения.",
+    "Кнопка «Подключить» открывает вход в Proton в браузере. Затем Whilo создаёт общее хранилище и хранит только ключ для чтения.",
   "connector.protonPass.setupDescriptionHost":
     "Кнопка «Подключить» открывает вход в Proton в браузере. Затем {host} создаёт общее хранилище и хранит только ключ для чтения.",
-  "connector.protonPass.vaultName": "Shared with OpenBot",
+  "connector.protonPass.vaultName": "Shared with Whilo",
   "connector.protonPass.vaultSetup":
-    "OpenBot создаёт это хранилище при подключении. Переместите в него учётные данные, чтобы поделиться ими.",
+    "Whilo создаёт это хранилище при подключении. Переместите в него учётные данные, чтобы поделиться ими.",
   "connector.protonPass.showSteps": "Показать шаги",
   "connector.protonPass.stepsLabel": "Шаги подключения",
   "connector.protonPass.stepSignIn": "Вход",
   "connector.protonPass.stepVault": "Создание хранилища",
   "connector.protonPass.stepDone": "Готово",
   "connector.protonPass.signInTitle": "Вход в Proton",
-  "connector.protonPass.signInStarting": "OpenBot начинает вход. Страница Proton откроется в браузере.",
+  "connector.protonPass.signInStarting": "Whilo начинает вход. Страница Proton откроется в браузере.",
   "connector.protonPass.signInDescription": "Вход открыт в браузере. Proton запросит пароль и второй фактор.",
   "connector.protonPass.signInDescriptionHost":
     "Вход для {host} открыт в браузере. Proton запросит пароль и второй фактор.",
@@ -627,7 +627,7 @@ export const messages = {
   "connector.protonPass.continue": "Продолжить",
   "connector.protonPass.setupStepTitle": "Создание общего хранилища",
   "connector.protonPass.setupStepDescription":
-    "OpenBot создаёт хранилище «{vault}» и ключ для чтения. Затем завершает сеанс Proton.",
+    "Whilo создаёт хранилище «{vault}» и ключ для чтения. Затем завершает сеанс Proton.",
   "connector.protonPass.doneTitle": "Proton Pass подключён",
   "connector.protonPass.doneDescription": "Переместите учётные данные в «{vault}», чтобы агенты могли входить с ними.",
   "connector.protonPass.failedTitle": "Proton Pass не подключён",
@@ -661,9 +661,9 @@ export const messages = {
   "connector.protonPass.keyNoExpiry": "Только чтение. Бессрочно.",
   "connector.protonPass.disconnectTitle": "Отключить Proton Pass",
   "connector.protonPass.disconnectSummary":
-    "OpenBot удаляет свой ключ доступа на этом компьютере. Хранилище и его учётные данные остаются в вашем аккаунте Proton.",
+    "Whilo удаляет свой ключ доступа на этом компьютере. Хранилище и его учётные данные остаются в вашем аккаунте Proton.",
   "connector.protonPass.disconnectSummaryHost":
-    "OpenBot удаляет свой ключ доступа на {host}. Хранилище и его учётные данные остаются в вашем аккаунте Proton.",
+    "Whilo удаляет свой ключ доступа на {host}. Хранилище и его учётные данные остаются в вашем аккаунте Proton.",
   "connector.protonPass.disconnect": "Отключить",
-  "connector.protonPass.actionFailed": "OpenBot не смог изменить подключение Proton Pass.",
+  "connector.protonPass.actionFailed": "Whilo не смог изменить подключение Proton Pass.",
 } as const satisfies PartialTranslation<typeof source>;

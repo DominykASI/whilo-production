@@ -263,7 +263,7 @@ export const messages = {
   "mobile.chat.imageGallery.saved": "写真に保存しました",
   "mobile.chat.imageGallery.shareAll": "すべて共有",
   "mobile.chat.imageGallery.photosPermission":
-    "これらの画像を保存するには、設定で OpenBot に写真の追加を許可してください。",
+    "これらの画像を保存するには、設定で Whilo に写真の追加を許可してください。",
   "mobile.chat.imageGallery.saveFailed": "画像を保存できませんでした",
   "mobile.chat.imageGallery.shareFailed": "画像を共有できませんでした",
   "mobile.chat.imageGallery.shareNeedsUpdate": "複数の画像を共有するには、アプリを最新版に更新してください。",

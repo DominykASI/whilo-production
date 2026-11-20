@@ -1,4 +1,4 @@
-import type { AgentAccessLevel, ServerAuditChange, ServerAuditEntry } from "@openbot/contracts/ipc";
+import type { AgentAccessLevel, ServerAuditChange, ServerAuditEntry } from "@whilo/contracts/ipc";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Typography } from "heroui-native";
 import { useThemeColor } from "heroui-native/hooks";
@@ -69,9 +69,9 @@ const LEVEL_CLASS = {
 
 function ChangeMark({ change }: { change: ServerAuditChange }) {
   const colors = {
-    success: [useCSSVariable("--openbot-success-text"), useCSSVariable("--openbot-success-soft")],
-    danger: [useCSSVariable("--openbot-danger-text"), useCSSVariable("--openbot-danger-soft")],
-    accent: [useCSSVariable("--openbot-accent-text"), useCSSVariable("--openbot-accent-soft")],
+    success: [useCSSVariable("--whilo-success-text"), useCSSVariable("--whilo-success-soft")],
+    danger: [useCSSVariable("--whilo-danger-text"), useCSSVariable("--whilo-danger-soft")],
+    accent: [useCSSVariable("--whilo-accent-text"), useCSSVariable("--whilo-accent-soft")],
   } as const;
   const { Icon, tone } = changeMark(change);
   const [color, background] = colors[tone];

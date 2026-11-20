@@ -81,13 +81,13 @@ export function createMockEvents(
       if (routine?.trigger.kind !== "webhook") throw new Error("This routine has no webhook trigger.");
       if (!routine.active)
         return {
-          eventType: routine.trigger.eventType ?? "openbot.test",
+          eventType: routine.trigger.eventType ?? "whilo.test",
           status: "ignored",
           reason: "inactive",
           runId: null,
         };
       return {
-        eventType: routine.trigger.eventType ?? "openbot.test",
+        eventType: routine.trigger.eventType ?? "whilo.test",
         status: "started",
         reason: null,
         runId: nextId("run"),

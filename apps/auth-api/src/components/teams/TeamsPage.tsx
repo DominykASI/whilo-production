@@ -14,7 +14,7 @@ import type { TeamsPageText } from "./teams-page-text";
 
 // Loaded after the page is in the browser, as in `FeaturesSection`: the avatar engine is large.
 const AgentAvatar = lazy(() =>
-  import("@openbot/ui/features/agents/AgentAvatar").then((module) => ({ default: module.AgentAvatar })),
+  import("@whilo/ui/features/agents/AgentAvatar").then((module) => ({ default: module.AgentAvatar })),
 );
 
 const SETUP_ICONS: Record<TeamsSetupId, LandingIconName> = {
@@ -139,7 +139,7 @@ function RevealSection(props: { id: string; labelledBy?: string; children: JSX.E
 // The hero ----------------------------------------------------------------------------------------
 
 /**
- * As the home hero puts the logo in "Meet OpenBot", this title holds the team: "Bring a team of [avatars]
+ * As the home hero puts the logo in "Meet Whilo", this title holds the team: "Bring a team of [avatars]
  * AI coworkers …". The word before the avatars stays on their line. Their eyes follow the pointer.
  */
 function TeamsHero(props: { text: TeamsPageText }) {

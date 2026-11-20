@@ -28,7 +28,7 @@ export interface AgentClient {
   readonly running: boolean;
   readonly readHistory?: ReadProviderHistory;
   /**
-   * True when the user's MCP tools in this thread wait for the provider's own `tool_search`. OpenBot's
+   * True when the user's MCP tools in this thread wait for the provider's own `tool_search`. Whilo's
    * tool search knows only the built-in tools, so it then sends the model to that tool. Optional,
    * because the other providers declare the MCP tools or load them on their own.
    */

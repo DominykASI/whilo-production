@@ -1,3 +1,4 @@
+import type { JSX } from "@solidjs/web";
 import {
   type BackgroundProcess,
   type ClientAgentSummary,
@@ -14,7 +15,6 @@ import {
   SettingsAgentsTab,
 } from "@whilo/ui/features/settings/SettingsAgentsTab";
 import { currentText, useText } from "@whilo/ui/text";
-import type { JSX } from "@solidjs/web";
 import { createEffect, createStore, Show } from "solid-js";
 import { actionToast } from "../../action-toast";
 import { settingsPort } from "./settings-port";

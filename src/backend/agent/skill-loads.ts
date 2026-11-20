@@ -1,7 +1,7 @@
 import { stat } from "node:fs/promises";
 import { homedir } from "node:os";
 import { isAbsolute, join } from "node:path";
-import { agentProviderDescriptor, isAgentProvider } from "@openbot/contracts/agent-providers";
+import { agentProviderDescriptor, isAgentProvider } from "@whilo/contracts/agent-providers";
 import { Effect, Option, Schema } from "effect";
 import { homeSkillRoot } from "../home-skills";
 import { getRecord, getString, isRecord } from "../protocol";
@@ -18,8 +18,8 @@ export interface SkillLoad {
 const SKILL_NAME = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/u;
 /** A skill of another Claude plugin, `<plugin>:<skill>`. Its folder is not known, so it has no size. */
 const PLUGIN_SKILL_NAME = /^(?=.{1,128}$)[A-Za-z0-9][A-Za-z0-9._-]*:[A-Za-z0-9][A-Za-z0-9._-]*$/u;
-/** The plugins through which OpenBot gives Claude the workspace skills and the user's own skills. */
-const OPENBOT_SKILL_PLUGINS = /^(?:openbot|agents):/u;
+/** The plugins through which Whilo gives Claude the workspace skills and the user's own skills. */
+const OPENBOT_SKILL_PLUGINS = /^(?:whilo|agents):/u;
 /** A whole path to a `SKILL.md` in a `skills` folder. The first group is the skill's folder name. */
 const SKILL_PATH = /^(?:.*[\\/])?skills[\\/]([^\\/]+)[\\/]SKILL\.md$/u;
 /** A path to a `SKILL.md` in a shell command. It starts after a separator, so `myskills/` is not a match. */
@@ -113,7 +113,7 @@ function skillFileCandidates(load: SkillLoad, place: SkillLoadPlace): string[] {
     const base = place.cwd ?? place.workspace;
     return base ? [join(base, path)] : [];
   }
-  // A skill of another plugin is in that plugin's folder, which OpenBot does not know.
+  // A skill of another plugin is in that plugin's folder, which Whilo does not know.
   if (load.skill.includes(":")) return [];
   const folders = isAgentProvider(place.provider) ? agentProviderDescriptor(place.provider).skillFolders : [];
   return [

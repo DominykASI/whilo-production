@@ -1,6 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
 import { attachmentFileExtension } from "@whilo/contracts/attachment-files";
 import type { AttachmentSummary } from "@whilo/contracts/ipc";
-import { useQuery } from "@tanstack/react-query";
 import { Directory, File, Paths } from "expo-file-system";
 import { useMobileWorkspaceActions } from "@/features/workspace/context/mobile-workspace-context";
 import { queryKeys } from "@/features/workspace/model/query-keys";

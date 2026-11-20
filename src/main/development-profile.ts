@@ -42,7 +42,7 @@ export function developmentUserDataName(profile: DevelopmentProfile, instanceId:
 }
 
 /**
- * The name the same profile had before the product was renamed from OpenBot. It is read only to
+ * The name the same profile had before the product was renamed from Whilo. It is read only to
  * move the directory once, in `migrateUserDataDirectory`, so work saved under the old name is not
  * left behind.
  */
@@ -50,7 +50,7 @@ export function legacyDevelopmentUserDataName(
   profile: DevelopmentProfile,
   instanceId: string | null = null,
 ): string {
-  const base = profile === "test-client" ? "OpenBot Dev Test Client" : "OpenBot Dev";
+  const base = profile === "test-client" ? "Whilo Dev Test Client" : "Whilo Dev";
   return instanceId ? `${base} ${instanceId}` : base;
 }
 

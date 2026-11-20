@@ -331,7 +331,7 @@ async function main(): Promise<void> {
 
     // RevenueCat refuses the registration with 400 `invalid_client`. In each attempt, the SDK
     // registers once more after it drops the credentials, both times as a public client. Then the
-    // probe says that the server does not accept OpenBot.
+    // probe says that the server does not accept Whilo.
     const revenueCat = await runCase("registration-refused-invalid-client", ["client_secret_basic", "none"], 2, {
       registrationRefused: true,
     });

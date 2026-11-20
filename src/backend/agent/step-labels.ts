@@ -1,8 +1,8 @@
 import { homedir } from "node:os";
 import { basename } from "node:path";
-import { isString } from "@openbot/contracts/runtime-values";
-import { sourceText } from "@openbot/i18n/source";
-import { redactText } from "@openbot/logging";
+import { isString } from "@whilo/contracts/runtime-values";
+import { sourceText } from "@whilo/i18n/source";
+import { redactText } from "@whilo/logging";
 import { getArray, getRecord, getString, isRecord, type ThreadItem } from "../protocol";
 
 /** The longest path, query or name that a step label quotes. A label is one short line. */

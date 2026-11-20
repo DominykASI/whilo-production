@@ -3,8 +3,8 @@ import {
   isAgentProvider,
   PROVIDER_USAGE_RESET_OUTCOMES,
   type ProviderUsageResetOutcome,
-} from "@openbot/contracts/ipc";
-import { decodeRecord, requiredString } from "@openbot/contracts/ipc-decoding";
+} from "@whilo/contracts/ipc";
+import { decodeRecord, requiredString } from "@whilo/contracts/ipc-decoding";
 import {
   type DynamicRecord,
   isBoolean,
@@ -12,7 +12,7 @@ import {
   isNumber,
   isOneOf,
   isString,
-} from "@openbot/contracts/runtime-values";
+} from "@whilo/contracts/runtime-values";
 
 export type RequestId = string | number;
 
@@ -289,7 +289,7 @@ export function decodeAccountLoginStartResult(value: unknown): AccountLoginStart
 export function decodeAccountDeviceCodeLoginStartResult(value: unknown): AccountDeviceCodeLoginStartResult {
   const record = decodeRecord(value, "account device login response");
   if (requiredString(record, "type") !== "chatgptDeviceCode") throw new Error("Unexpected Codex login type.");
-  // Held to the same rule as the browser login's URL: this is the address OpenBot shows the user
+  // Held to the same rule as the browser login's URL: this is the address Whilo shows the user
   // and offers to open, so a downgrade to plain HTTP is refused before it reaches the screen.
   const url = new URL(requiredString(record, "verificationUrl"));
   if (url.protocol !== "https:") throw new Error("Codex returned an unsafe login URL.");
@@ -472,7 +472,7 @@ function decodeRateLimitWindow(value: unknown): AccountRateLimitWindowResult | n
 }
 
 /**
- * Only the count: the credit rows are display text that OpenBot does not show. A count it cannot
+ * Only the count: the credit rows are display text that Whilo does not show. A count it cannot
  * read is unknown, so the usage reading that carries it still decodes.
  */
 function decodeRateLimitResetCredits(value: unknown): AccountRateLimitsReadResult["rateLimitResetCredits"] {

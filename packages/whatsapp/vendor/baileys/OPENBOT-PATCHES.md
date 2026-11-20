@@ -1,21 +1,21 @@
-# OpenBot patches to Baileys
+# Whilo patches to Baileys
 
 Upstream: <https://github.com/WhiskeySockets/Baileys>, tag `v7.0.0-rc14`, commit
 `7e7b0757e3f9f3c7789fb1cfd2f241d5002a199a`. License: MIT (`LICENSE`, kept unchanged).
 
 Copied: `src/` and `WAProto/` (without `WAProto/fix-imports.js`). Every changed line has an
-`OPENBOT PATCH` comment.
+`WHILO PATCH` comment.
 
 ## Why
 
 Upstream Baileys imports `libsignal` (GPL-3.0) for Signal sessions and sender keys, and
 `whatsapp-rust-bridge`, whose WebAssembly build contains `wacore-libsignal` (files marked
-`AGPL-3.0-only`). OpenBot is PolyForm Noncommercial 1.0.0 and cannot ship either. The patches remove
-both and plug in OpenBot's clean-room Signal module (`../../src/signal`, see `../../README.md`).
+`AGPL-3.0-only`). Whilo is PolyForm Noncommercial 1.0.0 and cannot ship either. The patches remove
+both and plug in Whilo's clean-room Signal module (`../../src/signal`, see `../../README.md`).
 
 ## Removed
 
-- `src/Signal/libsignal.ts`: the libsignal repository. OpenBot passes its own `makeSignalRepository`.
+- `src/Signal/libsignal.ts`: the libsignal repository. Whilo passes its own `makeSignalRepository`.
 - `src/Signal/Group/*`: the sender key code, which imported `libsignal/src/crypto` and
   `libsignal/src/curve`. Its origin could not be confirmed, so it is not kept.
 - `src/__tests__/`: upstream Jest tests.
@@ -31,7 +31,7 @@ both and plug in OpenBot's clean-room Signal module (`../../src/signal`, see `..
 | `src/Types/index.ts` | `UserFacingSocketConfig` requires `makeSignalRepository`. |
 | `src/index.ts` | Exports `Signal/lid-mapping` (`LIDMappingStore`). |
 | `src/Utils/messages-media.ts` | `Crypto.Decipheriv` in place of `Crypto.Decipher`, which `@types/node` 24 removed. |
-| `src/Types/optional-modules.d.ts` | New: declares the optional `link-preview-js`, which OpenBot does not install. |
+| `src/Types/optional-modules.d.ts` | New: declares the optional `link-preview-js`, which Whilo does not install. |
 | `src/Socket/socket.ts` | Handles `companion_reg_refresh`, which WhatsApp sends after the phone scans the code since July 2026: before a link, a new adv secret and the same code drawn again. Each code reads the adv secret when it is drawn. Upstream issue #2737, open PR #2765. Without it, the phone shows "Couldn't link device". |
 | `src/Socket/messages-recv.ts` | `sendMessageAck` reads `creds.me?.id`, so a node before the link (such as `companion_reg_refresh`) gets its ack. Upstream issue #2738, PR #2749. |
 
@@ -41,7 +41,7 @@ both and plug in OpenBot's clean-room Signal module (`../../src/signal`, see `..
 2. Replace `src/` and `WAProto/`, then delete `src/Signal/libsignal.ts`, `src/Signal/Group/`,
    `src/__tests__/` and `WAProto/fix-imports.js`.
 3. Apply each change in the table again. Drop a row when upstream has the same fix. `grep -rn "libsignal\|whatsapp-rust-bridge" src` must find
-   only `OPENBOT PATCH` comments.
+   only `WHILO PATCH` comments.
 4. Compare upstream's dependency list with `packages/whatsapp/package.json`, and check the license
    of each new package.
 5. Check that `Types/Signal.ts` (`SignalRepository`) did not change. If it did, update

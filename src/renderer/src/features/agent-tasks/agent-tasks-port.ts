@@ -1,4 +1,4 @@
-import type { AgentTaskInput, OpenBotDesktopApi } from "@openbot/contracts/ipc";
+import type { AgentTaskInput, OpenBotDesktopApi } from "@whilo/contracts/ipc";
 
 /** What the side thread state reaches on a server: the list, a thread's conversation, and the thread actions. */
 export interface AgentTasksPort
@@ -46,10 +46,10 @@ export interface AgentTasksPort
 /**
  * The side threads on desktop: main reaches the active server, or the server that a call names. A
  * delete that waits for its Undo time names its server, so a server switch does not move it.
- * Read on each call: tests and stories replace `window.openbot` per case.
+ * Read on each call: tests and stories replace `window.whilo` per case.
  */
 export function agentTasksPort(): AgentTasksPort {
-  const { agent } = window.openbot;
+  const { agent } = window.whilo;
   return {
     listTasks: (agentId) => agent.listTasks(agentId),
     readTask: (input) => agent.readTask(input),

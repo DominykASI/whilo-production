@@ -72,7 +72,7 @@ export class CodexAppServerClient extends EventEmitter<ClientEvents> {
   readonly #pending = new Map<RequestId, PendingRequest>();
   readonly #toolRequests = new Map<RequestId, { threadId: string; turnId: string; controller: AbortController }>();
   /**
-   * The Codex id of each server request, by the id OpenBot gives it. Each process numbers its requests
+   * The Codex id of each server request, by the id Whilo gives it. Each process numbers its requests
    * from 0, so its ids are not unique among the processes of other accounts or after a restart (#5465).
    */
   readonly #serverRequestIds = new Map<string, RequestId>();

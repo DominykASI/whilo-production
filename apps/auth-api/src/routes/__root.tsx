@@ -2,8 +2,8 @@ import interLatinFont from "@fontsource-variable/inter/files/inter-latin-wght-no
 import type { JSX } from "@solidjs/web";
 import { createRootRoute, type ErrorComponentProps, HeadContent, Outlet, Scripts } from "@tanstack/solid-router";
 import { createSignal, onSettled, Show } from "solid-js";
-import "@openbot/brand/logo.css";
-import { installPointerFocusGuard } from "@openbot/ui/pointer-focus";
+import "@whilo/brand/logo.css";
+import { installPointerFocusGuard } from "@whilo/ui/pointer-focus";
 import "../styles.css";
 import { NotFoundPage } from "../components/landing/NotFoundPage";
 import { PageError } from "../components/landing/PageError";
@@ -16,7 +16,7 @@ import { loadSiteChrome } from "../lib/site-locale";
 import { OPENBOT_SECURITY_HEADERS, openBotRootHead } from "../lib/site-metadata";
 import type { SiteChrome } from "../lib/site-text";
 
-const NOT_FOUND_TITLE = "Page not found · OpenBot";
+const NOT_FOUND_TITLE = "Page not found · Whilo";
 
 export const Route = createRootRoute({
   beforeLoad: () => ({ siteUrl: servingSiteUrl(), locale: requestLocale() }),

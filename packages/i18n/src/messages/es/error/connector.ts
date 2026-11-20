@@ -34,7 +34,7 @@ export const messages = {
   "error.connector.bitwardenCliInstallFailed":
     "No se pudo instalar la CLI de Bitwarden en este servidor. Comprueba su conexión de red y conecta de nuevo.",
   "error.connector.bitwardenFileUnreadable": "El archivo de conexión de Bitwarden no se puede leer.",
-  "error.connector.passwordManagerUnknown": "OpenBot no conoce este gestor de contraseñas.",
+  "error.connector.passwordManagerUnknown": "Whilo no conoce este gestor de contraseñas.",
   "error.connector.passwordManagerMethod": "Este gestor de contraseñas no se puede conectar de esta forma.",
   "error.connector.passwordManagerNoSignIn": "No hay ninguna página de inicio de sesión abierta. Vuelve a conectar.",
   "error.connector.protonPassFailed": "No se pudo conectar Proton Pass. Vuelve a conectar.",
@@ -49,5 +49,5 @@ export const messages = {
   "error.connector.protonPassFileUnreadable": "El archivo de conexión de Proton Pass no se puede leer.",
   "error.connector.protonPassSignInTimeout": "El inicio de sesión de Proton tardó demasiado. Vuelve a conectar.",
   "error.connector.protonPassSetupFailed":
-    "No se pudo crear la bóveda Shared with OpenBot ni su clave de acceso en Proton Pass. Vuelve a conectar.",
+    "No se pudo crear la bóveda Shared with Whilo ni su clave de acceso en Proton Pass. Vuelve a conectar.",
 } as const satisfies PartialTranslation<typeof source>;

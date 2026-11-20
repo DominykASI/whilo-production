@@ -1,4 +1,4 @@
-import type { WhiloDesktopApi, PromptCacheTtl } from "@whilo/contracts/ipc";
+import type { PromptCacheTtl, WhiloDesktopApi } from "@whilo/contracts/ipc";
 import type { ProviderPromptCache } from "@whilo/ui/features/settings/ProviderSettingsPage";
 import { useText } from "@whilo/ui/text";
 import { createEffect, createStore, untrack } from "solid-js";

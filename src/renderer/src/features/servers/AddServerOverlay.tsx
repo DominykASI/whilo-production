@@ -236,6 +236,11 @@ function AddServerSession(
         return "starting";
       case "running":
         return props.servers.some((entry) => entry.id === server.serverId) ? "ready" : "connecting";
+      case "stopping":
+      case "stopped":
+        // A stopped server is not ready/running. Only report ready when the host is listed and
+        // observed state is actually running (handled above); never claim provisioned/ready here.
+        return "error";
       default:
         return "error";
     }

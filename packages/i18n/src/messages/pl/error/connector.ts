@@ -34,7 +34,7 @@ export const messages = {
   "error.connector.bitwardenCliInstallFailed":
     "Nie udało się zainstalować Bitwarden CLI na tym serwerze. Sprawdź jego połączenie sieciowe, a następnie połącz ponownie.",
   "error.connector.bitwardenFileUnreadable": "Nie można odczytać pliku połączenia Bitwarden.",
-  "error.connector.passwordManagerUnknown": "OpenBot nie zna tego menedżera haseł.",
+  "error.connector.passwordManagerUnknown": "Whilo nie zna tego menedżera haseł.",
   "error.connector.passwordManagerMethod": "Tego menedżera haseł nie można połączyć w ten sposób.",
   "error.connector.passwordManagerNoSignIn": "Żadna strona logowania nie jest otwarta. Połącz ponownie.",
   "error.connector.protonPassFailed": "Nie udało się połączyć Proton Pass. Połącz ponownie.",
@@ -49,5 +49,5 @@ export const messages = {
   "error.connector.protonPassFileUnreadable": "Nie można odczytać pliku połączenia Proton Pass.",
   "error.connector.protonPassSignInTimeout": "Logowanie do Proton trwało zbyt długo. Połącz ponownie.",
   "error.connector.protonPassSetupFailed":
-    "Nie udało się utworzyć sejfu Shared with OpenBot ani jego klucza dostępu w Proton Pass. Połącz ponownie.",
+    "Nie udało się utworzyć sejfu Shared with Whilo ani jego klucza dostępu w Proton Pass. Połącz ponownie.",
 } as const satisfies PartialTranslation<typeof source>;

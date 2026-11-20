@@ -29,18 +29,18 @@ import type {
   UpdateAgentAdminSettingsInput,
   UpdateAgentInput,
   WorkspaceDirectory,
-} from "@openbot/contracts/ipc";
-import type { ConversationUiBlock } from "@openbot/contracts/ui-blocks";
-import type { AgentMessage, AgentProfile } from "@openbot/ui/data";
-import type { BrowserViewRuntime } from "@openbot/ui/features/browser/BrowserLiveView";
-import type { ChannelWorker } from "@openbot/ui/features/channels/ChannelActivityIndicator";
-import type { AwaitingReplyItem } from "@openbot/ui/features/conversation/AwaitingReplies";
-import type { UsageLimitAskCardProps } from "@openbot/ui/features/conversation/BackupModels";
-import type { ChatMessageAuthor } from "@openbot/ui/features/conversation/ChatMessageRow";
-import type { UnloadedHistory } from "@openbot/ui/features/conversation/ChatScrollRail";
-import type { AgentThreadOlderMessages } from "@openbot/ui/features/conversation/threads/AgentThreadView";
-import type { ThreadHeaderProps, ThreadItem } from "@openbot/ui/features/conversation/threads/thread-types";
-import type { SidebarAgentWait } from "@openbot/ui/features/sidebar/sidebar-agent-states";
+} from "@whilo/contracts/ipc";
+import type { ConversationUiBlock } from "@whilo/contracts/ui-blocks";
+import type { AgentMessage, AgentProfile } from "@whilo/ui/data";
+import type { BrowserViewRuntime } from "@whilo/ui/features/browser/BrowserLiveView";
+import type { ChannelWorker } from "@whilo/ui/features/channels/ChannelActivityIndicator";
+import type { AwaitingReplyItem } from "@whilo/ui/features/conversation/AwaitingReplies";
+import type { UsageLimitAskCardProps } from "@whilo/ui/features/conversation/BackupModels";
+import type { ChatMessageAuthor } from "@whilo/ui/features/conversation/ChatMessageRow";
+import type { UnloadedHistory } from "@whilo/ui/features/conversation/ChatScrollRail";
+import type { AgentThreadOlderMessages } from "@whilo/ui/features/conversation/threads/AgentThreadView";
+import type { ThreadHeaderProps, ThreadItem } from "@whilo/ui/features/conversation/threads/thread-types";
+import type { SidebarAgentWait } from "@whilo/ui/features/sidebar/sidebar-agent-states";
 import type { JSX } from "@solidjs/web";
 import type { ConnectorRegistry } from "../connectors/connector-registry";
 import type { ConversationRuntime } from "./conversation-runtime";
@@ -153,7 +153,7 @@ export interface ConversationProps {
   onOpenMcpSignIn?: ((mcpServerId: string, trigger: HTMLElement | null) => void) | undefined;
   /** Whether the server on screen holds a sign-in for an MCP row, as Server settings last read it. */
   mcpSignedIn?: ((mcpServerId: string) => boolean) | undefined;
-  platform?: import("@openbot/contracts/ipc").AppInfo["platform"] | undefined;
+  platform?: import("@whilo/contracts/ipc").AppInfo["platform"] | undefined;
 
   agentStatus: AgentStatus;
   /** A joined server's agents are still on their way, so the composer says that it connects. */
@@ -180,7 +180,7 @@ export interface ConversationProps {
   /**
    * Take the user to the provider's sign-in. Separate from `onConnectProvider`, which is the
    * managed-download path and is withheld when downloads are unavailable: a signed-out provider
-   * needs a way in whether or not OpenBot manages its CLI.
+   * needs a way in whether or not Whilo manages its CLI.
    */
   onSignInProvider?: ((provider: AgentProviderId) => void | Promise<void>) | undefined;
   /** The code sign-in, for a provider that has one, when the browser sign-in is slow or fails. */
@@ -368,7 +368,7 @@ export interface ConversationProps {
   onUpdateAgentPermissions?: ((input: UpdateAgentAdminSettingsInput) => Promise<void>) | undefined;
   /** Starts a new chat with the agent. Absent when its host does not serve `context-reset-v1`. */
   onClearAgentContext?: (() => Promise<void>) | undefined;
-  /** Compacts the agent's context now. The context ring offers it only where OpenBot compacts. */
+  /** Compacts the agent's context now. The context ring offers it only where Whilo compacts. */
   onCompactAgentContext?: (() => Promise<void>) | undefined;
   /** Answers `browserTakeover`. */
   onRespondToBrowserTakeover: (decision: "complete" | "cancel", options?: PromptAnswerOptions) => Promise<boolean>;
@@ -438,7 +438,7 @@ export type RightPanelMode =
   /** A side thread in the side panel, beside the agent's own chat. */
   | "thread";
 
-export type { SidePanelPane } from "@openbot/ui/features/conversation/SidePanel";
+export type { SidePanelPane } from "@whilo/ui/features/conversation/SidePanel";
 
 /**
  * The threads of the active agent. A side thread is a task of the host; the agent's own chat is the

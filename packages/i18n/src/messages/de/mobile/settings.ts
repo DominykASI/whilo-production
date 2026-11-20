@@ -8,12 +8,12 @@ export const messages = {
   "mobile.settings.language.system": "Systemstandard",
   "mobile.settings.language.footer":
     "Systemstandard verwendet die erste Sprache in den Telefoneinstellungen. Noch nicht übersetzter Text erscheint auf Englisch.",
-  "mobile.settings.language.restartTitle": "OpenBot neu starten?",
+  "mobile.settings.language.restartTitle": "Whilo neu starten?",
   "mobile.settings.language.restartBody":
-    "Diese Sprache liest sich in die andere Richtung. Die Ansichten wechseln die Richtung, wenn OpenBot neu startet. Wenn die Ansichten nach dem Neustart noch falsch aussehen, schließe OpenBot im App-Umschalter und öffne es erneut.",
+    "Diese Sprache liest sich in die andere Richtung. Die Ansichten wechseln die Richtung, wenn Whilo neu startet. Wenn die Ansichten nach dem Neustart noch falsch aussehen, schließe Whilo im App-Umschalter und öffne es erneut.",
   "mobile.settings.language.restartNow": "Jetzt neu starten",
   "mobile.settings.language.restartFailed":
-    "OpenBot konnte nicht neu starten. Die Ansichten wechseln die Richtung, wenn du OpenBot das nächste Mal öffnest.",
+    "Whilo konnte nicht neu starten. Die Ansichten wechseln die Richtung, wenn du Whilo das nächste Mal öffnest.",
   "mobile.settings.dictation.language": "Diktiersprache",
   "mobile.settings.about.development": "Entwicklung",
   "mobile.settings.about.openFailed": "Der Link konnte nicht geöffnet werden. Versuche es erneut.",
@@ -280,10 +280,10 @@ export const messages = {
   "mobile.settings.voice.pause.title": "Pause vor dem Senden",
   "mobile.settings.voice.pause.label": "Auf neue Wörter warten",
   "mobile.settings.voice.pause.footer":
-    "In einem Sprachgespräch sendet OpenBot deine Worte, wenn es so lange keine neuen Wörter erkennt. Lärm ohne Wörter hält das Zuhören nicht offen. Wähle eine längere Pause, wenn du langsam sprichst oder zum Nachdenken innehältst.",
+    "In einem Sprachgespräch sendet Whilo deine Worte, wenn es so lange keine neuen Wörter erkennt. Lärm ohne Wörter hält das Zuhören nicht offen. Wähle eine längere Pause, wenn du langsam sprichst oder zum Nachdenken innehältst.",
   "mobile.settings.voice.pause.seconds": "{seconds} s",
   "mobile.settings.voice.speed.title": "Antworttempo",
-  "mobile.settings.voice.speed.footer": "Das Tempo der Antworten, die OpenBot vorliest, auch in einem Sprachgespräch.",
+  "mobile.settings.voice.speed.footer": "Das Tempo der Antworten, die Whilo vorliest, auch in einem Sprachgespräch.",
   "mobile.settings.voice.speed.value": "{speed}×",
   "mobile.settings.voice.elevenLabs.recognitionFooter":
     "Whilo streamt deine Sprache mit einem Einmal-Token an ElevenLabs, und ElevenLabs rechnet über dein Konto ab. Der Schlüssel bleibt auf diesem Telefon.",

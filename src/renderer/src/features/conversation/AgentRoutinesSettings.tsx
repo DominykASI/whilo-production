@@ -1,3 +1,4 @@
+import type { JSX } from "@solidjs/web";
 import {
   type EventFilterDraft,
   eventFilterDraft,
@@ -65,7 +66,6 @@ import {
   routineScheduleToDraft,
 } from "@whilo/ui/features/conversation/routine-schedule-saved";
 import { useText } from "@whilo/ui/text";
-import type { JSX } from "@solidjs/web";
 import { createEffect, createMemo, createSignal, createStore, For, onCleanup, Show, untrack } from "solid-js";
 import { actionToast } from "../../action-toast";
 import { type DesktopAnalyticsScope, desktopAnalytics } from "../../analytics";

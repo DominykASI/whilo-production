@@ -203,7 +203,7 @@ export const messages = {
   "workflow.telegram.anyChat": "リンク済みのすべてのチャット",
   "workflow.telegram.sameChat": "トリガーと同じ",
   "workflow.telegram.event": "イベント",
-  "workflow.telegram.event.mention": "OpenBot へのメンション",
+  "workflow.telegram.event.mention": "Whilo へのメンション",
   "workflow.telegram.text": "テキストを含む",
   "workflow.telegram.anyText": "すべてのテキスト",
   "workflow.telegram.on": "対象",

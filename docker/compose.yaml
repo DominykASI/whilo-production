@@ -1,13 +1,13 @@
 # Whilo as a self-hosted server in Docker. See docs/docker.md.
 #
-#   curl -fsSLO https://raw.githubusercontent.com/nightly-labs/openbot/main/docker/compose.yaml
-#   curl -fsSLO https://raw.githubusercontent.com/nightly-labs/openbot/main/docker/seccomp.json
+#   curl -fsSLO https://raw.githubusercontent.com/nightly-labs/whilo/main/docker/compose.yaml
+#   curl -fsSLO https://raw.githubusercontent.com/nightly-labs/whilo/main/docker/seccomp.json
 #   docker compose up -d
 #   docker compose exec whilo whilo login
 services:
   whilo:
     # Use a version tag to choose when to upgrade. Whilo never goes back to an older version.
-    image: ghcr.io/nightly-labs/openbot:latest
+    image: ghcr.io/nightly-labs/whilo:latest
     restart: unless-stopped
     security_opt:
       # The Docker default profile, with user namespaces for the Electron sandbox.

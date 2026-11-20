@@ -1,6 +1,6 @@
 {
   "name": "WhiloGit",
-  "url": "https://github.com/nightly-labs/openbot",
+  "url": "https://github.com/nightly-labs/whilo",
   "description": "Gives Whilo agents your repositories, issues and pull requests, through the GitHub MCP server, gh and git. The sign-in stays on the computer that runs Whilo.",
   "public": true,
   "hook_attributes": { "url": "https://signal.openbot.run/v1/github/events", "active": true },

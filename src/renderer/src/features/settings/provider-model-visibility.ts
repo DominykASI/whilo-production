@@ -1,6 +1,6 @@
-import type { AgentModelId, AgentProviderId, OpenBotDesktopApi, ProviderModelVisibility } from "@openbot/contracts/ipc";
-import type { ProviderModelVisibilityControl } from "@openbot/ui/features/settings/ProviderSettingsPage";
-import { useText } from "@openbot/ui/text";
+import type { AgentModelId, AgentProviderId, OpenBotDesktopApi, ProviderModelVisibility } from "@whilo/contracts/ipc";
+import type { ProviderModelVisibilityControl } from "@whilo/ui/features/settings/ProviderSettingsPage";
+import { useText } from "@whilo/ui/text";
 import { createEffect, createStore, untrack } from "solid-js";
 
 /** The model list calls of one server's host. The desktop reaches them through main. */
@@ -10,7 +10,7 @@ export type HostModelVisibilityCalls = Pick<
 >;
 
 export interface HostModelVisibilityOptions {
-  /** The calls of a client with no `window.openbot`, such as the web client. */
+  /** The calls of a client with no `window.whilo`, such as the web client. */
   calls?: HostModelVisibilityCalls;
 }
 
@@ -31,7 +31,7 @@ export function createProviderModelVisibility(
   status: () => unknown,
 ): () => ((provider: AgentProviderId) => ProviderModelVisibilityControl) | undefined {
   const { t, errorMessage } = useText();
-  const calls = (): HostModelVisibilityCalls => source()?.calls ?? window.openbot.hostAdmin;
+  const calls = (): HostModelVisibilityCalls => source()?.calls ?? window.whilo.hostAdmin;
 
   /** Runs when a provider page opens, so its effect ends when the page closes. */
   function open(provider: AgentProviderId): ProviderModelVisibilityControl {

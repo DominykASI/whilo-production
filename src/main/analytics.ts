@@ -129,7 +129,7 @@ const MAX_INVENTORY_ITEMS = 32;
 const ANALYTICS_SCHEMA_VERSION = ANALYTICS_GENERATIONS.desktop_host;
 const CURATED_AGENT_PREFIX = "whilo-curated-agent-";
 const LISTING_SLUG_PATTERN = /^[a-z0-9][a-z0-9-]{0,63}$/u;
-/** An OpenBot version, such as `0.52.1` or `0.53.0-beta.2`. */
+/** An Whilo version, such as `0.52.1` or `0.53.0-beta.2`. */
 const APP_VERSION_PATTERN = /^\d{1,4}\.\d{1,4}\.\d{1,6}(?:-[0-9A-Za-z.]{1,24})?$/u;
 const TOOL_NAME_PATTERN = /^[A-Za-z0-9_.-]{1,64}$/u;
 const TOOL_KINDS = [
@@ -1414,7 +1414,7 @@ function sanitizeHostProperty(name: HostEventName, key: string, value: unknown):
   }
   if (name === "system_webhook_delivery") {
     if (key === "owner_kind") return isOneOf(["agent", "channel", "workflow"] as const, value) ? value : undefined;
-    if (key === "format") return isOneOf(["openbot", "standard"] as const, value) ? value : undefined;
+    if (key === "format") return isOneOf(["whilo", "standard"] as const, value) ? value : undefined;
     if (key === "result") return isOneOf(WEBHOOK_DELIVERY_RESULTS, value) ? value : undefined;
     if (key === "ignored_reason") return isOneOf(WEBHOOK_IGNORED_REASONS, value) ? value : undefined;
     if (key === "status_code") return isOneOf(WEBHOOK_DELIVERY_STATUSES, value) ? value : undefined;

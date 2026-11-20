@@ -9,27 +9,27 @@
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: start;
-  column-gap: var(--openbot-space-3);
-  padding: var(--openbot-space-4);
-  border-radius: var(--openbot-radius-lg);
-  background: var(--openbot-bg-surface-raised);
-  box-shadow: 0 0 0 1px var(--openbot-border);
-  color: var(--openbot-text-primary);
-  font-family: var(--openbot-font-sans);
+  column-gap: var(--whilo-space-3);
+  padding: var(--whilo-space-4);
+  border-radius: var(--whilo-radius-lg);
+  background: var(--whilo-bg-surface-raised);
+  box-shadow: 0 0 0 1px var(--whilo-border);
+  color: var(--whilo-text-primary);
+  font-family: var(--whilo-font-sans);
 }
 
 .social-follow-toast-close {
   position: absolute;
-  top: var(--openbot-space-2);
-  inset-inline-end: var(--openbot-space-2);
-  color: var(--openbot-text-muted);
+  top: var(--whilo-space-2);
+  inset-inline-end: var(--whilo-space-2);
+  color: var(--whilo-text-muted);
 }
 
 /* The plush hops in after the card, leans toward a network under the pointer, and bounces on thanks. */
 .social-follow-toast-plush {
   position: relative;
   display: inline-flex;
-  animation: social-follow-plush-hop 560ms var(--openbot-ease-out) 120ms both;
+  animation: social-follow-plush-hop 560ms var(--whilo-ease-out) 120ms both;
 }
 
 .social-follow-plush {
@@ -37,8 +37,8 @@
   display: inline-flex;
   flex: none;
   transition:
-    rotate var(--openbot-duration-normal) var(--openbot-ease-out),
-    translate var(--openbot-duration-normal) var(--openbot-ease-out);
+    rotate var(--whilo-duration-normal) var(--whilo-ease-out),
+    translate var(--whilo-duration-normal) var(--whilo-ease-out);
 }
 
 .social-follow-toast-plush[data-face="wide"] .social-follow-plush {
@@ -47,52 +47,52 @@
 }
 
 .social-follow-toast-plush[data-face="happy"] .social-follow-plush {
-  animation: social-follow-plush-bounce 520ms var(--openbot-ease-out);
+  animation: social-follow-plush-bounce 520ms var(--whilo-ease-out);
 }
 
 .social-follow-toast-main {
   display: grid;
-  gap: var(--openbot-space-3);
+  gap: var(--whilo-space-3);
   min-width: 0;
 }
 
 .social-follow-toast-copy {
   display: grid;
-  gap: var(--openbot-space-0-5);
+  gap: var(--whilo-space-0-5);
   /* The close button sits in the top corner. */
-  padding-inline-end: var(--openbot-space-6);
+  padding-inline-end: var(--whilo-space-6);
 }
 
 .social-follow-toast-copy strong {
-  font-size: var(--openbot-text-md);
-  line-height: var(--openbot-leading-md);
-  font-weight: var(--openbot-weight-semibold);
+  font-size: var(--whilo-text-md);
+  line-height: var(--whilo-leading-md);
+  font-weight: var(--whilo-weight-semibold);
 }
 
 .social-follow-toast-copy p {
   margin: 0;
-  color: var(--openbot-text-secondary);
-  font-size: var(--openbot-text-sm);
-  line-height: var(--openbot-leading-sm);
+  color: var(--whilo-text-secondary);
+  font-size: var(--whilo-text-sm);
+  line-height: var(--whilo-leading-sm);
   text-wrap: pretty;
 }
 
 .social-follow-toast-copy[data-thanks] {
-  animation: social-follow-rise var(--openbot-duration-overlay) var(--openbot-ease-out) both;
+  animation: social-follow-rise var(--whilo-duration-overlay) var(--whilo-ease-out) both;
 }
 
 /* The network row: filled round chips, aligned with the text. Seven chips fit in the text column. */
 .social-follow-networks {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--openbot-space-1);
+  gap: var(--whilo-space-1);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .social-follow-networks li {
-  animation: social-follow-rise var(--openbot-duration-overlay) var(--openbot-ease-out) both;
+  animation: social-follow-rise var(--whilo-duration-overlay) var(--whilo-ease-out) both;
 }
 
 .social-follow-networks li:nth-child(1) {
@@ -126,23 +126,23 @@
 /* The follow request: one outline button with the network mark, below the thanks. */
 .social-follow-toast-follow {
   display: flex;
-  animation: social-follow-rise var(--openbot-duration-overlay) var(--openbot-ease-out) 120ms both;
+  animation: social-follow-rise var(--whilo-duration-overlay) var(--whilo-ease-out) 120ms both;
 }
 
 .social-follow-toast .social-follow-network {
-  border-radius: var(--openbot-radius-pill);
-  background: var(--openbot-bg-control);
-  color: var(--openbot-text-secondary);
+  border-radius: var(--whilo-radius-pill);
+  background: var(--whilo-bg-control);
+  color: var(--whilo-text-secondary);
   transition:
-    background var(--openbot-duration-fast) var(--openbot-ease-out),
-    color var(--openbot-duration-fast) var(--openbot-ease-out),
-    translate var(--openbot-duration-normal) var(--openbot-ease-out),
-    scale var(--openbot-duration-fast) var(--openbot-ease-out);
+    background var(--whilo-duration-fast) var(--whilo-ease-out),
+    color var(--whilo-duration-fast) var(--whilo-ease-out),
+    translate var(--whilo-duration-normal) var(--whilo-ease-out),
+    scale var(--whilo-duration-fast) var(--whilo-ease-out);
 }
 
 .social-follow-toast .social-follow-network:hover {
-  background: var(--openbot-bg-control-hover);
-  color: var(--openbot-text-primary);
+  background: var(--whilo-bg-control-hover);
+  color: var(--whilo-text-primary);
   translate: 0 -2px;
 }
 
@@ -151,8 +151,8 @@
 }
 
 .social-follow-mark {
-  width: var(--openbot-icon-md);
-  height: var(--openbot-icon-md);
+  width: var(--whilo-icon-md);
+  height: var(--whilo-icon-md);
   flex: none;
 }
 
@@ -168,11 +168,11 @@
   fill: currentColor;
   top: 0;
   left: 50%;
-  width: var(--openbot-icon-sm);
-  height: var(--openbot-icon-sm);
-  color: var(--openbot-beam-pink);
+  width: var(--whilo-icon-sm);
+  height: var(--whilo-icon-sm);
+  color: var(--whilo-beam-pink);
   opacity: 0;
-  animation: social-follow-heart 1100ms var(--openbot-ease-out) forwards;
+  animation: social-follow-heart 1100ms var(--whilo-ease-out) forwards;
 }
 
 .social-follow-heart[data-index="0"] {
@@ -182,8 +182,8 @@
 
 .social-follow-heart[data-index="1"] {
   --social-follow-heart-x: 2px;
-  width: var(--openbot-icon-md);
-  height: var(--openbot-icon-md);
+  width: var(--whilo-icon-md);
+  height: var(--whilo-icon-md);
 }
 
 .social-follow-heart[data-index="2"] {

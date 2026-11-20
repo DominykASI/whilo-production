@@ -36,49 +36,49 @@ import {
   type SaveCustomAgentInput,
   type SaveCustomProviderInput,
   type SignInRelayStatus,
-} from "@openbot/contracts/ipc";
-import { isOneOf } from "@openbot/contracts/runtime-values";
-import { TEAM_API_ROUTES } from "@openbot/contracts/team-api-routes";
-import { ACP_REGISTRY_CAPABILITY, ACP_REGISTRY_ROUTES } from "@openbot/contracts/team-protocol/acp-registry-v1";
-import { CUSTOM_AGENTS_CAPABILITY } from "@openbot/contracts/team-protocol/custom-agents-v1";
+} from "@whilo/contracts/ipc";
+import { isOneOf } from "@whilo/contracts/runtime-values";
+import { TEAM_API_ROUTES } from "@whilo/contracts/team-api-routes";
+import { ACP_REGISTRY_CAPABILITY, ACP_REGISTRY_ROUTES } from "@whilo/contracts/team-protocol/acp-registry-v1";
+import { CUSTOM_AGENTS_CAPABILITY } from "@whilo/contracts/team-protocol/custom-agents-v1";
 import {
   CUSTOM_PROVIDER_HARNESS_CAPABILITY,
   CUSTOM_PROVIDER_HARNESS_ROUTES,
-} from "@openbot/contracts/team-protocol/custom-provider-harness-v1";
-import { MODEL_VISIBILITY_CAPABILITY } from "@openbot/contracts/team-protocol/model-visibility-v1";
-import { PROMPT_CACHE_TTL_CAPABILITY } from "@openbot/contracts/team-protocol/prompt-cache-ttl-v1";
-import { providerAccountRelay } from "@openbot/contracts/team-protocol/provider-account-relays";
-import { PROVIDER_ACCOUNTS_CAPABILITY } from "@openbot/contracts/team-protocol/provider-accounts-v1";
-import { PROVIDER_DEFAULT_CAPABILITY } from "@openbot/contracts/team-protocol/provider-default-v1";
-import { PROVIDER_SIGN_OUT_CAPABILITY } from "@openbot/contracts/team-protocol/provider-sign-out-v1";
-import { PROVIDER_USAGE_RESET_CAPABILITY } from "@openbot/contracts/team-protocol/provider-usage-reset-v1";
+} from "@whilo/contracts/team-protocol/custom-provider-harness-v1";
+import { MODEL_VISIBILITY_CAPABILITY } from "@whilo/contracts/team-protocol/model-visibility-v1";
+import { PROMPT_CACHE_TTL_CAPABILITY } from "@whilo/contracts/team-protocol/prompt-cache-ttl-v1";
+import { providerAccountRelay } from "@whilo/contracts/team-protocol/provider-account-relays";
+import { PROVIDER_ACCOUNTS_CAPABILITY } from "@whilo/contracts/team-protocol/provider-accounts-v1";
+import { PROVIDER_DEFAULT_CAPABILITY } from "@whilo/contracts/team-protocol/provider-default-v1";
+import { PROVIDER_SIGN_OUT_CAPABILITY } from "@whilo/contracts/team-protocol/provider-sign-out-v1";
+import { PROVIDER_USAGE_RESET_CAPABILITY } from "@whilo/contracts/team-protocol/provider-usage-reset-v1";
 import {
   PROVIDERS_ADMIN_CODE_SIGN_IN_PROVIDERS,
   PROVIDERS_ADMIN_ROUTES,
-} from "@openbot/contracts/team-protocol/providers-v1";
+} from "@whilo/contracts/team-protocol/providers-v1";
 import {
   PROVIDERS_RUNTIMES_V2_CAPABILITY,
   PROVIDERS_RUNTIMES_V2_ROUTES,
-} from "@openbot/contracts/team-protocol/providers-v2";
+} from "@whilo/contracts/team-protocol/providers-v2";
 import {
   PROVIDERS_SIGN_IN_V3_CAPABILITY,
   PROVIDERS_SIGN_IN_V3_PROVIDERS,
   PROVIDERS_SIGN_IN_V3_ROUTES,
-} from "@openbot/contracts/team-protocol/providers-v3";
+} from "@whilo/contracts/team-protocol/providers-v3";
 import {
   PROVIDERS_V4_CAPABILITY,
   PROVIDERS_V4_ROUTES,
   PROVIDERS_V4_RUNTIME_PROVIDERS,
   PROVIDERS_V4_SIGN_IN_PROVIDERS,
-} from "@openbot/contracts/team-protocol/providers-v4";
+} from "@whilo/contracts/team-protocol/providers-v4";
 import {
   PROVIDERS_V5_CAPABILITY,
   PROVIDERS_V5_ROUTES,
   PROVIDERS_V5_RUNTIME_PROVIDERS,
-} from "@openbot/contracts/team-protocol/providers-v5";
-import { PROVIDERS_V8_CAPABILITY, PROVIDERS_V8_ROUTES } from "@openbot/contracts/team-protocol/providers-v8";
-import { SIGN_IN_RELAY_CAPABILITY, SIGN_IN_RELAY_PROVIDERS } from "@openbot/contracts/team-protocol/sign-in-relay-v1";
-import type { MobileTextKey } from "@openbot/i18n/mobile";
+} from "@whilo/contracts/team-protocol/providers-v5";
+import { PROVIDERS_V8_CAPABILITY, PROVIDERS_V8_ROUTES } from "@whilo/contracts/team-protocol/providers-v8";
+import { SIGN_IN_RELAY_CAPABILITY, SIGN_IN_RELAY_PROVIDERS } from "@whilo/contracts/team-protocol/sign-in-relay-v1";
+import type { MobileTextKey } from "@whilo/i18n/mobile";
 import {
   cancelProviderCodeLogin,
   cancelProviderRuntime,
@@ -114,8 +114,8 @@ import {
   startProviderCodeLogin,
   startProviderSignInRelay,
   submitProviderCodeLogin,
-} from "@openbot/team-client/team-admin-requests";
-import type { TeamApiRequest } from "@openbot/team-client/team-api-requests";
+} from "@whilo/team-client/team-admin-requests";
+import type { TeamApiRequest } from "@whilo/team-client/team-api-requests";
 import { runTeamRequest } from "@/features/workspace/model/team-request";
 import { currentText } from "@/shared/lib/text";
 

@@ -99,9 +99,9 @@ export const messages = {
   "provider.codeLogin.chatgptDeviceSetting":
     "컴퓨터의 ChatGPT에서 보안 설정을 열고 Codex용 기기 코드 로그인을 켜세요. 회사 계정은 워크스페이스 관리자가 켜요.",
 
-  "provider.useApp.title": "OpenBot 앱에서 {name} 연결",
+  "provider.useApp.title": "Whilo 앱에서 {name} 연결",
   "provider.useApp.description":
-    "{name} 로그인은 시작한 컴퓨터로 돌아오는데, 브라우저 탭은 이를 받을 수 없어요. OpenBot 앱에서 {name}을(를) 연결하세요. 앱이 로그인을 알아서 마무리해요.",
+    "{name} 로그인은 시작한 컴퓨터로 돌아오는데, 브라우저 탭은 이를 받을 수 없어요. Whilo 앱에서 {name}을(를) 연결하세요. 앱이 로그인을 알아서 마무리해요.",
   "provider.useApp.download": "앱 받기",
 
   "provider.picker.noEndpoints": "아직 엔드포인트가 없어요",

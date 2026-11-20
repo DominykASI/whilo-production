@@ -56,7 +56,7 @@ export const messages = {
   "sitePage.billing.cancelledBody": "Hiçbir ücret alınmadı. Whilo'a dönün.",
   "sitePage.report.pageTitle": "Barındırılan siteyi bildir — Whilo",
   "sitePage.report.title": "Barındırılan siteyi bildir",
-  "sitePage.report.intro": "Bir openbot.site adresindeki zararlı veya yasa dışı içerik hakkında bildirim gönderin.",
+  "sitePage.report.intro": "Bir whilo.site adresindeki zararlı veya yasa dışı içerik hakkında bildirim gönderin.",
   "sitePage.report.hostnameLabel": "Site adresi",
   "sitePage.report.hostnameMissing": "Site adresini girin",
   "sitePage.report.reasonLabel": "Neden",

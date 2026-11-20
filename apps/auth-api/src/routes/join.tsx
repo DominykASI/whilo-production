@@ -6,7 +6,7 @@ import { OPENBOT_X_HANDLE, type PageSocialImage, pageSocialImageMeta } from "../
 
 const JOIN_SOCIAL_IMAGE: PageSocialImage = {
   path: "/social/join.jpg",
-  alt: "Good ideas. Made together. OpenBot agents around a glass table",
+  alt: "Good ideas. Made together. Whilo agents around a glass table",
 };
 
 export const Route = createFileRoute("/join")({
@@ -31,7 +31,7 @@ export const Route = createFileRoute("/join")({
         { name: "referrer", content: "no-referrer" },
         { name: "description", content: text.description },
         { property: "og:type", content: "website" },
-        { property: "og:site_name", content: "OpenBot" },
+        { property: "og:site_name", content: "Whilo" },
         { property: "og:locale", content: "en_US" },
         { property: "og:url", content: url },
         { property: "og:title", content: text.title },

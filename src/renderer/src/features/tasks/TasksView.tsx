@@ -2,8 +2,8 @@ import {
   expandAttachmentReferences,
   removeAttachmentReferences,
   serializeAttachmentReference,
-} from "@openbot/contracts/attachment-references";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+} from "@whilo/contracts/attachment-references";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import type {
   AgentApproval,
   AgentTask,
@@ -13,18 +13,18 @@ import type {
   AttachmentSummary,
   ConversationSnapshot,
   DraftAttachment,
-} from "@openbot/contracts/ipc";
-import type { AppTextKey } from "@openbot/i18n";
-import { plainTaskTitle, taskApproval } from "@openbot/team-client/agent-tasks";
-import type { AgentMessage, AgentProfile } from "@openbot/ui/data";
-import type { AgentTaskWait } from "@openbot/ui/features/conversation/AgentTasks";
-import type { AttachmentDownloads, AttachmentMediaSource } from "@openbot/ui/features/conversation/AttachmentCards";
-import type { ComposerPasteResult, ComposerSelection } from "@openbot/ui/features/conversation/ComposerEditor";
-import type { SendShortcut } from "@openbot/ui/features/conversation/send-shortcut";
-import { AgentThreadView } from "@openbot/ui/features/conversation/threads/AgentThreadView";
-import { TaskAnswerCard, TaskPanel } from "@openbot/ui/features/tasks/TaskPanel";
-import { TasksPage, type TasksVoice } from "@openbot/ui/features/tasks/TasksPage";
-import { currentText } from "@openbot/ui/text";
+} from "@whilo/contracts/ipc";
+import type { AppTextKey } from "@whilo/i18n";
+import { plainTaskTitle, taskApproval } from "@whilo/team-client/agent-tasks";
+import type { AgentMessage, AgentProfile } from "@whilo/ui/data";
+import type { AgentTaskWait } from "@whilo/ui/features/conversation/AgentTasks";
+import type { AttachmentDownloads, AttachmentMediaSource } from "@whilo/ui/features/conversation/AttachmentCards";
+import type { ComposerPasteResult, ComposerSelection } from "@whilo/ui/features/conversation/ComposerEditor";
+import type { SendShortcut } from "@whilo/ui/features/conversation/send-shortcut";
+import { AgentThreadView } from "@whilo/ui/features/conversation/threads/AgentThreadView";
+import { TaskAnswerCard, TaskPanel } from "@whilo/ui/features/tasks/TaskPanel";
+import { TasksPage, type TasksVoice } from "@whilo/ui/features/tasks/TasksPage";
+import { currentText } from "@whilo/ui/text";
 import {
   createEffect,
   createMemo,
@@ -49,7 +49,7 @@ import type { TaskEvent, TasksSource } from "./tasks-port";
 /** How long a start waits before it reaches the agent. Undo cancels it in this time. */
 const UNDO_MS = 6_000;
 /** The agent last chosen on this page for each server, kept apart from the chat agent. */
-const TASK_AGENT_STORAGE_KEY = "openbot:task-agent:v1";
+const TASK_AGENT_STORAGE_KEY = "whilo:task-agent:v1";
 
 /** What the voice of the composer can do on the page: read and change the draft, and start a task. */
 export interface TasksVoiceControls {

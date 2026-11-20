@@ -259,7 +259,7 @@ export const messages = defineMessages("mobile.chat", {
   "mobile.chat.imageGallery.saveAll": "Save all",
   "mobile.chat.imageGallery.saved": "Saved to Photos",
   "mobile.chat.imageGallery.shareAll": "Share all",
-  "mobile.chat.imageGallery.photosPermission": "Allow OpenBot to add photos in Settings to save these images.",
+  "mobile.chat.imageGallery.photosPermission": "Allow Whilo to add photos in Settings to save these images.",
   "mobile.chat.imageGallery.saveFailed": "Could not save images",
   "mobile.chat.imageGallery.shareFailed": "Could not share images",
   "mobile.chat.imageGallery.shareNeedsUpdate": "Sharing many images needs the latest version of the app.",

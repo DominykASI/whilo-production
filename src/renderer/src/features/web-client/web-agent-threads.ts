@@ -1,16 +1,16 @@
-import type { ConversationSnapshot } from "@openbot/contracts/ipc";
-import { AGENT_TASKS_CAPABILITY } from "@openbot/contracts/team-protocol/agent-tasks-v1";
+import type { ConversationSnapshot } from "@whilo/contracts/ipc";
+import { AGENT_TASKS_CAPABILITY } from "@whilo/contracts/team-protocol/agent-tasks-v1";
 import {
   AGENT_THREAD_BRANCHES_CAPABILITY,
   withAgentThreadBranches,
-} from "@openbot/contracts/team-protocol/agent-thread-branches-v1";
-import { AGENT_THREAD_FILES_CAPABILITY } from "@openbot/contracts/team-protocol/agent-thread-files-v1";
-import { AGENT_THREAD_PAGES_CAPABILITY } from "@openbot/contracts/team-protocol/agent-thread-pages-v1";
-import { AGENT_THREAD_READS_CAPABILITY } from "@openbot/contracts/team-protocol/agent-thread-reads-v1";
-import { AGENT_THREAD_REPLIES_CAPABILITY } from "@openbot/contracts/team-protocol/agent-thread-replies-v1";
-import { AGENT_THREADS_CAPABILITY } from "@openbot/contracts/team-protocol/agent-threads-v1";
-import { MESSAGE_DELETE_CAPABILITY, MESSAGE_DELETE_ROUTES } from "@openbot/contracts/team-protocol/message-delete-v1";
-import { runTeamEffect } from "@openbot/team-client";
+} from "@whilo/contracts/team-protocol/agent-thread-branches-v1";
+import { AGENT_THREAD_FILES_CAPABILITY } from "@whilo/contracts/team-protocol/agent-thread-files-v1";
+import { AGENT_THREAD_PAGES_CAPABILITY } from "@whilo/contracts/team-protocol/agent-thread-pages-v1";
+import { AGENT_THREAD_READS_CAPABILITY } from "@whilo/contracts/team-protocol/agent-thread-reads-v1";
+import { AGENT_THREAD_REPLIES_CAPABILITY } from "@whilo/contracts/team-protocol/agent-thread-replies-v1";
+import { AGENT_THREADS_CAPABILITY } from "@whilo/contracts/team-protocol/agent-threads-v1";
+import { MESSAGE_DELETE_CAPABILITY, MESSAGE_DELETE_ROUTES } from "@whilo/contracts/team-protocol/message-delete-v1";
+import { runTeamEffect } from "@whilo/team-client";
 import {
   agentTaskControl,
   branchAgentThread,
@@ -25,7 +25,7 @@ import {
   startAgentTask,
   type TeamApiRequest,
   type TeamRequestError,
-} from "@openbot/team-client/team-api-requests";
+} from "@whilo/team-client/team-api-requests";
 import { Effect } from "effect";
 import { onCleanup, untrack } from "solid-js";
 import type { AgentTasksPort } from "../agent-tasks/agent-tasks-port";
@@ -33,7 +33,7 @@ import { createAgentTasks, isAgentTaskEvent } from "../agent-tasks/agent-tasks-s
 import { createAgentThreadTabs } from "../agent-threads/agent-thread-tabs";
 import type { WebWorkspace } from "./web-client-context";
 
-/** The host names attachment previews with the desktop `openbot-attachment:` scheme, which a browser cannot load. */
+/** The host names attachment previews with the desktop `whilo-attachment:` scheme, which a browser cannot load. */
 export function withoutPreviewUrls(snapshot: ConversationSnapshot): ConversationSnapshot {
   return {
     ...snapshot,

@@ -30,7 +30,7 @@ const TICKET_KEY_ID = "whilo-remote-1";
 const DEVELOPMENT_STATE_VERSION = 1 as const;
 const DEVELOPMENT_STATE_DIRECTORY = ".whilo";
 /** The directory this file wrote before the product was renamed, migrated once on the next read. */
-const LEGACY_DEVELOPMENT_STATE_DIRECTORY = ".openbot";
+const LEGACY_DEVELOPMENT_STATE_DIRECTORY = ".whilo";
 const DEVELOPMENT_STATE_FILE = "dev-state.json";
 const DEVELOPMENT_STATE_LOCK = "dev-state.json.lock";
 

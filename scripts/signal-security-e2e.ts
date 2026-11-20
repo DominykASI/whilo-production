@@ -810,7 +810,7 @@ try {
         },
         body,
       });
-    // The ingress socket above names no format, as an OpenBot version before this one.
+    // The ingress socket above names no format, as an Whilo version before this one.
     const older = await standard(WEBHOOK_ROUTE, "webhook", "msg_older");
     expect(older.status === 401, `older host: ${older.status}`);
     expect(!ingress.frames.some((frame) => frame.includes('"msg_older"')), "The older host got the request.");

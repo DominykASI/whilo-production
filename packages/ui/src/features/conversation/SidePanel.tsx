@@ -1,4 +1,4 @@
-import type { AppTextKey } from "@openbot/i18n";
+import type { AppTextKey } from "@whilo/i18n";
 import {
   AudioLines,
   Button,
@@ -14,14 +14,14 @@ import {
   Tabs,
   Workflow,
   X,
-} from "@openbot/ui";
+} from "@whilo/ui";
 import {
   AttachmentReferenceVisual,
   attachmentReferenceTone,
-} from "@openbot/ui/features/conversation/AttachmentReference";
-import { ComputerIcon } from "@openbot/ui/features/conversation/ConversationIcons";
-import type { ThreadItem } from "@openbot/ui/features/conversation/threads/thread-types";
-import { useText } from "@openbot/ui/text";
+} from "@whilo/ui/features/conversation/AttachmentReference";
+import { ComputerIcon } from "@whilo/ui/features/conversation/ConversationIcons";
+import type { ThreadItem } from "@whilo/ui/features/conversation/threads/thread-types";
+import { useText } from "@whilo/ui/text";
 import type { JSX } from "@solidjs/web";
 import { For, flush, onSettled, Show } from "solid-js";
 import { ThreadStatusText, ThreadTabIcon, threadAttention } from "./threads/ThreadStatusMark";

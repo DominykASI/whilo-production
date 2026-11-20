@@ -1,6 +1,6 @@
-import type { OpenBotDesktopApi, VoiceLiveEvent } from "@openbot/contracts/ipc";
-import type { VoicePanelPhase } from "@openbot/ui/features/conversation/VoicePanel";
-import { currentText } from "@openbot/ui/text";
+import type { OpenBotDesktopApi, VoiceLiveEvent } from "@whilo/contracts/ipc";
+import type { VoicePanelPhase } from "@whilo/ui/features/conversation/VoicePanel";
+import { currentText } from "@whilo/ui/text";
 import { createStore, onCleanup } from "solid-js";
 import { SPEECH_LEVEL_COUNT } from "../../speech/speech-playback";
 import { voiceCaptureError } from "../voice-status";
@@ -15,9 +15,9 @@ const EVENTS_CHANNEL = "oai-events";
 
 export type CodexLivePort = Pick<OpenBotDesktopApi["voice"], "startLive" | "stopLive" | "onLiveEvent">;
 
-/** Read on each call: tests and stories replace `window.openbot` per case. */
+/** Read on each call: tests and stories replace `window.whilo` per case. */
 function codexLivePort(): CodexLivePort {
-  return window.openbot.voice;
+  return window.whilo.voice;
 }
 
 type LiveStep = "starting" | "listening" | "thinking" | "speaking";

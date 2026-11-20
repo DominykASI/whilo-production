@@ -216,7 +216,7 @@ export function WorkflowTriggerScreen() {
           // Only an owner or admin adds a GitHub trigger, on a host that runs it, as on desktop.
           ...((admin && githubSupported) || type === "github" ? [GITHUB_CHOICE] : []),
           ...(type === "message" ? [MESSAGE_CHOICE] : []),
-          // Only the computer that runs OpenBot has the Discord roles. An owner or admin adds a Telegram or
+          // Only the computer that runs Whilo has the Discord roles. An owner or admin adds a Telegram or
           // Slack trigger on a host that has a linked chat or workspace, as on desktop.
           ...(type === "discord" ? [DISCORD_CHOICE] : []),
           ...(telegramOffered || type === "telegram" ? [TELEGRAM_CHOICE] : []),

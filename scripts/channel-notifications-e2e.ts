@@ -12,7 +12,7 @@
 // saves "Keep memories in this channel", a save without the field keeps the stored value, and the host
 // ignores the field from a peer without the capability.
 // Run: `bun scripts/channel-notifications-e2e.ts`.
-// Writes .openbot-build/channel-notifications-e2e/report.json.
+// Writes .whilo-build/channel-notifications-e2e/report.json.
 
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
@@ -30,8 +30,8 @@ import {
   IPC_ENDPOINTS,
   LOCAL_SERVER_ID,
   type NotificationOpenedEvent,
-} from "@openbot/contracts/ipc";
-import { isDynamicRecord } from "@openbot/contracts/runtime-values";
+} from "@whilo/contracts/ipc";
+import { isDynamicRecord } from "@whilo/contracts/runtime-values";
 import {
   TEAM_APP_VERSION_HEADER,
   TEAM_CAPABILITIES_HEADER,
@@ -39,14 +39,14 @@ import {
   TEAM_PROTOCOL_V9,
   TEAM_PROTOCOL_VERSION_HEADER,
   teamCapabilitiesForProtocol,
-} from "@openbot/contracts/team-protocol";
-import { CHANNEL_ROUTES, channelResponse } from "@openbot/contracts/team-protocol/channels-v1";
+} from "@whilo/contracts/team-protocol";
+import { CHANNEL_ROUTES, channelResponse } from "@whilo/contracts/team-protocol/channels-v1";
 import {
   CHANNEL_ISOLATION_CAPABILITY,
   TEAM_CHANNEL_ATTENTION_CAPABILITY,
-} from "@openbot/contracts/team-protocol/current";
-import { teamSideRouteCodec } from "@openbot/contracts/team-protocol/side-routes";
-import { createFormat, translateFor } from "@openbot/i18n";
+} from "@whilo/contracts/team-protocol/current";
+import { teamSideRouteCodec } from "@whilo/contracts/team-protocol/side-routes";
+import { createFormat, translateFor } from "@whilo/i18n";
 import { plugin } from "bun";
 import { Effect } from "effect";
 import type { AgentBrowserHost } from "../src/backend/agent/turn-lifecycle";
@@ -54,11 +54,11 @@ import { AgentService } from "../src/backend/agent-service";
 import { AgentStore } from "../src/backend/agent-store";
 import { runCauseEffect } from "../src/backend/effect-boundary";
 import { MailboxStore } from "../src/backend/mailbox-store";
-import { OpenBotDatabase } from "../src/backend/openbot-database";
+import { WhiloDatabase } from "../src/backend/whilo-database";
 import { SidebarLayoutStore } from "../src/backend/sidebar-layout-store";
 import type { TeamApiBrowser } from "../src/main/team-api/dependencies";
 
-const OUT = resolve(import.meta.dirname, "../.openbot-build/channel-notifications-e2e");
+const OUT = resolve(import.meta.dirname, "../.whilo-build/channel-notifications-e2e");
 const APP_VERSION = "0.0.0-e2e";
 const STEP_DEADLINE_MS = 30_000;
 const OWNER = { username: "owner-user", password: "owner-password-123" };
@@ -228,7 +228,7 @@ function lastOpened(): NotificationOpenedEvent {
   return event;
 }
 
-const root = await mkdtemp(join(tmpdir(), "openbot-channel-notifications-"));
+const root = await mkdtemp(join(tmpdir(), "whilo-channel-notifications-"));
 const userData = join(root, "user-data");
 const unused = () => Effect.die(new Error("Not used by this check."));
 const agentBrowser: AgentBrowserHost = {
@@ -279,11 +279,11 @@ const cipher = {
 };
 const centralAccount = { createTeamAuthTicket: unused, getEmail: () => "e2e@example.invalid" };
 
-const database = new OpenBotDatabase(userData);
+const database = new WhiloDatabase(userData);
 const agentStore = new AgentStore(userData, join(root, "home"), database);
 const mailbox = new MailboxStore(userData, agentStore.sharedRoot, agentStore.database);
 const sidebar = new SidebarLayoutStore(join(userData, "sidebar-layout.json"));
-const team = new TeamStore(join(userData, "openbot-team-server-v2.json"));
+const team = new TeamStore(join(userData, "whilo-team-server-v2.json"));
 const manager = new RemoteServerManager(join(userData, "remote-servers.json"), cipher, centralAccount, {
   appVersion: APP_VERSION,
 });
@@ -565,7 +565,7 @@ try {
 
   await step("A prompt on the agent's own thread does not name a channel", async () => {
     const notified = nextNotification();
-    forwarders.forwardAgentEvent(LOCAL_SERVER_ID, prompt(2, agent.threadId ?? "openbot-thread-own-chat"));
+    forwarders.forwardAgentEvent(LOCAL_SERVER_ID, prompt(2, agent.threadId ?? "whilo-thread-own-chat"));
     const notification = await notified;
     assert.equal(notification.title, agent.name);
     notification.click();

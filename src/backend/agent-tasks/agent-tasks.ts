@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from "node:crypto";
-import { agentProviderDescriptor } from "@openbot/contracts/agent-providers";
-import { expandAttachmentReferences } from "@openbot/contracts/attachment-references";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { agentProviderDescriptor } from "@whilo/contracts/agent-providers";
+import { expandAttachmentReferences } from "@whilo/contracts/attachment-references";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import {
   AGENT_TASK_QUEUED_PREVIEW,
   type AgentEvent,
@@ -15,9 +15,9 @@ import {
   type BranchAgentTaskInput,
   type ConversationMessage,
   type ConversationSnapshot,
-} from "@openbot/contracts/ipc";
-import { sourceText } from "@openbot/i18n/source";
-import { createOpenBotLogger } from "@openbot/logging";
+} from "@whilo/contracts/ipc";
+import { sourceText } from "@whilo/i18n/source";
+import { createWhiloLogger } from "@whilo/logging";
 import { Deferred, Effect, Schema, Semaphore } from "effect";
 import { z } from "zod";
 import type { ConversationRuntime } from "../agent/conversation-runtime";
@@ -33,7 +33,7 @@ import type { MailboxStore } from "../mailbox-store";
 import type { DynamicToolCallParams } from "../protocol";
 import { storedSync } from "../stored-state-effects";
 
-const logger = createOpenBotLogger("agent-tasks");
+const logger = createWhiloLogger("agent-tasks");
 
 /**
  * The most unfinished tasks that an agent can have when it starts one more itself. A finished task does
@@ -64,7 +64,7 @@ export interface AgentTasksHooks {
   queued(agentId: string): void;
   /** The stored active turn of a thread, also when its conversation is not loaded. */
   turnActive(agentId: string, threadId: string): boolean;
-  /** OpenBot archived finished tasks of one agent: their memory reviews start, and a waiting task lane can start. */
+  /** Whilo archived finished tasks of one agent: their memory reviews start, and a waiting task lane can start. */
   archived(agentId: string, tasks: readonly AgentThreadRecord[]): Effect.Effect<void>;
 }
 
@@ -275,7 +275,7 @@ export class AgentTasks implements TaskLanes {
         ? taskTitle(messages.findLast((message) => message.author === "user")?.text ?? "") ||
           sourceText("status.agent.branchTitle")
         : branchTitle(source.title, this.#store.titles(input.agentId));
-    const threadId = `openbot-thread-${randomUUID()}`;
+    const threadId = `whilo-thread-${randomUUID()}`;
     const staged: string[] = [];
     const record = yield* Effect.gen({ self: this }, function* () {
       const files = new Map<string, AttachmentSummary>();

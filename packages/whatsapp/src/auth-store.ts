@@ -25,7 +25,7 @@ import {
   proto,
   type SignalDataSet,
   type SignalDataTypeMap,
-} from "@openbot/whatsapp/baileys";
+} from "@whilo/whatsapp/baileys";
 import { Schema } from "effect";
 
 const SCHEMA_VERSION = 1;
@@ -55,7 +55,7 @@ export interface InboxEntry {
   receivedAt: number;
 }
 
-/** Where a post of OpenBot belongs: its chat and the conversation it answers. */
+/** Where a post of Whilo belongs: its chat and the conversation it answers. */
 export interface PostRecord {
   chatJid: string;
   threadKey: string;

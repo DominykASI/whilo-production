@@ -312,7 +312,7 @@ try {
   assert.equal(await layout(longTarget), "Draft text short paste[pasted-text.txt]");
   const stored = await longTarget.evaluate(async (element) => {
     const id = element.querySelector<HTMLElement>("[data-attachment-reference-id]")?.dataset.attachmentReferenceId;
-    const response = await fetch(`openbot-attachment://file/${id}`);
+    const response = await fetch(`whilo-attachment://file/${id}`);
     return { type: response.headers.get("content-type"), text: await response.text() };
   });
   assert.equal(stored.text, longText);

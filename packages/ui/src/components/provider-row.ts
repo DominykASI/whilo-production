@@ -1,11 +1,11 @@
-import { agentProviderDescriptor, isInstallerProvider, isKeyOnlyProvider } from "@openbot/contracts/agent-providers";
+import { agentProviderDescriptor, isInstallerProvider, isKeyOnlyProvider } from "@whilo/contracts/agent-providers";
 import type {
   AgentProviderId,
   AgentProviderState,
   ProviderRuntimePhase,
   ProviderRuntimeStatus,
-} from "@openbot/contracts/ipc";
-import type { AppFormat, AppMessages, AppTextKey, AppTranslate } from "@openbot/i18n";
+} from "@whilo/contracts/ipc";
+import type { AppFormat, AppMessages, AppTextKey, AppTranslate } from "@whilo/i18n";
 import { createSignal } from "solid-js";
 import { providerUpdateAvailable, providerVersionLabel } from "../features/provider-updates/provider-update";
 import { useText } from "../text";
@@ -176,7 +176,7 @@ export function createProviderRow(option: () => ProviderPickerOption, host: Prov
    * action checks for one.
    */
   // A provider that is off gets no update offer from main, so a check there could only say "up to date".
-  // An installer provider updates itself: OpenBot runs its installer once and checks no versions.
+  // An installer provider updates itself: Whilo runs its installer once and checks no versions.
   const updateOffered = () =>
     Boolean(host.onUpdateProvider) &&
     !off() &&

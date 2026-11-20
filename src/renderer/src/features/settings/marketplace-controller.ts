@@ -16,7 +16,13 @@ import type {
   McpSignInRelayPage,
   McpSignInState,
 } from "@whilo/contracts/ipc";
-import { assignedSkillCount, BUNDLED_PLUGINS, isRemovableSkill, isSkillEnabled, mcpConfigErrors } from "@whilo/contracts/ipc";
+import {
+  assignedSkillCount,
+  BUNDLED_PLUGINS,
+  isRemovableSkill,
+  isSkillEnabled,
+  mcpConfigErrors,
+} from "@whilo/contracts/ipc";
 import { createMarketplaceShareUrl, type MarketplaceListingLink } from "@whilo/contracts/marketplace-links";
 import { mcpAccountFragment, mcpAccountUrl } from "@whilo/contracts/mcp-accounts";
 import { type McpConnectFlow, mcpFlowFields } from "@whilo/contracts/mcp-connect-flows";

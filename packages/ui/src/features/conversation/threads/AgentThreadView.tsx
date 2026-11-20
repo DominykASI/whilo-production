@@ -1,4 +1,4 @@
-import { limitedQuoteText } from "@openbot/contracts/chat-tag-references";
+import { limitedQuoteText } from "@whilo/contracts/chat-tag-references";
 import type {
   AgentApproval,
   AgentTask,
@@ -7,59 +7,59 @@ import type {
   DraftAttachment,
   InstalledSkill,
   QueueDelivery,
-} from "@openbot/contracts/ipc";
-import type { AppTextKey } from "@openbot/i18n";
-import { isAgentTaskActive } from "@openbot/team-client/agent-tasks";
-import { Button } from "@openbot/ui";
-import { createScrollFades } from "@openbot/ui/components/createScrollFades";
+} from "@whilo/contracts/ipc";
+import type { AppTextKey } from "@whilo/i18n";
+import { isAgentTaskActive } from "@whilo/team-client/agent-tasks";
+import { Button } from "@whilo/ui";
+import { createScrollFades } from "@whilo/ui/components/createScrollFades";
 import type {
   AgentMessage,
   AgentProfile,
   ComposerBrowserTab,
   ComposerMcpServer,
   ComposerThread,
-} from "@openbot/ui/data";
-import { AgentActivityIndicator, nextAgentActivityLabel } from "@openbot/ui/features/conversation/AgentActivity";
+} from "@whilo/ui/data";
+import { AgentActivityIndicator, nextAgentActivityLabel } from "@whilo/ui/features/conversation/AgentActivity";
 import {
   type AgentStep,
   AgentStepsDisclosure,
   type AgentStepsFacts,
-} from "@openbot/ui/features/conversation/AgentSteps";
-import type { AttachmentDownloads, AttachmentMediaSource } from "@openbot/ui/features/conversation/AttachmentCards";
-import { agentActivityExitDuration } from "@openbot/ui/features/conversation/activity-timing";
-import { branchPointIds } from "@openbot/ui/features/conversation/branch-points";
-import { type ChatMessageAuthor, ChatMessageRow } from "@openbot/ui/features/conversation/ChatMessageRow";
-import { ComposerAddMenu } from "@openbot/ui/features/conversation/ComposerAddMenu";
+} from "@whilo/ui/features/conversation/AgentSteps";
+import type { AttachmentDownloads, AttachmentMediaSource } from "@whilo/ui/features/conversation/AttachmentCards";
+import { agentActivityExitDuration } from "@whilo/ui/features/conversation/activity-timing";
+import { branchPointIds } from "@whilo/ui/features/conversation/branch-points";
+import { type ChatMessageAuthor, ChatMessageRow } from "@whilo/ui/features/conversation/ChatMessageRow";
+import { ComposerAddMenu } from "@whilo/ui/features/conversation/ComposerAddMenu";
 import {
   ComposerAttachmentRow,
   type ComposerPendingImage,
-} from "@openbot/ui/features/conversation/ComposerAttachmentRow";
+} from "@whilo/ui/features/conversation/ComposerAttachmentRow";
 import {
   ComposerEditor,
   type ComposerPasteResult,
   type ComposerSelection,
   type QuoteRequest,
-} from "@openbot/ui/features/conversation/ComposerEditor";
-import { ComposerNotice } from "@openbot/ui/features/conversation/ComposerNotice";
-import { ComposerReplyPreview } from "@openbot/ui/features/conversation/ComposerReplyPreview";
-import { ComposerSendControl } from "@openbot/ui/features/conversation/ComposerSendControl";
-import { ContextUsageMeter, type ContextUsageView } from "@openbot/ui/features/conversation/ContextUsage";
-import { ApprovalCard } from "@openbot/ui/features/conversation/ConversationPrompts";
+} from "@whilo/ui/features/conversation/ComposerEditor";
+import { ComposerNotice } from "@whilo/ui/features/conversation/ComposerNotice";
+import { ComposerReplyPreview } from "@whilo/ui/features/conversation/ComposerReplyPreview";
+import { ComposerSendControl } from "@whilo/ui/features/conversation/ComposerSendControl";
+import { ContextUsageMeter, type ContextUsageView } from "@whilo/ui/features/conversation/ContextUsage";
+import { ApprovalCard } from "@whilo/ui/features/conversation/ConversationPrompts";
 import {
   DeleteMessageDialog,
   MessageActions,
   MessageMenu,
   MessageMenuItems,
   type MessageMenuItemsProps,
-} from "@openbot/ui/features/conversation/MessageRendering";
-import { QueuePanel } from "@openbot/ui/features/conversation/QueuePanel";
+} from "@whilo/ui/features/conversation/MessageRendering";
+import { QueuePanel } from "@whilo/ui/features/conversation/QueuePanel";
 import {
   MessageSelectionActions,
   type QuoteShortcutModifier,
-} from "@openbot/ui/features/conversation/SelectionActions";
-import type { SendShortcut } from "@openbot/ui/features/conversation/send-shortcut";
-import { ComposerVoiceControls, type VoicePhase } from "@openbot/ui/features/conversation/VoiceRecordingMorph";
-import { type TextValue, useText } from "@openbot/ui/text";
+} from "@whilo/ui/features/conversation/SelectionActions";
+import type { SendShortcut } from "@whilo/ui/features/conversation/send-shortcut";
+import { ComposerVoiceControls, type VoicePhase } from "@whilo/ui/features/conversation/VoiceRecordingMorph";
+import { type TextValue, useText } from "@whilo/ui/text";
 import type { JSX } from "@solidjs/web";
 import { children, createEffect, createMemo, createSignal, For, onCleanup, onSettled, Show, untrack } from "solid-js";
 import { type AgentThreadBranchSource, BranchDivider } from "./BranchDivider";

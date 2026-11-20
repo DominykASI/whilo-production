@@ -61,13 +61,13 @@ export const messages = {
   "error.backend.sunshineNotReadyReason": "Sunshine is niet klaar geworden. {reason}",
   "error.backend.channelLeadModelUnavailable": "Het model van de kanaalleider is niet beschikbaar.",
   "error.backend.contextCompactionIneffective":
-    "Comprimeren maakt deze chat niet kleiner: na twee keer comprimeren gebruikt hij nog {percent}% van het contextvenster van het model, dus OpenBot stopt met comprimeren. Tools en instructies gebruiken het grootste deel van het venster. Zet de MCP-servers of computerbediening uit die deze agent niet nodig heeft, of kies een model met een groter venster. Start daarna een nieuwe chat.",
+    "Comprimeren maakt deze chat niet kleiner: na twee keer comprimeren gebruikt hij nog {percent}% van het contextvenster van het model, dus Whilo stopt met comprimeren. Tools en instructies gebruiken het grootste deel van het venster. Zet de MCP-servers of computerbediening uit die deze agent niet nodig heeft, of kies een model met een groter venster. Start daarna een nieuwe chat.",
   "error.backend.contextCompactionStopped":
-    "Twee compressies van deze chat zijn na elkaar mislukt, dus OpenBot comprimeert hem niet meer automatisch. Elke poging stuurt de hele chat naar het model en gebruikt je abonnementslimiet. Kies ‘Nu comprimeren’ om het opnieuw te proberen, of start een nieuwe chat.",
+    "Twee compressies van deze chat zijn na elkaar mislukt, dus Whilo comprimeert hem niet meer automatisch. Elke poging stuurt de hele chat naar het model en gebruikt je abonnementslimiet. Kies ‘Nu comprimeren’ om het opnieuw te proberen, of start een nieuwe chat.",
   "error.backend.providerRetrying":
     "De provider kon dit verzoek {attempts} keer niet uitvoeren en probeert het opnieuw. Als de agent niet verdergaat, stop dan de beurt.",
   "error.backend.providerRetryingLargeContext":
-    "De provider kon dit verzoek {attempts} keer niet uitvoeren en probeert het opnieuw. Deze chat gebruikt {percent}% van het contextvenster van het model. Als de agent niet verdergaat, stop dan de beurt: OpenBot comprimeert de chat dan voor het volgende bericht.",
+    "De provider kon dit verzoek {attempts} keer niet uitvoeren en probeert het opnieuw. Deze chat gebruikt {percent}% van het contextvenster van het model. Als de agent niet verdergaat, stop dan de beurt: Whilo comprimeert de chat dan voor het volgende bericht.",
   "error.backend.sharedDataUnavailable": "Gedeelde gegevens zijn niet beschikbaar.",
   "error.backend.shuttingDown": "Whilo wordt afgesloten.",
   "error.backend.channelUnconfirmedStart":

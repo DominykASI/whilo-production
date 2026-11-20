@@ -103,7 +103,7 @@ function startedThreadId(value: unknown): string {
 }
 
 function git(cwd: string, ...args: string[]): void {
-  execFileSync("git", ["-c", "user.name=Whilo", "-c", "user.email=e2e@openbot.invalid", ...args], { cwd });
+  execFileSync("git", ["-c", "user.name=Whilo", "-c", "user.email=e2e@whilo.invalid", ...args], { cwd });
 }
 
 for (const variant of variants) {

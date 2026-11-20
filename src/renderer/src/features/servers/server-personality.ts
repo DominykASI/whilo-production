@@ -1,4 +1,4 @@
-import type { HostPersonality, OpenBotDesktopApi, ResponseStyle } from "@openbot/contracts/ipc";
+import type { HostPersonality, OpenBotDesktopApi, ResponseStyle } from "@whilo/contracts/ipc";
 import { createSignal } from "solid-js";
 
 /** The personality calls of one server's host. The desktop reaches them through main. */

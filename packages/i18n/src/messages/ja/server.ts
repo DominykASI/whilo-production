@@ -241,7 +241,7 @@ export const messages = {
   "server.settings.storageDescription":
     "Whilo がこのサーバーのディスクに保存しているものを確認し、空き容量を増やします。",
   "server.settings.hostedSitesTitle": "サイト",
-  "server.settings.hostedSitesDescription": "このサーバーのエージェントが openbot.site に公開した静的サイト。",
+  "server.settings.hostedSitesDescription": "このサーバーのエージェントが whilo.site に公開した静的サイト。",
   "server.settings.importTitle": "インポート",
   "server.settings.importDescription": "Grok Bot または Hermes Agent からこのサーバーにエージェントを移動します。",
   "server.settings.transferTitle": "移行",
@@ -297,7 +297,7 @@ export const messages = {
   "server.settings.addLogo": "サーバーのロゴを追加",
   "server.settings.removeLogo": "サーバーのロゴを削除",
   "server.settings.access": "アクセス",
-  "server.companySignIn.desktopOnly": "シングルサインオンは OpenBot デスクトップアプリで設定します。",
+  "server.companySignIn.desktopOnly": "シングルサインオンは Whilo デスクトップアプリで設定します。",
   "server.settings.publish": "このサーバーを公開",
   "server.settings.published": "サーバーは公開されています",
   "server.settings.setUpDesktopTitle": "リモートデスクトップを設定",
@@ -461,7 +461,7 @@ export const messages = {
   "server.desktop.accessMembers": "すべてのメンバー",
   "server.desktop.askLabel": "このコンピューターで確認する",
   "server.desktop.askDescription":
-    "各セッションは、このコンピューターの前にいるユーザーが許可するまで待機します。30 秒以内に応答がない場合、OpenBot は拒否します。",
+    "各セッションは、このコンピューターの前にいるユーザーが許可するまで待機します。30 秒以内に応答がない場合、Whilo は拒否します。",
   "server.desktop.activeTitle": "アクティブなリモートデスクトップセッション: {active}",
   "server.desktop.activeDescription": "すべてのセッションをすぐに終了します。メンバーは再度リクエストできます。",
   "server.desktop.stopAll": "すべてのリモート操作を停止",
@@ -503,7 +503,7 @@ export const messages = {
   "server.update.path.container":
     "Docker ホストで新しい Whilo イメージを pull し、同じデータボリュームでコンテナーを再作成してください。先に実行中の作業が終わるのを待ってください。データを保持するため、既存のボリュームはそのまま残してください。",
   "server.update.path.manual":
-    "このインストールは自分自身を置き換えられません。github.com/nightly-labs/openbot/releases から互換性のあるリリースをインストールするよう、ホストの管理者に依頼してください。既存の Whilo のデータは残してください。",
+    "このインストールは自分自身を置き換えられません。github.com/nightly-labs/whilo/releases から互換性のあるリリースをインストールするよう、ホストの管理者に依頼してください。既存の Whilo のデータは残してください。",
   "server.update.path.unavailable":
     "これは開発ビルドです。アップデートを確認するには、インストール済みの Whilo リリースを使用してください。",
   "server.update.check": "アップデートを確認",

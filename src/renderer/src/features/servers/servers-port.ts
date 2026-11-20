@@ -1,4 +1,4 @@
-import type { WhiloDesktopApi, ServerSummary } from "@whilo/contracts/ipc";
+import type { ServerSummary, WhiloDesktopApi } from "@whilo/contracts/ipc";
 
 /**
  * What the servers domain reaches in main: the server list and selection, the account changes, the local host, the
@@ -33,10 +33,7 @@ export interface ServersPort {
   events: WhiloDesktopApi["events"];
   auth: Pick<WhiloDesktopApi["auth"], "onEvent">;
   browser: Pick<WhiloDesktopApi["browser"], "setVisible">;
-  hostAdmin: Pick<
-    WhiloDesktopApi["hostAdmin"],
-    "cancelUpdate" | "getUpdateStatus" | "startUpdate" | "updateIdentity"
-  >;
+  hostAdmin: Pick<WhiloDesktopApi["hostAdmin"], "cancelUpdate" | "getUpdateStatus" | "startUpdate" | "updateIdentity">;
   hostedServers: Pick<WhiloDesktopApi["hostedServers"], "list" | "restart" | "wake">;
   localServers: WhiloDesktopApi["localServers"];
   host: Pick<

@@ -1,8 +1,9 @@
 import { isBoolean, isDynamicRecord, isNumber } from "@whilo/contracts/runtime-values";
 import { currentAnalyticsInstallId, newAnalyticsInstallId } from "@whilo/telemetry";
 import { randomUUID } from "expo-crypto";
-import * as SecureStore from "expo-secure-store";
+import { Platform } from "react-native";
 import { create } from "zustand";
+import * as SecureStore from "../../shared/lib/persistent-storage";
 import { mobileAnalytics } from "./mobile-analytics";
 
 const key = "whilo.mobile.analytics.v1";
@@ -53,7 +54,11 @@ export function loadAnalyticsPreference(): Promise<void> {
     .then((installId) => mobileAnalytics.setInstallId(installId))
     .then(() => SecureStore.getItemAsync(key))
     .then((stored) => {
-      const enabled = stored === null || stored === "true";
+      // Web: explicit default is OFF and never silently enabled. expo-secure-store fails on web
+      // (so the stored choice used to be unreadable and reset on reload); mobile-analytics also has
+      // no web transport. The user's explicit choice is still persisted and respected if present.
+      // Native keeps the existing opt-out default (on unless the user turned it off).
+      const enabled = stored === null ? Platform.OS !== "web" : stored === "true";
       mobileAnalytics.setEnabled(enabled);
       useAnalyticsPreference.setState({ enabled, ready: true });
     })

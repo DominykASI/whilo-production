@@ -70,7 +70,7 @@ export const messages = {
   "settings.launchAtLogin.description": "이 컴퓨터에 로그인하면 앱을 열어요.",
   "settings.keepRunning.title": "Whilo을 백그라운드에서 계속 실행",
   "settings.keepRunning.description": "창을 닫은 뒤에도 진행 중인 작업을 계속 실행해요.",
-  "settings.menuBar.title": "메뉴 막대에 OpenBot 표시",
+  "settings.menuBar.title": "메뉴 막대에 Whilo 표시",
   "settings.menuBar.description": "메뉴 막대 아이콘에서 OpenBot을 열거나 종료해요.",
   "settings.keepAwake.title": "이 컴퓨터를 절전 모드로 전환하지 않기",
   "settings.keepAwake.description": "컴퓨터가 전원에 연결되어 있으면 루틴이 제시간에 실행돼요. 화면은 꺼질 수 있어요.",
@@ -223,11 +223,11 @@ export const messages = {
   "settings.agentDock.placement.description":
     "'다른 앱 위'를 선택하면 OpenBot이 백그라운드에 있어도 독이 화면에 표시됩니다.",
   "settings.agentDock.placement.screen": "다른 앱 위",
-  "settings.agentDock.placement.window": "OpenBot 창 안",
+  "settings.agentDock.placement.window": "Whilo 창 안",
   "settings.agentDock.display.title": "디스플레이",
   "settings.agentDock.display.description":
-    "해당 디스플레이가 연결되어 있지 않으면 독이 OpenBot 창의 디스플레이로 이동합니다.",
-  "settings.agentDock.display.window": "OpenBot 창와 함께",
+    "해당 디스플레이가 연결되어 있지 않으면 독이 Whilo 창의 디스플레이로 이동합니다.",
+  "settings.agentDock.display.window": "Whilo 창와 함께",
   "settings.agentDock.display.primary": "주 디스플레이",
   "settings.agentDock.display.all": "모든 디스플레이",
   "settings.agentDock.display.unnamed": "디스플레이 {number}",

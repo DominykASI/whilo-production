@@ -1,6 +1,6 @@
 /**
  * The Slack settings of a trigger and of an output card. A Slack trigger starts a run when a person
- * mentions OpenBot in a workspace and a channel that match it. A Slack output replies in that message's
+ * mentions Whilo in a workspace and a channel that match it. A Slack output replies in that message's
  * thread, adds a reaction to it, or posts in a channel. The labels that name no service are the Discord
  * ones.
  */
@@ -14,9 +14,9 @@ import {
   type WorkflowSlackAction,
   type WorkflowSlackEmoji,
   type WorkflowSlackEvent,
-} from "@openbot/contracts/ipc";
-import type { AppTextKey } from "@openbot/i18n";
-import { AtSign, CirclePlus, Hash, Megaphone, MessageSquare, MessageSquareReply, Zap } from "@openbot/ui";
+} from "@whilo/contracts/ipc";
+import type { AppTextKey } from "@whilo/i18n";
+import { AtSign, CirclePlus, Hash, Megaphone, MessageSquare, MessageSquareReply, Zap } from "@whilo/ui";
 import type { JSX } from "@solidjs/web";
 import { Show } from "solid-js";
 import { useText } from "../../text";

@@ -1,7 +1,7 @@
 import {
   createAgentTemplateShareUrl,
-  WHILO_AGENT_TEMPLATE_PATH_PREFIX,
   parseAgentTemplateUrl,
+  WHILO_AGENT_TEMPLATE_PATH_PREFIX,
 } from "@whilo/contracts/agent-template-links";
 import { parseInviteUrl, selfHostedApiOrigin } from "@whilo/contracts/invite-links";
 import { parseMobileConnectUrl } from "@whilo/contracts/mobile-connect";

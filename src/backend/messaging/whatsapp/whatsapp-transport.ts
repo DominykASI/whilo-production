@@ -1,7 +1,7 @@
-import type { MessagingConnectionState } from "@openbot/contracts/ipc";
-import { sourceText } from "@openbot/i18n/source";
-import { createOpenBotLogger } from "@openbot/logging";
-import { jidNormalizedUser, proto, type WAMessage } from "@openbot/whatsapp/baileys";
+import type { MessagingConnectionState } from "@whilo/contracts/ipc";
+import { sourceText } from "@whilo/i18n/source";
+import { createWhiloLogger } from "@whilo/logging";
+import { jidNormalizedUser, proto, type WAMessage } from "@whilo/whatsapp/baileys";
 import { Effect } from "effect";
 import type { InboundMessage, MessagingTransport, TransportSink } from "../messaging-types";
 import {
@@ -14,7 +14,7 @@ import {
 import type { WhatsAppConnectionHandle, WhatsAppRuntime } from "./whatsapp-runtime";
 import type { WhatsAppSessionState } from "./whatsapp-session";
 
-const logger = createOpenBotLogger("whatsapp");
+const logger = createWhiloLogger("whatsapp");
 
 /** A socket can deliver one message twice, such as after a reconnect. */
 const RECENT_MESSAGES = 2_000;
@@ -235,7 +235,7 @@ export class WhatsAppTransport implements MessagingTransport {
     this.#handed.set(dedupKey, timer);
   }
 
-  /** A dedicated number answers an unknown person once, with the code the owner sees in OpenBot. */
+  /** A dedicated number answers an unknown person once, with the code the owner sees in Whilo. */
   async #pair(event: Extract<WhatsAppEvent, { type: "pairing" }>): Promise<void> {
     const request = this.#runtime.policy.pairing(this.#workspaceId, event.senderId, event.name);
     if (!request?.created) return;

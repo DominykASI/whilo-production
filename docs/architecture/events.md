@@ -196,7 +196,7 @@ connection (empty: any linked chat) and a text filter (`telegram-matching.ts`). 
 starts one run for each trigger, with source `telegram` (schema v52) and the idempotency key
 `telegram:<node>:<connection>:<message>`, because a Telegram message ID is unique only in its chat. It
 does not start an agent conversation. A workflow with an open run
-skips the message; when all matched triggers skip it, OpenBot adds the failed reaction to it.
+skips the message; when all matched triggers skip it, Whilo adds the failed reaction to it.
 
 The run payload is the message, marked as data, with its chat, thread key and message ID. A Telegram
 output reads them from it only in a run that a Telegram message started: a reply and a reaction act
@@ -214,7 +214,7 @@ before it goes to an agent. The trigger matches the connection, the channel (emp
 filter (`slack-matching.ts`). Slack has no people filter: the host has no catalog of Slack people. A
 matched mention starts one run for each trigger, with source `slack` (schema v53) and the idempotency
 key `slack:<node>:<channel>:<message timestamp>`, because a Slack timestamp is unique only in its
-channel. A workflow with an open run skips the mention; when all matched triggers skip it, OpenBot
+channel. A workflow with an open run skips the mention; when all matched triggers skip it, Whilo
 adds the failed reaction to the message.
 
 The run payload is the mention, marked as data, with the file names, types and sizes but not their
@@ -246,7 +246,7 @@ owner or admin changes a Slack node (`route-workflows.ts`).
   such as Composio and Svix, make their own secret. The host encrypts the value in the same column as
   a secret that it made, so no migration is necessary. The answer is empty. For a host without the
   capability, the editor and the chat card leave out the button.
-- Signal accepts the `X-OpenBot-*` headers, or the Standard Webhooks `webhook-*` or `svix-*`
+- Signal accepts the `X-Whilo-*` headers, or the Standard Webhooks `webhook-*` or `svix-*`
   headers. It relays a Standard Webhooks request only to an ingress socket whose hello lists
   `standard-webhooks` in `webhookFormats`; for an older host it answers `401`. The host checks the
   `v1` signature (`verifyStandardWebhookSignature`) and uses the complete body as `data`.

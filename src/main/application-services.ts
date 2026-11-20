@@ -1007,8 +1007,8 @@ export async function createApplicationServices({
   prepareForUpdateInstall,
   quitting,
 }: ApplicationServiceContext): Promise<ApplicationServices> {
-  // The start of the first `openbot:services.*` step, for the `system_startup` summary.
-  performance.mark("openbot:services.start");
+  // The start of the first `whilo:services.*` step, for the `system_startup` summary.
+  performance.mark("whilo:services.start");
   // First, so the provider lines of the whole startup reach the file.
   teardown.push(
     TEARDOWN_ORDER.providerLog,
@@ -1722,7 +1722,7 @@ export async function createApplicationServices({
   );
   /*
    * The password-manager engine. 1Password and Bitwarden keep their own services, panels and
-   * teardown, and the browser reads their logins directly. The Proton Pass CLI data and OpenBot's
+   * teardown, and the browser reads their logins directly. The Proton Pass CLI data and Whilo's
    * copy of `pass-cli` stay outside every root an agent can write.
    */
   const protonPassCliTarget = runtimeTarget(process.platform, process.arch);
@@ -2955,7 +2955,7 @@ export async function createApplicationServices({
     hostComputerInUse: (event) => {
       const window = windows.getMainWindow();
       if (!window || window.isDestroyed()) return false;
-      // Also a locked screen. In a Wayland session, `computerIdle` counts the input in OpenBot only.
+      // Also a locked screen. In a Wayland session, `computerIdle` counts the input in Whilo only.
       if (powerMonitor.getSystemIdleState(awayAfterMs / 1_000) !== "active") return false;
       if (computerIdle.seconds() * 1_000 >= awayAfterMs) return false;
       if (window.isFocused()) return true;

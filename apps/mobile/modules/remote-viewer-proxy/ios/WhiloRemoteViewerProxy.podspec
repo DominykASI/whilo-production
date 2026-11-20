@@ -1,10 +1,10 @@
 Pod::Spec.new do |s|
-  s.name           = 'OpenBotShareFiles'
+  s.name           = 'OpenBotRemoteViewerProxy'
   s.version        = '1.0.0'
-  s.summary        = 'Share many files at once'
-  s.description    = 'Opens one share sheet with all the images of a chat gallery.'
+  s.summary        = 'Loopback HTTP and WebSocket server for the Whilo remote desktop viewer'
+  s.description    = 'Listens on 127.0.0.1 and gives each HTTP request and WebSocket message to JavaScript, which sends it to the host.'
   s.license        = 'PolyForm-Noncommercial-1.0.0'
-  s.author         = 'OpenBot'
+  s.author         = 'Whilo'
   s.homepage       = 'https://openbot.run'
   s.platforms      = { :ios => '16.4' }
   s.swift_version  = '5.9'

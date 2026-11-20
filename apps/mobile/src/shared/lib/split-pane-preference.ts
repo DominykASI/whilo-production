@@ -1,4 +1,4 @@
-import * as SecureStore from "expo-secure-store";
+import * as SecureStore from "./persistent-storage";
 import { create } from "zustand";
 
 /** How the pane of a wide window shows: the full list, or its avatars only. */

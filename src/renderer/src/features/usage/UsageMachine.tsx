@@ -1,6 +1,6 @@
-import type { MachineMetrics, OpenBotDesktopApi } from "@openbot/contracts/ipc";
-import { MACHINE_RESOURCES_CAPABILITY } from "@openbot/contracts/team-protocol/machine-resources-v1";
-import { UsageMachineMeter } from "@openbot/ui/features/usage/UsageMachineMeter";
+import type { MachineMetrics, OpenBotDesktopApi } from "@whilo/contracts/ipc";
+import { MACHINE_RESOURCES_CAPABILITY } from "@whilo/contracts/team-protocol/machine-resources-v1";
+import { UsageMachineMeter } from "@whilo/ui/features/usage/UsageMachineMeter";
 import { createMemo, createSignal, Show, untrack } from "solid-js";
 import { createUsageRefreshPoll } from "../account/usage-refresh-poll";
 import { canManageStorage } from "../files/storage-usage";
@@ -15,9 +15,9 @@ const MACHINE_REFRESH_CHECK_MS = 10_000;
 
 type MachinePort = Pick<OpenBotDesktopApi["storage"], "getMachineMetrics">;
 
-/** Read on each call: tests and stories replace `window.openbot` per case. */
+/** Read on each call: tests and stories replace `window.whilo` per case. */
 function machinePort(): MachinePort {
-  return window.openbot.storage;
+  return window.whilo.storage;
 }
 
 /**

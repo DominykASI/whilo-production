@@ -73,8 +73,8 @@ export const messages = defineMessages("settings", {
   "settings.launchAtLogin.description": "Open the app when you sign in to this computer.",
   "settings.keepRunning.title": "Keep Whilo running in the background",
   "settings.keepRunning.description": "Keep active tasks running after you close the window.",
-  "settings.menuBar.title": "Show OpenBot in the menu bar",
-  "settings.menuBar.description": "Open or quit OpenBot from an icon in the menu bar.",
+  "settings.menuBar.title": "Show Whilo in the menu bar",
+  "settings.menuBar.description": "Open or quit Whilo from an icon in the menu bar.",
   "settings.keepAwake.title": "Keep this computer awake",
   "settings.keepAwake.description":
     "Routines run on time while the computer is connected to power. The display can still turn off.",
@@ -229,13 +229,13 @@ export const messages = defineMessages("settings", {
   "settings.agentDock.show.description": "Show your agents at the screen edge, ready for a quick chat.",
   "settings.agentDock.placement.title": "Position",
   "settings.agentDock.placement.description":
-    "Above other apps keeps the dock on screen when OpenBot is in the background.",
+    "Above other apps keeps the dock on screen when Whilo is in the background.",
   "settings.agentDock.placement.screen": "Above other apps",
-  "settings.agentDock.placement.window": "In the OpenBot window",
+  "settings.agentDock.placement.window": "In the Whilo window",
   "settings.agentDock.display.title": "Display",
   "settings.agentDock.display.description":
-    "If that display is not connected, the dock goes to the display of the OpenBot window.",
-  "settings.agentDock.display.window": "With the OpenBot window",
+    "If that display is not connected, the dock goes to the display of the Whilo window.",
+  "settings.agentDock.display.window": "With the Whilo window",
   "settings.agentDock.display.primary": "Main display",
   "settings.agentDock.display.all": "All displays",
   "settings.agentDock.display.unnamed": "Display {number}",

@@ -179,7 +179,7 @@ export const messages = {
   "browser.proxies.addTitle": "Aggiungi proxy",
   "browser.proxies.editTitle": "Modifica {name}",
   "browser.proxies.dialogDescription":
-    "Usa socks5, http o https. Nome utente e password sono facoltativi per ogni tipo. La password resta cifrata sul computer su cui gira OpenBot.",
+    "Usa socks5, http o https. Nome utente e password sono facoltativi per ogni tipo. La password resta cifrata sul computer su cui gira Whilo.",
   "browser.proxies.address": "Indirizzo",
   "browser.proxies.addressPlaceholder": "socks5://user:password@host:1080",
   "browser.proxies.deleteUsed": {
@@ -189,7 +189,7 @@ export const messages = {
   "browser.proxies.deleteUnused": "Nessun profilo usa questo proxy.",
   "browser.proxies.failing": "{name} non risponde",
   "browser.proxies.signInRefused": "{name} ha rifiutato l’accesso",
-  "browser.proxies.unsupported": "Questo server non può usare proxy. Aggiorna OpenBot su quel server.",
+  "browser.proxies.unsupported": "Questo server non può usare proxy. Aggiorna Whilo su quel server.",
   "browser.proxies.yourComputer": "Il tuo computer",
   "browser.proxies.memberComputer": "Computer di {name}",
   "browser.proxies.unknownComputer": "Computer di un membro",
@@ -200,7 +200,7 @@ export const messages = {
   "browser.proxies.offlineBadge": "{name} è offline",
   "browser.proxies.shareTitle": "Condividere la connessione di questo computer?",
   "browser.proxies.shareDescription":
-    "I profili che usano il tuo computer aprono i siti pubblici tramite la connessione internet di questo computer. Funziona solo mentre OpenBot è aperto qui. Il server non può aprire indirizzi della tua rete locale.",
+    "I profili che usano il tuo computer aprono i siti pubblici tramite la connessione internet di questo computer. Funziona solo mentre Whilo è aperto qui. Il server non può aprire indirizzi della tua rete locale.",
   "browser.proxies.share": "Condividi",
   "browser.proxies.stopSharing": "Interrompi condivisione",
   "browser.proxies.closesTabs": {

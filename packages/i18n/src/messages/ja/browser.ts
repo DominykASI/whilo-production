@@ -177,7 +177,7 @@ export const messages = {
   "browser.proxies.addTitle": "プロキシを追加",
   "browser.proxies.editTitle": "{name} を編集",
   "browser.proxies.dialogDescription":
-    "socks5、http、https を使用できます。ユーザー名とパスワードはどの種類でも任意です。パスワードは OpenBot を実行しているコンピューターに暗号化して保存されます。",
+    "socks5、http、https を使用できます。ユーザー名とパスワードはどの種類でも任意です。パスワードは Whilo を実行しているコンピューターに暗号化して保存されます。",
   "browser.proxies.address": "アドレス",
   "browser.proxies.addressPlaceholder": "socks5://user:password@host:1080",
   "browser.proxies.deleteUsed": {
@@ -186,7 +186,7 @@ export const messages = {
   "browser.proxies.deleteUnused": "このプロキシを使用しているプロファイルはありません。",
   "browser.proxies.failing": "{name} が応答しません",
   "browser.proxies.signInRefused": "{name} がサインインを拒否しました",
-  "browser.proxies.unsupported": "このサーバーではプロキシを使用できません。サーバーの OpenBot を更新してください。",
+  "browser.proxies.unsupported": "このサーバーではプロキシを使用できません。サーバーの Whilo を更新してください。",
   "browser.proxies.yourComputer": "あなたのコンピュータ",
   "browser.proxies.memberComputer": "{name} のコンピュータ",
   "browser.proxies.unknownComputer": "メンバーのコンピュータ",
@@ -197,7 +197,7 @@ export const messages = {
   "browser.proxies.offlineBadge": "{name} はオフラインです",
   "browser.proxies.shareTitle": "このコンピュータの接続を共有しますか？",
   "browser.proxies.shareDescription":
-    "あなたのコンピュータを使用するプロファイルは、このコンピュータのインターネット接続を通じて公開サイトを開きます。これは、ここで OpenBot が開いている間だけ機能します。サーバーはローカルネットワーク上のアドレスを開けません。",
+    "あなたのコンピュータを使用するプロファイルは、このコンピュータのインターネット接続を通じて公開サイトを開きます。これは、ここで Whilo が開いている間だけ機能します。サーバーはローカルネットワーク上のアドレスを開けません。",
   "browser.proxies.share": "共有",
   "browser.proxies.stopSharing": "共有を停止",
   "browser.proxies.closesTabs": {

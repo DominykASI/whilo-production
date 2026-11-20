@@ -30,7 +30,7 @@ blocked version is no longer offered, but it stays on the computers that already
 
 ## One-time GitHub setup
 
-Create the `release` environment in `nightly-labs/openbot`, then add these environment secrets:
+Create the `release` environment in `nightly-labs/whilo`, then add these environment secrets:
 
 - `CSC_LINK` — a base64-encoded Developer ID Application `.p12` file.
 - `MAC_PROVISIONING_PROFILE` — the base64-encoded Developer ID provisioning profile for
@@ -55,9 +55,9 @@ After the first push, a package administrator must open the
 [Whilo package](https://github.com/orgs/nightly-labs/packages/container/package/whilo):
 
 1. Open **Package settings** and set **Change visibility** to **Public**.
-2. Check that the package is linked to `nightly-labs/openbot`. The Dockerfile sets the
+2. Check that the package is linked to `nightly-labs/whilo`. The Dockerfile sets the
    `org.opencontainers.image.source` label for this link.
-3. Under **Manage Actions access**, check that `nightly-labs/openbot` has write access.
+3. Under **Manage Actions access**, check that `nightly-labs/whilo` has write access.
 
 If **Public** is disabled by organization administrators, an organization owner must enable
 **Public** under **Package creation** in the
@@ -73,8 +73,8 @@ Check access with an empty Docker configuration, so a saved login cannot hide th
 
 ```sh
 anonymous_config=$(mktemp -d)
-docker --config "$anonymous_config" manifest inspect ghcr.io/nightly-labs/openbot:latest
-docker --config "$anonymous_config" manifest inspect ghcr.io/nightly-labs/openbot:0.30.0
+docker --config "$anonymous_config" manifest inspect ghcr.io/nightly-labs/whilo:latest
+docker --config "$anonymous_config" manifest inspect ghcr.io/nightly-labs/whilo:0.30.0
 rm -rf "$anonymous_config"
 ```
 
@@ -589,13 +589,13 @@ The workflow:
 10. builds a Docker image (`docker/Dockerfile`) from each Linux AppImage on a runner of that
     architecture, after it checks the AppImage against its `SHA256SUMS` file. It starts each image
     with `docker/seccomp.json`, waits for `whilo status`, and stops it, which must exit with 0;
-11. after the GitHub Release is published, pushes both images to `ghcr.io/nightly-labs/openbot`
+11. after the GitHub Release is published, pushes both images to `ghcr.io/nightly-labs/whilo`
     with the tags `<version>-amd64` and `<version>-arm64`, joins them under `<version>`, `v<version>`,
     `latest` and `sha-<commit>`, and attests the build provenance of that image. It then checks
     anonymous access to both architectures. See [Docker](docker.md).
 
 Users can verify a downloaded artifact with
-`gh attestation verify <file> --repo nightly-labs/openbot`.
+`gh attestation verify <file> --repo nightly-labs/whilo`.
 
 Before a tag, run the release path without publishing:
 

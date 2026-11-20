@@ -2,7 +2,6 @@ import {
   DEFAULT_SPEECH_SETTINGS,
   DEFAULT_VOICE_SETTINGS,
   ELEVENLABS_VOICE_MODEL_ID,
-  type WhiloDesktopApi,
   SPEECH_MODEL_ID,
   type SpeechModelStatus,
   type SpeechSettings,
@@ -15,6 +14,7 @@ import {
   type VoiceServerSettings,
   type VoiceSettings,
   type VoiceStreamTranscript,
+  type WhiloDesktopApi,
 } from "@whilo/contracts/ipc";
 import { clone, type Listener, type MockRuntime } from "./mock-support";
 

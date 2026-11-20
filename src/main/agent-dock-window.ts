@@ -11,16 +11,16 @@ import type {
   AgentDockEdge,
   AgentDockPresentation,
   SetAgentDockInteractiveInput,
-} from "@openbot/contracts/ipc";
-import { AGENT_DOCK_LIMITS, IPC_ENDPOINTS } from "@openbot/contracts/ipc";
-import { sourceText } from "@openbot/i18n/source";
-import { createOpenBotLogger, type Logger, toLogValue } from "@openbot/logging";
+} from "@whilo/contracts/ipc";
+import { AGENT_DOCK_LIMITS, IPC_ENDPOINTS } from "@whilo/contracts/ipc";
+import { sourceText } from "@whilo/i18n/source";
+import { createWhiloLogger, type Logger, toLogValue } from "@whilo/logging";
 import { Deferred, Effect, Schema, Semaphore } from "effect";
 import type { BrowserWindow, Display, Rectangle, Screen } from "electron";
 import { causeHelpers } from "../backend/effect-boundary";
 import { sendToRenderer } from "./renderer-ipc";
 
-const logger = createOpenBotLogger("agent-dock-window");
+const logger = createWhiloLogger("agent-dock-window");
 
 /**
  * The open chat panel, the neck and the dock (462 × 560), and the 40px of liquid that the goo filter

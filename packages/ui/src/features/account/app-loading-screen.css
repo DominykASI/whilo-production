@@ -10,12 +10,12 @@
   --app-loading-at: 0s;
   --app-loading-exit-delay: 300ms;
   position: absolute;
-  z-index: var(--openbot-layer-dialog);
+  z-index: var(--whilo-layer-dialog);
   inset: 0;
   display: grid;
   place-items: center;
   overflow: hidden;
-  background: var(--openbot-bg-canvas);
+  background: var(--whilo-bg-canvas);
   -webkit-app-region: drag;
 }
 
@@ -66,8 +66,8 @@
 .app-loading-status {
   min-height: 20px;
   margin: 0;
-  color: var(--openbot-text-muted);
-  font-size: var(--openbot-text-md);
+  color: var(--whilo-text-muted);
+  font-size: var(--whilo-text-md);
 }
 
 .app-loading-line {
@@ -81,7 +81,7 @@
 
 /* The fade also runs with reduced motion: its animationend removes the screen. */
 .app-loading:is([data-phase="fade"], [data-phase="exit"]) {
-  animation: app-loading-exit var(--openbot-duration-overlay) var(--openbot-ease-in-out) forwards;
+  animation: app-loading-exit var(--whilo-duration-overlay) var(--whilo-ease-in-out) forwards;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -93,16 +93,16 @@
 
   /* The stage waits before it shows, so a fast load does not flash the crew. */
   .app-loading-stage {
-    animation: app-loading-enter var(--openbot-duration-overlay) var(--openbot-ease-out)
+    animation: app-loading-enter var(--whilo-duration-overlay) var(--whilo-ease-out)
       calc(250ms - var(--app-loading-at)) both;
   }
 
   .app-loading-line {
-    animation: app-loading-line-in 280ms var(--openbot-ease-out);
+    animation: app-loading-line-in 280ms var(--whilo-ease-out);
   }
 
   .app-loading:not([data-phase="loading"]) .app-loading-status {
-    animation: app-loading-fade 200ms var(--openbot-ease-out) forwards;
+    animation: app-loading-fade 200ms var(--whilo-ease-out) forwards;
   }
 }
 
@@ -136,22 +136,22 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--openbot-space-3);
-  padding: var(--openbot-space-3);
-  background: var(--openbot-bg-canvas);
-  border-bottom: 1px solid var(--openbot-border);
+  gap: var(--whilo-space-3);
+  padding: var(--whilo-space-3);
+  background: var(--whilo-bg-canvas);
+  border-bottom: 1px solid var(--whilo-border);
 }
 .server-connection-notice p {
   margin: 0;
 }
 .server-connection-detail {
-  color: var(--openbot-text-muted);
+  color: var(--whilo-text-muted);
   font-variant-numeric: tabular-nums;
   text-wrap: pretty;
 }
 .server-connection-actions {
   display: flex;
-  gap: var(--openbot-space-2);
+  gap: var(--whilo-space-2);
   -webkit-app-region: no-drag;
 }
 /* The toast of a long first load, like the GitHub star toast: a raised card with the 1px ring only. */
@@ -161,32 +161,32 @@
 .server-connection-toast {
   position: relative;
   display: grid;
-  gap: var(--openbot-space-2);
-  padding: var(--openbot-space-4) var(--openbot-space-3) var(--openbot-space-3) var(--openbot-space-4);
-  border-radius: var(--openbot-radius-lg);
-  background: var(--openbot-bg-surface-raised);
-  box-shadow: 0 0 0 1px var(--openbot-border);
-  color: var(--openbot-text-primary);
-  font-family: var(--openbot-font-sans);
-  font-size: var(--openbot-text-md);
-  line-height: var(--openbot-leading-md);
+  gap: var(--whilo-space-2);
+  padding: var(--whilo-space-4) var(--whilo-space-3) var(--whilo-space-3) var(--whilo-space-4);
+  border-radius: var(--whilo-radius-lg);
+  background: var(--whilo-bg-surface-raised);
+  box-shadow: 0 0 0 1px var(--whilo-border);
+  color: var(--whilo-text-primary);
+  font-family: var(--whilo-font-sans);
+  font-size: var(--whilo-text-md);
+  line-height: var(--whilo-leading-md);
 }
 .server-connection-toast-close {
   position: absolute;
-  top: var(--openbot-space-2);
-  right: var(--openbot-space-2);
-  color: var(--openbot-text-muted);
+  top: var(--whilo-space-2);
+  right: var(--whilo-space-2);
+  color: var(--whilo-text-muted);
 }
 /* The end padding keeps the title clear of the close button. */
 .server-connection-toast-title {
-  padding-right: var(--openbot-space-6);
-  font-weight: var(--openbot-weight-semibold);
+  padding-right: var(--whilo-space-6);
+  font-weight: var(--whilo-weight-semibold);
 }
 .server-connection-toast-body {
   margin: 0;
-  color: var(--openbot-text-secondary);
-  font-size: var(--openbot-text-sm);
-  line-height: var(--openbot-leading-sm);
+  color: var(--whilo-text-secondary);
+  font-size: var(--whilo-text-sm);
+  line-height: var(--whilo-leading-sm);
   font-variant-numeric: tabular-nums;
   text-wrap: pretty;
 }
@@ -195,8 +195,8 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: var(--openbot-space-1-5);
-  margin-top: var(--openbot-space-1);
+  gap: var(--whilo-space-1-5);
+  margin-top: var(--whilo-space-1);
 }
 .server-connection-content {
   position: relative;

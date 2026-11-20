@@ -254,7 +254,7 @@ export const messages = {
   "mobile.chat.imageGallery.saveAll": "全部保存",
   "mobile.chat.imageGallery.saved": "已保存到照片",
   "mobile.chat.imageGallery.shareAll": "全部分享",
-  "mobile.chat.imageGallery.photosPermission": "要保存这些图片，请在设置中允许 OpenBot 添加照片。",
+  "mobile.chat.imageGallery.photosPermission": "要保存这些图片，请在设置中允许 Whilo 添加照片。",
   "mobile.chat.imageGallery.saveFailed": "无法保存图片",
   "mobile.chat.imageGallery.shareFailed": "无法分享图片",
   "mobile.chat.imageGallery.shareNeedsUpdate": "分享多张图片需要最新版本的应用。",

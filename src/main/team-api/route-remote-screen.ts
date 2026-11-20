@@ -17,9 +17,9 @@ import {
   type RemoteDesktopSession,
   remoteControlAllowsRole,
   type TeamMemberSummary,
-} from "@openbot/contracts/ipc";
-import { TEAM_API_ROUTES } from "@openbot/contracts/team-api-routes";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/ipc";
+import { TEAM_API_ROUTES } from "@whilo/contracts/team-api-routes";
+import { sourceText } from "@whilo/i18n/source";
 import { runCauseEffect } from "../../backend/effect-boundary";
 import { RemoteScreenError } from "../remote-screen-gateway";
 import type { TeamStore } from "../team-store";

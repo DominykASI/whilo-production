@@ -208,7 +208,7 @@ export const messages = {
   "workflow.telegram.anyChat": "Любой связанный чат",
   "workflow.telegram.sameChat": "Как у триггера",
   "workflow.telegram.event": "Событие",
-  "workflow.telegram.event.mention": "Упоминание OpenBot",
+  "workflow.telegram.event.mention": "Упоминание Whilo",
   "workflow.telegram.text": "Текст содержит",
   "workflow.telegram.anyText": "Любой текст",
   "workflow.telegram.on": "Где",

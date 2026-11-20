@@ -11,3 +11,6 @@ export const WHILO_SOFTWARE_APPLICATION = whiloSoftwareApplication({
   version,
   screenshot: new URL(channelScreenshot, WHILO_SITE_URL).toString(),
 });
+
+/** The structured data under the name the older pages import. */
+export const OPENBOT_SOFTWARE_APPLICATION = WHILO_SOFTWARE_APPLICATION;

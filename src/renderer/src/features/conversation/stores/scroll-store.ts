@@ -1,3 +1,4 @@
+import type { VirtualItem } from "@tanstack/virtual-core";
 import { createScrollFades } from "@whilo/ui/components/createScrollFades";
 import type { AgentMessage } from "@whilo/ui/data";
 import type { RoutineRunToggleMarkerModel } from "@whilo/ui/features/conversation/ChatActionMarker";
@@ -14,12 +15,8 @@ import {
   silentAgentAnswer,
   tallyNewMessages,
 } from "@whilo/ui/features/conversation/new-message-tally";
-import {
-  scrollToUnreadBoundary,
-  unreadMessagesDividerIsVisible,
-} from "@whilo/ui/features/conversation/UnreadMessages";
+import { scrollToUnreadBoundary, unreadMessagesDividerIsVisible } from "@whilo/ui/features/conversation/UnreadMessages";
 import { currentText } from "@whilo/ui/text";
-import type { VirtualItem } from "@tanstack/virtual-core";
 import { createEffect, createMemo, createSignal, onCleanup, untrack } from "solid-js";
 import { formatMessageTime } from "../../../app-message-projection";
 import { groupAgentMessageMarkers, markOpenAgentMessages } from "../agent-message-timeline";

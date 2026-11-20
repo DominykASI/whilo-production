@@ -34,7 +34,7 @@ const MAX_BODY_BYTES = 4 * 1024 * 1024;
 const MISSING_PERMISSION = "Resource not accessible by integration";
 /** For the agent, which tells the user. GitHub needs `administration: write` to create a repository. */
 const REPOSITORY_CREATION_HINT =
-  'OpenBot cannot create repositories for this owner. GitHub needs the "Administration: write" permission of the ' +
+  'Whilo cannot create repositories for this owner. GitHub needs the "Administration: write" permission of the ' +
   "OpenBotGit app on that account. An owner of the account installs OpenBotGit there, or approves its pending " +
   "permission request, in GitHub settings: Applications > Installed GitHub Apps (for an organization, in the " +
   "organization settings). Organization policy can also block repository creation. Tell the user this, and do " +

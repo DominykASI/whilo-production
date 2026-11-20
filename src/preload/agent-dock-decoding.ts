@@ -10,7 +10,7 @@ import {
   isAgentDockDisplayInfoList,
   isAgentDockOffset,
   isAgentDockPresentation,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 
 /** Null hides the dock window. */
 export function decodeAgentDockPresentation(value: unknown): AgentDockPresentation | null {

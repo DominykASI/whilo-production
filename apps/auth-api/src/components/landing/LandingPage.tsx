@@ -1,4 +1,4 @@
-import { AppLogo, PlatformLogo, ProviderLogo } from "@openbot/brand";
+import { AppLogo, PlatformLogo, ProviderLogo } from "@whilo/brand";
 import { For, onSettled, Show } from "solid-js";
 import { landingAnalytics } from "../../lib/analytics";
 import type { HeroProviderPart, LandingPageText } from "../../lib/landing-page-text";
@@ -94,7 +94,7 @@ function LandingPageContent() {
             source={() => download}
             avoid={() => (copy ? [...copy.children] : [])}
             beamPosition={0.78}
-            color="#a46cf5"
+            color="#007cf7"
             start={previewReady.opened}
             onImpact={beamImpact.open}
           />
@@ -136,7 +136,7 @@ function LandingPageContent() {
 
             <h1 id="landing-title" class="landing-title landing-hero-line" style={{ "--landing-hero-line": 1 }}>
               {/* The spaces do not render in the flex row. They keep the words apart in
-                  the text that search engines read, which was "MeetOpenBot". */}
+                  the text that search engines read. */}
               <Show when={hero().title.before}>
                 {(before) => (
                   <>
@@ -145,7 +145,7 @@ function LandingPageContent() {
                 )}
               </Show>
               <AppLogo variant="production" animation="blink" interactive class="landing-hero-logo" />{" "}
-              <span>OpenBot</span>
+              <span>Whilo</span>
               <Show when={hero().title.after}>
                 {(after) => (
                   <>

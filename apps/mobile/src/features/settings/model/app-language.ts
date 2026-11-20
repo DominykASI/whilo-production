@@ -1,5 +1,5 @@
 import { type AppLanguage, DEFAULT_APP_LANGUAGE, isAppLanguage } from "@whilo/i18n/mobile";
-import * as SecureStore from "expo-secure-store";
+import * as SecureStore from "../../../shared/lib/persistent-storage";
 import { create } from "zustand";
 
 /**

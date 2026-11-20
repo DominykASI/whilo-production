@@ -63,7 +63,7 @@ import {
 import { withTimeout } from "./with-timeout";
 
 /**
- * OpenBot's OAuth client metadata document. `apps/auth-api` serves it, and its `redirect_uris`
+ * Whilo's OAuth client metadata document. `apps/auth-api` serves it, and its `redirect_uris`
  * must hold every address that `redirectUrl` can be.
  */
 const MCP_CLIENT_METADATA_URL = "https://openbot.run/oauth/mcp-client.json";
@@ -849,7 +849,7 @@ class McpOAuthClientProvider implements OAuthClientProvider {
   /** Full discovery for this attempt, including custom protected-resource metadata. */
   #discoveryState: OAuthDiscoveryState | undefined;
   /**
-   * The client metadata document (CIMD, SEP-991) that names OpenBot. Set in `saveDiscoveryState`
+   * The client metadata document (CIMD, SEP-991) that names Whilo. Set in `saveDiscoveryState`
    * only for an authorization server with no RFC 7591 registration endpoint; ElevenLabs accepts only
    * this. The SDK uses it only when the server sets `client_id_metadata_document_supported`. A server
    * with a registration endpoint keeps the registration, so a sign-in that works now does not change

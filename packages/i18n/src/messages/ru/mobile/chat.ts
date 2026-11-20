@@ -291,7 +291,7 @@ export const messages = {
   "mobile.chat.imageGallery.saved": "Сохранено в «Фото»",
   "mobile.chat.imageGallery.shareAll": "Поделиться всеми",
   "mobile.chat.imageGallery.photosPermission":
-    "Разрешите OpenBot добавлять фото в Настройках, чтобы сохранить эти изображения.",
+    "Разрешите Whilo добавлять фото в Настройках, чтобы сохранить эти изображения.",
   "mobile.chat.imageGallery.saveFailed": "Не удалось сохранить изображения",
   "mobile.chat.imageGallery.shareFailed": "Не удалось поделиться изображениями",
   "mobile.chat.imageGallery.shareNeedsUpdate":

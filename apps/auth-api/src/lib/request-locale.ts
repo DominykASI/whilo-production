@@ -1,7 +1,7 @@
-import { isAppLanguage } from "@whilo/contracts/app-language";
-import type { TranslatedLocale } from "@whilo/i18n";
 import { createIsomorphicFn } from "@tanstack/solid-start";
 import { getCookie, getRequestHeader } from "@tanstack/solid-start/server";
+import { isAppLanguage } from "@whilo/contracts/app-language";
+import type { TranslatedLocale } from "@whilo/i18n";
 import { chosenSiteLocale, SITE_LOCALE_COOKIE } from "./site-paths";
 
 /** One language range of an `Accept-Language` header, with its quality. */

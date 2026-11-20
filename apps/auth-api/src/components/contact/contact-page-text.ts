@@ -1,4 +1,4 @@
-import type { AppTranslate } from "@openbot/i18n";
+import type { AppTranslate } from "@whilo/i18n";
 import { slot } from "../../lib/text-slots";
 
 /*

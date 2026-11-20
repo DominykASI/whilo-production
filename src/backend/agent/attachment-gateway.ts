@@ -1,9 +1,9 @@
 import { constants } from "node:fs";
 import { lstat, open, realpath } from "node:fs/promises";
 import { basename, isAbsolute } from "node:path";
-import { sortConversationMessages } from "@openbot/contracts/conversation-order";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import type { AgentEvent, ConversationSnapshot } from "@openbot/contracts/ipc";
+import { sortConversationMessages } from "@whilo/contracts/conversation-order";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import type { AgentEvent, ConversationSnapshot } from "@whilo/contracts/ipc";
 import { Deferred, Effect, Result } from "effect";
 import {
   type AttachmentOperationError,
@@ -26,7 +26,7 @@ export interface AttachmentGatewayHooks {
  * Where a path a tool named is allowed to point.
  *
  * The default is the attachment policy: the file must resolve inside this agent's own workspace or the
- * OpenBot shared directory, and a symlink anywhere on the way is refused outright.
+ * Whilo shared directory, and a symlink anywhere on the way is refused outright.
  *
  * `allowAnyReadablePath` is the browser-upload policy. `openbot_browser.upload_files` hands a local
  * file to a page, and the file the user names is almost never one the agent already copied into its
@@ -318,7 +318,7 @@ export class AttachmentGateway {
       ),
     );
     const normalized = value.replaceAll("\\", "/");
-    const sharedReference = ["~/OpenBot/Shared/", "OpenBot/Shared/", "Shared/"].some((prefix) =>
+    const sharedReference = ["~/Whilo/Shared/", "Whilo/Shared/", "Shared/"].some((prefix) =>
       normalized.startsWith(prefix),
     );
     // An absolute path may be one the provider's own transcript still names under this agent's pre-rename
@@ -385,8 +385,8 @@ export class AttachmentGateway {
       new Error(
         `${
           scope.allowAnyReadablePath
-            ? "Upload files must exist, be regular files, and be readable by OpenBot."
-            : "Attachment files must exist inside this agent's workspace or the OpenBot shared directory."
+            ? "Upload files must exist, be regular files, and be readable by Whilo."
+            : "Attachment files must exist inside this agent's workspace or the Whilo shared directory."
         } Reason: ${[...new Set(reasons)].join("; ")}.`,
       ),
     );

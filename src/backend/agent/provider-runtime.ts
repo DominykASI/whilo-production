@@ -18,7 +18,7 @@ import type {
   ProviderCodeLoginStart,
   ProviderUsageResetOutcome,
   ProviderUsageResets,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   AGENT_PROVIDERS,
   accountUsageCoversModel,
@@ -30,11 +30,11 @@ import {
   GITHUB_CONNECTOR_MCP_SERVER_ID,
   isAgentProvider,
   workspaceAccessEnforced,
-} from "@openbot/contracts/ipc";
-import { matchingSourceKeys, sourceText } from "@openbot/i18n/source";
-import { createOpenBotLogger, redactText } from "@openbot/logging";
-import { classifyFailure } from "@openbot/telemetry";
-import { classifyUserError } from "@openbot/user-errors";
+} from "@whilo/contracts/ipc";
+import { matchingSourceKeys, sourceText } from "@whilo/i18n/source";
+import { createWhiloLogger, redactText } from "@whilo/logging";
+import { classifyFailure } from "@whilo/telemetry";
+import { classifyUserError } from "@whilo/user-errors";
 import { Deferred, Effect, Exit, Fiber, Result, Schema, Scope, Semaphore } from "effect";
 import { isOpenCodeInternalFailure } from "./../acp-flavor-opencode";
 import { googleSignInByOpenBot, startAcpAuthentication } from "./../acp-sign-in";
@@ -120,12 +120,12 @@ import { providerForAgent, providerLabel } from "./thread-items";
 import { UsageReadGate } from "./usage-read-gate";
 import { checkAgentFolders, workspaceExcludedFolders, workspaceWritableRoots } from "./workspace-sandbox";
 
-const logger = createOpenBotLogger("provider-runtime");
+const logger = createWhiloLogger("provider-runtime");
 /**
  * Stderr records that the classifiers sort out as noise. They can quote a tool call's output or a
  * command line, so they go to the console only and not to the provider log file.
  */
-const stderrLogger = createOpenBotLogger("provider-stderr");
+const stderrLogger = createWhiloLogger("provider-stderr");
 
 const ACCOUNT_USAGE_READ_TIMEOUT_MS = 30_000;
 /** A read this recent answers a second request, such as one that waited for the read before it. */
@@ -175,7 +175,7 @@ function signInFileVersion(paths: readonly string[]): string {
     .join("|");
 }
 /**
- * Starts that fail in a row before OpenBot stops starting a provider by itself. A start that fails,
+ * Starts that fail in a row before Whilo stops starting a provider by itself. A start that fails,
  * that times out, or whose process ends within `STABLE_RUN_MS` counts. Only a user action starts the
  * provider again: each start of the Windows Gemini server unpacks about 310 MB, and a loop of starts
  * filled the disk.
@@ -1379,7 +1379,7 @@ export class ProviderRuntime implements ProviderPort {
    * Only a signed-out row is checked again: the CLI also writes the file to refresh a token, and a
    * provider that stopped at `START_FAILURE_LIMIT` must wait for the user. A change that comes while
    * a check runs keeps its new version, so a later poll checks it. A sign-in or a Connect that
-   * OpenBot started checks the account itself when it ends.
+   * Whilo started checks the account itself when it ends.
    */
   #checkSignInFiles(): void {
     if (this.#status.phase === "starting" || this.#status.phase === "restarting" || this.#providerRefresh) return;
@@ -1437,7 +1437,7 @@ export class ProviderRuntime implements ProviderPort {
   }).bind(this);
 
   /**
-   * `automatic`: the app asked, not the user, so a provider that OpenBot stopped starting
+   * `automatic`: the app asked, not the user, so a provider that Whilo stopped starting
    * (`START_FAILURE_LIMIT`) stays stopped.
    */
   readonly refreshProviders = Effect.fn("ProviderRuntime.refreshProviders")(function* (
@@ -1497,8 +1497,8 @@ export class ProviderRuntime implements ProviderPort {
   /**
    * Signs the user in to one provider, in the way that provider's driver declares. `openExternal`
    * is only reached by a `browser` or `muse-device` sign-in, whose login hands back a URL; a
-   * `cli-command` sign-in opens its own browser window from the CLI OpenBot spawns, and an
-   * `external` sign-in happens outside OpenBot, so Connect only asks the provider again.
+   * `cli-command` sign-in opens its own browser window from the CLI Whilo spawns, and an
+   * `external` sign-in happens outside Whilo, so Connect only asks the provider again.
    */
   readonly connectProvider = Effect.fn("ProviderRuntime.connectProvider")(function* (
     this: ProviderRuntime,
@@ -2947,7 +2947,7 @@ export class ProviderRuntime implements ProviderPort {
       .request(
         "initialize",
         {
-          clientInfo: { name: "openbot", title: "OpenBot", version: "0.1.0" },
+          clientInfo: { name: "whilo", title: "Whilo", version: "0.1.0" },
           capabilities: { experimentalApi: true, mcpServerOpenaiFormElicitation: true },
         },
         decodeRecordResponse,
@@ -3228,7 +3228,7 @@ export class ProviderRuntime implements ProviderPort {
     keepsReleased = false,
   ): void {
     const hasActiveClient = this.#clients.has(provider) || (keepsReleased && this.#released.has(provider));
-    const fallbackMessage = `OpenBot could not connect ${providerLabel(provider)}. Try again.`;
+    const fallbackMessage = `Whilo could not connect ${providerLabel(provider)}. Try again.`;
     const rawMessage = error instanceof Error ? error.message : String(error);
     const timeout = isProviderTimeout(error);
     // A timeout says which stage did not answer, and the row's last error keeps it. Only a catalog
@@ -3237,7 +3237,7 @@ export class ProviderRuntime implements ProviderPort {
     const message =
       (timeout && matchingSourceKeys(rawMessage).length > 0) ||
       error instanceof ProviderSignInError ||
-      /^(ChatGPT connection|OpenBot)/u.test(rawMessage)
+      /^(ChatGPT connection|Whilo)/u.test(rawMessage)
         ? rawMessage
         : fallbackMessage;
     const status = hasActiveClient
@@ -3326,7 +3326,7 @@ export class ProviderRuntime implements ProviderPort {
   }, Effect.uninterruptible);
 
   /**
-   * Connects a provider that OpenBot never spawns a login for. The user signed in with the
+   * Connects a provider that Whilo never spawns a login for. The user signed in with the
    * provider's own CLI in a terminal, so this only starts a fresh client and asks the provider
    * which account it now has. A provider with a free tier answers with an account either way.
    */
@@ -3428,7 +3428,7 @@ export class ProviderRuntime implements ProviderPort {
     } = {},
   ) {
     requestedProviders = requestedProviders.filter((provider) => !this.#off.has(provider));
-    // A provider OpenBot stopped starting keeps its row as it is, and no process starts.
+    // A provider Whilo stopped starting keeps its row as it is, and no process starts.
     const stopped = requestedProviders.filter(
       (provider) => this.#startStopped(provider) && !this.#clients.has(provider),
     );
@@ -3727,10 +3727,10 @@ export class ProviderRuntime implements ProviderPort {
       // half is a value the redactor does not match.
       const redacted = this.#redactMcp(raw);
       const message = shortenDiagnostic(redacted);
-      // An agent that tears down its sessions while OpenBot stops it (idle release, restart, quit)
+      // An agent that tears down its sessions while Whilo stops it (idle release, restart, quit)
       // can write an error for each one. It is not a failure the user can act on, so it goes to the log.
       if (origin?.duringStop) {
-        stderrLogger.warn("A provider wrote an error while OpenBot stopped it.", {
+        stderrLogger.warn("A provider wrote an error while Whilo stopped it.", {
           provider: client.provider,
           message,
         });
@@ -3880,7 +3880,7 @@ export class ProviderRuntime implements ProviderPort {
               capabilities: { ...this.#status.capabilities, chat: "unavailable" },
               message: startStopped
                 ? this.#startStoppedMessage(client.provider, error.message)
-                : `${providerLabel(client.provider)} stopped repeatedly. Restart OpenBot after checking the CLI.`,
+                : `${providerLabel(client.provider)} stopped repeatedly. Restart Whilo after checking the CLI.`,
             },
       );
       return;
@@ -3954,14 +3954,14 @@ export class ProviderRuntime implements ProviderPort {
     return (this.#startFailures.get(provider) ?? 0) >= START_FAILURE_LIMIT;
   }
 
-  /** Counts one failed start, and answers whether OpenBot now stops starting the provider. */
+  /** Counts one failed start, and answers whether Whilo now stops starting the provider. */
   #countStartFailure(provider: AgentProvider): boolean {
     const failures = (this.#startFailures.get(provider) ?? 0) + 1;
     this.#startFailures.set(provider, failures);
     if (failures < START_FAILURE_LIMIT) return false;
     clearTimeout(this.#restartTimers.get(provider));
     this.#restartTimers.delete(provider);
-    if (failures === START_FAILURE_LIMIT) logger.warn("OpenBot stopped starting a provider.", { provider, failures });
+    if (failures === START_FAILURE_LIMIT) logger.warn("Whilo stopped starting a provider.", { provider, failures });
     return true;
   }
 
@@ -3972,7 +3972,7 @@ export class ProviderRuntime implements ProviderPort {
     return sourceText("error.provider.startStopped", { provider: providerLabel(provider) });
   }
 
-  /** Shows on the provider row that OpenBot stopped starting it, and answers the message. */
+  /** Shows on the provider row that Whilo stopped starting it, and answers the message. */
   #showStartStopped(provider: AgentProvider): string {
     const row = this.#status.providers?.find((candidate) => candidate.id === provider);
     const message = this.#startStoppedMessage(provider, row?.message);
@@ -4018,7 +4018,7 @@ export class ProviderRuntime implements ProviderPort {
   /**
    * Starts a provider whose CLI did not answer in time, or whose start OpenCode failed, again later,
    * with the backoff and the attempt count of `#handleExit`. Answers the status message for a
-   * timeout: whether OpenBot tries again, or the user has to.
+   * timeout: whether Whilo tries again, or the user has to.
    */
   #retryAfterTimeout(provider: AgentProvider, schedule: boolean): string {
     const attempts = this.#restartAttempts.get(provider) ?? 0;

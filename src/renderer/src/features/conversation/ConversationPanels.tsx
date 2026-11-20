@@ -36,8 +36,8 @@ const BROWSER_PANEL_MAX = 1600;
 const CONVERSATION_PANEL_MIN = 96;
 const loadAgentSettingsPanel = () => import("./AgentSettingsPanel");
 
-import { type HostFolderPick, HostFolderPicker } from "@whilo/ui/features/conversation/HostFolderPicker";
 import { Portal } from "@solidjs/web";
+import { type HostFolderPick, HostFolderPicker } from "@whilo/ui/features/conversation/HostFolderPicker";
 import { createEffect, createMemo, createSignal, Loading, lazy, onSettled, Show, untrack } from "solid-js";
 import {
   agentFolderCalls,

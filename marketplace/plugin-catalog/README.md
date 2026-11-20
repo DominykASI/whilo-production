@@ -150,7 +150,7 @@ Troubleshooting:
 
 The listing connects to ElevenLabs' hosted MCP server at `https://api.elevenlabs.io/v1/mcp`
 (<https://elevenlabs.io/docs/eleven-agents/operate/hosted-mcp>). ElevenLabs deprecated its local
-server. The authorization server has no client registration. It reads OpenBot's client metadata
+server. The authorization server has no client registration. It reads Whilo's client metadata
 document, `https://openbot.run/oauth/mcp-client.json`, so the user signs in through the browser and
 types no key. Generated audio comes back as a short-lived download link.
 
@@ -160,5 +160,5 @@ the server's MCP servers settings and selects Sign in.
 
 Troubleshooting:
 
-- The sign-in page refuses the redirect address: another program uses port 28417, so OpenBot
-  listens on another port that the document does not list. Close that program and restart OpenBot.
+- The sign-in page refuses the redirect address: another program uses port 28417, so Whilo
+  listens on another port that the document does not list. Close that program and restart Whilo.

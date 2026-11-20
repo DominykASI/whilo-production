@@ -1,4 +1,4 @@
-import type { AgentEvent, TeamRealtimeEvent } from "@openbot/contracts/ipc";
+import type { AgentEvent, TeamRealtimeEvent } from "@whilo/contracts/ipc";
 import { type MobileAgentWaitReason, WAIT_RANK } from "./agent-activity";
 
 /**

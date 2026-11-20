@@ -1,8 +1,8 @@
 /**
- * The browser has no Keychain and no `expo-device`. `expo-secure-store` ships an empty module on web, so
- * the read of the saved device ID threw a `TypeError` inside `verifyMobileEmailCode` — before
- * `POST /v1/mobile-auth/email/verify` left the page — and the code that the user typed could never be
- * accepted. The same key lives in `localStorage` here, and the browser names itself from its user agent.
+ * The browser has no Keychain and no `expo-device`. expo-secure-store is unavailable on web (its
+ * web module breaks async reads), so the saved device ID used to throw inside
+ * `verifyMobileEmailCode` before `POST /v1/mobile-auth/email/verify` left the page. The same key
+ * now persists via guarded `localStorage` here; the browser names itself from its user agent.
  */
 const MOBILE_DEVICE_ID_KEY = "whilo.mobile.device-id.v1";
 

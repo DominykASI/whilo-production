@@ -1,4 +1,4 @@
-import { attachmentMimeTypeForName } from "@openbot/contracts/attachment-files";
+import { attachmentMimeTypeForName } from "@whilo/contracts/attachment-files";
 import { createContext, useCallback, useContext, useRef, useState } from "react";
 import { showFailureAlert } from "@/features/analytics/failure-reports";
 import { useMobileWorkspaceActions } from "@/features/workspace/context/mobile-workspace-context";

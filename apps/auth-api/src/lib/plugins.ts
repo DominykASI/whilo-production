@@ -8,9 +8,9 @@
 // This module holds no JSX, for the same reason `content-collection.ts` holds none: it is read by
 // the sitemap, which runs outside the renderer.
 
-import { SKILL_CATEGORY_LABELS } from "@openbot/contracts/ipc-skills";
-import { createPluginShareUrl } from "@openbot/contracts/plugin-links";
-import { type DynamicRecord, isDynamicRecord, isString } from "@openbot/contracts/runtime-values";
+import { SKILL_CATEGORY_LABELS } from "@whilo/contracts/ipc-skills";
+import { createPluginShareUrl } from "@whilo/contracts/plugin-links";
+import { type DynamicRecord, isDynamicRecord, isString } from "@whilo/contracts/runtime-values";
 import { MARKETPLACE_APPS_ROUTE } from "./marketplace-routes";
 import { PLUGIN_CATALOG_DETAILS, PLUGIN_CATALOG_INDEX, type PluginCatalogDetail } from "./plugin-catalog.generated";
 import { OPENBOT_SITE_URL, type PageSocialImage } from "./site-metadata";
@@ -40,11 +40,11 @@ const PLUGIN_INDEX_ROUTE = "/plugins";
 export const PLUGIN_DETAIL_ROUTE = "/plugins/$slug";
 
 export const PLUGINS_DESCRIPTION =
-  "Apps and skills an OpenBot agent can use. Open a plugin in the app, and decide there what it connects to.";
+  "Apps and skills an Whilo agent can use. Open a plugin in the app, and decide there what it connects to.";
 /** One social card for the page of every plugin. */
 export const PLUGIN_PAGE_SOCIAL_IMAGE: PageSocialImage = {
   path: "/social/plugin.jpg",
-  alt: "Plant an idea. Your agents do the rest. OpenBot agents among paper trees",
+  alt: "Plant an idea. Your agents do the rest. Whilo agents among paper trees",
 };
 
 /** Newest listing first is not a thing here: the order is the order the index declares. */

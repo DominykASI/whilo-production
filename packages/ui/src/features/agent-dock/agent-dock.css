@@ -4,13 +4,13 @@
 .agent-dock {
   /* The liquid has the window frame colour, so the dock reads as part of the frame. The glass window
      has a clear frame; overlapping clear shapes would show their seams, so the dock stays solid. */
-  --agent-dock-fill: var(--window-solid-frame, var(--openbot-bg-frame));
+  --agent-dock-fill: var(--window-solid-frame, var(--whilo-bg-frame));
   /* The seat badges are cut out of the dock, as the sidebar badges are cut out of the sidebar. */
   --agent-avatar-outline: var(--agent-dock-fill);
   --agent-row-avatar-size: 40px;
 
   position: fixed;
-  z-index: var(--openbot-layer-dropdown);
+  z-index: var(--whilo-layer-dropdown);
   top: 50%;
   right: 0;
   transform: translateY(-50%);
@@ -51,8 +51,8 @@
   stroke: var(--agent-dock-fill);
   stroke-linecap: round;
   transition:
-    stroke-width var(--openbot-duration-normal) var(--openbot-ease-out),
-    translate var(--openbot-duration-normal) var(--openbot-ease-out);
+    stroke-width var(--whilo-duration-normal) var(--whilo-ease-out),
+    translate var(--whilo-duration-normal) var(--whilo-ease-out);
 }
 
 /* The handle answers the pointer: it gets thicker and comes nearer to the dock, more while it drags. */
@@ -67,7 +67,7 @@
 }
 
 .agent-dock-handle-hit {
-  stroke: var(--openbot-transparent);
+  stroke: var(--whilo-transparent);
   stroke-linecap: round;
   pointer-events: stroke;
   cursor: grab;
@@ -96,7 +96,7 @@
   top: 0;
   left: 0;
   overflow: visible;
-  background: var(--openbot-transparent);
+  background: var(--whilo-transparent);
   fill: var(--agent-dock-fill);
 }
 
@@ -119,7 +119,7 @@
   left: 40px;
   width: 44px;
   height: 44px;
-  border-radius: var(--openbot-radius-pill);
+  border-radius: var(--whilo-radius-pill);
   transform: scale(0);
 }
 
@@ -145,14 +145,14 @@
   height: 44px;
   place-items: center;
   border: 0;
-  border-radius: var(--openbot-radius-pill);
+  border-radius: var(--whilo-radius-pill);
   padding: 0;
-  background: var(--openbot-transparent);
-  color: var(--openbot-text-muted);
+  background: var(--whilo-transparent);
+  color: var(--whilo-text-muted);
   cursor: pointer;
   transition:
-    color var(--openbot-duration-normal) var(--openbot-ease-out),
-    transform var(--openbot-duration-normal) var(--openbot-ease-out);
+    color var(--whilo-duration-normal) var(--whilo-ease-out),
+    transform var(--whilo-duration-normal) var(--whilo-ease-out);
 }
 
 /* The avatar drawing runs past the seat. Only the seat takes the pointer, so a press between the
@@ -162,7 +162,7 @@
 }
 
 .agent-dock-seat-button:hover {
-  color: var(--openbot-text-primary);
+  color: var(--whilo-text-primary);
   transform: scale(1.06);
 }
 
@@ -171,7 +171,7 @@
 }
 
 .agent-dock-seat-button:focus-visible {
-  outline: 1px solid var(--openbot-border-focus);
+  outline: 1px solid var(--whilo-border-focus);
   outline-offset: 2px;
 }
 
@@ -194,8 +194,8 @@
 }
 
 .agent-dock-add svg {
-  width: var(--openbot-icon-md);
-  height: var(--openbot-icon-md);
+  width: var(--whilo-icon-md);
+  height: var(--whilo-icon-md);
 }
 
 .agent-dock-menu-avatar.agent-avatar {
@@ -207,7 +207,7 @@
 .agent-dock-panel {
   position: absolute;
   top: 0;
-  color: var(--openbot-text-primary);
+  color: var(--whilo-text-primary);
   opacity: 0;
   transform-origin: 100% 50%;
 }
@@ -220,7 +220,7 @@
   display: flex;
   height: 100%;
   flex-direction: column;
-  animation: agent-dock-swap var(--openbot-duration-island-content) var(--openbot-ease-out);
+  animation: agent-dock-swap var(--whilo-duration-island-content) var(--whilo-ease-out);
 }
 
 @keyframes agent-dock-swap {
@@ -234,8 +234,8 @@
 .agent-dock-chat-header {
   display: flex;
   align-items: center;
-  gap: var(--openbot-space-2);
-  padding: var(--openbot-space-3) var(--openbot-space-3) var(--openbot-space-2) var(--openbot-space-4);
+  gap: var(--whilo-space-2);
+  padding: var(--whilo-space-3) var(--whilo-space-3) var(--whilo-space-2) var(--whilo-space-4);
 }
 
 .agent-dock-chat-avatar.agent-avatar {
@@ -251,21 +251,21 @@
   min-width: 0;
   flex: 1;
   flex-direction: column;
-  line-height: var(--openbot-leading-sm);
+  line-height: var(--whilo-leading-sm);
 }
 
 .agent-dock-chat-title strong {
   overflow: hidden;
-  font-size: var(--openbot-text-md);
-  font-weight: var(--openbot-weight-semibold);
+  font-size: var(--whilo-text-md);
+  font-weight: var(--whilo-weight-semibold);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .agent-dock-chat-title span {
   overflow: hidden;
-  color: var(--openbot-text-muted);
-  font-size: var(--openbot-text-sm);
+  color: var(--whilo-text-muted);
+  font-size: var(--whilo-text-sm);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -276,21 +276,21 @@
   height: 30px;
   place-items: center;
   border: 0;
-  border-radius: var(--openbot-radius-pill);
+  border-radius: var(--whilo-radius-pill);
   padding: 0;
-  background: var(--openbot-transparent);
-  color: var(--openbot-text-muted);
+  background: var(--whilo-transparent);
+  color: var(--whilo-text-muted);
   cursor: pointer;
 }
 
 .agent-dock-icon:hover {
-  background: var(--openbot-bg-surface);
-  color: var(--openbot-text-primary);
+  background: var(--whilo-bg-surface);
+  color: var(--whilo-text-primary);
 }
 
 .agent-dock-icon svg {
-  width: var(--openbot-icon-md);
-  height: var(--openbot-icon-md);
+  width: var(--whilo-icon-md);
+  height: var(--whilo-icon-md);
 }
 
 /* The log and its scroll thumb. The thumb stays outside the faded edges of the log. */
@@ -307,7 +307,7 @@
   min-height: 0;
   flex: 1;
   overflow-y: auto;
-  padding: var(--openbot-space-2) var(--openbot-space-4) var(--openbot-space-3);
+  padding: var(--whilo-space-2) var(--whilo-space-4) var(--whilo-space-3);
   scrollbar-width: none;
   --agent-dock-fade-top: 0px;
   --agent-dock-fade-bottom: 0px;
@@ -321,7 +321,7 @@
   display: flex;
   min-height: 100%;
   flex-direction: column;
-  gap: var(--openbot-space-2);
+  gap: var(--whilo-space-2);
 }
 
 .agent-dock-scroll-thumb {
@@ -329,11 +329,11 @@
   top: 0;
   right: 3px;
   width: 3px;
-  border-radius: var(--openbot-radius-pill);
-  background: var(--openbot-text-muted);
+  border-radius: var(--whilo-radius-pill);
+  background: var(--whilo-text-muted);
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--openbot-duration-overlay) var(--openbot-ease-out);
+  transition: opacity var(--whilo-duration-overlay) var(--whilo-ease-out);
 }
 
 .agent-dock-scroll-thumb[data-scrollable][data-shown] {
@@ -345,15 +345,15 @@
   -webkit-mask-image: linear-gradient(
     to bottom,
     transparent,
-    var(--openbot-text-primary) var(--agent-dock-fade-top),
-    var(--openbot-text-primary) calc(100% - var(--agent-dock-fade-bottom)),
+    var(--whilo-text-primary) var(--agent-dock-fade-top),
+    var(--whilo-text-primary) calc(100% - var(--agent-dock-fade-bottom)),
     transparent
   );
   mask-image: linear-gradient(
     to bottom,
     transparent,
-    var(--openbot-text-primary) var(--agent-dock-fade-top),
-    var(--openbot-text-primary) calc(100% - var(--agent-dock-fade-bottom)),
+    var(--whilo-text-primary) var(--agent-dock-fade-top),
+    var(--whilo-text-primary) calc(100% - var(--agent-dock-fade-bottom)),
     transparent
   );
 }
@@ -368,15 +368,15 @@
 
 .agent-dock-empty {
   margin: auto 0;
-  color: var(--openbot-text-muted);
-  font-size: var(--openbot-text-md);
+  color: var(--whilo-text-muted);
+  font-size: var(--whilo-text-md);
   text-align: center;
 }
 
 .agent-dock-bubble {
   max-width: 85%;
   flex: none;
-  font-size: var(--openbot-text-md);
+  font-size: var(--whilo-text-md);
   overflow-wrap: anywhere;
 }
 
@@ -385,7 +385,7 @@
 }
 
 .agent-dock-bubble[data-error] {
-  color: var(--openbot-danger-text);
+  color: var(--whilo-danger-text);
 }
 
 .agent-dock-text {
@@ -396,12 +396,12 @@
 /* The chat's Markdown, a size down to fit the panel. */
 .agent-dock-markdown {
   min-width: 0;
-  font-size: var(--openbot-text-md);
+  font-size: var(--whilo-text-md);
 }
 
 .agent-dock-typing {
   display: flex;
-  padding-block: var(--openbot-space-1);
+  padding-block: var(--whilo-space-1);
 }
 
 .agent-dock-typing-dots {
@@ -413,9 +413,9 @@
 .agent-dock-typing-dots i {
   width: 6px;
   height: 6px;
-  border-radius: var(--openbot-radius-pill);
-  background: var(--openbot-text-muted);
-  animation: agent-dock-dot 1s var(--openbot-ease-in-out) infinite;
+  border-radius: var(--whilo-radius-pill);
+  background: var(--whilo-text-muted);
+  animation: agent-dock-dot 1s var(--whilo-ease-in-out) infinite;
 }
 
 .agent-dock-typing-dots i:nth-child(2) {
@@ -446,24 +446,24 @@
 .agent-dock-wait {
   display: flex;
   align-items: center;
-  gap: var(--openbot-space-2);
-  margin: 0 var(--openbot-space-3);
-  border-radius: var(--openbot-radius-lg);
-  padding: var(--openbot-space-2) var(--openbot-space-2) var(--openbot-space-2) var(--openbot-space-3);
-  background: var(--openbot-bg-surface);
-  font-size: var(--openbot-text-sm);
+  gap: var(--whilo-space-2);
+  margin: 0 var(--whilo-space-3);
+  border-radius: var(--whilo-radius-lg);
+  padding: var(--whilo-space-2) var(--whilo-space-2) var(--whilo-space-2) var(--whilo-space-3);
+  background: var(--whilo-bg-surface);
+  font-size: var(--whilo-text-sm);
 }
 
 .agent-dock-wait-icon {
   display: grid;
   flex: none;
   place-items: center;
-  color: var(--openbot-text-muted);
+  color: var(--whilo-text-muted);
 }
 
 .agent-dock-wait-icon svg {
-  width: var(--openbot-icon-sm);
-  height: var(--openbot-icon-sm);
+  width: var(--whilo-icon-sm);
+  height: var(--whilo-icon-sm);
 }
 
 .agent-dock-wait-title {
@@ -472,15 +472,15 @@
 }
 
 .agent-dock-error {
-  margin: var(--openbot-space-2) var(--openbot-space-4) 0;
-  color: var(--openbot-danger-text);
-  font-size: var(--openbot-text-sm);
+  margin: var(--whilo-space-2) var(--whilo-space-4) 0;
+  color: var(--whilo-danger-text);
+  font-size: var(--whilo-text-sm);
 }
 
 /* The app's compact composer, as the side-question and diagram chat panels use it. */
 .agent-dock-composer.composer[data-compact] {
   grid-template-columns: minmax(0, 1fr) auto;
-  margin: var(--openbot-space-2) var(--openbot-space-3) var(--openbot-space-3);
+  margin: var(--whilo-space-2) var(--whilo-space-3) var(--whilo-space-3);
 }
 
 /* Panel radius 24 = composer radius 12 + gap 12, so the corners are concentric. A focus halo would
@@ -502,7 +502,7 @@
   position: absolute;
   display: grid;
   justify-items: end;
-  gap: var(--openbot-space-2);
+  gap: var(--whilo-space-2);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -515,8 +515,8 @@
 .agent-dock-shelf-item {
   animation: agent-dock-shelf-drip 560ms cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
   transition:
-    opacity var(--openbot-duration-normal) ease-out,
-    translate var(--openbot-duration-normal) ease-out;
+    opacity var(--whilo-duration-normal) ease-out,
+    translate var(--whilo-duration-normal) ease-out;
 }
 
 .agent-dock-shelf-item[data-leaving] {
@@ -536,17 +536,17 @@
 .agent-dock-shelf :is(.agent-dock-result, .agent-dock-shelf-more) {
   gap: 0;
   border: 0;
-  border-radius: var(--openbot-radius-pill);
+  border-radius: var(--whilo-radius-pill);
   background: var(--agent-dock-fill);
   font: inherit;
-  font-size: var(--openbot-text-sm);
+  font-size: var(--whilo-text-sm);
   white-space: nowrap;
   pointer-events: auto;
   cursor: pointer;
 }
 
 .agent-dock-shelf :is(.agent-dock-result, .agent-dock-shelf-more):focus-visible {
-  outline: 1px solid var(--openbot-border-focus);
+  outline: 1px solid var(--whilo-border-focus);
   outline-offset: 2px;
   box-shadow: none;
 }
@@ -559,9 +559,9 @@
   display: flex;
   align-items: center;
   height: 40px;
-  padding: 0 var(--openbot-space-4) 0 var(--openbot-space-1);
-  color: var(--openbot-text-primary);
-  transition: translate var(--openbot-duration-normal) cubic-bezier(0.34, 1.56, 0.64, 1);
+  padding: 0 var(--whilo-space-4) 0 var(--whilo-space-1);
+  color: var(--whilo-text-primary);
+  transition: translate var(--whilo-duration-normal) cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .agent-dock-result:hover {
@@ -578,29 +578,29 @@
 
 .agent-dock-result > svg {
   flex: none;
-  width: var(--openbot-icon-md);
-  height: var(--openbot-icon-md);
-  margin-left: var(--openbot-space-2);
-  color: var(--openbot-text-secondary);
+  width: var(--whilo-icon-md);
+  height: var(--whilo-icon-md);
+  margin-left: var(--whilo-space-2);
+  color: var(--whilo-text-secondary);
 }
 
 .agent-dock-result-label {
   max-width: 240px;
   overflow: hidden;
-  margin-left: var(--openbot-space-2);
-  font-weight: var(--openbot-weight-medium);
+  margin-left: var(--whilo-space-2);
+  font-weight: var(--whilo-weight-medium);
   text-overflow: ellipsis;
 }
 
 .agent-dock-shelf-more {
   height: 28px;
-  padding: 0 var(--openbot-space-3);
-  color: var(--openbot-text-secondary);
+  padding: 0 var(--whilo-space-3);
+  color: var(--whilo-text-secondary);
   font-variant-numeric: tabular-nums;
 }
 
 .agent-dock-shelf-more:hover {
-  color: var(--openbot-text-primary);
+  color: var(--whilo-text-primary);
 }
 
 /* On the left edge the seats and the chat are mirrored back, so they read as usual. */

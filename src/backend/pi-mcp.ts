@@ -12,7 +12,7 @@ import { providerCall } from "./provider-client-effects";
 // adds the servers for this process. Credentials are not written to the extension file. Pi runs
 // the extension again when it switches sessions, so the list stays in a process slot for those runs.
 const EXTENSION = `export default function (pi) {
-  const slot = Symbol.for("openbot.pi.mcpServers");
+  const slot = Symbol.for("whilo.pi.mcpServers");
   globalThis[slot] ??= JSON.parse(process.env.OPENBOT_PI_MCP_SERVERS || "[]");
   delete process.env.OPENBOT_PI_MCP_SERVERS;
   for (const server of globalThis[slot]) pi.registerMcpServer(server.name, server.config);
@@ -34,13 +34,13 @@ export const createPiMcpExtension = Effect.fn("PiMcp.createExtension")(function*
 ) {
   const root = directory ?? tmpdir();
   yield* providerCall(() => mkdir(root, { recursive: true, mode: 0o700 }));
-  const folder = yield* providerCall(() => mkdtemp(join(root, "openbot-pi-")));
+  const folder = yield* providerCall(() => mkdtemp(join(root, "whilo-pi-")));
   const path = join(folder, "mcp.mjs");
   const environment: Record<string, string> = {};
   const secrets: string[] = [];
   let count = 0;
-  // Pi keeps the tool names in the session that OpenBot resumes, so a name must not change when
-  // OpenBot restarts: the model calls the old names, and Pi does not find them (#3343). The name
+  // Pi keeps the tool names in the session that Whilo resumes, so a name must not change when
+  // Whilo restarts: the model calls the old names, and Pi does not find them (#3343). The name
   // comes from the server's own name, not its position, which changes when a server is added or
   // removed. Pi replaces a tool name longer than 64 characters with a hash, and the model then cannot
   // find tools such as tool_search by name. Eight hex characters keep the names short.
@@ -61,7 +61,7 @@ export const createPiMcpExtension = Effect.fn("PiMcp.createExtension")(function*
     );
   // Pi declares a direct tool in each request. Computer use alone has 56 tools, about 24k tokens, so
   // the user's servers wait for Pi's `tool_search`, which records each loaded tool in the session for
-  // resume. The OpenBot bridge stays direct: its tool search is the way to every other tool.
+  // resume. The Whilo bridge stays direct: its tool search is the way to every other tool.
   // The system prompt lists each deferred server by its hashed name and its `description`, so the model
   // knows what to search for. Without one, Pi shows the server's instructions after it connects, and
   // the prompt changes between requests.

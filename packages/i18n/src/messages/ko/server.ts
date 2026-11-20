@@ -264,7 +264,7 @@ export const messages = {
   "server.settings.storageTitle": "저장 공간",
   "server.settings.storageDescription": "Whilo이 이 서버의 디스크에 보관하는 항목을 확인하고 공간을 확보해요.",
   "server.settings.hostedSitesTitle": "사이트",
-  "server.settings.hostedSitesDescription": "이 서버의 에이전트가 openbot.site에 게시한 정적 사이트예요.",
+  "server.settings.hostedSitesDescription": "이 서버의 에이전트가 whilo.site에 게시한 정적 사이트예요.",
   "server.settings.importTitle": "가져오기",
   "server.settings.importDescription": "Grok Bot이나 Hermes Agent의 에이전트를 이 서버로 옮겨요.",
   "server.settings.transferTitle": "이전",
@@ -318,7 +318,7 @@ export const messages = {
   "server.settings.addLogo": "서버 로고 추가",
   "server.settings.removeLogo": "서버 로고 삭제",
   "server.settings.access": "접근 권한",
-  "server.companySignIn.desktopOnly": "싱글 사인온은 OpenBot 데스크톱 앱에서 설정하세요.",
+  "server.companySignIn.desktopOnly": "싱글 사인온은 Whilo 데스크톱 앱에서 설정하세요.",
   "server.settings.publish": "이 서버 게시",
   "server.settings.published": "서버가 게시되었어요",
   "server.settings.setUpDesktopTitle": "원격 데스크톱 설정",
@@ -577,7 +577,7 @@ export const messages = {
   "server.update.path.container":
     "Docker 호스트에서 새 Whilo 이미지를 가져온 후 같은 데이터 볼륨으로 컨테이너를 다시 만드세요. 먼저 진행 중인 작업이 끝나기를 기다려 주세요. 데이터를 보존하려면 기존 볼륨을 유지하세요.",
   "server.update.path.manual":
-    "이 설치본은 스스로 교체할 수 없어요. 호스트 관리자에게 github.com/nightly-labs/openbot/releases의 호환되는 릴리스를 설치해 달라고 요청하세요. 기존 Whilo 데이터는 유지하세요.",
+    "이 설치본은 스스로 교체할 수 없어요. 호스트 관리자에게 github.com/nightly-labs/whilo/releases의 호환되는 릴리스를 설치해 달라고 요청하세요. 기존 Whilo 데이터는 유지하세요.",
   "server.update.path.unavailable": "개발 빌드예요. 업데이트를 확인하려면 설치된 Whilo 릴리스를 사용하세요.",
   "server.update.check": "업데이트 확인",
   "server.update.start": "대기 상태일 때 업데이트",

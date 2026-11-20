@@ -1,12 +1,12 @@
-import { isKnownAgentProvider, providerSteersTurns } from "@openbot/contracts/agent-providers";
-import { supportedAttachmentExtensions } from "@openbot/contracts/attachment-files";
+import { isKnownAgentProvider, providerSteersTurns } from "@whilo/contracts/agent-providers";
+import { supportedAttachmentExtensions } from "@whilo/contracts/attachment-files";
 import {
   type AccountUsageLimit,
   type AgentWait,
   canPreviewAttachment,
   DEFAULT_PROVIDER_ACCOUNT_ID,
   type QueueSnapshot,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   TEAM_ANY_FILE_ATTACHMENTS_CAPABILITY,
   TEAM_EML_ATTACHMENTS_CAPABILITY,
@@ -14,33 +14,33 @@ import {
   TEAM_MP4_ATTACHMENTS_CAPABILITY,
   TEAM_SVG_ATTACHMENTS_CAPABILITY,
   TEAM_ZIP_ATTACHMENTS_CAPABILITY,
-} from "@openbot/contracts/team-protocol/current";
-import { sourceText } from "@openbot/i18n/source";
-import { spentUsageWindow } from "@openbot/team-client/plan-limits";
-import { Button, Input } from "@openbot/ui";
-import { AwaitingReplies } from "@openbot/ui/features/conversation/AwaitingReplies";
-import { ComposerAddMenu } from "@openbot/ui/features/conversation/ComposerAddMenu";
-import { ComposerAttachmentRow } from "@openbot/ui/features/conversation/ComposerAttachmentRow";
-import { ComposerEditor } from "@openbot/ui/features/conversation/ComposerEditor";
-import { ComposerErrorBanner } from "@openbot/ui/features/conversation/ComposerErrorBanner";
+} from "@whilo/contracts/team-protocol/current";
+import { sourceText } from "@whilo/i18n/source";
+import { spentUsageWindow } from "@whilo/team-client/plan-limits";
+import { Button, Input } from "@whilo/ui";
+import { AwaitingReplies } from "@whilo/ui/features/conversation/AwaitingReplies";
+import { ComposerAddMenu } from "@whilo/ui/features/conversation/ComposerAddMenu";
+import { ComposerAttachmentRow } from "@whilo/ui/features/conversation/ComposerAttachmentRow";
+import { ComposerEditor } from "@whilo/ui/features/conversation/ComposerEditor";
+import { ComposerErrorBanner } from "@whilo/ui/features/conversation/ComposerErrorBanner";
 import {
   ComposerNotice,
   ComposerSignInNotice,
   ComposerUpdateNotice,
   ComposerUsageLimitNotice,
-} from "@openbot/ui/features/conversation/ComposerNotice";
-import { ComposerReplyPreview } from "@openbot/ui/features/conversation/ComposerReplyPreview";
-import { ComposerSendControl } from "@openbot/ui/features/conversation/ComposerSendControl";
+} from "@whilo/ui/features/conversation/ComposerNotice";
+import { ComposerReplyPreview } from "@whilo/ui/features/conversation/ComposerReplyPreview";
+import { ComposerSendControl } from "@whilo/ui/features/conversation/ComposerSendControl";
 import {
   ComposerCompactionNotice,
   ComposerNewChatButton,
   ContextUsageMeter,
   contextUsageView,
-} from "@openbot/ui/features/conversation/ContextUsage";
-import { type OpenWaitItem, OpenWaits } from "@openbot/ui/features/conversation/OpenWaits";
-import { SpeakingBar } from "@openbot/ui/features/conversation/SpeakingBar";
-import { ComposerVoiceControls } from "@openbot/ui/features/conversation/VoiceRecordingMorph";
-import { useText } from "@openbot/ui/text";
+} from "@whilo/ui/features/conversation/ContextUsage";
+import { type OpenWaitItem, OpenWaits } from "@whilo/ui/features/conversation/OpenWaits";
+import { SpeakingBar } from "@whilo/ui/features/conversation/SpeakingBar";
+import { ComposerVoiceControls } from "@whilo/ui/features/conversation/VoiceRecordingMorph";
+import { useText } from "@whilo/ui/text";
 import { createEffect, createMemo, createSignal, createStore, Loading, lazy, Show } from "solid-js";
 import { reportErrorBanner, reportNotification } from "../../error-reports";
 import { deviceSendShortcut, sendShortcutAriaKey, sendShortcutHintKey } from "../../send-shortcut-preference";
@@ -707,7 +707,7 @@ export function ConversationComposer() {
               multiple
               hidden
               tabindex={-1}
-              data-openbot-attachment-picker={props.runtime ? undefined : "true"}
+              data-whilo-attachment-picker={props.runtime ? undefined : "true"}
               onChange={(event) => {
                 if (props.runtime?.importFiles)
                   void props.runtime.importFiles(Array.from(event.currentTarget.files ?? []));
@@ -794,5 +794,5 @@ function openWaitItems(waits: readonly AgentWait[], queue: QueueSnapshot | undef
 }
 
 const QueuePanel = lazy(() =>
-  import("@openbot/ui/features/conversation/QueuePanel").then((module) => ({ default: module.QueuePanel })),
+  import("@whilo/ui/features/conversation/QueuePanel").then((module) => ({ default: module.QueuePanel })),
 );

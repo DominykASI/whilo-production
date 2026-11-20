@@ -347,16 +347,16 @@ export const messages = {
   "connector.whatsapp.actionFailed": "WhatsApp heeft de wijziging niet geaccepteerd",
   "connector.whatsapp.numbersTitle": "Nummers",
   "connector.whatsapp.linkNumber": "Koppel een nummer",
-  "connector.whatsapp.ownNumberNote": "Je chat “Bericht aan jezelf” en de mensen die je toestaat bereiken OpenBot.",
+  "connector.whatsapp.ownNumberNote": "Je chat “Bericht aan jezelf” en de mensen die je toestaat bereiken Whilo.",
   "connector.whatsapp.dedicatedNote":
-    "De mensen die je toestaat bereiken OpenBot. Anderen krijgen een code om aan jou te geven.",
+    "De mensen die je toestaat bereiken Whilo. Anderen krijgen een code om aan jou te geven.",
   "connector.whatsapp.helpLoggedOut":
     "WhatsApp heeft deze computer uit de gekoppelde apparaten verwijderd. Koppel het nummer opnieuw.",
   "connector.whatsapp.helpLoggedOutHost":
     "WhatsApp heeft deze server uit de gekoppelde apparaten verwijderd. Koppel het nummer opnieuw.",
   "connector.whatsapp.helpError":
-    "OpenBot kan WhatsApp op dit nummer niet bereiken. Verbind opnieuw of koppel het nummer los.",
-  "connector.whatsapp.retryAt": "WhatsApp vroeg OpenBot te wachten. Het probeert het opnieuw om {time}.",
+    "Whilo kan WhatsApp op dit nummer niet bereiken. Verbind opnieuw of koppel het nummer los.",
+  "connector.whatsapp.retryAt": "WhatsApp vroeg Whilo te wachten. Het probeert het opnieuw om {time}.",
   "connector.whatsapp.pause": "Pauzeren",
   "connector.whatsapp.resume": "Hervatten",
   "connector.whatsapp.reconnect": "Opnieuw verbinden",
@@ -366,14 +366,14 @@ export const messages = {
   "connector.whatsapp.disconnectAllSummary":
     "Elk nummer wordt losgekoppeld. Mensen kunnen je agents niet meer bereiken via WhatsApp.",
   "connector.whatsapp.disconnectAllSummaryOrchestrator":
-    "Elk nummer wordt losgekoppeld. De WhatsApp Orchestrator en zijn gesprekken worden uit OpenBot verwijderd.",
+    "Elk nummer wordt losgekoppeld. De WhatsApp Orchestrator en zijn gesprekken worden uit Whilo verwijderd.",
   "connector.whatsapp.rowAction": "{action}: {name}",
   "connector.whatsapp.ownNumber": "Persoonlijk nummer",
   "connector.whatsapp.ownNumberDescription":
-    "Alleen je chat “Bericht aan jezelf” en de mensen die je toestaat kunnen schrijven. Zet dit uit voor een nummer alleen voor OpenBot.",
+    "Alleen je chat “Bericht aan jezelf” en de mensen die je toestaat kunnen schrijven. Zet dit uit voor een nummer alleen voor Whilo.",
   "connector.whatsapp.orchestratorTitle": "WhatsApp Orchestrator",
   "connector.whatsapp.orchestratorDescription":
-    "Deze agent ontvangt de berichten voor OpenBot van al je gekoppelde nummers. Korte berichten beantwoordt hij zelf, ander werk geeft hij aan de juiste agent, en hij antwoordt in WhatsApp.",
+    "Deze agent ontvangt de berichten voor Whilo van al je gekoppelde nummers. Korte berichten beantwoordt hij zelf, ander werk geeft hij aan de juiste agent, en hij antwoordt in WhatsApp.",
   "connector.whatsapp.orchestratorNone": "Nog geen agent antwoordt",
   "connector.whatsapp.orchestratorNoneDescription":
     "Voeg de WhatsApp Orchestrator toe, anders krijgt WhatsApp geen antwoord.",
@@ -389,8 +389,8 @@ export const messages = {
   "connector.whatsapp.kindLabel": "Nummer",
   "connector.whatsapp.kindPersonal": "Mijn persoonlijke nummer",
   "connector.whatsapp.kindPersonalDescription":
-    "OpenBot antwoordt alleen in je chat “Bericht aan jezelf” en aan de mensen die je toestaat.",
-  "connector.whatsapp.kindDedicated": "Een nummer alleen voor OpenBot",
+    "Whilo antwoordt alleen in je chat “Bericht aan jezelf” en aan de mensen die je toestaat.",
+  "connector.whatsapp.kindDedicated": "Een nummer alleen voor Whilo",
   "connector.whatsapp.kindDedicatedDescription":
     "Onbekende mensen krijgen een code om aan jou te geven. Je keurt ze hier goed.",
   "connector.whatsapp.methodLabel": "Koppelmethode",
@@ -419,26 +419,26 @@ export const messages = {
     "WhatsApp weigerde de koppeling. Wacht een paar minuten en probeer het dan opnieuw.",
   "connector.whatsapp.failedBusy":
     "Er loopt al een andere koppeling. Wacht tot die klaar is en probeer het dan opnieuw.",
-  "connector.whatsapp.failedUnavailable": "OpenBot kan WhatsApp niet bereiken. Controleer de internetverbinding.",
+  "connector.whatsapp.failedUnavailable": "Whilo kan WhatsApp niet bereiken. Controleer de internetverbinding.",
   "connector.whatsapp.tryAgain": "Probeer opnieuw",
   "connector.whatsapp.agentStepTitle": "Voeg de WhatsApp Orchestrator toe",
   "connector.whatsapp.agentStepDescription":
-    "Deze nieuwe agent beantwoordt de berichten voor OpenBot op {number} en op elk nummer dat je later koppelt.",
+    "Deze nieuwe agent beantwoordt de berichten voor Whilo op {number} en op elk nummer dat je later koppelt.",
   "connector.whatsapp.orchestratorName": "WhatsApp Orchestrator",
   "connector.whatsapp.orchestratorRole": "Antwoordt in WhatsApp en vraagt het team",
-  "connector.whatsapp.orchestratorDoesReceive": "Ontvangt elk WhatsApp-bericht voor OpenBot als eerste",
+  "connector.whatsapp.orchestratorDoesReceive": "Ontvangt elk WhatsApp-bericht voor Whilo als eerste",
   "connector.whatsapp.orchestratorDoesDelegate": "Geeft elke taak aan de agent die het best past",
   "connector.whatsapp.orchestratorDoesAnswer": "Antwoordt in de WhatsApp-chat",
   "connector.whatsapp.orchestratorModel": "Model",
-  "connector.whatsapp.doneTitle": "OpenBot is gekoppeld aan {number}",
+  "connector.whatsapp.doneTitle": "Whilo is gekoppeld aan {number}",
   "connector.whatsapp.done": "Klaar",
   "connector.whatsapp.disconnectTitle": "{number} loskoppelen?",
   "connector.whatsapp.disconnectDescription":
-    "OpenBot logt uit bij WhatsApp op {number}. Als OpenBot uit stond, verwijder het apparaat dan ook in WhatsApp > Gekoppelde apparaten.",
+    "Whilo logt uit bij WhatsApp op {number}. Als Whilo uit stond, verwijder het apparaat dan ook in WhatsApp > Gekoppelde apparaten.",
   "connector.whatsapp.disconnectEffect": "Mensen kunnen je agents niet meer bereiken via {number}.",
-  "connector.whatsapp.removeEffectKept": "De gesprekken en de WhatsApp Orchestrator blijven in OpenBot.",
+  "connector.whatsapp.removeEffectKept": "De gesprekken en de WhatsApp Orchestrator blijven in Whilo.",
   "connector.whatsapp.removeEffectDeleted":
-    "Dit is het laatste nummer, dus de WhatsApp Orchestrator en zijn gesprekken worden uit OpenBot verwijderd.",
+    "Dit is het laatste nummer, dus de WhatsApp Orchestrator en zijn gesprekken worden uit Whilo verwijderd.",
   "connector.whatsapp.keep": "Gekoppeld houden",
   "connector.whatsapp.close": "Sluiten",
   "connector.whatsapp.sendersTitle": "Wie naar {number} kan schrijven",
@@ -458,7 +458,7 @@ export const messages = {
   "connector.whatsapp.groupDescription": "Mensen in deze groep kunnen werk geven aan je agents.",
   "connector.whatsapp.groupSearch": "Zoek groepen",
   "connector.whatsapp.groupsLoading": "Groepen lezen…",
-  "connector.whatsapp.groupsLoadFailed": "OpenBot kon de groepen niet lezen",
+  "connector.whatsapp.groupsLoadFailed": "Whilo kon de groepen niet lezen",
   "connector.whatsapp.groupsEmpty": "Dit nummer zit in geen enkele groep.",
   "connector.whatsapp.groupsNoMatch": "Geen groep heeft deze naam.",
   "connector.whatsapp.groupAdded": "Toegevoegd",
@@ -570,19 +570,19 @@ export const messages = {
   "connector.protonPass.keyPlaceholder": "pst_…",
   "connector.protonPass.setupTitle": "Instellen",
   "connector.protonPass.setupDescription":
-    "Verbinden opent de Proton-aanmelding in je browser. Daarna maakt OpenBot de gedeelde kluis en bewaart het alleen een sleutel met leestoegang.",
+    "Verbinden opent de Proton-aanmelding in je browser. Daarna maakt Whilo de gedeelde kluis en bewaart het alleen een sleutel met leestoegang.",
   "connector.protonPass.setupDescriptionHost":
     "Verbinden opent de Proton-aanmelding in je browser. Daarna maakt {host} de gedeelde kluis en bewaart het alleen een sleutel met leestoegang.",
-  "connector.protonPass.vaultName": "Shared with OpenBot",
+  "connector.protonPass.vaultName": "Shared with Whilo",
   "connector.protonPass.vaultSetup":
-    "OpenBot maakt deze kluis wanneer je verbindt. Verplaats logins erheen om ze te delen.",
+    "Whilo maakt deze kluis wanneer je verbindt. Verplaats logins erheen om ze te delen.",
   "connector.protonPass.showSteps": "Stappen tonen",
   "connector.protonPass.stepsLabel": "Verbindingsstappen",
   "connector.protonPass.stepSignIn": "Aanmelden",
   "connector.protonPass.stepVault": "Gedeelde kluis maken",
   "connector.protonPass.stepDone": "Klaar",
   "connector.protonPass.signInTitle": "Aanmelden bij Proton",
-  "connector.protonPass.signInStarting": "OpenBot start de aanmelding. De Proton-pagina opent in je browser.",
+  "connector.protonPass.signInStarting": "Whilo start de aanmelding. De Proton-pagina opent in je browser.",
   "connector.protonPass.signInDescription":
     "De aanmelding is open in je browser. Proton vraagt om je wachtwoord en je tweede factor.",
   "connector.protonPass.signInDescriptionHost":
@@ -593,7 +593,7 @@ export const messages = {
   "connector.protonPass.continue": "Doorgaan",
   "connector.protonPass.setupStepTitle": "Gedeelde kluis maken",
   "connector.protonPass.setupStepDescription":
-    "OpenBot maakt de kluis ‘{vault}’ en een sleutel met leestoegang. Daarna meldt het je Proton-sessie af.",
+    "Whilo maakt de kluis ‘{vault}’ en een sleutel met leestoegang. Daarna meldt het je Proton-sessie af.",
   "connector.protonPass.doneTitle": "Proton Pass is verbonden",
   "connector.protonPass.doneDescription": "Verplaats logins naar ‘{vault}’ zodat agents ermee kunnen inloggen.",
   "connector.protonPass.failedTitle": "Proton Pass is niet verbonden",
@@ -622,9 +622,9 @@ export const messages = {
   "connector.protonPass.keyNoExpiry": "Alleen lezen. Verloopt niet.",
   "connector.protonPass.disconnectTitle": "Proton Pass loskoppelen",
   "connector.protonPass.disconnectSummary":
-    "OpenBot verwijdert zijn toegangssleutel op deze computer. De kluis en de logins erin blijven in je Proton-account.",
+    "Whilo verwijdert zijn toegangssleutel op deze computer. De kluis en de logins erin blijven in je Proton-account.",
   "connector.protonPass.disconnectSummaryHost":
-    "OpenBot verwijdert zijn toegangssleutel op {host}. De kluis en de logins erin blijven in je Proton-account.",
+    "Whilo verwijdert zijn toegangssleutel op {host}. De kluis en de logins erin blijven in je Proton-account.",
   "connector.protonPass.disconnect": "Loskoppelen",
-  "connector.protonPass.actionFailed": "OpenBot kon de Proton Pass-verbinding niet wijzigen.",
+  "connector.protonPass.actionFailed": "Whilo kon de Proton Pass-verbinding niet wijzigen.",
 } as const satisfies PartialTranslation<typeof source>;

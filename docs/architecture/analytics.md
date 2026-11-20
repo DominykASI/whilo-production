@@ -99,7 +99,7 @@ main log holds every line of the `main` logger, redacted, in two files of 1 MB. 
 keeps local crash dumps in `app.getPath("crashDumps")` and never uploads them. A process that ends
 with no `exit` span and no dump was stopped from outside Whilo (#2675).
 
-`run-marker.ts` keeps `openbot-run-marker-v1.json` in the user data folder of the process that holds
+`run-marker.ts` keeps `whilo-run-marker-v1.json` in the user data folder of the process that holds
 the single-instance lock. It writes `running` at the start, the time of the last sign of life once a
 minute and at sleep and wake, `quitting` with the reason in `recordExit`, `quit_timeout` before the
 shutdown deadline exit, and `clean` after `teardown.runAll()`. It adds no teardown step, so the
@@ -131,7 +131,7 @@ App windows (`src/renderer/src/renderer-timing.ts`) count long tasks and input d
 The main handler decodes bounded counts only; `ResourceMonitor` buffers them and adds them to the day
 at the next sample. The same channel carries the main window's `workspaceReady` flag:
 `StartupTiming` (`src/main/startup-timing.ts`) reads the time on the main clock and sends one
-`system_startup` per main process from the `openbot:*` startup marks. It keeps the last start in
+`system_startup` per main process from the `whilo:*` startup marks. It keeps the last start in
 `startup-history.json` to tell a cold start from a warm one. Turn timing comes from the drain
 scheduler and `TurnLifecycle`, which keep the queue pick, the provider start and the first output of
 each turn until `HostAnalytics` takes them at `turn-completed`.

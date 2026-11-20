@@ -6,8 +6,14 @@ export const APP_LOGO_SIZE = 240;
 /** The corner radius of the square, in the same units. */
 export const APP_LOGO_CORNER = 50;
 
-/** The `W` is one thick rounded stroke, so the two valleys read as one ribbon rather than four lines. */
-export const APP_LOGO_W_PATH = "M52 96 L86 164 L120 116 L154 164 L188 96";
+/** The `W` is a handlebar mustache: one thick rounded ribbon with a dip in the middle. */
+export const APP_LOGO_W_PATH = "M46 138 C62 112 76 166 96 138 C112 114 128 166 144 138 C164 112 178 166 194 138";
+
+/** Two eyes above the mustache. The pupil sits toward the center so the face reads as looking at you. */
+export const APP_LOGO_EYES = [
+  { cx: 84, cy: 80, rx: 21, ry: 27, pupil: { cx: 90, cy: 84, r: 8 } },
+  { cx: 156, cy: 80, rx: 21, ry: 27, pupil: { cx: 150, cy: 84, r: 8 } },
+] as const;
 
 /** Each sparkle is a four-point star centered on the given coordinates, sized by its arm length. */
 export const APP_LOGO_SPARKLES = [

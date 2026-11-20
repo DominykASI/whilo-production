@@ -7,9 +7,9 @@ import { useCSSVariable } from "uniwind";
  * row a danger icon.
  */
 const TONE_COLORS = {
-  muted: "--openbot-text-grouped-secondary",
-  accent: "--openbot-accent",
-  danger: "--openbot-danger-text",
+  muted: "--whilo-text-grouped-secondary",
+  accent: "--whilo-accent",
+  danger: "--whilo-danger-text",
 } as const;
 
 export function RowIcon({ icon: Icon, tone = "muted" }: { icon: LucideIcon; tone?: keyof typeof TONE_COLORS }) {

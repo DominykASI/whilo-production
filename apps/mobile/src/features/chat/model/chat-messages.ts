@@ -1,6 +1,6 @@
-import { chatVisualReply } from "@openbot/contracts/chat-visual";
-import { sortConversationMessages } from "@openbot/contracts/conversation-order";
-import { itemTypeCountsAsUnread } from "@openbot/contracts/conversation-read";
+import { chatVisualReply } from "@whilo/contracts/chat-visual";
+import { sortConversationMessages } from "@whilo/contracts/conversation-order";
+import { itemTypeCountsAsUnread } from "@whilo/contracts/conversation-read";
 import type {
   AgentExchangeSummary,
   AttachmentSummary,
@@ -14,7 +14,7 @@ import type {
   QueueDelivery,
   RoutineConversationEventAction,
   RoutineRunStatus,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   CONVERSATION_PLAN_ITEM_TYPE,
   channelRoutingConversationEvent,
@@ -22,9 +22,9 @@ import {
   parseConversationPlanText,
   routineConversationEvent,
   routineRunConversationEvent,
-} from "@openbot/contracts/ipc";
-import type { ConversationUiBlock } from "@openbot/contracts/ui-blocks";
-import type { MobileTextKey } from "@openbot/i18n/mobile";
+} from "@whilo/contracts/ipc";
+import type { ConversationUiBlock } from "@whilo/contracts/ui-blocks";
+import type { MobileTextKey } from "@whilo/i18n/mobile";
 
 export type RoutineMarkerEvent = RoutineConversationEventAction | RoutineRunStatus;
 

@@ -1,7 +1,7 @@
-import type { ClientAgentSummary } from "@openbot/contracts/ipc";
-import { AgentAvatar } from "@openbot/ui/features/agents/AgentAvatar";
-import { channelActivitySentence } from "@openbot/ui/features/channels/ChannelActivityIndicator";
-import { useText } from "@openbot/ui/text";
+import type { ClientAgentSummary } from "@whilo/contracts/ipc";
+import { AgentAvatar } from "@whilo/ui/features/agents/AgentAvatar";
+import { channelActivitySentence } from "@whilo/ui/features/channels/ChannelActivityIndicator";
+import { useText } from "@whilo/ui/text";
 import { For, onSettled, Show } from "solid-js";
 import { quitShortcutHintAgents, quitShortcutHintShown, watchQuitShortcutHint } from "../../quit-shortcut-hint";
 

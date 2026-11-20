@@ -7,10 +7,10 @@ import {
   type ProviderAccountStatus,
   providerDisplayName,
   type UpdateAgentInput,
-} from "@openbot/contracts/ipc";
-import { CLAUDE_API_KEY_ACCOUNT_ID } from "@openbot/contracts/team-protocol/claude-api-key-v1";
-import type { MobileTextKey } from "@openbot/i18n/mobile";
-import { planLimitWindowKind, spentUsageWindow } from "@openbot/team-client/plan-limits";
+} from "@whilo/contracts/ipc";
+import { CLAUDE_API_KEY_ACCOUNT_ID } from "@whilo/contracts/team-protocol/claude-api-key-v1";
+import type { MobileTextKey } from "@whilo/i18n/mobile";
+import { planLimitWindowKind, spentUsageWindow } from "@whilo/team-client/plan-limits";
 import { useQuery } from "@tanstack/react-query";
 import { Button, Typography } from "heroui-native";
 import { useEffect, useState } from "react";

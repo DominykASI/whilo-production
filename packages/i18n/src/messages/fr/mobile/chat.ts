@@ -273,7 +273,7 @@ export const messages = {
   "mobile.chat.imageGallery.saved": "Enregistrées dans Photos",
   "mobile.chat.imageGallery.shareAll": "Tout partager",
   "mobile.chat.imageGallery.photosPermission":
-    "Autorisez OpenBot à ajouter des photos dans Réglages pour enregistrer ces images.",
+    "Autorisez Whilo à ajouter des photos dans Réglages pour enregistrer ces images.",
   "mobile.chat.imageGallery.saveFailed": "Impossible d’enregistrer les images",
   "mobile.chat.imageGallery.shareFailed": "Impossible de partager les images",
   "mobile.chat.imageGallery.shareNeedsUpdate": "Le partage de plusieurs images nécessite la dernière version de l’app.",

@@ -81,7 +81,7 @@ const config: KnipConfig = {
         // `@whilo/team-client` imports it, and the main bundle keeps it external through this
         // entry. Bundled, a JSDoc `import` line in it takes the `__dirname` shim of electron-vite.
         "@noble/hashes",
-        // The vendored Baileys in `@openbot/whatsapp` imports these at runtime. The main bundle keeps
+        // The vendored Baileys in `@whilo/whatsapp` imports these at runtime. The main bundle keeps
         // them external, so electron-builder packs them only from these root entries.
         "@cacheable/node-cache",
         "@hapi/boom",
@@ -150,7 +150,7 @@ const config: KnipConfig = {
       entry: ["src/*.ts", "scripts/*.ts"],
       project: ["src/**/*.ts", "scripts/*.ts"],
       // The vendored Baileys imports these. Knip does not read the vendor, which keeps upstream's code
-      // as it is (vendor/baileys/OPENBOT-PATCHES.md).
+      // as it is (vendor/baileys/WHILO-PATCHES.md).
       ignoreDependencies: [
         "@cacheable/node-cache",
         "@hapi/boom",

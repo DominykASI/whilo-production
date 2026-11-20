@@ -51,5 +51,5 @@ export const messages = {
   "error.connector.protonPassFileUnreadable": "Proton Pass 연결 파일을 읽을 수 없습니다.",
   "error.connector.protonPassSignInTimeout": "Proton 로그인이 너무 오래 걸렸습니다. 다시 연결하세요.",
   "error.connector.protonPassSetupFailed":
-    "Proton Pass에서 Shared with OpenBot 보관함이나 해당 액세스 키를 만들지 못했습니다. 다시 연결하세요.",
+    "Proton Pass에서 Shared with Whilo 보관함이나 해당 액세스 키를 만들지 못했습니다. 다시 연결하세요.",
 } as const satisfies PartialTranslation<typeof source>;

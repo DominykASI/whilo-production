@@ -1,5 +1,5 @@
 // Runs the real `pi` provider driver and the real Pi binary against a fake OpenAI-compatible server,
-// and books each turn's usage in a real OpenBot database, to check that a Pi turn gets the cost that
+// and books each turn's usage in a real Whilo database, to check that a Pi turn gets the cost that
 // Pi reports. Pi's `get_session_stats` sends the session's tokens and its cost at the rates of Pi's
 // model list; both are session totals, so each turn books the difference from the last one. The
 // agent directory has a `models.json` with a priced model and a model with no rates. Cases: a first
@@ -8,7 +8,7 @@
 // same session to the priced model (priced) and back (unpriced again), and a session
 // from before Pi costs were kept (its first cost report also counts that earlier use, so the turn
 // stays unpriced and the next turn is priced).
-// `PI_CLI=<pi> bun run test:pi-usage-cost`. Writes .openbot-build/pi-usage-cost-e2e/report.json.
+// `PI_CLI=<pi> bun run test:pi-usage-cost`. Writes .whilo-build/pi-usage-cost-e2e/report.json.
 import assert from "node:assert/strict";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
@@ -19,12 +19,12 @@ import { collectProviderUsage } from "../src/backend/agent/usage-collection";
 import type { AgentClient } from "../src/backend/agent-client";
 import { resolvePiCli } from "../src/backend/cli";
 import { runCauseEffect } from "../src/backend/effect-boundary";
-import { OpenBotDatabase } from "../src/backend/openbot-database";
+import { WhiloDatabase } from "../src/backend/whilo-database";
 import { type AppServerNotification, getString, isRecord } from "../src/backend/protocol";
 import { requireProviderDriver } from "../src/backend/provider-drivers";
 import { runTurn, startThread, stopClients } from "./provider-fakes/host";
 
-const OUT = resolve(import.meta.dirname, "../.openbot-build/pi-usage-cost-e2e");
+const OUT = resolve(import.meta.dirname, "../.whilo-build/pi-usage-cost-e2e");
 const PROVIDER = "cost-e2e";
 /** USD per million tokens. */
 const RATES = { input: 2, output: 10, cacheRead: 0.5, cacheWrite: 0 };
@@ -54,7 +54,7 @@ interface Report {
 }
 
 const report: Report = { passed: false, usageNotices: [], cases: [] };
-const root = await mkdtemp(join(tmpdir(), "openbot-pi-usage-cost-e2e-"));
+const root = await mkdtemp(join(tmpdir(), "whilo-pi-usage-cost-e2e-"));
 const clients: AgentClient[] = [];
 /** The usage of the next reply. Each case sets it before its turn. */
 let next: Sent = { input: 0, cached: 0, output: 0 };
@@ -147,7 +147,7 @@ try {
   const workspace = join(root, "workspace");
   await mkdir(workspace, { recursive: true });
 
-  const database = new OpenBotDatabase(join(root, "profile"));
+  const database = new WhiloDatabase(join(root, "profile"));
   await runCauseEffect(database.initialize());
   const reader = new DatabaseSync(database.path);
   const cli = await runCauseEffect(resolvePiCli({ bundledExecutable: process.env.PI_CLI }));
@@ -166,9 +166,9 @@ try {
     const session = sessions.get(getString(notification.params, "threadId") ?? "");
     if (!session) return;
     let params = notification.params;
-    if (notification.method === "openbot/usage") {
+    if (notification.method === "whilo/usage") {
       report.usageNotices.push(params);
-      // A version of OpenBot from before this change booked Pi's tokens without the cost.
+      // A version of Whilo from before this change booked Pi's tokens without the cost.
       if (session.dropCost && isRecord(params)) {
         const { cost: _cost, ...rest } = params;
         params = rest;

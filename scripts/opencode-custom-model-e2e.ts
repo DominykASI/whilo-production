@@ -88,7 +88,7 @@ interface Report {
   passed: boolean;
   openCodeVersion?: string;
   models?: string[];
-  /** The efforts that OpenBot listed for each model. */
+  /** The efforts that Whilo listed for each model. */
   efforts?: Record<string, string[]>;
   requests: Request[];
   turns: { reply: string; error: string | null; status: string | null }[];

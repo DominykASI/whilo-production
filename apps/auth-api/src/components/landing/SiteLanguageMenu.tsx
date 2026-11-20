@@ -1,4 +1,4 @@
-import { appLanguageOption } from "@openbot/i18n/languages";
+import { appLanguageOption } from "@whilo/i18n/languages";
 import { useLocation } from "@tanstack/solid-router";
 import { createSignal, createUniqueId, For, onSettled, Show } from "solid-js";
 import {

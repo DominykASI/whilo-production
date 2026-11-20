@@ -1,5 +1,5 @@
-import type { ProviderLogoVariant } from "@openbot/brand";
-import type { AppTranslate } from "@openbot/i18n";
+import type { ProviderLogoVariant } from "@whilo/brand";
+import type { AppTranslate } from "@whilo/i18n";
 import { DOWNLOAD_PLATFORMS, type DownloadPlatform } from "./download-platforms";
 import { ADA, CLAUDE_CODE, type LandingFeatureId, type LandingTeamsOfferId, LINUS } from "./landing-content";
 import type { LandingQuestion } from "./landing-faq";

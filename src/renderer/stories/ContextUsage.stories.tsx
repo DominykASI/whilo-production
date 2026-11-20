@@ -1,3 +1,4 @@
+import type { JSX } from "@solidjs/web";
 import { ArrowUp, Button, Mic, Plus } from "@whilo/ui";
 import type { AgentMessage } from "@whilo/ui/data";
 import { ChatMessageRow } from "@whilo/ui/features/conversation/ChatMessageRow";
@@ -10,7 +11,6 @@ import {
   ContextUsageMeter,
   type ContextUsageView,
 } from "@whilo/ui/features/conversation/ContextUsage";
-import type { JSX } from "@solidjs/web";
 import { createSignal, For, Show } from "solid-js";
 import { fn } from "storybook/test";
 import type { Meta, StoryObj } from "storybook-solidjs-vite";

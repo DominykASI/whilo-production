@@ -38,7 +38,7 @@ jobs:
   update:
     name: Check and publish
     if: >-
-      github.repository == 'nightly-labs/openbot' && (
+      github.repository == 'nightly-labs/whilo' && (
         github.event_name == 'schedule' ||
         github.event_name == 'workflow_dispatch' ||
         (
@@ -308,7 +308,7 @@ jobs:
     name: Report failed checks
     needs: [update, deploy]
     if: >-
-      always() && github.repository == 'nightly-labs/openbot' &&
+      always() && github.repository == 'nightly-labs/whilo' &&
       (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     concurrency:
       group: status-page-alert
@@ -358,7 +358,7 @@ jobs:
     name: Start the next check run
     needs: update
     if: >-
-      !cancelled() && github.repository == 'nightly-labs/openbot' && github.ref == 'refs/heads/main' &&
+      !cancelled() && github.repository == 'nightly-labs/whilo' && github.ref == 'refs/heads/main' &&
       (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     timeout-minutes: 10

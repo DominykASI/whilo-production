@@ -1,6 +1,6 @@
 import { uptime } from "node:os";
 import { join } from "node:path";
-import { isDynamicRecord, isNumber, isString } from "@openbot/contracts/runtime-values";
+import { isDynamicRecord, isNumber, isString } from "@whilo/contracts/runtime-values";
 import { Effect } from "effect";
 import { readPreferenceFile, writePreferenceFile } from "./preference-file";
 import { quantize } from "./resource-summary";
@@ -10,7 +10,7 @@ const STARTUP_FILE = "startup-history.json";
 const WORKSPACE_WAIT_MS = 2 * 60_000;
 
 /**
- * `warm`: OpenBot started earlier since the computer booted. `cold`: the first start since the boot.
+ * `warm`: Whilo started earlier since the computer booted. `cold`: the first start since the boot.
  * `updated`: the first start of this app version. `unknown`: no earlier start is saved, or the saved
  * start was not read before the summary went.
  *
@@ -20,7 +20,7 @@ const WORKSPACE_WAIT_MS = 2 * 60_000;
 export const START_KINDS = ["warm", "cold", "updated", "unknown"] as const;
 export type StartKind = (typeof START_KINDS)[number];
 
-/** The steps of `createApplicationServices`, in order. Each `openbot:services.<step>` mark ends one. */
+/** The steps of `createApplicationServices`, in order. Each `whilo:services.<step>` mark ends one. */
 export const SERVICE_STEPS = [
   "pre-store",
   "store",
@@ -113,12 +113,12 @@ function startKind(saved: SavedStart | null, appVersion: string, bootedAt: numbe
 }
 
 function markMs(name: string): number | undefined {
-  const value = performance.getEntriesByName(`openbot:${name}`, "mark")[0]?.startTime;
+  const value = performance.getEntriesByName(`whilo:${name}`, "mark")[0]?.startTime;
   return value === undefined || !Number.isFinite(value) || value < 0 ? undefined : value;
 }
 
 /**
- * The length of each step between the `openbot:services.*` marks. The first step starts at
+ * The length of each step between the `whilo:services.*` marks. The first step starts at
  * `services.start`, the top of `createApplicationServices`, so it does not include the window.
  * A step with no mark has no length, and the next step starts at the last mark before it.
  */

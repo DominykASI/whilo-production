@@ -1,5 +1,5 @@
-import { computeAgentAvatarMoods } from "@openbot/ui/features/agents/agent-avatar-mood";
-import { computeSidebarAgentStates } from "@openbot/ui/features/sidebar/sidebar-agent-states";
+import { computeAgentAvatarMoods } from "@whilo/ui/features/agents/agent-avatar-mood";
+import { computeSidebarAgentStates } from "@whilo/ui/features/sidebar/sidebar-agent-states";
 import { createMemo } from "solid-js";
 import { useTurns } from "../../turns";
 import { useAgentTasks } from "../agent-tasks/agent-tasks-context";

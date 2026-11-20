@@ -1,5 +1,5 @@
-import { installPointerFocusGuard } from "@whilo/ui/pointer-focus";
 import { render } from "@solidjs/web";
+import { installPointerFocusGuard } from "@whilo/ui/pointer-focus";
 import { syncAppearance } from "./appearance-choice";
 import { AgentDockSurface } from "./features/agent-dock/AgentDockSurface";
 import { BrowserDockSurface } from "./features/browser/BrowserDockSurface";
@@ -7,8 +7,8 @@ import { ComputerUseHighlightSurface } from "./features/computer-use/ComputerUse
 import { ComputerUsePermissionHelp, permissionFromQuery } from "./features/computer-use/ComputerUsePermissionHelp";
 import { DynamicIslandSurface } from "./features/dynamic-island/DynamicIslandSurface";
 import { I18nProvider } from "./i18n-context";
-import { syncLogoColor } from "./logo-color";
 import { syncInterfaceLook } from "./interface-look";
+import { syncLogoColor } from "./logo-color";
 import "./styles.css";
 
 // The helper windows have an entry of their own, so they do not load `App`. There is one Dynamic

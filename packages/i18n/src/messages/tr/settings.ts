@@ -70,8 +70,8 @@ export const messages = {
   "settings.launchAtLogin.description": "Bu bilgisayarda oturum açtığınızda uygulamayı açın.",
   "settings.keepRunning.title": "Whilo'u arka planda çalışır durumda tut",
   "settings.keepRunning.description": "Pencereyi kapattıktan sonra etkin görevleri çalıştırmaya devam edin.",
-  "settings.menuBar.title": "OpenBot’u menü çubuğunda göster",
-  "settings.menuBar.description": "OpenBot’u menü çubuğundaki bir simgeden açın veya kapatın.",
+  "settings.menuBar.title": "Whilo’u menü çubuğunda göster",
+  "settings.menuBar.description": "Whilo’u menü çubuğundaki bir simgeden açın veya kapatın.",
   "settings.keepAwake.title": "Bilgisayarı uyanık tut",
   "settings.keepAwake.description":
     "Bilgisayar prize takılıyken rutinler zamanında çalışır. Ekran yine de kapanabilir.",
@@ -223,12 +223,12 @@ export const messages = {
   "settings.agentDock.show.description": "Ajanlarınızı ekran kenarında gösterir, hızlı bir sohbete hazır tutar.",
   "settings.agentDock.placement.title": "Konum",
   "settings.agentDock.placement.description":
-    "“Diğer uygulamaların üstünde” seçeneği, OpenBot arka plandayken yuvayı ekranda tutar.",
+    "“Diğer uygulamaların üstünde” seçeneği, Whilo arka plandayken yuvayı ekranda tutar.",
   "settings.agentDock.placement.screen": "Diğer uygulamaların üstünde",
-  "settings.agentDock.placement.window": "OpenBot penceresinde",
+  "settings.agentDock.placement.window": "Whilo penceresinde",
   "settings.agentDock.display.title": "Ekran",
-  "settings.agentDock.display.description": "O ekran bağlı değilse yuva, OpenBot penceresinin ekranına geçer.",
-  "settings.agentDock.display.window": "OpenBot penceresiyle",
+  "settings.agentDock.display.description": "O ekran bağlı değilse yuva, Whilo penceresinin ekranına geçer.",
+  "settings.agentDock.display.window": "Whilo penceresiyle",
   "settings.agentDock.display.primary": "Ana ekran",
   "settings.agentDock.display.all": "Tüm ekranlar",
   "settings.agentDock.display.unnamed": "Ekran {number}",
@@ -250,7 +250,7 @@ export const messages = {
   "settings.analytics.webDescription":
     "Açık: kullanım ve güvenilirlik meta verileri hesap kimliğiniz ve e-postanızla birlikte Whilo'un kendi barındırdığı analizlerine gönderilir. Kapalı: aynı meta veriler yalnızca rastgele bir kurulum kimliğiyle gönderilir. Sohbetler, dosyalar ve istemler asla gönderilmez. Bu ayar bu tarayıcı için geçerlidir.",
   "settings.tab.general.title": "Genel",
-  "settings.tab.general.description": "OpenBot'un bu bilgisayarda nasıl davranacağını kontrol edin.",
+  "settings.tab.general.description": "Whilo'un bu bilgisayarda nasıl davranacağını kontrol edin.",
   "settings.tab.agents.title": "Ajanlar",
   "settings.tab.agents.description":
     "Bir ajan için ayarlamadığınızda bu bilgisayardaki ajanların neler yapabileceğini seçin.",

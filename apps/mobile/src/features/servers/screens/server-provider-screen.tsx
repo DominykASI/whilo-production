@@ -6,7 +6,7 @@ import {
   PROMPT_CACHE_TTLS,
   type PromptCacheTtl,
   type ProviderAccountStatus,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Typography } from "heroui-native";

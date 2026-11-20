@@ -12,7 +12,7 @@ To run it in a container, see [Docker](docker.md).
 On Ubuntu 24.04 or 26.04 (x86_64 or arm64) with systemd:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/nightly-labs/openbot/main/scripts/install-server.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/nightly-labs/whilo/main/scripts/install-server.sh | sudo bash
 sudo whilo login
 ```
 
@@ -24,27 +24,27 @@ Then connect a provider from the app, as on a hosted server (see
 
 ### Hermes Agent
 
-OpenBot uses the Hermes Agent of the service user, as it uses the user's own Hermes on a desktop
+Whilo uses the Hermes Agent of the service user, as it uses the user's own Hermes on a desktop
 (see [Hermes](architecture/providers.md#hermes)). Open the server's provider settings and select
-Download on the Hermes row. OpenBot runs the official Hermes installer as the service user, then the
+Download on the Hermes row. Whilo runs the official Hermes installer as the service user, then the
 row shows Connect. To install Hermes from a terminal instead, run the installer as that user, then
-restart OpenBot:
+restart Whilo:
 
 ```sh
-sudo -u openbot -i bash -c 'curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash -s -- --non-interactive'
-sudo openbot restart
+sudo -u whilo -i bash -c 'curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash -s -- --non-interactive'
+sudo whilo restart
 ```
 
 In Docker, the service user is the image user, and its home folder is the data volume:
 
 ```sh
-docker exec openbot bash -c 'curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash -s -- --non-interactive'
-docker restart openbot
+docker exec whilo bash -c 'curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash -s -- --non-interactive'
+docker restart whilo
 ```
 
 Hermes keeps its settings, sign-ins and memories in `~/.hermes` of that user. Then select Connect on
 the Hermes row of the server's provider settings: it shows a Nous Portal code. Alternatively, run
-`hermes setup` or `hermes model` as that user. OpenBot sees a change to `config.yaml`, `.env` or
+`hermes setup` or `hermes model` as that user. Whilo sees a change to `config.yaml`, `.env` or
 `auth.json` with no restart. A Hermes that another user installed is not used.
 
 The Hermes installer needs `git` and `curl`, and downloads Node.js, which needs `libatomic1`. The

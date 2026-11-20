@@ -301,13 +301,13 @@ const agentRuntimeLockSchema = z.object({
   pi: nativeProviderLockSchema,
   muse: nativeProviderLockSchema,
   /**
-   * Cognition's Devin CLI, from its own download site. The licence is proprietary, so OpenBot
+   * Cognition's Devin CLI, from its own download site. The licence is proprietary, so Whilo
    * downloads the CLI on the user's computer and does not ship it in a release.
    */
   devin: nativeProviderLockSchema,
   /**
    * GitHub's Copilot CLI, from the GitHub releases of `github/copilot-cli`. Its licence lets an app
-   * include it only unchanged, so OpenBot downloads the CLI on the user's computer and does not ship
+   * include it only unchanged, so Whilo downloads the CLI on the user's computer and does not ship
    * it in a release.
    */
   copilot: nativeProviderLockSchema,

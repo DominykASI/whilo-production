@@ -61,13 +61,13 @@ export const messages = {
   "error.backend.sunshineNotReadyReason": "Sunshine n’est pas devenu prêt. {reason}",
   "error.backend.channelLeadModelUnavailable": "Le modèle du responsable du canal est indisponible.",
   "error.backend.contextCompactionIneffective":
-    "La compaction ne réduit pas ce chat : après deux compactions, il utilise encore {percent} % de la fenêtre de contexte du modèle, donc OpenBot arrête de le compacter. Les outils et les instructions occupent la plus grande partie de la fenêtre. Désactive les serveurs MCP ou le contrôle de l'ordinateur dont cet agent n'a pas besoin, ou choisis un modèle avec une fenêtre plus grande. Puis démarre un nouveau chat.",
+    "La compaction ne réduit pas ce chat : après deux compactions, il utilise encore {percent} % de la fenêtre de contexte du modèle, donc Whilo arrête de le compacter. Les outils et les instructions occupent la plus grande partie de la fenêtre. Désactive les serveurs MCP ou le contrôle de l'ordinateur dont cet agent n'a pas besoin, ou choisis un modèle avec une fenêtre plus grande. Puis démarre un nouveau chat.",
   "error.backend.contextCompactionStopped":
-    "Deux compactages de suite de cette discussion ont échoué, donc OpenBot ne la compacte plus automatiquement. Chaque essai envoie toute la discussion au modèle et consomme la limite de votre forfait. Sélectionnez « Compacter » pour réessayer, ou démarrez une nouvelle discussion.",
+    "Deux compactages de suite de cette discussion ont échoué, donc Whilo ne la compacte plus automatiquement. Chaque essai envoie toute la discussion au modèle et consomme la limite de votre forfait. Sélectionnez « Compacter » pour réessayer, ou démarrez une nouvelle discussion.",
   "error.backend.providerRetrying":
     "Le fournisseur a échoué {attempts} fois sur cette requête et réessaie. Si l'agent ne continue pas, arrête le tour.",
   "error.backend.providerRetryingLargeContext":
-    "Le fournisseur a échoué {attempts} fois sur cette requête et réessaie. Ce chat utilise {percent} % de la fenêtre de contexte du modèle. Si l'agent ne continue pas, arrête le tour : OpenBot compactera alors le chat avant le prochain message.",
+    "Le fournisseur a échoué {attempts} fois sur cette requête et réessaie. Ce chat utilise {percent} % de la fenêtre de contexte du modèle. Si l'agent ne continue pas, arrête le tour : Whilo compactera alors le chat avant le prochain message.",
   "error.backend.sharedDataUnavailable": "Les données partagées sont indisponibles.",
   "error.backend.shuttingDown": "Whilo est en cours d’arrêt.",
   "error.backend.channelUnconfirmedStart":

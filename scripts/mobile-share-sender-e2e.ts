@@ -22,7 +22,7 @@ import { chromium } from "playwright-core";
 const ROOT = resolve(import.meta.dirname, "..");
 const OUT = join(ROOT, ".whilo-build", "mobile-share-sender-e2e");
 const PAGE = join(OUT, "share-sender.html");
-const API_URL = "https://api.openbot.test/";
+const API_URL = "https://api.whilo.test/";
 const SESSION_TOKEN = "share-e2e-session-token";
 const SESSION_ID = "share-e2e-session";
 /** The page goes into the extension bundle. The source translations once made it 2.4 MB. */

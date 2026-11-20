@@ -183,7 +183,7 @@ export const messages = defineMessages("browser", {
   "browser.proxies.addTitle": "Add proxy",
   "browser.proxies.editTitle": "Edit {name}",
   "browser.proxies.dialogDescription":
-    "Use socks5, http or https. A user name and a password are optional, for each type. The password stays encrypted on the computer that runs OpenBot.",
+    "Use socks5, http or https. A user name and a password are optional, for each type. The password stays encrypted on the computer that runs Whilo.",
   "browser.proxies.address": "Address",
   "browser.proxies.addressPlaceholder": "socks5://user:password@host:1080",
   "browser.proxies.deleteUsed": {
@@ -193,7 +193,7 @@ export const messages = defineMessages("browser", {
   "browser.proxies.deleteUnused": "No profile uses this proxy.",
   "browser.proxies.failing": "{name} does not answer",
   "browser.proxies.signInRefused": "{name} refused the sign-in",
-  "browser.proxies.unsupported": "This server cannot use proxies. Update OpenBot on it.",
+  "browser.proxies.unsupported": "This server cannot use proxies. Update Whilo on it.",
   "browser.proxies.yourComputer": "Your computer",
   "browser.proxies.memberComputer": "{name}'s computer",
   "browser.proxies.unknownComputer": "A member's computer",
@@ -204,7 +204,7 @@ export const messages = defineMessages("browser", {
   "browser.proxies.offlineBadge": "{name} is offline",
   "browser.proxies.shareTitle": "Share the connection of this computer?",
   "browser.proxies.shareDescription":
-    "The profiles that use your computer open public sites through the internet connection of this computer. This works only while OpenBot is open here. The server cannot open addresses on your local network.",
+    "The profiles that use your computer open public sites through the internet connection of this computer. This works only while Whilo is open here. The server cannot open addresses on your local network.",
   "browser.proxies.share": "Share",
   "browser.proxies.stopSharing": "Stop sharing",
   "browser.proxies.closesTabs": {

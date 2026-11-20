@@ -71,8 +71,8 @@ export const messages = {
   "settings.launchAtLogin.description": "Открывать приложение, когда вы входите в систему на этом компьютере.",
   "settings.keepRunning.title": "Оставлять Whilo работать в фоне",
   "settings.keepRunning.description": "Активные задачи продолжат выполняться после закрытия окна.",
-  "settings.menuBar.title": "Показывать OpenBot в строке меню",
-  "settings.menuBar.description": "Открывать и закрывать OpenBot из значка в строке меню.",
+  "settings.menuBar.title": "Показывать Whilo в строке меню",
+  "settings.menuBar.description": "Открывать и закрывать Whilo из значка в строке меню.",
   "settings.keepAwake.title": "Не переводить компьютер в сон",
   "settings.keepAwake.description":
     "Регулярные задачи запускаются вовремя, пока компьютер подключён к сети. Экран всё равно может выключаться.",
@@ -230,12 +230,12 @@ export const messages = {
   "settings.agentDock.show.description": "Показывает ваших агентов у края экрана, чтобы быстро начать чат.",
   "settings.agentDock.placement.title": "Положение",
   "settings.agentDock.placement.description":
-    "«Поверх других приложений» оставляет док на экране, когда OpenBot в фоне.",
+    "«Поверх других приложений» оставляет док на экране, когда Whilo в фоне.",
   "settings.agentDock.placement.screen": "Поверх других приложений",
-  "settings.agentDock.placement.window": "В окне OpenBot",
+  "settings.agentDock.placement.window": "В окне Whilo",
   "settings.agentDock.display.title": "Дисплей",
-  "settings.agentDock.display.description": "Если этот дисплей не подключён, док переходит на дисплей окна OpenBot.",
-  "settings.agentDock.display.window": "Вместе с окном OpenBot",
+  "settings.agentDock.display.description": "Если этот дисплей не подключён, док переходит на дисплей окна Whilo.",
+  "settings.agentDock.display.window": "Вместе с окном Whilo",
   "settings.agentDock.display.primary": "Основной дисплей",
   "settings.agentDock.display.all": "Все дисплеи",
   "settings.agentDock.display.unnamed": "Дисплей {number}",
@@ -257,7 +257,7 @@ export const messages = {
   "settings.analytics.webDescription":
     "Вкл.: метаданные об использовании и надёжности отправляются в собственную аналитику Whilo вместе с ID аккаунта и почтой. Выкл.: те же метаданные отправляются только со случайным ID установки. Чаты, файлы и промпты никогда не отправляются. Настройка действует для этого браузера.",
   "settings.tab.general.title": "Основные",
-  "settings.tab.general.description": "Как OpenBot ведёт себя на этом компьютере.",
+  "settings.tab.general.description": "Как Whilo ведёт себя на этом компьютере.",
   "settings.tab.agents.title": "Агенты",
   "settings.tab.agents.description":
     "Выберите, что могут делать агенты на этом компьютере, если вы не задали это для агента.",

@@ -6,7 +6,7 @@ import {
   type UiFormField,
   type UiFormOptionsField,
   type UiFormBlock as UiFormSpec,
-} from "@openbot/contracts/ui-blocks";
+} from "@whilo/contracts/ui-blocks";
 import {
   Button,
   Field,
@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
   Textarea,
-} from "@openbot/ui";
+} from "@whilo/ui";
 import type { JSX } from "@solidjs/web";
 import { createSignal, createUniqueId, For, Match, Show, Switch } from "solid-js";
 import { useText } from "../../../text";

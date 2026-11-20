@@ -223,7 +223,7 @@ export function mapSite(
 function siteUrl(hostname: string, localSiteOrigin?: string): string {
   if (!localSiteOrigin) return `https://${hostname}`;
   const origin = new URL(localSiteOrigin);
-  const label = hostname.slice(0, -".openbot.site".length);
+  const label = hostname.slice(0, -".whilo.site".length);
   origin.hostname = `${label}.${origin.hostname}`;
   origin.pathname = "/";
   origin.search = "";

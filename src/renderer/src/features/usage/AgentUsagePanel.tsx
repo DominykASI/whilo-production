@@ -4,8 +4,8 @@ import {
   type HostAnalytics,
   type HostAnalyticsInput,
   WORKFLOWS_USAGE_ID,
-} from "@openbot/contracts/ipc";
-import type { AppTextKey } from "@openbot/i18n";
+} from "@whilo/contracts/ipc";
+import type { AppTextKey } from "@whilo/i18n";
 import {
   ArrowLeft,
   Button,
@@ -17,8 +17,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@openbot/ui";
-import { AgentUsageReport } from "@openbot/ui/features/usage/AgentUsageReport";
+} from "@whilo/ui";
+import { AgentUsageReport } from "@whilo/ui/features/usage/AgentUsageReport";
 import {
   type UsageAgentLabel,
   type UsageMetric,
@@ -28,9 +28,9 @@ import {
   usagePeriodDays,
   usagePeriodLabels,
   usagePeriods,
-} from "@openbot/ui/features/usage/usage-format";
-import { useText } from "@openbot/ui/text";
-import { errorReference } from "@openbot/user-errors";
+} from "@whilo/ui/features/usage/usage-format";
+import { useText } from "@whilo/ui/text";
+import { errorReference } from "@whilo/user-errors";
 import type { JSX } from "@solidjs/web";
 import { createEffect, createStore, onSettled, Show } from "solid-js";
 import { desktopAnalytics } from "../../analytics";

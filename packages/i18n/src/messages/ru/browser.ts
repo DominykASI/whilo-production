@@ -199,7 +199,7 @@ export const messages = {
   "browser.proxies.addTitle": "Добавить прокси",
   "browser.proxies.editTitle": "Изменить «{name}»",
   "browser.proxies.dialogDescription":
-    "Используйте socks5, http или https. Имя пользователя и пароль необязательны для любого типа. Пароль хранится в зашифрованном виде на компьютере, где работает OpenBot.",
+    "Используйте socks5, http или https. Имя пользователя и пароль необязательны для любого типа. Пароль хранится в зашифрованном виде на компьютере, где работает Whilo.",
   "browser.proxies.address": "Адрес",
   "browser.proxies.addressPlaceholder": "socks5://user:password@host:1080",
   "browser.proxies.deleteUsed": {
@@ -211,7 +211,7 @@ export const messages = {
   "browser.proxies.deleteUnused": "Ни один профиль не использует этот прокси.",
   "browser.proxies.failing": "{name} не отвечает",
   "browser.proxies.signInRefused": "{name} отклонил вход",
-  "browser.proxies.unsupported": "Этот сервер не может использовать прокси. Обновите OpenBot на этом сервере.",
+  "browser.proxies.unsupported": "Этот сервер не может использовать прокси. Обновите Whilo на этом сервере.",
   "browser.proxies.yourComputer": "Ваш компьютер",
   "browser.proxies.memberComputer": "Компьютер участника {name}",
   "browser.proxies.unknownComputer": "Компьютер участника",
@@ -222,7 +222,7 @@ export const messages = {
   "browser.proxies.offlineBadge": "{name} не в сети",
   "browser.proxies.shareTitle": "Поделиться подключением этого компьютера?",
   "browser.proxies.shareDescription":
-    "Профили, которые используют ваш компьютер, открывают общедоступные сайты через интернет-подключение этого компьютера. Это работает, только пока OpenBot открыт здесь. Сервер не может открывать адреса в вашей локальной сети.",
+    "Профили, которые используют ваш компьютер, открывают общедоступные сайты через интернет-подключение этого компьютера. Это работает, только пока Whilo открыт здесь. Сервер не может открывать адреса в вашей локальной сети.",
   "browser.proxies.share": "Поделиться",
   "browser.proxies.stopSharing": "Перестать делиться",
   "browser.proxies.closesTabs": {

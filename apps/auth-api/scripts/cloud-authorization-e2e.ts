@@ -522,7 +522,7 @@ async function aCheckoutReturnStaysOnTheAccountSite() {
 }
 
 async function aSiteServesOnlyItsOwnFiles() {
-  const hostname = "demo.openbot.site";
+  const hostname = "demo.whilo.site";
   const prefix = "sites/site-1/deployments/deployment-1/";
   const manifest = {
     version: 1,

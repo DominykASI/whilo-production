@@ -389,14 +389,14 @@ export const messages = {
   "connector.whatsapp.numbersTitle": "Numery",
   "connector.whatsapp.linkNumber": "Połącz numer",
   "connector.whatsapp.ownNumberNote":
-    "Do OpenBot trafiają wiadomości z twojego czatu „Wiadomość do siebie” i od osób, którym pozwolisz.",
+    "Do Whilo trafiają wiadomości z twojego czatu „Wiadomość do siebie” i od osób, którym pozwolisz.",
   "connector.whatsapp.dedicatedNote":
-    "Do OpenBot trafiają wiadomości od osób, którym pozwolisz. Inne osoby dostają kod, który mają ci przekazać.",
+    "Do Whilo trafiają wiadomości od osób, którym pozwolisz. Inne osoby dostają kod, który mają ci przekazać.",
   "connector.whatsapp.helpLoggedOut": "WhatsApp usunął ten komputer z połączonych urządzeń. Połącz numer ponownie.",
   "connector.whatsapp.helpLoggedOutHost": "WhatsApp usunął ten serwer z połączonych urządzeń. Połącz numer ponownie.",
   "connector.whatsapp.helpError":
-    "OpenBot nie może połączyć się z WhatsApp na tym numerze. Połącz ponownie lub odłącz numer.",
-  "connector.whatsapp.retryAt": "WhatsApp poprosił OpenBot o czekanie. Kolejna próba o {time}.",
+    "Whilo nie może połączyć się z WhatsApp na tym numerze. Połącz ponownie lub odłącz numer.",
+  "connector.whatsapp.retryAt": "WhatsApp poprosił Whilo o czekanie. Kolejna próba o {time}.",
   "connector.whatsapp.pause": "Wstrzymaj",
   "connector.whatsapp.resume": "Wznów",
   "connector.whatsapp.reconnect": "Połącz ponownie",
@@ -406,14 +406,14 @@ export const messages = {
   "connector.whatsapp.disconnectAllSummary":
     "Wszystkie numery zostaną odłączone. Nikt nie dotrze już do Twoich agentów przez WhatsApp.",
   "connector.whatsapp.disconnectAllSummaryOrchestrator":
-    "Wszystkie numery zostaną odłączone. WhatsApp Orchestrator i jego rozmowy zostaną usunięte z OpenBot.",
+    "Wszystkie numery zostaną odłączone. WhatsApp Orchestrator i jego rozmowy zostaną usunięte z Whilo.",
   "connector.whatsapp.rowAction": "{action}: {name}",
   "connector.whatsapp.ownNumber": "Numer prywatny",
   "connector.whatsapp.ownNumberDescription":
-    "Pisać mogą tylko twój czat „Wiadomość do siebie” i osoby, którym pozwolisz. Wyłącz dla numeru tylko dla OpenBot.",
+    "Pisać mogą tylko twój czat „Wiadomość do siebie” i osoby, którym pozwolisz. Wyłącz dla numeru tylko dla Whilo.",
   "connector.whatsapp.orchestratorTitle": "WhatsApp Orchestrator",
   "connector.whatsapp.orchestratorDescription":
-    "Ten agent odbiera wiadomości do OpenBot ze wszystkich twoich połączonych numerów. Na krótkie odpowiada sam, inną pracę przekazuje odpowiedniemu agentowi i odpowiada w WhatsApp.",
+    "Ten agent odbiera wiadomości do Whilo ze wszystkich twoich połączonych numerów. Na krótkie odpowiada sam, inną pracę przekazuje odpowiedniemu agentowi i odpowiada w WhatsApp.",
   "connector.whatsapp.orchestratorNone": "Żaden agent jeszcze nie odpowiada",
   "connector.whatsapp.orchestratorNoneDescription":
     "Dodaj WhatsApp Orchestrator, inaczej WhatsApp nie dostanie odpowiedzi.",
@@ -427,8 +427,8 @@ export const messages = {
   "connector.whatsapp.kindLabel": "Numer",
   "connector.whatsapp.kindPersonal": "Mój numer prywatny",
   "connector.whatsapp.kindPersonalDescription":
-    "OpenBot odpowiada tylko w twoim czacie „Wiadomość do siebie” i osobom, którym pozwolisz.",
-  "connector.whatsapp.kindDedicated": "Numer tylko dla OpenBot",
+    "Whilo odpowiada tylko w twoim czacie „Wiadomość do siebie” i osobom, którym pozwolisz.",
+  "connector.whatsapp.kindDedicated": "Numer tylko dla Whilo",
   "connector.whatsapp.kindDedicatedDescription":
     "Nieznane osoby dostają kod, który mają ci przekazać. Zatwierdzasz je tutaj.",
   "connector.whatsapp.methodLabel": "Sposób połączenia",
@@ -455,27 +455,27 @@ export const messages = {
   "connector.whatsapp.failedTimeout": "Kod wygasł, zanim telefon go użył.",
   "connector.whatsapp.failedRefused": "WhatsApp odrzucił połączenie. Odczekaj kilka minut i spróbuj ponownie.",
   "connector.whatsapp.failedBusy": "Trwa inne łączenie. Poczekaj, aż się skończy, i spróbuj ponownie.",
-  "connector.whatsapp.failedUnavailable": "OpenBot nie może połączyć się z WhatsApp. Sprawdź połączenie z internetem.",
+  "connector.whatsapp.failedUnavailable": "Whilo nie może połączyć się z WhatsApp. Sprawdź połączenie z internetem.",
   "connector.whatsapp.tryAgain": "Ponów",
   "connector.whatsapp.agentStepTitle": "Dodaj WhatsApp Orchestrator",
   "connector.whatsapp.agentStepDescription":
-    "Ten nowy agent odpowiada na wiadomości do OpenBot na numerze {number} i na każdym numerze, który połączysz później.",
+    "Ten nowy agent odpowiada na wiadomości do Whilo na numerze {number} i na każdym numerze, który połączysz później.",
   "connector.whatsapp.orchestratorName": "WhatsApp Orchestrator",
   "connector.whatsapp.orchestratorRole": "Odpowiada w WhatsApp i pyta zespół",
-  "connector.whatsapp.orchestratorDoesReceive": "Jako pierwszy odbiera każdą wiadomość z WhatsApp do OpenBot",
+  "connector.whatsapp.orchestratorDoesReceive": "Jako pierwszy odbiera każdą wiadomość z WhatsApp do Whilo",
   "connector.whatsapp.orchestratorDoesDelegate": "Przekazuje każde zadanie najlepiej pasującemu agentowi",
   "connector.whatsapp.orchestratorDoesAnswer": "Odpowiada w czacie WhatsApp",
   "connector.whatsapp.orchestratorModel": "Model",
-  "connector.whatsapp.doneTitle": "OpenBot jest połączony z numerem {number}",
+  "connector.whatsapp.doneTitle": "Whilo jest połączony z numerem {number}",
   "connector.whatsapp.done": "Gotowe",
   "connector.whatsapp.disconnectTitle": "Odłączyć {number}?",
   "connector.whatsapp.disconnectDescription":
-    "OpenBot wyloguje się z WhatsApp na numerze {number}. Jeśli OpenBot był wyłączony, usuń też urządzenie w WhatsApp > Połączone urządzenia.",
+    "Whilo wyloguje się z WhatsApp na numerze {number}. Jeśli Whilo był wyłączony, usuń też urządzenie w WhatsApp > Połączone urządzenia.",
   "connector.whatsapp.disconnectEffect":
     "Ludzie nie będą już mogli kontaktować się z twoimi agentami przez numer {number}.",
-  "connector.whatsapp.removeEffectKept": "Rozmowy i WhatsApp Orchestrator zostają w OpenBot.",
+  "connector.whatsapp.removeEffectKept": "Rozmowy i WhatsApp Orchestrator zostają w Whilo.",
   "connector.whatsapp.removeEffectDeleted":
-    "To ostatni numer, więc WhatsApp Orchestrator i jego rozmowy zostaną usunięte z OpenBot.",
+    "To ostatni numer, więc WhatsApp Orchestrator i jego rozmowy zostaną usunięte z Whilo.",
   "connector.whatsapp.keep": "Nie odłączaj",
   "connector.whatsapp.close": "Zamknij",
   "connector.whatsapp.sendersTitle": "Kto może pisać na {number}",
@@ -495,7 +495,7 @@ export const messages = {
   "connector.whatsapp.groupDescription": "Osoby w tej grupie mogą zlecać pracę twoim agentom.",
   "connector.whatsapp.groupSearch": "Szukaj grup",
   "connector.whatsapp.groupsLoading": "Odczytywanie grup…",
-  "connector.whatsapp.groupsLoadFailed": "OpenBot nie mógł odczytać grup",
+  "connector.whatsapp.groupsLoadFailed": "Whilo nie mógł odczytać grup",
   "connector.whatsapp.groupsEmpty": "Ten numer nie należy do żadnej grupy.",
   "connector.whatsapp.groupsNoMatch": "Żadna grupa nie ma tej nazwy.",
   "connector.whatsapp.groupAdded": "Dodano",
@@ -612,19 +612,19 @@ export const messages = {
   "connector.protonPass.keyPlaceholder": "pst_…",
   "connector.protonPass.setupTitle": "Konfiguracja",
   "connector.protonPass.setupDescription":
-    "Połącz otwiera logowanie do Proton w przeglądarce. Potem OpenBot tworzy udostępniony sejf i zachowuje tylko klucz tylko do odczytu.",
+    "Połącz otwiera logowanie do Proton w przeglądarce. Potem Whilo tworzy udostępniony sejf i zachowuje tylko klucz tylko do odczytu.",
   "connector.protonPass.setupDescriptionHost":
     "Połącz otwiera logowanie do Proton w przeglądarce. Potem {host} tworzy udostępniony sejf i zachowuje tylko klucz tylko do odczytu.",
-  "connector.protonPass.vaultName": "Shared with OpenBot",
+  "connector.protonPass.vaultName": "Shared with Whilo",
   "connector.protonPass.vaultSetup":
-    "OpenBot tworzy ten sejf podczas łączenia. Przenieś do niego dane logowania, aby je udostępnić.",
+    "Whilo tworzy ten sejf podczas łączenia. Przenieś do niego dane logowania, aby je udostępnić.",
   "connector.protonPass.showSteps": "Pokaż kroki",
   "connector.protonPass.stepsLabel": "Kroki połączenia",
   "connector.protonPass.stepSignIn": "Logowanie",
   "connector.protonPass.stepVault": "Tworzenie sejfu",
   "connector.protonPass.stepDone": "Gotowe",
   "connector.protonPass.signInTitle": "Zaloguj się do Proton",
-  "connector.protonPass.signInStarting": "OpenBot rozpoczyna logowanie. Strona Proton otworzy się w przeglądarce.",
+  "connector.protonPass.signInStarting": "Whilo rozpoczyna logowanie. Strona Proton otworzy się w przeglądarce.",
   "connector.protonPass.signInDescription":
     "Logowanie jest otwarte w przeglądarce. Proton prosi o hasło i drugi składnik.",
   "connector.protonPass.signInDescriptionHost":
@@ -635,7 +635,7 @@ export const messages = {
   "connector.protonPass.continue": "Dalej",
   "connector.protonPass.setupStepTitle": "Tworzenie udostępnionego sejfu",
   "connector.protonPass.setupStepDescription":
-    "OpenBot tworzy sejf „{vault}” i klucz tylko do odczytu. Potem wylogowuje Twoją sesję Proton.",
+    "Whilo tworzy sejf „{vault}” i klucz tylko do odczytu. Potem wylogowuje Twoją sesję Proton.",
   "connector.protonPass.doneTitle": "Proton Pass jest połączony",
   "connector.protonPass.doneDescription": "Przenieś dane logowania do „{vault}”, aby agenci mogli się nimi logować.",
   "connector.protonPass.failedTitle": "Nie połączono Proton Pass",
@@ -669,9 +669,9 @@ export const messages = {
   "connector.protonPass.keyNoExpiry": "Tylko do odczytu. Nie wygasa.",
   "connector.protonPass.disconnectTitle": "Odłącz Proton Pass",
   "connector.protonPass.disconnectSummary":
-    "OpenBot usuwa swój klucz dostępu z tego komputera. Sejf i jego dane logowania zostają na Twoim koncie Proton.",
+    "Whilo usuwa swój klucz dostępu z tego komputera. Sejf i jego dane logowania zostają na Twoim koncie Proton.",
   "connector.protonPass.disconnectSummaryHost":
-    "OpenBot usuwa swój klucz dostępu z {host}. Sejf i jego dane logowania zostają na Twoim koncie Proton.",
+    "Whilo usuwa swój klucz dostępu z {host}. Sejf i jego dane logowania zostają na Twoim koncie Proton.",
   "connector.protonPass.disconnect": "Odłącz",
-  "connector.protonPass.actionFailed": "OpenBot nie mógł zmienić połączenia z Proton Pass.",
+  "connector.protonPass.actionFailed": "Whilo nie mógł zmienić połączenia z Proton Pass.",
 } as const satisfies PartialTranslation<typeof source>;

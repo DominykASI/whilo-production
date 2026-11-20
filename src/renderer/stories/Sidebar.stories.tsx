@@ -1,13 +1,13 @@
-import type { ChannelSummary, HiddenAgent, SidebarLayoutSnapshot } from "@openbot/contracts/ipc";
-import { Button } from "@openbot/ui";
-import type { AvatarMood } from "@openbot/ui/bloub-avatar";
-import { Sidebar } from "@openbot/ui/features/sidebar/Sidebar";
-import { SidebarCommunityCard } from "@openbot/ui/features/sidebar/SidebarCommunityCard";
-import { SidebarMachineCard } from "@openbot/ui/features/sidebar/SidebarMachineCard";
-import { SidebarMobileAppCard } from "@openbot/ui/features/sidebar/SidebarMobileAppCard";
-import { SidebarStorageCard } from "@openbot/ui/features/sidebar/SidebarStorageCard";
-import { normalizeSidebarPinnedItems, type SidebarPinnedItem } from "@openbot/ui/features/sidebar/sidebar-pins";
-import { SIDEBAR_HIDDEN_GROUP_OPEN_ID, type SidebarAgentState } from "@openbot/ui/features/sidebar/sidebar-types";
+import type { ChannelSummary, HiddenAgent, SidebarLayoutSnapshot } from "@whilo/contracts/ipc";
+import { Button } from "@whilo/ui";
+import type { AvatarMood } from "@whilo/ui/bloub-avatar";
+import { Sidebar } from "@whilo/ui/features/sidebar/Sidebar";
+import { SidebarCommunityCard } from "@whilo/ui/features/sidebar/SidebarCommunityCard";
+import { SidebarMachineCard } from "@whilo/ui/features/sidebar/SidebarMachineCard";
+import { SidebarMobileAppCard } from "@whilo/ui/features/sidebar/SidebarMobileAppCard";
+import { SidebarStorageCard } from "@whilo/ui/features/sidebar/SidebarStorageCard";
+import { normalizeSidebarPinnedItems, type SidebarPinnedItem } from "@whilo/ui/features/sidebar/sidebar-pins";
+import { SIDEBAR_HIDDEN_GROUP_OPEN_ID, type SidebarAgentState } from "@whilo/ui/features/sidebar/sidebar-types";
 import { createSignal, For, untrack } from "solid-js";
 import { fn } from "storybook/test";
 import type { Meta, StoryObj } from "storybook-solidjs-vite";
@@ -248,7 +248,7 @@ export const Populated: Story = {
   decorators: [(Story) => <div style={{ width: "280px", height: "100vh" }}>{Story()}</div>],
 };
 
-/** A joined server has a new OpenBot version. The header button opens its update. */
+/** A joined server has a new Whilo version. The header button opens its update. */
 export const ServerUpdate: Story = {
   args: { serverName: "Research server", serverUpdate: { version: "0.24.0", running: false, onOpen: fn() } },
   decorators: [(Story) => <div style={{ width: "280px", height: "100vh" }}>{Story()}</div>],

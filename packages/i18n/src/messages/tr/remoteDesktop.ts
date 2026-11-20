@@ -75,12 +75,12 @@ export const messages = {
   "remoteDesktop.setup.finishTest": "Testi bitir",
   "remoteDesktop.host.questionTitle": "{name} bu bilgisayarı kontrol etmek istiyor",
   "remoteDesktop.host.questionDetail":
-    "{name} ekranınızı görecek ve farenizi ve klavyenizi kullanabilecek. 30 saniye içinde yanıt vermezseniz OpenBot isteği reddeder.",
+    "{name} ekranınızı görecek ve farenizi ve klavyenizi kullanabilecek. 30 saniye içinde yanıt vermezseniz Whilo isteği reddeder.",
   "remoteDesktop.host.allow": "İzin ver",
   "remoteDesktop.host.deny": "Reddet",
   "remoteDesktop.host.startedTitle": "Uzaktan kontrol başladı",
   "remoteDesktop.host.startedBody": "{name} şu anda bu bilgisayarı kontrol ediyor.",
-  "remoteDesktop.host.trayTooltip": "OpenBot: uzaktan kontrol açık",
+  "remoteDesktop.host.trayTooltip": "Whilo: uzaktan kontrol açık",
   "remoteDesktop.host.trayControlledBy": "{name} bu bilgisayarı kontrol ediyor",
   "remoteDesktop.host.stopAll": "Tüm uzaktan kontrolü durdur",
 } as const satisfies PartialTranslation<typeof source>;

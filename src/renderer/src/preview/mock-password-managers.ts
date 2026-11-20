@@ -3,7 +3,7 @@ import {
   type OpenBotDesktopApi,
   type PasswordManagerId,
   type PasswordManagerStatus,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 
 type PasswordManagersApi = OpenBotDesktopApi["passwordManagers"];
 
@@ -19,7 +19,7 @@ function connected(manager: PasswordManagerId): PasswordManagerStatus {
   return {
     ...disconnectedPasswordManager(manager, ["browser", "key"]),
     state: "connected",
-    vaultNames: ["Shared with OpenBot"],
+    vaultNames: ["Shared with Whilo"],
     loginCount: 12,
     expiresAt: Date.now() + MOCK_KEY_DAYS * 24 * 60 * 60 * 1_000,
   };

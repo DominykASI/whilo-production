@@ -12,7 +12,7 @@
 //      The summary runs on the provider's smaller model, and the Lead's turns on its own model.
 //   5. A reply that continues a task marks its earlier turn superseded and keeps the channel summary,
 //      so the next turn does not summarize the channel again from the first message (#3761).
-//   6. Two compactions that leave a session at 76% of its window give one notice, and OpenBot asks
+//   6. Two compactions that leave a session at 76% of its window give one notice, and Whilo asks
 //      for no more compactions of that session when it grows over 80% (#3905, #5150). A session
 //      that becomes smaller than 70% in another way compacts again when it grows over 80%.
 //   7. A provider that retries a request three times gives one notice, and a session at 60% of its
@@ -22,21 +22,21 @@
 //      messageId and offset gives the rest of it. It cuts a long task instruction. A long request is
 //      in the packet once, and a long handoff of an agent is cut with a pointer to the rest.
 //   9. A session at 60% of its window compacts before a turn whose input fills it over 80% (#4374).
-//  10. In an isolated channel, openbot.remember saves a channel memory and the agent keeps none of
+//  10. In an isolated channel, whilo.remember saves a channel memory and the agent keeps none of
 //      it. The packet says when isolation is on and when it is off (#4332).
 //  11. A reply that quotes a member's message and only mentions another member gives the quote in
 //      the assignment. The quote continues its task, and the packet does not show it superseded (#4841).
-// `bun scripts/channel-context-e2e.ts`. Writes .openbot-build/channel-context-e2e/report.json.
+// `bun scripts/channel-context-e2e.ts`. Writes .whilo-build/channel-context-e2e/report.json.
 // `CHANNEL_CONTEXT_MEASURE=<label> bun scripts/channel-context-e2e.ts` runs no checks. It sends
 // MEASURE_TURNS requests to three members in turn, with long replies, and writes the size of each
-// packet and summary request to .openbot-build/channel-context-e2e/measure-<label>.json.
+// packet and summary request to .whilo-build/channel-context-e2e/measure-<label>.json.
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { AGENT_PROVIDERS, type AgentEvent, type ChannelMessage } from "@openbot/contracts/ipc";
+import { AGENT_PROVIDERS, type AgentEvent, type ChannelMessage } from "@whilo/contracts/ipc";
 import { Effect } from "effect";
 import type { AgentBrowserHost } from "../src/backend/agent/turn-lifecycle";
 import type { boundedHistoryPage, historyMessagePart } from "../src/backend/channel-history";
@@ -44,8 +44,8 @@ import type { boundedHistoryPage, historyMessagePart } from "../src/backend/chan
 type HistoryPage = ReturnType<typeof boundedHistoryPage>;
 type HistoryPart = ReturnType<typeof historyMessagePart>;
 
-const OUT = resolve(import.meta.dirname, "../.openbot-build/channel-context-e2e");
-const root = await mkdtemp(join(tmpdir(), "openbot-channel-context-"));
+const OUT = resolve(import.meta.dirname, "../.whilo-build/channel-context-e2e");
+const root = await mkdtemp(join(tmpdir(), "whilo-channel-context-"));
 const userData = join(root, "user-data");
 const home = join(root, "home");
 const fakeCodex = join(root, "codex");
@@ -64,12 +64,12 @@ const { AgentService } = await import("../src/backend/agent-service");
 const { AgentStore } = await import("../src/backend/agent-store");
 const { runCauseEffect } = await import("../src/backend/effect-boundary");
 const { MailboxStore } = await import("../src/backend/mailbox-store");
-const { OpenBotDatabase } = await import("../src/backend/openbot-database");
+const { WhiloDatabase } = await import("../src/backend/whilo-database");
 
 const PERSON = { id: "local", name: "Alex" };
 const PACKET_STARTS = [
-  "You have one assignment in a shared OpenBot channel chat.",
-  "You have a new assignment in the same shared OpenBot channel chat.",
+  "You have one assignment in a shared Whilo channel chat.",
+  "You have a new assignment in the same shared Whilo channel chat.",
 ];
 const CHANNEL_RULE = "Use channel_history for earlier history";
 const SUMMARY_REQUEST = "Summarize shared facts";
@@ -100,7 +100,7 @@ let threads = 0;
 let turns = 0;
 let calls = 0;
 const quietCompactions = new Set();
-// The tool calls that wait for the answer of OpenBot, by request id.
+// The tool calls that wait for the answer of Whilo, by request id.
 const waiting = new Map();
 process.stdout.on("error", (error) => {
   if (error.code === "EPIPE") process.exit(0);
@@ -176,14 +176,14 @@ const answer = (message) => {
         write({ method: "item/completed", params: { threadId, turnId, item } });
         write({ method: "turn/completed", params: { threadId, turn: { id: turnId, status: "completed" } } });
       };
-      // An agent saves a fact with openbot.remember: first with a memoryId, then without one.
+      // An agent saves a fact with whilo.remember: first with a memoryId, then without one.
       const call = (args, then) => {
         const id = "tool-" + (++calls);
         waiting.set(id, (response) => {
           log({ threadId, turnId, method: "tool/result", text: JSON.stringify(response.result ?? response.error) });
           then();
         });
-        write({ id, method: "item/tool/call", params: { threadId, turnId, callId: "call-" + calls, namespace: "openbot", tool: "remember", arguments: args } });
+        write({ id, method: "item/tool/call", params: { threadId, turnId, callId: "call-" + calls, namespace: "whilo", tool: "remember", arguments: args } });
       };
       if (assignment.startsWith("REMEMBER")) {
         const text = assignment.slice("REMEMBER: ".length);
@@ -382,7 +382,7 @@ function record(agent: string, packet: string): void {
 }
 
 await writeFile(fakeCodex, FAKE_CODEX, { mode: 0o755 });
-const database = new OpenBotDatabase(userData);
+const database = new WhiloDatabase(userData);
 const store = new AgentStore(userData, home, database);
 const mailbox = new MailboxStore(userData, store.sharedRoot, store.database);
 const agents = new AgentService({
@@ -711,7 +711,7 @@ try {
       events.find((event) => event.code === "context_compaction_ineffective" && event.agentId === tester.id),
     );
     pass("The notice gives the share of the window", ineffective.message.includes("76%"), ineffective.message);
-    pass("OpenBot asks for no compaction of the full session", compactions(stuckThread) === 0);
+    pass("Whilo asks for no compaction of the full session", compactions(stuckThread) === 0);
     // Tools that the agent no longer has leave the session at 60%, and it then grows over 80%.
     const smaller = await send(channelId, tester.id, "USAGE: report the size.");
     await send(channelId, tester.id, "FULL: report the size.");
@@ -884,7 +884,7 @@ try {
       `${beforeLarge} -> ${compactions(usageThread)}, ${large.length} characters`,
     );
 
-    // 10. #4332: in an isolated channel, openbot.remember saves a channel memory, and the agent keeps
+    // 10. #4332: in an isolated channel, whilo.remember saves a channel memory, and the agent keeps
     // none of it. A save without the field, as from a client before it, keeps the channel isolated.
     await save("Ship the release.", true, true);
     await save("Ship the release.");
@@ -895,7 +895,7 @@ try {
     pass(
       "The packet says that the channel is isolated",
       facts(isolatedPacket).channel?.isolated === true &&
-        isolatedPacket.includes("openbot.remember saves a channel memory here"),
+        isolatedPacket.includes("whilo.remember saves a channel memory here"),
     );
     const results = turnLogs()
       .filter((entry) => entry.method === "tool/result")
@@ -924,7 +924,7 @@ try {
       "The packet says when isolation is off",
       facts(sharedPacket).channel?.isolated === undefined &&
         sharedPacket.includes("no longer isolated") &&
-        !sharedPacket.includes("openbot.remember saves a channel memory here"),
+        !sharedPacket.includes("whilo.remember saves a channel memory here"),
     );
 
     // 11. The person quotes the Tester's answer and only mentions the Lead.

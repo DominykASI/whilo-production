@@ -156,7 +156,7 @@ export function requireSitePublishingEnabled(): void {
     throw new HostedSiteInputError(
       409,
       "cookie_isolation_unavailable",
-      "Site publishing is disabled until openbot.site has public-suffix cookie isolation.",
+      "Site publishing is disabled until whilo.site has public-suffix cookie isolation.",
     );
   }
 }
@@ -402,8 +402,25 @@ function requestHostedBilling(developerKey: string | null = null) {
 
 export function hostedServerErrorResponse(error: unknown): Response {
   if (error instanceof HostedServerServiceError) return apiError(error.status, error.code, error.message);
-  if (error instanceof BillingError) return apiError(error.status, error.code, error.message);
+  if (error instanceof BillingError) {
+    // Billing config/credentials missing is a hosting dependency — never 500, never leak details.
+    if (error.code === "billing_unavailable") {
+      return apiError(403, "hosting_unavailable", "Hosted servers are not available.");
+    }
+    return apiError(error.status, error.code, error.message);
+  }
   if (error instanceof HostedSiteInputError) return apiError(error.status, error.code, error.message);
+  // Provider/config failures must never leak raw details or stack traces to the user.
+  if (isDynamicRecord(error) && error._tag === "BoatApiError") {
+    const status = typeof error.status === "number" ? error.status : 502;
+    if (status === 401 || status === 403) {
+      return apiError(403, "hosting_unavailable", "Hosted servers are not available.");
+    }
+    return apiError(502, "hosted_server_provider_failed", "The hosting provider could not complete the request.");
+  }
+  if (isDynamicRecord(error) && error._tag === "HostedServerOperationError") {
+    return apiError(503, "hosting_unavailable", "Hosted servers are temporarily unavailable.");
+  }
   return remoteControlPlaneErrorResponse(error);
 }
 

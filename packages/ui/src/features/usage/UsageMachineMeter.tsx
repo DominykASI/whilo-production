@@ -3,9 +3,9 @@ import {
   type MachineMetric,
   type MachineMetrics,
   machineAlertLevel,
-} from "@openbot/contracts/ipc";
-import { Button, buttonVariants, ChevronRight, Popover, Progress, RadialProgress } from "@openbot/ui";
-import { useText } from "@openbot/ui/text";
+} from "@whilo/contracts/ipc";
+import { Button, buttonVariants, ChevronRight, Popover, Progress, RadialProgress } from "@whilo/ui";
+import { useText } from "@whilo/ui/text";
 import type { JSX } from "@solidjs/web";
 import { createSignal, For, Show } from "solid-js";
 import {

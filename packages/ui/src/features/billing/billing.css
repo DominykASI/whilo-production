@@ -142,7 +142,7 @@
 .billing-license-icon svg {
   width: 18px;
   height: 18px;
-  stroke-width: var(--openbot-icon-stroke-lg);
+  stroke-width: var(--whilo-icon-stroke-lg);
 }
 
 .billing-license-row .ui-item-actions {

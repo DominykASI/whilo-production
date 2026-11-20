@@ -1,4 +1,4 @@
-import { leadingAddress } from "@openbot/contracts/chat-tag-references";
+import { leadingAddress } from "@whilo/contracts/chat-tag-references";
 import type {
   AgentEvent,
   Channel,
@@ -21,11 +21,11 @@ import type {
   TestChannelRoutineInput,
   UpdateChannelMemoryInput,
   UpdateChannelRoutineInput,
-} from "@openbot/contracts/ipc";
-import { channelRoutingConversationEventItemType } from "@openbot/contracts/ipc";
-import { markdownPreviewText } from "@openbot/contracts/markdown-preview-text";
-import { sourceText } from "@openbot/i18n/source";
-import { avatarImageDataUrl } from "@openbot/ui/avatar-image";
+} from "@whilo/contracts/ipc";
+import { channelRoutingConversationEventItemType } from "@whilo/contracts/ipc";
+import { markdownPreviewText } from "@whilo/contracts/markdown-preview-text";
+import { sourceText } from "@whilo/i18n/source";
+import { avatarImageDataUrl } from "@whilo/ui/avatar-image";
 
 /** A save keeps the picture, as the host does: the draft carries the icon only when it changes. */
 function storedPicture(channel: Channel | undefined): Pick<Channel, "icon" | "imageUrl"> {

@@ -5,19 +5,19 @@ export const messages = defineMessages("startup", {
   "startup.failedTitle": "Whilo couldn’t start",
   "startup.failedBody":
     "{message}\n\nYour local data was not reset or overwritten. See the troubleshooting guide for recovery steps.",
-  // Shown while OpenBot runs, when another program changed `app.asar`: the next start would fail with no message.
-  "startup.archiveChangedTitle": "OpenBot files were changed",
+  // Shown while Whilo runs, when another program changed `app.asar`: the next start would fail with no message.
+  "startup.archiveChangedTitle": "Whilo files were changed",
   "startup.archiveChangedBody":
-    "Another program changed the OpenBot file app.asar. OpenBot runs now, but it will not open after you quit it.\n\nTo repair OpenBot, install it again. Your local data stays.",
-  "startup.archiveChangedDownload": "Download OpenBot",
-  // An older OpenBot started over data that a newer one migrated: it installs the latest release.
-  "startup.newerDataUpdatingTitle": "Updating OpenBot",
+    "Another program changed the Whilo file app.asar. Whilo runs now, but it will not open after you quit it.\n\nTo repair Whilo, install it again. Your local data stays.",
+  "startup.archiveChangedDownload": "Download Whilo",
+  // An older Whilo started over data that a newer one migrated: it installs the latest release.
+  "startup.newerDataUpdatingTitle": "Updating Whilo",
   "startup.newerDataUpdatingBody":
-    "A newer version of OpenBot saved your data. OpenBot installs the latest version and then opens again.\n\nYour local data was not reset or overwritten.",
-  "startup.newerDataTitle": "Install the latest OpenBot",
+    "A newer version of Whilo saved your data. Whilo installs the latest version and then opens again.\n\nYour local data was not reset or overwritten.",
+  "startup.newerDataTitle": "Install the latest Whilo",
   "startup.newerDataBody":
-    "A newer version of OpenBot saved your data, and this version ({version}) cannot open it. Install the latest version to open your data.\n\nYour local data was not reset or overwritten.",
-  "startup.newerDataDownload": "Download OpenBot",
+    "A newer version of Whilo saved your data, and this version ({version}) cannot open it. Install the latest version to open your data.\n\nYour local data was not reset or overwritten.",
+  "startup.newerDataDownload": "Download Whilo",
   "startup.newerDataGuide": "Open guide",
   "startup.newerDataQuit": "Quit",
 });

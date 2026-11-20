@@ -8,7 +8,7 @@ import { passwordVaultRouter } from "../src/backend/password-vault-router";
 import { BitwardenConnectorService } from "../src/main/bitwarden-connector-service";
 import { waitForPresentedFrame } from "./browser-smoke-frames";
 
-const ORIGIN = "https://authentication.openbot.test";
+const ORIGIN = "https://authentication.whilo.test";
 const ID = "12345678-1234-1234-1234-123456789abc";
 const PASSWORD = "fixture-bitwarden-password";
 const CODE = "739182";
@@ -47,7 +47,7 @@ export async function runBitwardenBrowserSmoke(browser: BrowserHost): Promise<vo
           password: PASSWORD,
           totp: "fixture-seed",
           // A sibling host with no scheme and the default rule: Bitwarden matches the registrable domain.
-          uris: [{ uri: "accounts.openbot.test", match: null }],
+          uris: [{ uri: "accounts.whilo.test", match: null }],
         },
       };
       return JSON.stringify(args[1] === "items" ? [item] : item);

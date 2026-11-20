@@ -25,7 +25,7 @@
       {
         "type": "fixed",
         "items": [
-          "Claude stays signed in after OpenBot restarts or updates, and Claude agents use less of the 5-hour usage window.",
+          "Claude stays signed in after Whilo restarts or updates, and Claude agents use less of the 5-hour usage window.",
           "Older messages that you load in a long chat stay loaded. The chat no longer jumps back to the latest messages.",
           "Automatic compactions of a ChatGPT (Codex), Muse, Pi or Antigravity chat stop after 2 fail in a row, so the chat no longer uses up the plan limit.",
           "GPT voice works with every agent, also when the agent uses a Codex model.",
@@ -43,7 +43,7 @@
         "type": "added",
         "items": [
           "Give a browser profile its own proxy in Server settings → Browser profiles, or use your own computer as its proxy on a joined server.",
-          "Connect Proton Pass in the Marketplace. The browser fills the logins of the vault that you share with OpenBot.",
+          "Connect Proton Pass in the Marketplace. The browser fills the logins of the vault that you share with Whilo.",
           "Type @ in an agent's chat to tag one of its browser tabs or side threads.",
           "Settings → Voice has two more local dictation models: Parakeet Unified EN and Cohere Transcribe.",
           "A thread shows a blue dot when the agent wrote in it and you did not read it.",
@@ -63,9 +63,9 @@
       {
         "type": "fixed",
         "items": [
-          "OpenBot uses less energy when it is open with no task.",
+          "Whilo uses less energy when it is open with no task.",
           "Long chats scroll without stops and open faster.",
-          "OpenBot no longer stays on \"Connecting to OpenBot\" or on the server loading screen at start.",
+          "Whilo no longer stays on \"Connecting to Whilo\" or on the server loading screen at start.",
           "Routine runs have Computer Use again when it is on for the agent."
         ]
       }
@@ -101,9 +101,9 @@
         "type": "fixed",
         "items": [
           "A channel with a long history opens quickly again.",
-          "On Linux, OpenBot no longer asks you to sign in again after each restart when the keyring does not keep its key.",
+          "On Linux, Whilo no longer asks you to sign in again after each restart when the keyring does not keep its key.",
           "On Windows, channel leads route messages again, and you can create a server on this computer.",
-          "When an older OpenBot opens data that a newer version saved, it installs the latest version."
+          "When an older Whilo opens data that a newer version saved, it installs the latest version."
         ]
       }
     ]
@@ -117,8 +117,8 @@
         "type": "added",
         "items": [
           "Talk to your agents from WhatsApp. Link a number under Marketplace → Apps → WhatsApp. A separate number is safer, because WhatsApp can block numbers that it sees as automated.",
-          "Start a workflow when someone mentions OpenBot in Slack or in a Telegram group, and send its result back there.",
-          "Use OpenBot in Arabic. The layout mirrors from right to left.",
+          "Start a workflow when someone mentions Whilo in Slack or in a Telegram group, and send its result back there.",
+          "Use Whilo in Arabic. The layout mirrors from right to left.",
           "Turn models off in Server settings → Providers. The model picker shows the newest models first, and older models are under a fold.",
           "Server settings has an Audit log of member, role and agent access changes.",
           "Company sign-in: a server owner can connect Microsoft Entra ID, Okta, Google Workspace or another OpenID Connect provider in Members → Company sign-in. People with a company email then join with no invitation.",
@@ -134,7 +134,7 @@
           "Chat messages use more of a wide window.",
           "Each file that you open from a chat gets its own tab in the side panel.",
           "A text paste of more than 4,000 characters becomes a pasted-text.txt attachment, so the message keeps all of the text.",
-          "OpenBot is free for personal use, and first run says so."
+          "Whilo is free for personal use, and first run says so."
         ]
       },
       {

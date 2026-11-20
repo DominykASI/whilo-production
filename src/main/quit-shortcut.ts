@@ -1,7 +1,7 @@
-import type { AgentSummary } from "@openbot/contracts/ipc";
+import type { AgentSummary } from "@whilo/contracts/ipc";
 import type { BrowserWindow, Input } from "electron";
 
-/** How long `Cmd + Q` must be held before OpenBot quits. */
+/** How long `Cmd + Q` must be held before Whilo quits. */
 const HOLD_MS = 1_200;
 /** The longest time between two presses that still counts as a double press. */
 const DOUBLE_PRESS_MS = 500;
@@ -42,14 +42,14 @@ interface Hold {
 }
 
 /**
- * `Cmd + Q` is next to `Cmd + W` and `Cmd + A`, and one press stopped OpenBot with its agents and
- * routines (#4149). In a focused OpenBot page, while an agent works, OpenBot quits only when the user
+ * `Cmd + Q` is next to `Cmd + W` and `Cmd + A`, and one press stopped Whilo with its agents and
+ * routines (#4149). In a focused Whilo page, while an agent works, Whilo quits only when the user
  * holds the keys or presses them twice, and a hint in the window names the agents and tells how. With
  * no agent at work, a quit stops nothing, so one press quits.
  *
  * macOS sends no key up for Q while Command is held, so the repeats of the held key show the hold.
- * The keys stay held when the hold is complete. If OpenBot quit then, macOS would give the next
- * repeats to the app that comes to the front, and that app would quit too. OpenBot therefore hides
+ * The keys stay held when the hold is complete. If Whilo quit then, macOS would give the next
+ * repeats to the app that comes to the front, and that app would quit too. Whilo therefore hides
  * the window and waits for the release: a key up, the loss of focus, or a quiet time with no repeat.
  */
 export function createQuitShortcut({ quit, isQuitting, workingAgents, showHint }: QuitShortcutOptions): QuitShortcut {

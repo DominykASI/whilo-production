@@ -2,7 +2,7 @@ import { pbkdf2Async } from "@noble/hashes/pbkdf2.js";
 import { sha256 } from "@noble/hashes/sha2.js";
 import { bytesToHex, hexToBytes, utf8ToBytes } from "@noble/hashes/utils.js";
 import { getRandomBytes } from "expo-crypto";
-import * as SecureStore from "expo-secure-store";
+import * as SecureStore from "../../../shared/lib/persistent-storage";
 import { z } from "zod";
 import { nativeDerivePin } from "@/features/app-lock/model/app-lock-native";
 import * as LockedKeychain from "@/shared/lib/locked-keychain";

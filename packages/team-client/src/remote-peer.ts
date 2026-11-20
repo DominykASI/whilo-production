@@ -1,14 +1,14 @@
-import type { AgentEvent, TeamRealtimeEvent } from "@openbot/contracts/ipc";
-import { isDynamicRecord, isNumber, isString } from "@openbot/contracts/runtime-values";
-import { decodeSignalServerMessage } from "@openbot/contracts/signal-protocol/decode";
+import type { AgentEvent, TeamRealtimeEvent } from "@whilo/contracts/ipc";
+import { isDynamicRecord, isNumber, isString } from "@whilo/contracts/runtime-values";
+import { decodeSignalServerMessage } from "@whilo/contracts/signal-protocol/decode";
 import {
   SIGNAL_PROTOCOL_VERSION,
   SIGNAL_TURN_REFRESH_INTERVAL_MS,
   type SignalClientMessage,
   type SignalServerMessage,
-} from "@openbot/contracts/signal-protocol/messages";
-import { ticketNamesSignalHome } from "@openbot/contracts/signal-protocol/ticket";
-import { TEAM_API_ROUTES } from "@openbot/contracts/team-api-routes";
+} from "@whilo/contracts/signal-protocol/messages";
+import { ticketNamesSignalHome } from "@whilo/contracts/signal-protocol/ticket";
+import { TEAM_API_ROUTES } from "@whilo/contracts/team-api-routes";
 import {
   decodeTeamProtocolV2AuthFrame,
   decodeTeamProtocolV2EventFrame,
@@ -24,18 +24,18 @@ import {
   type TeamProtocolV2Json,
   teamCapabilitiesForProtocol,
   teamProtocolV2AuthenticationTranscript,
-} from "@openbot/contracts/team-protocol";
-import { optionalTeamEvent, optionalTeamEventToCurrent } from "@openbot/contracts/team-protocol/optional-events";
-import { teamSideRouteCodec } from "@openbot/contracts/team-protocol/side-routes";
-import { addUiBlockAutoAnswers } from "@openbot/contracts/team-protocol/ui-block-auto-answer-v1";
-import { addUiBlockVaultRequests } from "@openbot/contracts/team-protocol/ui-block-vault-v1";
+} from "@whilo/contracts/team-protocol";
+import { optionalTeamEvent, optionalTeamEventToCurrent } from "@whilo/contracts/team-protocol/optional-events";
+import { teamSideRouteCodec } from "@whilo/contracts/team-protocol/side-routes";
+import { addUiBlockAutoAnswers } from "@whilo/contracts/team-protocol/ui-block-auto-answer-v1";
+import { addUiBlockVaultRequests } from "@whilo/contracts/team-protocol/ui-block-vault-v1";
 import {
   type TeamProtocolV1CurrentEventControl,
   toWireTeamProtocolV1ClientEvent,
-} from "@openbot/contracts/team-protocol/v1-adapter";
-import { decodeTeamProtocolSupportV9, TEAM_PROTOCOL_V9 } from "@openbot/contracts/team-protocol/v9";
-import { sourceText } from "@openbot/i18n/source";
-import { errorReference, referenceFrom } from "@openbot/user-errors/reference";
+} from "@whilo/contracts/team-protocol/v1-adapter";
+import { decodeTeamProtocolSupportV9, TEAM_PROTOCOL_V9 } from "@whilo/contracts/team-protocol/v9";
+import { sourceText } from "@whilo/i18n/source";
+import { errorReference, referenceFrom } from "@whilo/user-errors/reference";
 import { Context, Deferred, Effect, Exit, Layer, ManagedRuntime, Result, Schema, Scope, Semaphore } from "effect";
 import { base64UrlToBytes, bytesToBase64Url } from "./base64";
 import { createEd25519Identity, type Ed25519Identity, signEd25519, verifyEd25519Pem } from "./ed25519";
@@ -454,7 +454,7 @@ class RemotePeerIO extends Context.Service<
     connectionUpdate(update: RemoteTeamConnectionUpdate): Effect.Effect<void, RemotePeerError>;
     teamEvent(hostId: string, event: AgentEvent | TeamRealtimeEvent): Effect.Effect<void, RemotePeerError>;
   }
->()("@openbot/team-client/RemotePeerIO") {
+>()("@whilo/team-client/RemotePeerIO") {
   static layer(actions: ActionsRef) {
     return Layer.succeed(
       RemotePeerIO,
@@ -2237,7 +2237,7 @@ export function createRemoteTeamPeer(
   }
 
   function channelLabel(kind: ChannelKind): string {
-    if (kind === "desktop") return "openbot.remote-desktop.signal.v1";
+    if (kind === "desktop") return "whilo.remote-desktop.signal.v1";
     return TEAM_PROTOCOL_V2_CHANNELS[kind];
   }
 
@@ -2245,7 +2245,7 @@ export function createRemoteTeamPeer(
     if (label === TEAM_PROTOCOL_V2_CHANNELS.rpc) return "rpc";
     if (label === TEAM_PROTOCOL_V2_CHANNELS.events) return "events";
     if (label === TEAM_PROTOCOL_V2_CHANNELS.files) return "files";
-    if (label === "openbot.remote-desktop.signal.v1") return "desktop";
+    if (label === "whilo.remote-desktop.signal.v1") return "desktop";
     return null;
   }
 

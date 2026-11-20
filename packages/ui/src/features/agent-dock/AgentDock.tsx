@@ -8,7 +8,7 @@
  * change, such as the first load, places the seats at once.
  */
 
-import { AppWindow, ContextMenu, DropdownMenu, Maximize2, PanelRight, Plus, Settings } from "@openbot/ui";
+import { AppWindow, ContextMenu, DropdownMenu, Maximize2, PanelRight, Plus, Settings } from "@whilo/ui";
 import {
   createEffect,
   createMemo,

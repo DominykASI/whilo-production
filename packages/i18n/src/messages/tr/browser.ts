@@ -179,7 +179,7 @@ export const messages = {
   "browser.proxies.addTitle": "Proxy ekle",
   "browser.proxies.editTitle": "{name} proxy'sini düzenle",
   "browser.proxies.dialogDescription":
-    "socks5, http veya https kullanın. Kullanıcı adı ve parola her türde isteğe bağlıdır. Parola, OpenBot'u çalıştıran bilgisayarda şifreli olarak kalır.",
+    "socks5, http veya https kullanın. Kullanıcı adı ve parola her türde isteğe bağlıdır. Parola, Whilo'u çalıştıran bilgisayarda şifreli olarak kalır.",
   "browser.proxies.address": "Adres",
   "browser.proxies.addressPlaceholder": "socks5://user:password@host:1080",
   "browser.proxies.deleteUsed": {
@@ -189,7 +189,7 @@ export const messages = {
   "browser.proxies.deleteUnused": "Bu proxy'yi kullanan profil yok.",
   "browser.proxies.failing": "{name} yanıt vermiyor",
   "browser.proxies.signInRefused": "{name} oturum açmayı reddetti",
-  "browser.proxies.unsupported": "Bu sunucu proxy kullanamaz. Sunucudaki OpenBot'u güncelleyin.",
+  "browser.proxies.unsupported": "Bu sunucu proxy kullanamaz. Sunucudaki Whilo'u güncelleyin.",
   "browser.proxies.yourComputer": "Bilgisayarınız",
   "browser.proxies.memberComputer": "{name} üyesinin bilgisayarı",
   "browser.proxies.unknownComputer": "Bir üyenin bilgisayarı",
@@ -200,7 +200,7 @@ export const messages = {
   "browser.proxies.offlineBadge": "{name} çevrim dışı",
   "browser.proxies.shareTitle": "Bu bilgisayarın bağlantısı paylaşılsın mı?",
   "browser.proxies.shareDescription":
-    "Bilgisayarınızı kullanan profiller, herkese açık siteleri bu bilgisayarın internet bağlantısı üzerinden açar. Bu yalnızca OpenBot burada açıkken çalışır. Sunucu, yerel ağınızdaki adresleri açamaz.",
+    "Bilgisayarınızı kullanan profiller, herkese açık siteleri bu bilgisayarın internet bağlantısı üzerinden açar. Bu yalnızca Whilo burada açıkken çalışır. Sunucu, yerel ağınızdaki adresleri açamaz.",
   "browser.proxies.share": "Paylaş",
   "browser.proxies.stopSharing": "Paylaşmayı durdur",
   "browser.proxies.closesTabs": {

@@ -1,9 +1,9 @@
-import { fileReferenceName } from "@openbot/brand/file-reference";
-import { removeAttachmentReferences } from "@openbot/contracts/attachment-references";
-import { chatPreviewKind } from "@openbot/contracts/chat-preview";
-import type { AttachmentSummary, InstalledSkill, MessageReaction } from "@openbot/contracts/ipc";
-import { canPreviewAttachment, MESSAGE_REACTIONS, MORE_MESSAGE_REACTIONS } from "@openbot/contracts/ipc";
-import { parseSelectionInstruction } from "@openbot/contracts/selection-instruction";
+import { fileReferenceName } from "@whilo/brand/file-reference";
+import { removeAttachmentReferences } from "@whilo/contracts/attachment-references";
+import { chatPreviewKind } from "@whilo/contracts/chat-preview";
+import type { AttachmentSummary, InstalledSkill, MessageReaction } from "@whilo/contracts/ipc";
+import { canPreviewAttachment, MESSAGE_REACTIONS, MORE_MESSAGE_REACTIONS } from "@whilo/contracts/ipc";
+import { parseSelectionInstruction } from "@whilo/contracts/selection-instruction";
 import {
   AudioLines,
   type BubbleVariant,
@@ -17,8 +17,8 @@ import {
   Info,
   LoaderCircle,
   Trash2,
-} from "@openbot/ui";
-import { prefersReducedMotion } from "@openbot/ui/utils";
+} from "@whilo/ui";
+import { prefersReducedMotion } from "@whilo/ui/utils";
 import type { JSX } from "@solidjs/web";
 import {
   createEffect,

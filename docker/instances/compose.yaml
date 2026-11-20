@@ -3,7 +3,7 @@
 # docs/docker.md#several-instances-on-one-host.
 services:
   whilo:
-    image: ghcr.io/nightly-labs/openbot:${WHILO_TAG:-latest}
+    image: ghcr.io/nightly-labs/whilo:${WHILO_TAG:-latest}
     container_name: whilo-${WHILO_NAME:?}
     restart: unless-stopped
     security_opt:

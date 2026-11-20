@@ -16,7 +16,7 @@ interface AccountLoginProps {
   state: CentralAuthState;
   onRetry: () => Promise<void>;
   onRequestEmailCode: (email: string) => Promise<void>;
-  onVerifyEmailCode: (challengeId: string, code: string) => Promise<void>;
+  onVerifyEmailCode: (challengeId: string, code: string, remember: boolean) => Promise<void>;
   onReset: () => Promise<void>;
   /** Opens the company sign-in page again: in the browser on desktop, in this tab on the web. */
   onOpenCompanySignIn?: () => Promise<void>;
@@ -55,6 +55,7 @@ export function AccountLogin(props: AccountLoginProps) {
   const { t, sourceText } = useText();
   const [email, setEmail] = createSignal("");
   const [code, setCode] = createSignal("");
+  const [remember, setRemember] = createSignal(true);
   const [presentedEmailError, setPresentedEmailError] = createSignal<string | null>(null);
   const [emailErrorActive, setEmailErrorActive] = createSignal(false);
   const [emailShaking, setEmailShaking] = createSignal(false);
@@ -330,7 +331,7 @@ export function AccountLogin(props: AccountLoginProps) {
     setLocalError(null);
     setPendingAction("verify");
     try {
-      await props.onVerifyEmailCode(props.state.challengeId, formatCode(normalizedCode));
+      await props.onVerifyEmailCode(props.state.challengeId, formatCode(normalizedCode), remember());
     } catch (error) {
       showActionError(error, t("account.login.verifyFailed"), true);
     } finally {
@@ -633,6 +634,14 @@ export function AccountLogin(props: AccountLoginProps) {
                         : t("account.login.sendingCode")}
                     </Show>
                   </Button>
+                  <label class="account-login-remember">
+                    <input
+                      type="checkbox"
+                      checked={remember()}
+                      onChange={(event) => setRemember(event.currentTarget.checked)}
+                    />
+                    <span>{t("account.login.remember")}</span>
+                  </label>
                   {props.consent}
                   <div class="account-login-footer">
                     {/* The account is for sign-in only. A new user asks what leaves the computer. */}

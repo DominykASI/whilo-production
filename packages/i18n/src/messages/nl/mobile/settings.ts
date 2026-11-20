@@ -8,12 +8,12 @@ export const messages = {
   "mobile.settings.language.system": "Systeemstandaard",
   "mobile.settings.language.footer":
     "Systeemstandaard volgt de eerste taal in de instellingen van je telefoon. Tekst die nog niet is vertaald, wordt in het Engels getoond.",
-  "mobile.settings.language.restartTitle": "OpenBot opnieuw starten?",
+  "mobile.settings.language.restartTitle": "Whilo opnieuw starten?",
   "mobile.settings.language.restartBody":
-    "Deze taal lees je in de andere richting. De schermen draaien om wanneer OpenBot opnieuw start. Zien de schermen er na de herstart nog verkeerd uit, sluit OpenBot dan in de appkiezer en open het opnieuw.",
+    "Deze taal lees je in de andere richting. De schermen draaien om wanneer Whilo opnieuw start. Zien de schermen er na de herstart nog verkeerd uit, sluit Whilo dan in de appkiezer en open het opnieuw.",
   "mobile.settings.language.restartNow": "Nu opnieuw starten",
   "mobile.settings.language.restartFailed":
-    "OpenBot kon niet opnieuw starten. De schermen draaien om wanneer je OpenBot de volgende keer opent.",
+    "Whilo kon niet opnieuw starten. De schermen draaien om wanneer je Whilo de volgende keer opent.",
   "mobile.settings.dictation.language": "Dicteertaal",
   "mobile.settings.about.development": "Ontwikkeling",
   "mobile.settings.about.openFailed": "Kan de link niet openen. Probeer het opnieuw.",
@@ -192,10 +192,10 @@ export const messages = {
   "mobile.settings.voice.pause.title": "Pauze voor verzenden",
   "mobile.settings.voice.pause.label": "Wachten op nieuwe woorden",
   "mobile.settings.voice.pause.footer":
-    "In een spraakgesprek verstuurt OpenBot je woorden als het zo lang geen nieuwe woorden herkent. Geluid zonder woorden houdt het luisteren niet open. Kies een langere pauze als je langzaam spreekt of stopt om na te denken.",
+    "In een spraakgesprek verstuurt Whilo je woorden als het zo lang geen nieuwe woorden herkent. Geluid zonder woorden houdt het luisteren niet open. Kies een langere pauze als je langzaam spreekt of stopt om na te denken.",
   "mobile.settings.voice.pause.seconds": "{seconds} s",
   "mobile.settings.voice.speed.title": "Snelheid antwoorden",
-  "mobile.settings.voice.speed.footer": "De snelheid van antwoorden die OpenBot voorleest, ook in een spraakgesprek.",
+  "mobile.settings.voice.speed.footer": "De snelheid van antwoorden die Whilo voorleest, ook in een spraakgesprek.",
   "mobile.settings.voice.speed.value": "{speed}×",
   "mobile.settings.voice.elevenLabs.recognitionFooter":
     "Whilo streamt je spraak met een eenmalige token naar ElevenLabs, en ElevenLabs brengt het in rekening op je account. De sleutel blijft op deze telefoon.",

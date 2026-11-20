@@ -54,7 +54,7 @@ export const messages = {
   "sitePage.billing.cancelledBody": "没有扣款。请返回 Whilo。",
   "sitePage.report.pageTitle": "举报托管站点 — Whilo",
   "sitePage.report.title": "举报托管站点",
-  "sitePage.report.intro": "举报 openbot.site 地址上的有害或违法内容。",
+  "sitePage.report.intro": "举报 whilo.site 地址上的有害或违法内容。",
   "sitePage.report.hostnameLabel": "站点地址",
   "sitePage.report.hostnameMissing": "请输入站点地址",
   "sitePage.report.reasonLabel": "原因",

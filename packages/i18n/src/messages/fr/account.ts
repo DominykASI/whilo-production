@@ -65,7 +65,7 @@ export const messages = {
   "account.login.signInDescription":
     "Utilisez votre e-mail pour vous connecter ou créer un compte. Nous vous enverrons un code à usage unique.",
   "account.login.keyringChangedDescription":
-    "Le trousseau du système a perdu votre dernière connexion. OpenBot conserve désormais les connexions dans son propre fichier sur cet ordinateur. Connectez-vous encore une fois.",
+    "Le trousseau du système a perdu votre dernière connexion. Whilo conserve désormais les connexions dans son propre fichier sur cet ordinateur. Connectez-vous encore une fois.",
   "account.login.codeAccepted": "Votre code a été accepté.",
   "account.login.codeSent": "Nous avons envoyé un code à {email}.",
   "account.login.connectingSecurely": "Connexion sécurisée…",

@@ -34,7 +34,7 @@ export const messages = {
   "error.connector.bitwardenCliInstallFailed":
     "Kan de Bitwarden-CLI niet installeren op deze server. Controleer de netwerkverbinding en verbind opnieuw.",
   "error.connector.bitwardenFileUnreadable": "Het verbindingsbestand van Bitwarden is onleesbaar.",
-  "error.connector.passwordManagerUnknown": "OpenBot kent deze wachtwoordbeheerder niet.",
+  "error.connector.passwordManagerUnknown": "Whilo kent deze wachtwoordbeheerder niet.",
   "error.connector.passwordManagerMethod": "Deze wachtwoordbeheerder kan niet op deze manier verbinden.",
   "error.connector.passwordManagerNoSignIn": "Er is geen aanmeldpagina open. Verbind opnieuw.",
   "error.connector.protonPassFailed": "Kan Proton Pass niet verbinden. Verbind opnieuw.",
@@ -49,5 +49,5 @@ export const messages = {
   "error.connector.protonPassFileUnreadable": "Het Proton Pass-verbindingsbestand is onleesbaar.",
   "error.connector.protonPassSignInTimeout": "Het aanmelden bij Proton duurde te lang. Verbind opnieuw.",
   "error.connector.protonPassSetupFailed":
-    "Kan de kluis Shared with OpenBot of de toegangssleutel ervan niet maken in Proton Pass. Verbind opnieuw.",
+    "Kan de kluis Shared with Whilo of de toegangssleutel ervan niet maken in Proton Pass. Verbind opnieuw.",
 } as const satisfies PartialTranslation<typeof source>;

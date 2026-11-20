@@ -1,7 +1,7 @@
-import { sourceText } from "@openbot/i18n/source";
+import { sourceText } from "@whilo/i18n/source";
 import { z } from "zod";
 import { BROWSER_DYNAMIC_TOOLS, OPENBOT_BROWSER_NAMESPACE } from "../browser-tools";
-import { OPENBOT_DYNAMIC_TOOLS, OPENBOT_TOOL_DEFINITIONS } from "../openbot-tools";
+import { OPENBOT_DYNAMIC_TOOLS, OPENBOT_TOOL_DEFINITIONS } from "../whilo-tools";
 import type { DynamicToolCallParams } from "../protocol";
 import { advertisedJsonSchema } from "./advertised-json-schema";
 import { toolGuidance } from "./tool-guidance";
@@ -87,8 +87,8 @@ export const VISIBLE_TOOL_DEFINITIONS = [
 export const VISIBLE_DYNAMIC_TOOLS = [
   {
     type: "namespace" as const,
-    name: "openbot",
-    description: "OpenBot tools. Search, then call other built-in and browser tools.",
+    name: "whilo",
+    description: "Whilo tools. Search, then call other built-in and browser tools.",
     tools: VISIBLE_TOOL_DEFINITIONS.map((definition) => ({
       type: "function" as const,
       name: definition.name,
@@ -118,7 +118,7 @@ function bridgedName(input: unknown): string | null {
 
 /**
  * Claude loads its own deferred tools with a search and then calls them directly. After a search here,
- * it called openbot.list_workflows as mcp__openbot__list_workflows, and each refused name cost a model step.
+ * it called whilo.list_workflows as mcp__openbot__list_workflows, and each refused name cost a model step.
  */
 const CALL_NOTE = "These are not direct tools: run each with tool_call {name, arguments}.";
 
@@ -259,7 +259,7 @@ export function discoverTools(params: DynamicToolCallParams) {
       tools,
       ...(guidance.length > 0 ? { guidance } : {}),
     };
-    // A workflow search asks for OpenBot's own workflows, not for a website.
+    // A workflow search asks for Whilo's own workflows, not for a website.
     return workflowSearch || found.some(({ entry }) => entry.namespace === OPENBOT_BROWSER_NAMESPACE)
       ? result
       : { ...result, note: BROWSER_SEARCH_NOTE };

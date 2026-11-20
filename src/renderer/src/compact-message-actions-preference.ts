@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 
-const COMPACT_MESSAGE_ACTIONS_STORAGE_KEY = "openbot:compact-message-actions";
+const COMPACT_MESSAGE_ACTIONS_STORAGE_KEY = "whilo:compact-message-actions";
 
 /** The choice for this page after the browser did not save it. It wins over an older saved value. */
 let unsavedPreference: boolean | undefined;

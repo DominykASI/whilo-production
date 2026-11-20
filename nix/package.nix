@@ -21,14 +21,14 @@ let
   asset = sources.assets.${system} or (throw "Whilo has no release for ${system}");
 
   src = fetchurl {
-    url = "https://github.com/nightly-labs/openbot/releases/download/v${version}/${asset.name}";
+    url = "https://github.com/nightly-labs/whilo/releases/download/v${version}/${asset.name}";
     inherit (asset) hash;
   };
 
   meta = {
     description = "Local-first multi-agent desktop workspace for Codex, Claude, Grok and other coding agents";
-    homepage = "https://github.com/nightly-labs/openbot";
-    changelog = "https://github.com/nightly-labs/openbot/releases/tag/v${version}";
+    homepage = "https://github.com/nightly-labs/whilo";
+    changelog = "https://github.com/nightly-labs/whilo/releases/tag/v${version}";
     license = {
       shortName = "polyform-nc-10";
       fullName = "PolyForm Noncommercial License 1.0.0";

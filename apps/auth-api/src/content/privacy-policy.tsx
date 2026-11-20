@@ -26,8 +26,9 @@ export function PrivacyPolicy() {
         tasks.
       </p>
       <p>
-        This Privacy Policy applies to the Whilo website at <a href="https://whilo.onerall.com">https://whilo.onerall.com</a>, its
-        applications, and related services (collectively, the "Services").
+        This Privacy Policy applies to the Whilo website at{" "}
+        <a href="https://whilo.onerall.com">https://whilo.onerall.com</a>, its applications, and related services
+        (collectively, the "Services").
       </p>
       <p>
         By accessing or using the Services, you acknowledge that you have read and understood this Privacy Policy. If
@@ -65,28 +66,28 @@ export function PrivacyPolicy() {
       </p>
       <ul>
         <li>
-          <strong>Whilo as a Data Processor</strong> – Whilo acts as a Data Processor when it processes personal
-          data on behalf of customers who act as Data Controllers, particularly in connection with hosted server
-          services. In such cases, Whilo processes personal data in accordance with the customer's documented
-          instructions and applicable data protection laws.
+          <strong>Whilo as a Data Processor</strong> – Whilo acts as a Data Processor when it processes personal data on
+          behalf of customers who act as Data Controllers, particularly in connection with hosted server services. In
+          such cases, Whilo processes personal data in accordance with the customer's documented instructions and
+          applicable data protection laws.
         </li>
         <li>
-          <strong>Whilo as Data Controller</strong> – Whilo acts as a Data Controller when it determines the
-          purposes and means of processing personal data in connection with the operation and provision of the Services.
-          This includes managing user accounts, authentication, subscriptions, payments, customer support, platform
-          security, and service analytics.
+          <strong>Whilo as Data Controller</strong> – Whilo acts as a Data Controller when it determines the purposes
+          and means of processing personal data in connection with the operation and provision of the Services. This
+          includes managing user accounts, authentication, subscriptions, payments, customer support, platform security,
+          and service analytics.
         </li>
       </ul>
       <p>
-        When users operate Whilo on their own devices or independently managed servers, their conversations, files,
-        and workspace data remain within their chosen environment. Whilo does not act as a Data Processor solely by
+        When users operate Whilo on their own devices or independently managed servers, their conversations, files, and
+        workspace data remain within their chosen environment. Whilo does not act as a Data Processor solely by
         providing the software used to process such data.
       </p>
       <p>
-        Where required under Article 28 GDPR, Whilo enters into a{" "}
-        <Link to="/dpa">Data Processing Agreement (DPA)</Link> with customers governing the processing of personal data
-        on their behalf. Any international transfers carried out in this capacity are subject to applicable contractual
-        requirements and appropriate data protection safeguards.
+        Where required under Article 28 GDPR, Whilo enters into a <Link to="/dpa">Data Processing Agreement (DPA)</Link>{" "}
+        with customers governing the processing of personal data on their behalf. Any international transfers carried
+        out in this capacity are subject to applicable contractual requirements and appropriate data protection
+        safeguards.
       </p>
 
       <h2>Data We Collect</h2>
@@ -334,8 +335,8 @@ export function PrivacyPolicy() {
 
       <h2>Use of Artificial Intelligence</h2>
       <p>
-        Whilo enables users to access and operate artificial intelligence technologies supplied by different
-        providers, including OpenAI, Anthropic, Google, xAI, and other supported services or locally configured models.
+        Whilo enables users to access and operate artificial intelligence technologies supplied by different providers,
+        including OpenAI, Anthropic, Google, xAI, and other supported services or locally configured models.
       </p>
       <p>
         Users can select and configure AI providers according to their preferences, available subscriptions, and the
@@ -383,8 +384,8 @@ export function PrivacyPolicy() {
 
       <h2>Automated Decision-Making</h2>
       <p>
-        Whilo enables users to create and configure AI agents that can perform tasks, analyse information, and carry
-        out automated activities based on their instructions.
+        Whilo enables users to create and configure AI agents that can perform tasks, analyse information, and carry out
+        automated activities based on their instructions.
       </p>
       <p>
         Depending on how the Services are used, these activities may involve the processing of personal data and
@@ -483,10 +484,10 @@ export function PrivacyPolicy() {
         arrangements, and applicable Data Protection Laws.
       </p>
       <p>
-        Payment card and billing details are provided directly to Stripe through its payment pages. Whilo receives
-        only the information necessary to administer subscriptions and related transactions, including subscription
-        plans, billing periods, payment statuses, amounts, and transaction references. Whilo does not collect or store
-        complete payment card numbers.
+        Payment card and billing details are provided directly to Stripe through its payment pages. Whilo receives only
+        the information necessary to administer subscriptions and related transactions, including subscription plans,
+        billing periods, payment statuses, amounts, and transaction references. Whilo does not collect or store complete
+        payment card numbers.
       </p>
 
       <h2>AI Providers and Optional Integrations</h2>
@@ -512,15 +513,15 @@ export function PrivacyPolicy() {
 
       <h2>Google User Data</h2>
       <p>
-        OpenBot allows users to connect their Google accounts and authorise AI agents to access Google services through
-        Google APIs. This section describes how OpenBot accesses, uses, stores, and shares information received from
+        Whilo allows users to connect their Google accounts and authorise AI agents to access Google services through
+        Google APIs. This section describes how Whilo accesses, uses, stores, and shares information received from
         Google APIs ("Google User Data") and supplements the other provisions of this Privacy Policy.
       </p>
 
       <h3>Google User Data We Access</h3>
       <p>
-        OpenBot accesses Google User Data only after the user connects a Google account and grants the permissions
-        displayed on Google's consent screen. Depending on the permissions granted and the functionalities used, OpenBot
+        Whilo accesses Google User Data only after the user connects a Google account and grants the permissions
+        displayed on Google's consent screen. Depending on the permissions granted and the functionalities used, Whilo
         may access the following information:
       </p>
       <ul>
@@ -547,7 +548,7 @@ export function PrivacyPolicy() {
       <p>Users decide which Google services to connect and may use the Services without connecting a Google account.</p>
 
       <h3>How We Use Google User Data</h3>
-      <p>OpenBot uses Google User Data solely to provide the functionalities requested by users, including:</p>
+      <p>Whilo uses Google User Data solely to provide the functionalities requested by users, including:</p>
       <ul>
         <li>
           to enable AI agents to read, search, summarise, and organise emails, files, documents, and calendar events at
@@ -564,18 +565,18 @@ export function PrivacyPolicy() {
           issues.
         </li>
       </ul>
-      <p>OpenBot does not use Google User Data for advertising, marketing, or profiling purposes.</p>
+      <p>Whilo does not use Google User Data for advertising, marketing, or profiling purposes.</p>
 
       <h3>Storage of Google User Data</h3>
       <p>
         Google User Data and the access tokens used to connect to Google services are stored on the computer or server
-        running the relevant OpenBot environment. Where users use hosted server services, this information is stored
+        running the relevant Whilo environment. Where users use hosted server services, this information is stored
         within the infrastructure allocated to the relevant server.
       </p>
       <p>
-        OpenBot's central account service only relays the exchange of authorisation codes and access tokens between the
-        user's OpenBot environment and Google. It does not store access tokens, refresh tokens, or any other Google User
-        Data, and Google User Data is not stored in OpenBot's central account database.
+        Whilo's central account service only relays the exchange of authorisation codes and access tokens between the
+        user's Whilo environment and Google. It does not store access tokens, refresh tokens, or any other Google User
+        Data, and Google User Data is not stored in Whilo's central account database.
       </p>
       <p>
         Google User Data is not included in product analytics events or diagnostic reports. Access tokens are protected
@@ -584,12 +585,12 @@ export function PrivacyPolicy() {
 
       <h3>Sharing of Google User Data</h3>
       <p>
-        OpenBot does not sell or rent Google User Data and does not transfer it to advertising platforms, data brokers,
+        Whilo does not sell or rent Google User Data and does not transfer it to advertising platforms, data brokers,
         or information resellers.
       </p>
       <p>
         Google User Data is transmitted to the third-party AI provider selected by the user only when an AI agent
-        performs a task that requires that information, and only to the extent necessary to complete that task. OpenBot
+        performs a task that requires that information, and only to the extent necessary to complete that task. Whilo
         does not transmit Google User Data to AI providers in the background or for purposes unrelated to the requested
         task. Such information is processed by the selected provider as described in the Use of Artificial Intelligence
         section.
@@ -606,13 +607,13 @@ export function PrivacyPolicy() {
 
       <h3>Compliance with the Google API Services User Data Policy</h3>
       <p>
-        OpenBot's use and transfer to any other app of information received from Google APIs will adhere to the{" "}
+        Whilo's use and transfer to any other app of information received from Google APIs will adhere to the{" "}
         <a href="https://developers.google.com/terms/api-services-user-data-policy">
           Google API Services User Data Policy
         </a>
         , including the Limited Use requirements.
       </p>
-      <p>In particular, OpenBot:</p>
+      <p>In particular, Whilo:</p>
       <ul>
         <li>
           uses Google User Data only to provide or improve user-facing features that are visible and prominent in the
@@ -641,31 +642,31 @@ export function PrivacyPolicy() {
 
       <h3>Retention and Deletion of Google User Data</h3>
       <p>
-        Google User Data is retained in the user's OpenBot environment for as long as necessary to provide the requested
+        Google User Data is retained in the user's Whilo environment for as long as necessary to provide the requested
         functionalities or until it is deleted by the user.
       </p>
       <p>
         Users may disconnect a Google account in the application settings at any time. Disconnecting a Google account
         deletes the associated access tokens and stops further access to Google User Data. Users may also revoke
-        OpenBot's access through their Google Account settings at{" "}
+        Whilo's access through their Google Account settings at{" "}
         <a href="https://myaccount.google.com/permissions">https://myaccount.google.com/permissions</a>.
       </p>
       <p>
         Revoking access does not automatically delete Google User Data previously retrieved and stored in the user's
-        OpenBot environment, including conversations, task histories, and agent memories containing such information.
+        Whilo environment, including conversations, task histories, and agent memories containing such information.
         Users can delete such information within the application or remove the relevant environment, as described in the
         Account Deletion and Data Removal section.
       </p>
       <p>
-        Users may contact OpenBot at <PrivacyEmail /> to request information about the processing of Google User Data or
+        Users may contact Whilo at <PrivacyEmail /> to request information about the processing of Google User Data or
         its deletion.
       </p>
 
       <h2>Data Storage and Local Processing</h2>
       <p>
-        Whilo allows users to store and manage their conversations, files, and other content either on their own
-        devices or on hosted servers, depending on how they choose to use the Services. Account information and other
-        data necessary for the operation of the Services may be processed through Whilo's central infrastructure, as
+        Whilo allows users to store and manage their conversations, files, and other content either on their own devices
+        or on hosted servers, depending on how they choose to use the Services. Account information and other data
+        necessary for the operation of the Services may be processed through Whilo's central infrastructure, as
         described in this Privacy Policy.
       </p>
 
@@ -699,9 +700,9 @@ export function PrivacyPolicy() {
 
       <h2>Data Security</h2>
       <p>
-        Whilo implements appropriate technical and organisational measures to ensure a level of security appropriate
-        to the risks associated with the processing of personal data. These measures are designed to protect personal
-        data against accidental or unlawful destruction, loss, alteration, unauthorised disclosure, or access.
+        Whilo implements appropriate technical and organisational measures to ensure a level of security appropriate to
+        the risks associated with the processing of personal data. These measures are designed to protect personal data
+        against accidental or unlawful destruction, loss, alteration, unauthorised disclosure, or access.
       </p>
       <p>Our security measures include, where applicable:</p>
       <ul>
@@ -731,8 +732,8 @@ export function PrivacyPolicy() {
         possible, and maintain appropriate backups and security measures.
       </p>
       <p>
-        While Whilo takes appropriate measures to protect personal data, no method of electronic transmission or
-        storage can guarantee absolute security.
+        While Whilo takes appropriate measures to protect personal data, no method of electronic transmission or storage
+        can guarantee absolute security.
       </p>
 
       <h2>International Data Transfers</h2>
@@ -817,8 +818,8 @@ export function PrivacyPolicy() {
 
       <h2>Account Deletion and Data Removal</h2>
       <p>
-        Users may request the deletion of their Whilo account and associated personal data in accordance with
-        applicable data protection laws.
+        Users may request the deletion of their Whilo account and associated personal data in accordance with applicable
+        data protection laws.
       </p>
       <p>
         Upon account deletion, Whilo removes personal data associated with the account from its central account
@@ -837,8 +838,8 @@ export function PrivacyPolicy() {
         integrity and security of the Services.
       </p>
       <p>
-        Content published through Whilo's sharing functionalities, including publicly available agent templates, can
-        be unpublished or removed. Certain identifiers and technical records may be retained to prevent previously used
+        Content published through Whilo's sharing functionalities, including publicly available agent templates, can be
+        unpublished or removed. Certain identifiers and technical records may be retained to prevent previously used
         public links from being reassigned.
       </p>
       <p>
@@ -898,8 +899,8 @@ export function PrivacyPolicy() {
 
       <h2>Use of cookies</h2>
       <p>
-        Whilo does not use cookies or similar technologies for advertising, marketing, behavioural profiling,
-        analytics, or cross-site tracking.
+        Whilo does not use cookies or similar technologies for advertising, marketing, behavioural profiling, analytics,
+        or cross-site tracking.
       </p>
       <p>
         The Platform uses only strictly necessary cookies required to authenticate users, maintain secure user sessions,
@@ -923,8 +924,8 @@ export function PrivacyPolicy() {
       <h2>External services</h2>
       <p>
         The Platform may integrate with or provide access to external services. The collection and processing of
-        information by such services are governed by their own privacy policies and terms. Whilo is not responsible
-        for the privacy practices or content of any external services.
+        information by such services are governed by their own privacy policies and terms. Whilo is not responsible for
+        the privacy practices or content of any external services.
       </p>
 
       <h2>Changes and Updates</h2>

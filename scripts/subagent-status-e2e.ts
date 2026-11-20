@@ -6,22 +6,22 @@
 // 2. The prompt `background` starts a subagent that runs on after its turn. After `turn-completed`, the
 //    runtime snapshot still names the agent in `subagentTurns`. When the subagent ends, a new runtime
 //    snapshot drops it.
-// `bun run test:subagent-status`. Writes .openbot-build/subagent-status-e2e/report.json.
+// `bun run test:subagent-status`. Writes .whilo-build/subagent-status-e2e/report.json.
 import { mkdirSync, writeFileSync } from "node:fs";
 import { chmod, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { AGENT_PROVIDERS, type AgentEvent } from "@openbot/contracts/ipc";
-import { translateFor } from "@openbot/i18n";
-import { redactText } from "@openbot/logging";
-import { notificationForAgentEvent } from "@openbot/team-client/agent-notifications";
+import { AGENT_PROVIDERS, type AgentEvent } from "@whilo/contracts/ipc";
+import { translateFor } from "@whilo/i18n";
+import { redactText } from "@whilo/logging";
+import { notificationForAgentEvent } from "@whilo/team-client/agent-notifications";
 import { Effect } from "effect";
 import type { AgentBrowserHost } from "../src/backend/agent/turn-lifecycle";
 import { desktopAgentEventLevel } from "../src/main/desktop-notifications";
 
-const OUT = resolve(import.meta.dirname, "../.openbot-build/subagent-status-e2e");
+const OUT = resolve(import.meta.dirname, "../.whilo-build/subagent-status-e2e");
 const BACKGROUND_MS = 1_500;
-const root = await mkdtemp(join(tmpdir(), "openbot-subagent-status-"));
+const root = await mkdtemp(join(tmpdir(), "whilo-subagent-status-"));
 const userData = join(root, "user-data");
 const home = join(root, "home");
 const fakeOpenCode = join(root, "bin", "opencode");
@@ -40,7 +40,7 @@ const { AgentService } = await import("../src/backend/agent-service");
 const { AgentStore } = await import("../src/backend/agent-store");
 const { runCauseEffect } = await import("../src/backend/effect-boundary");
 const { MailboxStore } = await import("../src/backend/mailbox-store");
-const { OpenBotDatabase } = await import("../src/backend/openbot-database");
+const { WhiloDatabase } = await import("../src/backend/whilo-database");
 
 interface Report {
   passed: boolean;
@@ -106,7 +106,7 @@ await writeFile(
 );
 await chmod(fakeOpenCode, 0o755);
 
-const database = new OpenBotDatabase(userData);
+const database = new WhiloDatabase(userData);
 const store = new AgentStore(userData, home, database);
 const mailbox = new MailboxStore(userData, store.sharedRoot, store.database);
 const agents = new AgentService({

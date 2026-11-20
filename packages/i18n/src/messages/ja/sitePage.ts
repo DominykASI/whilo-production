@@ -55,7 +55,7 @@ export const messages = {
   "sitePage.billing.cancelledBody": "請求は発生していません。Whilo に戻ってください。",
   "sitePage.report.pageTitle": "ホストされたサイトを報告 — Whilo",
   "sitePage.report.title": "ホストされたサイトを報告",
-  "sitePage.report.intro": "openbot.site のアドレスにある有害または違法なコンテンツを報告します。",
+  "sitePage.report.intro": "whilo.site のアドレスにある有害または違法なコンテンツを報告します。",
   "sitePage.report.hostnameLabel": "サイトのアドレス",
   "sitePage.report.hostnameMissing": "サイトのアドレスを入力してください",
   "sitePage.report.reasonLabel": "理由",

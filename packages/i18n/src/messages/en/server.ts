@@ -288,7 +288,7 @@ export const messages = defineMessages("server", {
   "server.settings.storageTitle": "Storage",
   "server.settings.storageDescription": "See what Whilo keeps on this server’s disk, and free space.",
   "server.settings.hostedSitesTitle": "Sites",
-  "server.settings.hostedSitesDescription": "The static sites that agents on this server published to openbot.site.",
+  "server.settings.hostedSitesDescription": "The static sites that agents on this server published to whilo.site.",
   "server.settings.importTitle": "Import",
   "server.settings.importDescription": "Move your agents from Grok Bot or Hermes Agent to this server.",
   "server.settings.transferTitle": "Transfer",
@@ -352,15 +352,15 @@ export const messages = defineMessages("server", {
   "server.companySignIn.testedStatus": "Tested for {domains}. Turn it on to use it.",
   "server.companySignIn.setUp": "Set up",
   "server.companySignIn.edit": "Edit",
-  "server.companySignIn.desktopOnly": "Set up single sign-on in the OpenBot desktop app.",
-  "server.companySignIn.loadFailed": "OpenBot couldn’t load company sign-in.",
+  "server.companySignIn.desktopOnly": "Set up single sign-on in the Whilo desktop app.",
+  "server.companySignIn.loadFailed": "Whilo couldn’t load company sign-in.",
   "server.companySignIn.scim": "User sync (SCIM)",
   "server.companySignIn.scimOff": "Off",
   "server.companySignIn.createToken": "Create token",
   "server.companySignIn.copyScimUrl": "Copy URL",
   "server.companySignIn.revokeToken": "Revoke token",
   "server.companySignIn.newTokenTitle": "SCIM token",
-  "server.companySignIn.newTokenDescription": "Copy it now. OpenBot shows it only once.",
+  "server.companySignIn.newTokenDescription": "Copy it now. Whilo shows it only once.",
   "server.companySignIn.revokeTitle": "Revoke the SCIM token?",
   "server.companySignIn.revokeDescription":
     "Your identity provider can no longer sync users until you create a new token.",
@@ -605,7 +605,7 @@ export const messages = defineMessages("server", {
   "server.desktop.accessMembers": "All members",
   "server.desktop.askLabel": "Ask on this computer",
   "server.desktop.askDescription":
-    "Each session waits until a person at this computer allows it. With no answer in 30 seconds, OpenBot refuses it.",
+    "Each session waits until a person at this computer allows it. With no answer in 30 seconds, Whilo refuses it.",
   "server.desktop.activeTitle": "Active remote desktop sessions: {active}",
   "server.desktop.activeDescription": "Ends each session now. Members can ask again.",
   "server.desktop.stopAll": "Stop all remote control",
@@ -649,7 +649,7 @@ export const messages = defineMessages("server", {
   "server.update.path.container":
     "On the Docker host, pull the new Whilo image and create the container again with the same data volumes. Wait for active work to finish first. Keep the existing volumes to preserve your data.",
   "server.update.path.manual":
-    "This installation cannot replace itself. Ask the host administrator to install the compatible release from github.com/nightly-labs/openbot/releases. Keep the existing Whilo data.",
+    "This installation cannot replace itself. Ask the host administrator to install the compatible release from github.com/nightly-labs/whilo/releases. Keep the existing Whilo data.",
   "server.update.path.unavailable":
     "This is a development build. Use an installed Whilo release to check for updates.",
   "server.update.check": "Check for updates",

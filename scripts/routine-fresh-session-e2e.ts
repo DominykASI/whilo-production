@@ -12,7 +12,7 @@
 // It also drives saved password and authenticator fills through the routine tool router, checks
 // the sign-in guidance, and checks that no secret reaches the provider. Each run keeps the agent's
 // Computer Use, as the chat does: a scheduled run can drive a desktop app.
-// `bun scripts/routine-fresh-session-e2e.ts`. Writes .openbot-build/routine-fresh-session-e2e/report.json.
+// `bun scripts/routine-fresh-session-e2e.ts`. Writes .whilo-build/routine-fresh-session-e2e/report.json.
 import assert from "node:assert/strict";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
@@ -27,13 +27,13 @@ import {
   COMPUTER_USE_MCP_SERVER_NAME,
   decodeUsageTokens,
   parseRoutineRunConversationEventItemType,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import { Effect } from "effect";
 import type { AgentBrowserHost } from "../src/backend/agent/turn-lifecycle";
 import { getRecord, getString } from "../src/backend/protocol";
 
-const OUT = resolve(import.meta.dirname, "../.openbot-build/routine-fresh-session-e2e");
-const root = await mkdtemp(join(tmpdir(), "openbot-routine-session-"));
+const OUT = resolve(import.meta.dirname, "../.whilo-build/routine-fresh-session-e2e");
+const root = await mkdtemp(join(tmpdir(), "whilo-routine-session-"));
 const userData = join(root, "user-data");
 const home = join(root, "home");
 const fakeCodex = join(root, "codex");
@@ -51,7 +51,7 @@ const { AgentService } = await import("../src/backend/agent-service");
 const { AgentStore } = await import("../src/backend/agent-store");
 const { runCauseEffect } = await import("../src/backend/effect-boundary");
 const { MailboxStore } = await import("../src/backend/mailbox-store");
-const { OpenBotDatabase } = await import("../src/backend/openbot-database");
+const { WhiloDatabase } = await import("../src/backend/whilo-database");
 
 /** Tokens that each session holds before its first request: the instructions and the tools. */
 const BASE_TOKENS = 3_000;
@@ -60,7 +60,7 @@ const HISTORY_CHARACTERS = 45_000;
 const ROUTINE_INPUT_LIMIT = 10_000;
 const ROUTINE_MARK = "ROUTINE-CHECK";
 const SECOND_MARK = "ROUTINE-SECOND";
-const VAULT_ORIGIN = "https://routine.openbot.test";
+const VAULT_ORIGIN = "https://routine.whilo.test";
 const VAULT_LOGIN = "routine-login";
 const PASSWORD = "fixture-routine-password";
 const CODE = "739182";
@@ -92,7 +92,7 @@ const callNext = (turn) => {
   waiting.set(id, { turn, tool: call.arguments.name ?? call.tool });
   write({ id, method: "item/tool/call", params: {
     threadId: turn.threadId, turnId: turn.turnId, callId: id,
-    namespace: "openbot", tool: call.tool, arguments: call.arguments,
+    namespace: "whilo", tool: call.tool, arguments: call.arguments,
   } });
 };
 /** threadId -> characters of all input so far, and the prompt and totals of the last request. */
@@ -341,7 +341,7 @@ function pass(name: string, condition: boolean, detail?: string) {
 }
 
 await writeFile(fakeCodex, FAKE_CODEX, { mode: 0o755 });
-const database = new OpenBotDatabase(userData);
+const database = new WhiloDatabase(userData);
 const store = new AgentStore(userData, home, database);
 const mailbox = new MailboxStore(userData, store.sharedRoot, store.database);
 const agents = new AgentService({

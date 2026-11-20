@@ -23,7 +23,7 @@ function pageMeta(url: string, text: MarketplaceHeadText) {
     { title: text.title },
     { name: "description", content: text.description },
     { property: "og:type", content: "website" },
-    { property: "og:site_name", content: "OpenBot" },
+    { property: "og:site_name", content: "Whilo" },
     { property: "og:url", content: url },
     { property: "og:title", content: text.title },
     { property: "og:description", content: text.description },
@@ -37,7 +37,7 @@ function pageMeta(url: string, text: MarketplaceHeadText) {
 /** The social card of the three index tabs. A listing has its own card. */
 const MARKETPLACE_SOCIAL_IMAGE: PageSocialImage = {
   path: "/social/marketplace.jpg",
-  alt: "Your kind of team. Four OpenBot agents in front of a rainbow",
+  alt: "Your kind of team. Four Whilo agents in front of a rainbow",
 };
 
 /** `/marketplace`, `/marketplace/skills` and `/marketplace/apps`, with the Marketplace card. */
@@ -67,7 +67,7 @@ export interface MarketplaceListingHeadInput {
  */
 export async function marketplaceListingHead(input: MarketplaceListingHeadInput, siteUrl: string) {
   const url = new URL(input.path, siteUrl).toString();
-  const { AGENT_TEMPLATE_CARD } = await import("@openbot/contracts/ipc");
+  const { AGENT_TEMPLATE_CARD } = await import("@whilo/contracts/ipc");
   const cardUrl = input.cardUrl ? new URL(input.cardUrl, siteUrl).toString() : null;
   const card = cardUrl
     ? [

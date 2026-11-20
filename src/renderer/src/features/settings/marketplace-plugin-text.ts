@@ -1,9 +1,6 @@
 import type { McpConnectFlow } from "@whilo/contracts/mcp-connect-flows";
 import { type AppTextKey, type AppTranslate, translateFor } from "@whilo/i18n";
-import type {
-  MarketplacePluginDetail,
-  MarketplacePluginServer,
-} from "@whilo/ui/features/settings/marketplace-plugins";
+import type { MarketplacePluginDetail, MarketplacePluginServer } from "@whilo/ui/features/settings/marketplace-plugins";
 
 /** The keys of one catalog listing's text. Apps and prompts go by their catalog id. */
 interface PluginTextKeys {

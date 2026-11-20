@@ -6,4 +6,4 @@
   ••• menu has Trackpad mode, Fit to screen, the computer's displays, the quality (Fast at 120 fps,
   Smooth at 60 fps or Data saver) and connection stats, and the help button shows each gesture.
   The phone asks for Face ID, Touch ID or the phone unlock first, and stops the stream when you
-  leave the app. The computer must run OpenBot with remote desktop set up.
+  leave the app. The computer must run Whilo with remote desktop set up.

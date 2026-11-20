@@ -35,7 +35,7 @@ export const messages = {
   "error.connector.bitwardenCliInstallFailed":
     "Bu sunucuya Bitwarden CLI yüklenemedi. Ağ bağlantısını kontrol edin, sonra tekrar bağlanın.",
   "error.connector.bitwardenFileUnreadable": "Bitwarden bağlantı dosyası okunamıyor.",
-  "error.connector.passwordManagerUnknown": "OpenBot bu parola yöneticisini tanımıyor.",
+  "error.connector.passwordManagerUnknown": "Whilo bu parola yöneticisini tanımıyor.",
   "error.connector.passwordManagerMethod": "Bu parola yöneticisi bu yolla bağlanamaz.",
   "error.connector.passwordManagerNoSignIn": "Açık bir oturum açma sayfası yok. Yeniden bağlanın.",
   "error.connector.protonPassFailed": "Proton Pass bağlanamadı. Yeniden bağlanın.",
@@ -50,5 +50,5 @@ export const messages = {
   "error.connector.protonPassFileUnreadable": "Proton Pass bağlantı dosyası okunamıyor.",
   "error.connector.protonPassSignInTimeout": "Proton oturum açma işlemi çok uzun sürdü. Yeniden bağlanın.",
   "error.connector.protonPassSetupFailed":
-    "Proton Pass'te Shared with OpenBot kasası veya erişim anahtarı oluşturulamadı. Yeniden bağlanın.",
+    "Proton Pass'te Shared with Whilo kasası veya erişim anahtarı oluşturulamadı. Yeniden bağlanın.",
 } as const satisfies PartialTranslation<typeof source>;

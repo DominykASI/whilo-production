@@ -5,7 +5,7 @@ import {
   liveActivityKeys,
 } from "@whilo/team-client/live-activity-seal";
 import * as Crypto from "expo-crypto";
-import * as SecureStore from "expo-secure-store";
+import * as SecureStore from "../../../shared/lib/persistent-storage";
 import { untilForeground } from "../../../shared/lib/until-foreground";
 
 const key = "whilo.mobile.live-activity-secret.v1";

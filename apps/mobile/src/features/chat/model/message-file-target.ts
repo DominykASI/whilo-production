@@ -1,4 +1,4 @@
-import { isFileReference } from "@openbot/brand/file-reference";
+import { isFileReference } from "@whilo/brand/file-reference";
 
 /** A file that a message names: in the shared folder, or in the workspace of the agent that wrote it. */
 export type MessageFileTarget = { kind: "shared"; path: string } | { kind: "workspace"; agentId: string; path: string };
@@ -13,9 +13,9 @@ export interface MessageFileDirectory {
 function isSharedPath(path: string): boolean {
   const normalized = path.replaceAll("\\", "/");
   return (
-    normalized.startsWith("~/OpenBot/Shared/") ||
-    normalized.startsWith("OpenBot/Shared/") ||
-    normalized.includes("/OpenBot/Shared/")
+    normalized.startsWith("~/Whilo/Shared/") ||
+    normalized.startsWith("Whilo/Shared/") ||
+    normalized.includes("/Whilo/Shared/")
   );
 }
 

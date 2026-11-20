@@ -136,6 +136,9 @@
   let messagesMembersLoading = false;
   let messagesMembersFeedback = '';
   let messagesRows = [];
+  let messagesReadMembers = null;
+  let messagesReadMembersConversationId = '';
+  let messagesReadMembersLoaded = false;
   let messagesPins = [];
   let messagesPinsOpen = false;
   let messagesPinsLoading = false;
@@ -196,6 +199,22 @@
     return '';
   }
 
+  function whiloApiErrorMessage(status, data) {
+    const d = data && typeof data === 'object' ? data : {};
+    const code = String(d.code || d.error || '').trim();
+    if (code === 'hosting_unavailable' || code === 'hosting_not_ready') {
+      return 'Whilo Dots/hosting is unavailable right now (configuration pending). Try again later or contact support.';
+    }
+    if (code === 'oauth_not_configured' || (status === 503 && /oauth/i.test(String(d.message || d.error || '')))) {
+      return 'This sign-in provider is not configured for this Whilo deployment yet.';
+    }
+    if (typeof d.message === 'string' && d.message.trim()) return d.message.trim();
+    if (typeof d.error === 'string' && d.error.trim() && !/^[a-z0-9_]+$/i.test(d.error.trim())) return d.error.trim();
+    if (status === 401 || status === 403) return 'Whilo access was denied. Sign in again or check your account permissions.';
+    if (status >= 500) return 'Whilo service is temporarily unavailable. Please try again.';
+    return 'Whilo request failed. Please try again.';
+  }
+
   async function whiloApi(path, options) {
     const token = await whiloAccessToken();
     if (!token) throw new Error('Sign in to Whilo with the configured workspace account before connecting systems.');
@@ -205,7 +224,13 @@
     const response = await fetch(path, Object.assign({}, config, { headers, cache: 'no-store' }));
     let data = {};
     try { data = await response.json(); } catch (_) {}
-    if (!response.ok) throw new Error(data && data.error ? data.error : 'Whilo connector API is not ready. Check server configuration.');
+    if (!response.ok) {
+      const err = new Error(whiloApiErrorMessage(response.status, data));
+      err.status = response.status;
+      err.code = String((data && (data.code || data.error)) || '').trim();
+      err.apiData = data;
+      throw err;
+    }
     return data;
   }
 
@@ -562,99 +587,14 @@
 
   function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) {} }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
-  function norm(s) { return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim(); }
-  function visible(el) { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.top < 170; }
-  const vocab = {
-    chat: ['chat', 'conversa', 'conversas'],
-    pets: ['pets', 'bots', 'agentes'],
-    store: ['store', 'loja', 'marketplace'],
-    routines: ['routines', 'rotinas', 'automations', 'automacoes']
-  };
-  function category(el) {
-    const words = norm((el.innerText || el.textContent || '') + ' ' + (el.getAttribute('aria-label') || '') + ' ' + (el.getAttribute('title') || ''));
-    for (const key of Object.keys(vocab)) if (vocab[key].some(function (v) { return words === v || words.startsWith(v + ' ') || words.startsWith(v + '\n'); })) return key;
-    return '';
-  }
-  function injectTopbar() {
-    const candidates = Array.from(document.querySelectorAll('button,a,[role="tab"],[role="button"]')).filter(function (el) { return visible(el) && category(el); });
-    const found = {};
-    candidates.forEach(function (el) { const c = category(el); if (!found[c] || el.getBoundingClientRect().top < found[c].getBoundingClientRect().top) found[c] = el; });
-    if (!['chat', 'pets', 'store', 'routines'].every(function (k) { return !!found[k]; })) return false;
-    let common = found.chat;
-    while (common && !Object.keys(found).every(function (k) { return common.contains(found[k]); })) common = common.parentElement;
-    if (!common) return false;
-    let changed = true;
-    while (changed) {
-      changed = false;
-      Array.from(common.children).forEach(function (child) {
-        if (Object.keys(found).every(function (k) { return child === found[k] || child.contains(found[k]); })) { common = child; changed = true; }
-      });
-    }
-    const sample = found.routines;
-    if (!sample.hasAttribute('data-whilo-routines-bound')) {
-      sample.setAttribute('data-whilo-routines-bound', 'true');
-      sample.addEventListener('click', function (ev) { ev.preventDefault(); ev.stopImmediatePropagation(); openPanel('routines'); }, true);
-    }
-    const parent = sample.parentElement || common;
-    if (!parent.querySelector('[data-whilo-message-tab]')) {
-      const portugueseMessages = /pt/i.test(document.documentElement.lang || '') || norm(found.chat.innerText || found.chat.textContent).includes('convers');
-      const messageButton = found.chat.cloneNode(false);
-      messageButton.removeAttribute('id'); messageButton.removeAttribute('href'); messageButton.removeAttribute('aria-current');
-      messageButton.removeAttribute('aria-pressed'); messageButton.removeAttribute('data-state');
-      messageButton.setAttribute('type', 'button');
-      messageButton.setAttribute('data-whilo-message-tab', 'messages');
-      messageButton.setAttribute('aria-label', portugueseMessages ? 'Mensagens' : 'Messages');
-      messageButton.title = portugueseMessages ? 'Mensagens' : 'Messages';
-      messageButton.innerHTML = '<span aria-hidden="true" style="margin-right:6px;opacity:.8">✉</span><span>' + (portugueseMessages ? 'Mensagens' : 'Messages') + '</span>';
-      messageButton.addEventListener('click', function (ev) { ev.preventDefault(); ev.stopPropagation(); openPanel('messages'); });
-      found.chat.insertAdjacentElement('afterend', messageButton);
-    }
-    if (!parent.querySelector('[data-whilo-routines-chat-launcher]')) {
-      const routineButton = found.chat.cloneNode(false);
-      routineButton.removeAttribute('id'); routineButton.removeAttribute('href'); routineButton.removeAttribute('aria-current');
-      routineButton.removeAttribute('aria-pressed'); routineButton.removeAttribute('data-state');
-      routineButton.setAttribute('type', 'button');
-      routineButton.setAttribute('data-whilo-routines-chat-launcher', 'true');
-      routineButton.setAttribute('aria-label', 'Create a routine directly in Chat');
-      routineButton.title = '@Routines · Create automation in Chat';
-      routineButton.innerHTML = '<span aria-hidden="true" style="margin-right:6px;opacity:.8">✳</span><span>@Routines</span>';
-      routineButton.addEventListener('click', function (ev) {
-        ev.preventDefault(); ev.stopPropagation();
-        openRoutineInChat('Design a safe Whilo routine. Ask for the desired outcome, trigger, target, bounded steps, evidence, cost ceiling, approval policy and schedule. Prefer read-only actions first; never claim execution until a connected authorized worker provides evidence.');
-      });
-      const messageTab = parent.querySelector('[data-whilo-message-tab]');
-      if (messageTab) messageTab.insertAdjacentElement('afterend', routineButton);
-      else found.chat.insertAdjacentElement('afterend', routineButton);
-    }
-    const portuguese = /pt/i.test(document.documentElement.lang || '') || !!found.routines && norm(found.routines.innerText || found.routines.textContent).includes('rotina');
-    const items = [
-      { key: 'work', en: 'Work', pt: 'Trabalho', mark: '▤' },
-      { key: 'company', en: 'Company', pt: 'Empresa', mark: '▦' },
-      { key: 'connect', en: 'Connect', pt: 'Conexões', mark: '↗' },
-      { key: 'account', en: 'Account', pt: 'Conta', mark: '◉' },
-      { key: 'results', en: 'Results', pt: 'Resultados', mark: '◷' }
-    ];
-    items.forEach(function (item) {
-      if (document.querySelector('[data-whilo-enterprise-tab="' + item.key + '"]')) return;
-      const b = sample.cloneNode(false);
-      b.removeAttribute('id'); b.removeAttribute('href'); b.removeAttribute('aria-current');
-      b.setAttribute('type', 'button');
-      b.setAttribute('data-whilo-enterprise-tab', item.key);
-      b.setAttribute('aria-label', portuguese ? item.pt : item.en);
-      b.title = portuguese ? item.pt : item.en;
-      b.innerHTML = '<span aria-hidden="true" style="margin-right:6px;opacity:.8">' + item.mark + '</span><span>' + (portuguese ? item.pt : item.en) + '</span>';
-      b.addEventListener('click', function (ev) { ev.preventDefault(); ev.stopPropagation(); openPanel(item.key); });
-      parent.appendChild(b);
-    });
-    return true;
-  }
-
+  // First-party enterprise navigation is rendered inside this Shadow DOM panel (see veil markup + render()).
+  // Legacy foreign topbar injection (text-matching host bundle buttons, MutationObserver rescans) was removed.
   const shadowHost = document.createElement('div');
   shadowHost.id = 'whilo-enterprise-root';
   shadowHost.style.cssText = 'position:relative;z-index:2147483000;';
   document.documentElement.appendChild(shadowHost);
   const shadow = shadowHost.attachShadow ? shadowHost.attachShadow({ mode: 'open' }) : shadowHost;
-  const css = ':host{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#e9edf5}*{box-sizing:border-box}.veil{position:fixed;inset:0;z-index:2147483000;background:rgba(5,8,14,.78);backdrop-filter:blur(12px);display:none;padding:clamp(8px,2.5vw,26px)}.veil.open{display:flex}.panel{width:min(1420px,100%);height:min(900px,100%);margin:auto;background:#0d111a;border:1px solid #242d3d;border-radius:22px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 100px rgba(0,0,0,.55)}.top{display:flex;align-items:center;gap:18px;justify-content:space-between;padding:18px 22px;border-bottom:1px solid #242d3d;background:#101622}.brand{display:flex;align-items:center;gap:12px;min-width:0}.mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(140deg,#9be7d4,#8ea6ff);color:#0c1722;display:grid;place-items:center;font-weight:900}.eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#8d9ab0}.title{font-size:20px;font-weight:750;letter-spacing:-.03em;margin-top:2px}.sub{font-size:12px;color:#91a0b6;margin-top:3px}.close{border:1px solid #323e53;background:#182132;color:#e9edf5;width:38px;height:38px;border-radius:12px;font-size:22px;cursor:pointer}.tabs{display:flex;gap:6px;padding:12px 22px;border-bottom:1px solid #242d3d;overflow:auto}.tab{border:1px solid transparent;background:transparent;color:#94a1b6;padding:10px 14px;border-radius:10px;font-size:13px;white-space:nowrap;cursor:pointer}.tab.active{background:#1c293a;color:#d9f8f0;border-color:#355b61}.body{overflow:auto;padding:clamp(16px,3vw,32px);flex:1}.hero{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:22px}.h2{font-size:26px;font-weight:750;letter-spacing:-.04em;margin:0 0 8px}.muted{color:#9ba9bf;font-size:13px;line-height:1.65;max-width:720px}.btn{background:#b8f1e0;color:#0b191b;border:0;font-weight:700;padding:10px 14px;border-radius:10px;cursor:pointer;font-size:12px}.btn.secondary{background:#1a2535;color:#dce5f3;border:1px solid #344157}.btn.danger{background:#3a2229;color:#ffc0c7;border:1px solid #65424b}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.card{border:1px solid #293449;background:#121a27;border-radius:15px;padding:17px;min-width:0}.card h3{margin:0 0 7px;font-size:14px;letter-spacing:-.01em}.card p{margin:0;color:#9ba9bf;font-size:12px;line-height:1.6}.card .actions{display:flex;gap:8px;margin-top:15px;flex-wrap:wrap}.statrow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0}.stat{padding:17px;border:1px solid #293449;border-radius:14px;background:#121a27}.stat .n{font-size:27px;font-weight:800;letter-spacing:-.04em}.stat .l{font-size:11px;color:#96a4ba;margin-top:4px}.form{display:grid;grid-template-columns:2fr 1fr 1fr .9fr .9fr auto;gap:9px;margin-bottom:18px;padding:14px;background:#101724;border:1px solid #293449;border-radius:14px}.field{width:100%;background:#0b1019;color:#e9edf5;border:1px solid #313e53;border-radius:9px;padding:10px 11px;font:inherit;font-size:12px;min-width:0}.label{display:block;font-size:11px;color:#a9b5c8;margin:0 0 6px}.task{display:grid;grid-template-columns:minmax(0,1.8fr) .85fr .8fr .7fr auto;gap:12px;align-items:center;padding:14px;border-bottom:1px solid #242d3d;font-size:12px}.task:first-child{border-top:1px solid #242d3d}.mission-plan{margin-top:10px;border:1px solid #2a364a;border-radius:9px;padding:8px 10px;color:#c7d4e6;font-size:11px}.mission-plan summary{cursor:pointer;font-weight:650}.mission-plan ol{padding-left:18px;margin:10px 0}.mission-plan li{margin:8px 0;line-height:1.5}.mission-plan .mini{margin-top:3px}.taskname{font-weight:650;color:#e9edf5}.pill{display:inline-flex;width:max-content;padding:5px 8px;border-radius:999px;background:#253041;color:#cbd5e5;font-size:10px}.pill.done{background:#16372f;color:#a7f0d8}.pill.active{background:#2b294b;color:#c9c2ff}.pill.review{background:#49351c;color:#ffd9a0}.empty{padding:36px 20px;text-align:center;color:#8f9db3;border:1px dashed #364257;border-radius:14px;font-size:13px}.notice{padding:12px 14px;border-radius:12px;background:#192332;border:1px solid #344157;color:#aab8cd;font-size:11px;line-height:1.6;margin-bottom:18px}.sectionlabel{font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#8293aa;margin:22px 0 10px}.mini{font-size:10px;color:#8594aa;line-height:1.5}.twocol{display:grid;grid-template-columns:1.3fr .7fr;gap:14px}.row{display:flex;justify-content:space-between;gap:10px;align-items:center}.modes{display:inline-flex;align-items:center;gap:2px;padding:4px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(16px) saturate(180%);-webkit-backdrop-filter:blur(16px) saturate(180%);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 10px 30px rgba(0,0,0,.38);position:relative}.modes button{border:0;background:transparent;color:#9fadc2;font:inherit;font-size:12px;font-weight:650;letter-spacing:-.01em;padding:8px 15px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:color .18s ease,background .18s ease,box-shadow .18s ease}.modes button:hover{color:#dfe8f4}.modes button.active{color:#0d1a1f;background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(226,244,238,.72));box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 2px 10px rgba(0,0,0,.35)}.modes .glow{position:absolute;inset:-1px;border-radius:999px;pointer-events:none;background:radial-gradient(120px 40px at 20% 0%,rgba(155,231,212,.35),transparent 70%)}@media(max-width:760px){.modes{order:-1;width:100%;justify-content:center}.modes button{flex:1}}.footer{padding:10px 22px;border-top:1px solid #242d3d;color:#7f8ca1;font-size:10px;display:flex;justify-content:space-between;gap:12px}.fieldgroup{margin:12px 0}.currency{font-size:13px;color:#becce0}@media(max-width:760px){.grid{grid-template-columns:1fr}.statrow{grid-template-columns:repeat(2,minmax(0,1fr))}.form{grid-template-columns:1fr 1fr}.form .wide{grid-column:1/-1}.task{grid-template-columns:1fr auto}.task .mobilehide{display:none}.twocol{grid-template-columns:1fr}.top{padding:14px}.tabs{padding:10px}.hero{display:block}.hero .btn{margin-top:14px}.body{padding:14px}.title{font-size:18px}.footer{padding:9px 14px}}';
+  const css = ':host{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#e9edf5}*{box-sizing:border-box}.veil{position:fixed;inset:0;z-index:2147483000;background:rgba(5,8,14,.78);backdrop-filter:blur(12px);display:none;padding:clamp(8px,2.5vw,26px)}.veil.open{display:flex}.panel{width:min(1420px,100%);height:min(900px,100%);margin:auto;background:#0d111a;border:1px solid #242d3d;border-radius:22px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 100px rgba(0,0,0,.55)}.top{display:flex;align-items:center;gap:18px;justify-content:space-between;padding:18px 22px;border-bottom:1px solid #242d3d;background:#101622;flex-wrap:wrap}.brand{display:flex;align-items:center;gap:12px;min-width:0}.mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(140deg,#9be7d4,#8ea6ff);color:#0c1722;display:grid;place-items:center;font-weight:900}.eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#8d9ab0}.title{font-size:20px;font-weight:750;letter-spacing:-.03em;margin-top:2px}.sub{font-size:12px;color:#91a0b6;margin-top:3px}.close{border:1px solid #323e53;background:#182132;color:#e9edf5;width:38px;height:38px;border-radius:12px;font-size:22px;cursor:pointer;flex:0 0 auto}.modes{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.mode{border:1px solid #323e53;background:#182132;color:#94a1b6;padding:8px 12px;border-radius:10px;font-size:12px;cursor:pointer;white-space:nowrap}.mode.active{background:#1c293a;color:#d9f8f0;border-color:#355b61}.whilo-first-nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:10px 22px;border-bottom:1px solid #242d3d;background:#0f1520}.whilo-nav-btn{border:1px solid #2f3b50;background:#162032;color:#c7d2e3;padding:8px 12px;border-radius:10px;font-size:12px;cursor:pointer;white-space:nowrap}.whilo-nav-btn:hover{border-color:#44607a;color:#e9f2ff}.whilo-nav-btn.active{background:#1c293a;color:#d9f8f0;border-color:#355b61}.whilo-nav-btn.accent{border-color:#3f5b67;color:#b8f1e0}.tabs{display:flex;gap:6px;padding:12px 22px;border-bottom:1px solid #242d3d;overflow:auto}.tab{border:1px solid transparent;background:transparent;color:#94a1b6;padding:10px 14px;border-radius:10px;font-size:13px;white-space:nowrap;cursor:pointer}.tab.active{background:#1c293a;color:#d9f8f0;border-color:#355b61}.body{overflow:auto;padding:clamp(16px,3vw,32px);flex:1}.hero{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:22px}.h2{font-size:26px;font-weight:750;letter-spacing:-.04em;margin:0 0 8px}.muted{color:#9ba9bf;font-size:13px;line-height:1.65;max-width:720px}.btn{background:#b8f1e0;color:#0b191b;border:0;font-weight:700;padding:10px 14px;border-radius:10px;cursor:pointer;font-size:12px}.btn.secondary{background:#182132;color:#e9edf5;border:1px solid #323e53}.btn:disabled{opacity:.55;cursor:default}.statrow{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}.stat{background:#101622;border:1px solid #242d3d;border-radius:14px;padding:14px 16px;min-width:140px}.stat .n{font-size:24px;font-weight:800}.stat .l{font-size:11px;color:#91a0b6;margin-top:4px}.task{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(180px,.9fr) auto auto auto;gap:10px 14px;align-items:start;padding:14px 0;border-top:1px solid #1f2735}.taskname{font-weight:650}.mini{font-size:11px;color:#91a0b6;line-height:1.5;margin-top:4px}.pill{display:inline-flex;align-items:center;padding:5px 9px;border-radius:999px;font-size:11px;border:1px solid #334055;color:#c7d2e3;background:#182132;white-space:nowrap}.pill.done{color:#b8f1e0;border-color:#355b61}.pill.active{color:#d9ecff;border-color:#3a5574}.pill.review{color:#f1dbad;border-color:#665230}.actions{display:flex;gap:8px;flex-wrap:wrap}.form{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 8px}.field,.field.wide{background:#0b111b;color:#e9edf5;border:1px solid #2d384b;border-radius:10px;padding:10px 12px;font:inherit;font-size:13px}.field.wide{flex:1;min-width:240px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}.card{background:#101622;border:1px solid #242d3d;border-radius:16px;padding:16px}.card h3{margin:6px 0 8px;font-size:16px}.card p{margin:0;color:#9ba9bf;font-size:13px;line-height:1.6}.row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.sectionlabel{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8d9ab0;margin:22px 0 10px}.notice,.empty{background:#101622;border:1px dashed #334055;border-radius:14px;padding:14px 16px;color:#9ba9bf;font-size:13px;line-height:1.6}.footer{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 22px;border-top:1px solid #242d3d;color:#7f8da3;font-size:11px;background:#0f1520}@media(max-width:980px){.task{grid-template-columns:1fr}.mobilehide{display:none}}';
   const messageCss = `
 .messages-hero .actions{display:flex;gap:8px;flex-wrap:wrap}
 .messages-shell{height:min(68vh,690px);min-height:450px;display:grid;grid-template-columns:320px minmax(0,1fr);border:1px solid #2a3549;border-radius:16px;overflow:hidden;background:#0b111b}
@@ -688,14 +628,25 @@
 .messages-chat-head .actions{display:flex;gap:6px;flex-wrap:wrap}
 .messages-chat-head .btn{padding:8px 10px}
 .messages-scroll{overflow:auto;min-height:0;flex:1;padding:20px clamp(12px,2.5vw,28px);display:flex;flex-direction:column;gap:11px;scroll-behavior:smooth}
+.message-day-divider{display:flex;align-items:center;justify-content:center;margin:10px 0 4px}
+.message-day-chip{display:inline-flex;align-items:center;background:#1c2a3d;border:1px solid #2f4258;color:#a8c1d9;font-size:10px;font-weight:700;letter-spacing:.02em;border-radius:999px;padding:6px 12px;box-shadow:0 2px 10px rgba(0,0,0,.18);white-space:nowrap}
 .message-line{display:flex;align-items:flex-end;gap:8px;max-width:100%}
 .message-line.mine{justify-content:flex-end}
+.message-line.is-run-continue{margin-top:-6px}
+.message-avatar-spacer{visibility:hidden}
 .message-bubble{max-width:min(84%,720px);min-width:95px;background:#172332;border:1px solid #27364b;border-radius:14px 14px 14px 5px;padding:10px 12px;overflow-wrap:anywhere;box-shadow:0 5px 18px rgba(0,0,0,.08)}
 .message-line.mine .message-bubble{background:#18352f;border-color:#2d6258;border-radius:14px 14px 5px 14px}
 .message-sender{font-size:10px;font-weight:800;color:#a8e9d9;margin-bottom:5px}
 .message-line.mine .message-sender{color:#b5e8dc}
 .message-content{font-size:12px;line-height:1.65;color:#e8eef6;white-space:pre-wrap;overflow-wrap:anywhere}
-.message-meta{font-size:9px;color:#788ba4;text-align:right;margin-top:5px}
+.message-meta{display:flex;align-items:center;justify-content:flex-end;gap:6px;font-size:9px;color:#788ba4;text-align:right;margin-top:5px}
+.message-meta .message-time{white-space:nowrap}
+.message-read{display:inline-flex;align-items:center;gap:3px;color:#7a8ca3;line-height:1}
+.message-read.is-read{color:#8ee9cf}
+.message-read-icon{font-size:10px;letter-spacing:.02em}
+.message-read-count{font-size:9px;font-weight:700;color:inherit}
+.message-line.mine .message-read{color:#7dd9c2}
+.message-line.mine .message-read.is-read{color:#aef0d8}
 .message-reply-indicator{font-size:10px;color:#9edccb;border-left:2px solid #76c8b7;padding-left:7px;margin:4px 0}
 .message-actions{display:flex;gap:10px;flex-wrap:wrap;opacity:.85;margin-top:7px}
 .message-action{background:transparent;border:0;padding:0;color:#95a9be;cursor:pointer;font-size:9px}
@@ -761,7 +712,7 @@
 
   const style = document.createElement('style'); style.textContent = css + messageCss + routineCss; shadow.appendChild(style);
   const veil = document.createElement('div'); veil.className = 'veil'; veil.setAttribute('role','dialog'); veil.setAttribute('aria-modal','true'); veil.setAttribute('aria-label','Whilo Enterprise workspace');
-  veil.innerHTML = '<section class="panel"><header class="top"><div class="brand"><div class="mark">W</div><div><div class="eyebrow">Whilo / Operations</div><div class="title">Company workspace</div><div class="sub">Turn repeatable work into measurable outcomes.</div></div></div><div class="modes" role="tablist" aria-label="Whilo product mode"><span class="glow" aria-hidden="true"></span><button type="button" class="mode" role="tab" data-mode="pets">Whilo Pets</button><button type="button" class="mode" role="tab" data-mode="dots">Whilo Dots</button></div><button class="close" data-act="close" aria-label="Close workspace">×</button></header><nav class="tabs" aria-label="Enterprise workspace"><button class="tab" data-tab="work">▤ Work</button><button class="tab" data-tab="company">▦ Company</button><button class="tab" data-tab="connect">↗ Connect</button><button class="tab" data-tab="account">◉ Account</button><button class="tab" data-tab="results">◷ Results</button><button class="tab" data-tab="chat">✳ Chat</button><button class="tab" data-tab="routines">⟲ Routines</button><button class="tab" data-tab="credits">◈ Credits</button><button class="tab" data-tab="pricing">✳ Plans</button></nav><main class="body" id="view"></main><footer class="footer"><span>Local workspace data · stored in this browser</span><span>Outcome-first operations · approvals before consequential actions</span></footer></section>';
+  veil.innerHTML = '<section class="panel"><header class="top"><div class="brand"><div class="mark">W</div><div><div class="eyebrow">Whilo / Operations</div><div class="title">Company workspace</div><div class="sub">Turn repeatable work into measurable outcomes.</div></div></div><div class="modes" role="tablist" aria-label="Whilo product mode"><button type="button" class="mode" role="tab" data-mode="pets" data-nav="pets">Whilo Pets</button><button type="button" class="mode" role="tab" data-mode="dots" data-nav="dots">Whilo Dots</button></div><button class="close" data-act="close" aria-label="Close workspace">×</button></header><nav class="whilo-first-nav" aria-label="Whilo workspace navigation" data-whilo-first-nav="true"><button type="button" class="whilo-nav-btn" data-tab="messages" data-nav="messages">✉ Messages</button><button type="button" class="whilo-nav-btn accent" data-act="open-routine-chat" data-nav="routine-chat">✳ @Routines</button><button type="button" class="whilo-nav-btn" data-tab="routines" data-nav="routines">⟲ Routines</button><button type="button" class="whilo-nav-btn" data-tab="work" data-nav="work">▤ Work</button><button type="button" class="whilo-nav-btn" data-tab="company" data-nav="company">▦ Company</button><button type="button" class="whilo-nav-btn" data-tab="connect" data-nav="connect">↗ Connect</button><button type="button" class="whilo-nav-btn" data-tab="account" data-nav="account">◉ Account</button><button type="button" class="whilo-nav-btn" data-tab="results" data-nav="results">◷ Results</button></nav><nav class="tabs" aria-label="Enterprise workspace"><button class="tab" data-tab="messages">✉ Messages</button><button class="tab" data-tab="work">▤ Work</button><button class="tab" data-tab="company">▦ Company</button><button class="tab" data-tab="connect">↗ Connect</button><button class="tab" data-tab="account">◉ Account</button><button class="tab" data-tab="results">◷ Results</button><button class="tab" data-tab="chat">✳ Chat</button><button class="tab" data-tab="routines">⟲ Routines</button><button class="tab" data-tab="credits">◈ Credits</button><button class="tab" data-tab="pricing">✳ Plans</button></nav><main class="body" id="view"></main><footer class="footer"><span>Local workspace data · stored in this browser</span><span>Outcome-first operations · approvals before consequential actions</span></footer></section>';
   shadow.appendChild(veil);
   const view = veil.querySelector('#view');
   let active = 'work';
@@ -923,6 +874,156 @@
       : date.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   }
 
+  function messageDayKey(value) {
+    const date = new Date(value);
+    if (!Number.isFinite(date.getTime())) return '';
+    return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+  }
+
+  function messageDayLabel(value) {
+    const date = new Date(value);
+    if (!Number.isFinite(date.getTime())) return '';
+    const now = new Date();
+    const sameDay = date.toDateString() === now.toDateString();
+    if (sameDay) return 'Today';
+    const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+    const yesterdayDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    if (yesterdayDate.getTime() === yesterday.getTime()) return 'Yesterday';
+    return date.toLocaleDateString([], { day: 'numeric', month: 'long', year: date.getFullYear() === now.getFullYear() ? undefined : 'numeric' });
+  }
+
+  function isGroupConversationType(type) {
+    return type === 'group' || type === 'supergroup' || type === 'channel';
+  }
+
+  function hasReadInfoForMember(member) {
+    if (!member || typeof member !== 'object') return false;
+    if (member.last_read_at || member.lastReadAt) return true;
+    if (member.last_read_message_id || member.lastReadMessageId || member.lastReadMessageID) return true;
+    return false;
+  }
+
+  function memberHasReadMessage(member, message, myId) {
+    if (!member || !message || !message.id) return false;
+    if (member.user_id !== undefined && member.user_id !== null && myId != null && String(member.user_id) === String(myId)) return false;
+    if (member.id !== undefined && member.user_id === undefined && myId != null && String(member.id) === String(myId)) return false;
+    const memberId = member.user_id || member.id || member.userId;
+    if (myId != null && memberId != null && String(memberId) === String(myId)) return false;
+    const lastReadId = member.last_read_message_id || member.lastReadMessageId || member.lastReadMessageID;
+    if (lastReadId) {
+      if (String(lastReadId) === String(message.id)) return true;
+      const cursorIdx = messagesRows.findIndex(function (r) { return r && r.id === lastReadId; });
+      const thisIdx = messagesRows.findIndex(function (r) { return r && r.id === message.id; });
+      if (cursorIdx !== -1 && thisIdx !== -1 && cursorIdx >= thisIdx) return true;
+      if (cursorIdx !== -1) return false;
+    }
+    const lastReadAtRaw = member.last_read_at || member.lastReadAt;
+    if (lastReadAtRaw && message.created_at) {
+      const lastReadAt = Date.parse(String(lastReadAtRaw));
+      const msgAt = Date.parse(String(message.created_at));
+      if (Number.isFinite(lastReadAt) && Number.isFinite(msgAt)) return lastReadAt >= msgAt;
+    }
+    return false;
+  }
+
+  function readCountForMessage(message, myId, members, totalMembers) {
+    if (!message || !myId) return { hasInfo: false, readCount: 0, total: 0 };
+    if (!Array.isArray(members) || !members.length) return { hasInfo: false, readCount: 0, total: 0 };
+    let hasInfo = false;
+    let readCount = 0;
+    let others = 0;
+    for (let i = 0; i < members.length; i++) {
+      const member = members[i];
+      if (!member) continue;
+      const memberId = member.user_id || member.id || member.userId;
+      if (memberId == null) continue;
+      if (String(memberId) === String(myId)) continue;
+      others += 1;
+      if (hasReadInfoForMember(member)) hasInfo = true;
+      if (memberHasReadMessage(member, message, myId)) readCount += 1;
+    }
+    if (!hasInfo) return { hasInfo: false, readCount: 0, total: 0 };
+    const total = typeof totalMembers === 'number' && Number.isFinite(totalMembers) && totalMembers >= 0 ? totalMembers : others;
+    return { hasInfo: true, readCount: readCount, total: total };
+  }
+
+  function isReadReceiptVisibleForMessage(message) {
+    if (!message) return false;
+    if (message.read_at) return true;
+    if (message.readAt) return true;
+    if (message.readBy && (Array.isArray(message.readBy) && message.readBy.length)) return true;
+    if (typeof message.read_count === 'number') return true;
+    if (typeof message.readCount === 'number') return true;
+    return false;
+  }
+
+  function readCountFromMessagePayload(message, members, conversation, myId) {
+    if (!message) return { hasInfo: false, readCount: 0, total: 0 };
+    if (Array.isArray(message.readBy) && message.readBy.length) {
+      return { hasInfo: true, readCount: message.readBy.length, total: conversation && typeof conversation.member_count === 'number' ? conversation.member_count : message.readBy.length };
+    }
+    if (Array.isArray(message.readers) && message.readers.length) {
+      return { hasInfo: true, readCount: message.readers.length, total: conversation && typeof conversation.member_count === 'number' ? conversation.member_count : message.readers.length };
+    }
+    if (typeof message.read_count === 'number') {
+      const total = typeof message.read_total === 'number' ? message.read_total : (conversation && typeof conversation.member_count === 'number' ? conversation.member_count : message.read_count);
+      return { hasInfo: true, readCount: message.read_count, total: total };
+    }
+    if (typeof message.readCount === 'number') {
+      const total = typeof message.readTotal === 'number' ? message.readTotal : (conversation && typeof conversation.member_count === 'number' ? conversation.member_count : message.readCount);
+      return { hasInfo: true, readCount: message.readCount, total: total };
+    }
+    return { hasInfo: false, readCount: 0, total: 0 };
+  }
+
+  function getReadMembersForTimeline(conversation) {
+    const myId = cloudAuthSession && cloudAuthSession.id;
+    const candidateMembers = [];
+    if (Array.isArray(messagesReadMembers) && messagesReadMembers.length && messagesReadMembersConversationId === (conversation && conversation.id)) {
+      candidateMembers.push.apply(candidateMembers, messagesReadMembers);
+    }
+    if (Array.isArray(messagesMembers) && messagesMembers.length && messagesReadMembersConversationId === (conversation && conversation.id)) {
+      candidateMembers.push.apply(candidateMembers, messagesMembers);
+    }
+    if (!candidateMembers.length && messagesReadMembersLoaded) return null;
+    if (!candidateMembers.length) return null;
+    const seen = new Set();
+    const uniqueMembers = [];
+    candidateMembers.forEach(function (m) {
+      if (!m) return;
+      const key = String(m.user_id || m.id || m.userId || JSON.stringify(m));
+      if (seen.has(key)) return;
+      seen.add(key);
+      uniqueMembers.push(m);
+    });
+    const withReadInfo = uniqueMembers.some(function (m) { return hasReadInfoForMember(m); });
+    if (!withReadInfo) return null;
+    return uniqueMembers;
+  }
+
+  function buildReadMetaHtml(message, mine, conversation, myId, isLastInRun) {
+    if (!mine) return '';
+    const fromPayload = readCountFromMessagePayload(message, messagesReadMembers || messagesMembers, conversation, myId);
+    if (fromPayload.hasInfo) {
+      const isRead = fromPayload.readCount > 0;
+      if (isGroupConversationType(conversation && conversation.conversation_type) && fromPayload.total > 1) {
+        const countLabel = 'Read by ' + fromPayload.readCount + ' of ' + fromPayload.total;
+        return '<span class="message-read' + (isRead ? ' is-read' : '') + '" data-read="true" title="' + esc(countLabel) + '"><span class="message-read-icon">' + (isRead ? '✓✓' : '✓') + '</span><span class="message-read-count">' + esc(fromPayload.readCount + '/' + fromPayload.total) + '</span></span>';
+      }
+      return '<span class="message-read' + (isRead ? ' is-read' : '') + '" data-read="' + (isRead ? 'true' : 'false') + '" title="' + (isRead ? 'Read' : 'Sent') + '"><span class="message-read-icon">' + (isRead ? '✓✓' : '✓') + '</span></span>';
+    }
+    const members = getReadMembersForTimeline(conversation);
+    if (!members) return '';
+    const readInfo = readCountForMessage(message, myId, members, conversation && conversation.member_count);
+    if (!readInfo.hasInfo) return '';
+    const isRead = readInfo.readCount > 0;
+    if (isGroupConversationType(conversation && conversation.conversation_type) && readInfo.total > 1) {
+      const countLabel = 'Read by ' + readInfo.readCount + ' of ' + readInfo.total;
+      return '<span class="message-read' + (isRead ? ' is-read' : '') + '" data-read="true" title="' + esc(countLabel) + '"><span class="message-read-icon">' + (isRead ? '✓✓' : '✓') + '</span><span class="message-read-count">' + esc(readInfo.readCount + '/' + readInfo.total) + '</span></span>';
+    }
+    return '<span class="message-read' + (isRead ? ' is-read' : '') + '" data-read="' + (isRead ? 'true' : 'false') + '" title="' + (isRead ? 'Read' : 'Sent') + '"><span class="message-read-icon">' + (isRead ? '✓✓' : '✓') + '</span></span>';
+  }
+
   function messageTypeLabel(type) {
     return ({ direct: 'Direct message', group: 'Group', supergroup: 'Supergroup', channel: 'Channel' })[type] || 'Conversation';
   }
@@ -1016,18 +1117,37 @@
     const restoreComposerFocus = !!activeElement && activeElement.id === 'message-compose-input';
     const selectionStart = restoreComposerFocus ? activeElement.selectionStart : null;
     const selectionEnd = restoreComposerFocus ? activeElement.selectionEnd : null;
+    let timelineData = null;
     try {
       const params = new URLSearchParams({ conversationId: conversationId, limit: '60' });
       if (threadRootId) params.set('threadRootId', threadRootId);
       const data = await whiloApi('/api/messages?' + params.toString(), { method: 'GET' });
+      timelineData = data;
       messagesRows = Array.isArray(data.messages) ? data.messages : [];
       messagesFeedback = '';
+      const embeddedMembers = (data && (data.members || data.read_members || data.readMembers)) || null;
+      if (Array.isArray(embeddedMembers) && embeddedMembers.length) {
+        messagesReadMembers = embeddedMembers;
+        messagesReadMembersConversationId = conversationId;
+        messagesReadMembersLoaded = true;
+      } else if (messagesReadMembersConversationId !== conversationId) {
+        messagesReadMembers = null;
+        messagesReadMembersLoaded = false;
+        messagesReadMembersConversationId = conversationId;
+      }
       const latest = messagesRows.length ? messagesRows[messagesRows.length - 1] : null;
       if (latest && latest.id) {
         whiloApi('/api/messages', {
           method: 'POST',
           body: JSON.stringify({ action: 'mark_read', conversationId: conversationId, lastReadMessageId: latest.id })
         }).catch(function () {});
+      }
+      const conversationForReads = currentConversation();
+      const shouldLoadMembersForReads = conversationForReads && Array.isArray(messagesRows) && messagesRows.some(function (m) { return m && m.sender_user_id === (cloudAuthSession && cloudAuthSession.id); });
+      const needsMembersForReads = (conversationForReads && isGroupConversationType(conversationForReads.conversation_type)) || (conversationForReads && conversationForReads.conversation_type === 'direct');
+      const embeddedReadInfo = (timelineData && Array.isArray(timelineData.members)) || messagesRows.some(function (m) { return m && (m.readBy || m.readers || typeof m.read_count === 'number' || typeof m.readCount === 'number'); });
+      if (shouldLoadMembersForReads && needsMembersForReads && !embeddedReadInfo && !(messagesMembers && messagesMembers.length && messagesReadMembersLoaded) && !messagesMembersLoading && !threadRootId) {
+        loadMessageMembersForReads(conversationId, true).catch(function () {});
       }
     } catch (error) {
       messagesFeedback = error && error.message ? error.message : 'Messages could not be loaded.';
@@ -1067,11 +1187,25 @@
     const myId = cloudAuthSession && cloudAuthSession.id;
     const role = conversation.my_membership && conversation.my_membership.member_role || '';
     const canPin = conversation.conversation_type === 'direct' || ['owner','admin','moderator'].includes(role);
-    return messagesRows.map(function (message) {
+    const groupedHtml = [];
+    let lastDay = '';
+    let lastSenderKey = '';
+    for (let idx = 0; idx < messagesRows.length; idx++) {
+      const message = messagesRows[idx];
+      const dayKey = messageDayKey(message.created_at);
+      const dayChanged = dayKey && dayKey !== lastDay && messageDayLabel(message.created_at);
+      if (dayChanged) {
+        groupedHtml.push('<div class="message-day-divider"><span class="message-day-chip" data-day="' + esc(dayKey) + '">' + esc(messageDayLabel(message.created_at)) + '</span></div>');
+        lastDay = dayKey;
+        lastSenderKey = '';
+      }
       const mine = message.sender_user_id === myId;
       const senderName = message.sender && message.sender.display_name
         ? message.sender.display_name
         : (mine ? 'You' : 'Whilo member');
+      const senderKey = message.sender_user_id ? 'u:' + message.sender_user_id : 'n:' + senderName;
+      const isFirstInRun = senderKey !== lastSenderKey;
+      lastSenderKey = senderKey;
       const initials = senderName.split(/\s+/).slice(0,2).map(function (part) { return part.charAt(0); }).join('').toUpperCase() || '?';
       const reactions = Array.isArray(message.reactions) ? message.reactions : [];
       const grouped = {};
@@ -1098,16 +1232,19 @@
           : '<button class="message-action" data-act="pin-message" data-id="' + esc(message.id) + '">📌 Pin</button>')
         : '';
       const pinnedBadge = message.pinned_at ? '<div class="message-pinned-indicator">📌 Pinned in this conversation</div>' : '';
-      return '<div class="message-line ' + (mine ? 'mine' : '') + '" data-message-id="' + esc(message.id) + '">' +
-        (mine ? '' : '<span class="message-avatar tiny">' + esc(initials) + '</span>') +
-        '<div class="message-bubble"><div class="message-sender">' + esc(senderName) + '</div>' +
+      const showSenderHeader = isFirstInRun;
+      const readMetaHtml = buildReadMetaHtml(message, mine, conversation, myId, !isFirstInRun);
+      groupedHtml.push('<div class="message-line ' + (mine ? 'mine' : '') + ' ' + (isFirstInRun ? 'is-run-start' : 'is-run-continue') + '" data-message-id="' + esc(message.id) + '">' +
+        (!mine ? (isFirstInRun ? '<span class="message-avatar tiny">' + esc(initials) + '</span>' : '<span class="message-avatar tiny message-avatar-spacer" aria-hidden="true"></span>') : '') +
+        '<div class="message-bubble">' + (showSenderHeader ? '<div class="message-sender">' + esc(senderName) + '</div>' : '') +
         pinnedBadge + reply + '<div class="message-content">' + esc(message.content || 'Message deleted') + '</div>' +
-        '<div class="message-meta">' + esc(messageDate(message.created_at, true)) + esc(edited) + '</div>' +
+        '<div class="message-meta">' + readMetaHtml + '<span class="message-time">' + esc(messageDate(message.created_at, true)) + esc(edited) + '</span></div>' +
         '<div class="message-actions"><button class="message-action" data-act="message-reply" data-id="' + esc(message.id) + '">Reply</button>' + thread + workAction + pinAction + ownerActions + '</div>' +
         (reactionHtml ? '<div class="message-reactions">' + reactionHtml + '</div>' : '') +
         '<div class="message-quick-reactions">' + ['👍','❤️','😂','🔥'].map(function (emoji) { return '<button type="button" aria-label="React ' + esc(emoji) + '" data-act="message-react" data-id="' + esc(message.id) + '" data-emoji="' + esc(emoji) + '">' + esc(emoji) + '</button>'; }).join('') + '</div>' +
-        '</div></div>';
-    }).join('');
+        '</div></div>');
+    }
+    return groupedHtml.join('');
   }
 
   function messageCreateFormHtml() {
@@ -1215,6 +1352,33 @@
     } finally {
       messagesMembersLoading = false;
       if (active === 'messages') render();
+    }
+  }
+
+  async function loadMessageMembersForReads(conversationId, quiet) {
+    if (!conversationId || !cloudAuthSession || messagesMembersLoading) return;
+    messagesMembersLoading = true;
+    try {
+      const params = new URLSearchParams({ conversationId: conversationId });
+      const data = await whiloApi('/api/messages/members?' + params.toString(), { method: 'GET' });
+      const fetched = Array.isArray(data.members) ? data.members : [];
+      if (fetched.length) {
+        messagesMembers = fetched;
+        messagesReadMembers = fetched;
+        messagesReadMembersConversationId = conversationId;
+        messagesReadMembersLoaded = true;
+      }
+    } catch (_) {
+      if (messagesReadMembersConversationId !== conversationId) {
+        messagesReadMembers = null;
+      }
+    } finally {
+      messagesMembersLoading = false;
+      if (!quiet && active === 'messages') render();
+      else if (quiet && active === 'messages') {
+        const timeline = shadow.querySelector('#message-timeline');
+        if (timeline) timeline.innerHTML = messageTimelineHtml();
+      }
     }
   }
 
@@ -2024,7 +2188,7 @@ out+='<div class="routine-head"><div><div class="eyebrow">FIXED PRICE PACKS</div
     return '<section class="hero"><div><div class="h2">Whilo Dots</div>'
       + '<p class="muted">A Dot is a bot that runs on its own machine, bought per month. Whilo provisions it and your client reaches it over a signed ticket — no IP, no port, no password to keep.</p></div>'
       + '<button class="btn" type="button" data-act="dots-open-plans">See machine plans</button></section>'
-      + '<div class="notice">A Dot only reports ready once its machine is running. Nothing is charged before you confirm a plan in Stripe.</div>'
+      + '<div class="notice"><strong>Hosting status:</strong> when a Dot machine or hosting provider is unavailable (<em>indisponível</em>), Whilo shows that state clearly and does not claim the Dot is provisioned or ready. A Dot only reports ready after its machine is actually running. Nothing is charged before you confirm a plan in Stripe.</div>'
       + pricingPage();
   }
 
@@ -2035,6 +2199,14 @@ out+='<div class="routine-head"><div><div class="eyebrow">FIXED PRICE PACKS</div
         const on = b.getAttribute('data-mode') === active;
         b.classList.toggle('active', on);
         b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      shadow.querySelectorAll('[data-nav]').forEach(function (b) {
+        const nav = b.getAttribute('data-nav');
+        let on = false;
+        if (nav === 'pets' || nav === 'dots') on = active === nav;
+        else if (nav === 'routine-chat') on = active === 'chat';
+        else on = active === nav;
+        b.classList.toggle('active', on);
       });
       if (active === 'pets') view.innerHTML = petsPage();
       if (active === 'dots') view.innerHTML = dotsPage();
@@ -2193,6 +2365,7 @@ out+='<div class="routine-head"><div><div class="eyebrow">FIXED PRICE PACKS</div
     if (!action) return;
     const act = action.getAttribute('data-act'), id = action.getAttribute('data-id');
     if (act === 'pets-open-chat') { openPanel('chat'); return; }
+    if (act === 'open-routine-chat') { openRoutineInChat('Design a safe Whilo routine. Ask for the desired outcome, trigger, target, bounded steps, evidence, cost ceiling, approval policy and schedule. Prefer read-only actions first; never claim execution until a connected authorized worker provides evidence.'); return; }
     if (act === 'dots-open-plans') { active = 'pricing'; render(); return; }
     if (act === 'codex-desktop-status') { whiloChatCodexAction('status'); return; }
     if (act === 'codex-desktop-login') { whiloChatCodexAction('login'); return; }
@@ -3116,25 +3289,7 @@ out+='<div class="routine-head"><div><div class="eyebrow">FIXED PRICE PACKS</div
       window.history.replaceState({}, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
       setTimeout(function () { openPanel('connect'); loadConnectors(); }, 0);
     }
-    injectTopbar();
-    // The existing React shell may replace the navigation after a route change.
-    // Keep the observer, but only rescan when a top-level navigation label is likely affected.
-    let scheduled = false;
-    const observer = new MutationObserver(function (records) {
-      const relevant = records.some(function (record) {
-        const nodes = Array.from(record.addedNodes || []).concat(Array.from(record.removedNodes || []));
-        return nodes.some(function (node) {
-          if (!node || node.nodeType !== 1) return false;
-          const element = node;
-          if (element.matches && element.matches('button,a,[role="tab"],[role="button"]') && visible(element)) return true;
-          return !!(element.querySelector && element.querySelector('button,a,[role="tab"],[role="button"]'));
-        });
-      });
-      if (!relevant || scheduled) return;
-      scheduled = true;
-      queueMicrotask(function () { scheduled = false; injectTopbar(); });
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
+    // First-party nav lives in the Shadow DOM panel; no host-bundle injection or MutationObserver rescans.
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true }); else boot();
 })();

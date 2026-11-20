@@ -162,7 +162,7 @@ export type SignalClientMessage =
       // keeps the events of a route for this host while the host starts.
       queueKey?: string;
       // `ingress` only, and optional: the webhook signature formats that this host checks in addition
-      // to `X-OpenBot-Signature` (`./webhook-route.ts`). An older Signal ignores it, and Signal ignores
+      // to `X-Whilo-Signature` (`./webhook-route.ts`). An older Signal ignores it, and Signal ignores
       // a format that it does not know.
       webhookFormats?: string[];
     }
@@ -318,7 +318,7 @@ export type SignalServerMessage =
       deliveryId: string;
       signature: string;
       bodyBase64: string;
-      // Absent for an `X-OpenBot-Signature` request. Present only when the host named the format in
+      // Absent for an `X-Whilo-Signature` request. Present only when the host named the format in
       // its `ingress` hello.
       format?: WebhookSignatureFormat;
     }

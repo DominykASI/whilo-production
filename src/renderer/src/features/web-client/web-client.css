@@ -66,11 +66,7 @@
   /* The workspace pane shows the page rail at its left, so its pages stay in reach on a phone. */
   .web-app-window:has(> .web-app-frame[data-web-mobile-pane="workspace"]) > .window-rail {
     display: flex;
-    padding-bottom: calc(
-      var(--web-mobile-navigation-height) +
-      env(safe-area-inset-bottom, 0px) +
-      var(--whilo-space-3)
-    );
+    padding-bottom: calc(var(--web-mobile-navigation-height) + env(safe-area-inset-bottom, 0px) + var(--whilo-space-3));
   }
 
   .web-app-frame {

@@ -1,9 +1,9 @@
 import { createHash, randomUUID } from "node:crypto";
 import { EventEmitter } from "node:events";
-import { agentProviderDescriptor, customAgentIdOfModel } from "@openbot/contracts/agent-providers";
-import { sortConversationMessages } from "@openbot/contracts/conversation-order";
-import { developmentStartingModel } from "@openbot/contracts/development-defaults";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { agentProviderDescriptor, customAgentIdOfModel } from "@whilo/contracts/agent-providers";
+import { sortConversationMessages } from "@whilo/contracts/conversation-order";
+import { developmentStartingModel } from "@whilo/contracts/development-defaults";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import type {
   AgentAccessLevel,
   AgentAnalyticsInput,
@@ -113,7 +113,7 @@ import type {
   VoiceLiveEvent,
   VoiceLiveSession,
   VoiceLiveStart,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   type AgentDefaults,
   type AgentModelChoice,
@@ -137,15 +137,15 @@ import {
   sameAgentModelChoice,
   WORKFLOWS_USAGE_ID,
   workspaceAccessEnforced,
-} from "@openbot/contracts/ipc";
-import { AGENT_THREAD_READS_LIMIT } from "@openbot/contracts/team-protocol/agent-thread-reads-v1";
-import { CLAUDE_API_KEY_ACCOUNT_ID } from "@openbot/contracts/team-protocol/claude-api-key-v1";
-import { ContextCompactRefusedError } from "@openbot/contracts/team-protocol/context-compact-v1";
-import { ContextResetBusyError } from "@openbot/contracts/team-protocol/context-reset-v1";
-import type { QueueEditRequest } from "@openbot/contracts/team-protocol/queue-edit-v1";
-import { sourceText } from "@openbot/i18n/source";
-import { createOpenBotLogger } from "@openbot/logging";
-import { classifyFailure } from "@openbot/telemetry";
+} from "@whilo/contracts/ipc";
+import { AGENT_THREAD_READS_LIMIT } from "@whilo/contracts/team-protocol/agent-thread-reads-v1";
+import { CLAUDE_API_KEY_ACCOUNT_ID } from "@whilo/contracts/team-protocol/claude-api-key-v1";
+import { ContextCompactRefusedError } from "@whilo/contracts/team-protocol/context-compact-v1";
+import { ContextResetBusyError } from "@whilo/contracts/team-protocol/context-reset-v1";
+import type { QueueEditRequest } from "@whilo/contracts/team-protocol/queue-edit-v1";
+import { sourceText } from "@whilo/i18n/source";
+import { createWhiloLogger } from "@whilo/logging";
+import { classifyFailure } from "@whilo/telemetry";
 import { Cause, Deferred, Effect, Exit, Fiber, Result, Schema, Scope, Semaphore } from "effect";
 import { AgentMemories } from "./agent/agent-memories";
 import { AgentRemoval, AgentRemovalFailed } from "./agent/agent-removal";
@@ -192,7 +192,7 @@ import {
   startingModel,
   workflowProvider,
 } from "./agent/model-choice";
-import { OpenBotToolRouter } from "./agent/openbot-tool-router";
+import { OpenBotToolRouter } from "./agent/whilo-tool-router";
 import { PlanContinuation } from "./agent/plan-continuation";
 import { ProfileClients } from "./agent/profile-clients";
 import {
@@ -277,11 +277,11 @@ import {
   resolveWorkspaceFile,
 } from "./workspace-paths";
 
-const logger = createOpenBotLogger("agent-service");
+const logger = createWhiloLogger("agent-service");
 /** Its lines also go to `main.log`, so a support report can show why channel routing failed (#3041). */
-const routingLogger = createOpenBotLogger("channel-routing");
+const routingLogger = createWhiloLogger("channel-routing");
 /** Its lines also go to `providers.log`: the screen can show a general sentence in place of the cause (#5222). */
-const errorLogger = createOpenBotLogger("agent-error");
+const errorLogger = createWhiloLogger("agent-error");
 
 /**
  * Only the application knows which managed CLIs it downloaded, so a caller that says nothing gets
@@ -312,7 +312,7 @@ export interface AgentServiceOptions {
   browser: AgentBrowserHost;
   requestTimeoutMs?: number;
   /**
-   * How long a provider takes to start a context compaction before OpenBot stops it. A started
+   * How long a provider takes to start a context compaction before Whilo stops it. A started
    * compaction runs ten times as long. Tests make it short.
    */
   contextCompactionTimeoutMs?: number;
@@ -420,10 +420,10 @@ export interface AgentServiceOptions {
   computerUseMcpServer?: () => McpServerConfig | null;
   /**
    * The built-in GitHub connection of this computer, or `null`. Read at each spawn and each hand-off,
-   * for the same reason as `computerUseMcpServer`: the user connects and disconnects while OpenBot runs.
+   * for the same reason as `computerUseMcpServer`: the user connects and disconnects while Whilo runs.
    */
   githubConnector?: GitHubConnectorSource | null;
-  /** The 1Password vault the user shared with OpenBot, or `null`. The browser fills logins from it. */
+  /** The 1Password vault the user shared with Whilo, or `null`. The browser fills logins from it. */
   passwordVault?: PasswordVault | null;
   /** The cards and contact info of the Vault, or `null`. The browser fills cards from it. */
   vaultItems?: VaultItems | null;
@@ -768,7 +768,7 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
       hooks: {
         bindClient: (client) => {
           client.on("notification", (notification) => {
-            if (notification.method === "openbot/sessionSettings/updated") {
+            if (notification.method === "whilo/sessionSettings/updated") {
               const threadId = getString(notification.params, "threadId");
               const agentId = threadId ? this.#conversation.agentForThread(threadId) : undefined;
               if (agentId) this.#emit({ type: "agent-session-settings-changed", agentId });
@@ -1637,7 +1637,7 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
       compaction: this.#compaction,
       apiKeys: options.agentApiKeys ?? null,
       deleteWithRevokedApproval: options.deleteWithRevokedApproval ?? ((_agentId, remove) => remove()),
-      logger: createOpenBotLogger("agent-removal"),
+      logger: createWhiloLogger("agent-removal"),
       hooks: {
         emit: (event) => this.#emit(event),
         listAgents: () => this.listAgents(),
@@ -2183,7 +2183,7 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
   /**
    * The MCP servers this machine holds.
    *
-   * Configurations only: OpenBot holds no connection of its own to report. A connection is made
+   * Configurations only: Whilo holds no connection of its own to report. A connection is made
    * when the user asks for a test, and when an agent starts - and the second is the provider's own.
    */
   listMcpServers(): McpServerConfig[] {
@@ -2596,7 +2596,7 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
 
   /**
    * Claude and the app-server providers report each compaction. A `handoff` provider is compacted by
-   * OpenBot, which gives the new session the complete prompt, and the ACP client reports a compaction
+   * Whilo, which gives the new session the complete prompt, and the ACP client reports a compaction
    * that the agent does by itself. Another ACP agent or Pi can compact with no signal, so a prompt
    * that names earlier context instead of repeating it could lose what the summary dropped.
    */
@@ -3644,7 +3644,7 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
 
   /**
    * Compacts the context of the agent's own chat now, below the automatic threshold too. Only for a
-   * provider that OpenBot can ask to compact, and only when no turn or queued message needs the session.
+   * provider that Whilo can ask to compact, and only when no turn or queued message needs the session.
    */
   readonly compactAgentContext = Effect.fn("AgentService.compactAgentContext")(function* (
     this: AgentService,
@@ -4993,7 +4993,7 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
 
   /**
    * Deletes one shown message from the agent's own chat or, with `taskId`, from a side thread. The
-   * delete removes the message, its mailbox copy and its files from OpenBot, and no restart or sync
+   * delete removes the message, its mailbox copy and its files from Whilo, and no restart or sync
    * brings it back. The provider session can still hold the message.
    */
   deleteConversationMessage(
@@ -5467,7 +5467,7 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
         ),
       );
     // No provider runs a turn whose end failed part way or whose provider exited, so it has nothing to
-    // stop. The Stop then settles what OpenBot still holds for the turn, and the queue frees (#2214).
+    // stop. The Stop then settles what Whilo still holds for the turn, and the queue frees (#2214).
     // A turn that the drain started can wait for its `turn/started` with a snapshot already on it:
     // that turn is live, and only the provider can stop it. A turn whose normal end runs settles itself.
     if (!mayStop && this.#turn.turnStartedAt(turnId) === null && !this.#turn.isCompleting(turnId)) {

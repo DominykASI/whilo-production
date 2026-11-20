@@ -40,6 +40,32 @@
   transform-box: view-box;
 }
 
+/* The handlebar mustache is the W: a little thinner than the old mark so the two eyes carry the face. */
+.app-logo-mustache {
+  stroke-width: 24px;
+}
+
+.app-logo-eyes {
+  transform: translate(var(--app-logo-eye-x, 0%), var(--app-logo-eye-y, 0%));
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform var(--whilo-duration-normal) cubic-bezier(0.23, 1, 0.32, 1);
+  pointer-events: none;
+}
+
+.app-logo-eye {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.app-logo-eye ellipse {
+  fill: var(--app-logo-eye);
+}
+
+.app-logo-pupil {
+  fill: var(--app-logo-background);
+}
+
 .app-logo-sparkle {
   fill: var(--app-logo-eye);
   pointer-events: none;
@@ -248,6 +274,11 @@
   }
 
   .app-logo-mark-motion {
+    transition: none;
+    transform: none;
+  }
+
+  .app-logo-eyes {
     transition: none;
     transform: none;
   }

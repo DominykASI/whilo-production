@@ -203,7 +203,7 @@ export const messages = {
   "workflow.telegram.anyChat": "Bağlı herhangi bir sohbet",
   "workflow.telegram.sameChat": "Tetikleyiciyle aynı",
   "workflow.telegram.event": "Olay",
-  "workflow.telegram.event.mention": "OpenBot anıldı",
+  "workflow.telegram.event.mention": "Whilo anıldı",
   "workflow.telegram.text": "Metin içerir",
   "workflow.telegram.anyText": "Herhangi bir metin",
   "workflow.telegram.on": "Hedef",

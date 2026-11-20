@@ -25,8 +25,8 @@ import { useText } from "@whilo/ui/text";
 import { Show } from "solid-js";
 import { useAppearanceChoice } from "../../appearance-choice";
 import { useI18n } from "../../i18n-context";
-import { useInterfaceSizeChoice } from "../../interface-size";
 import { useInterfaceLookChoice } from "../../interface-look";
+import { useInterfaceSizeChoice } from "../../interface-size";
 import { useLogoColorChoice } from "../../logo-color";
 import { ExternalLinkSelect } from "./ExternalLinkSelect";
 

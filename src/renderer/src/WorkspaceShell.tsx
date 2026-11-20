@@ -1,12 +1,12 @@
-import type { CentralAuthUser } from "@openbot/contracts/ipc";
-import { AGENT_TASKS_CAPABILITY } from "@openbot/contracts/team-protocol/agent-tasks-v1";
+import type { CentralAuthUser } from "@whilo/contracts/ipc";
+import { AGENT_TASKS_CAPABILITY } from "@whilo/contracts/team-protocol/agent-tasks-v1";
 import {
   ConversationLoadNotice,
   ServerConnectionNotice,
   ServerPanelLoadNotice,
   serverWorkspacePhase,
-} from "@openbot/ui/features/servers/ServerConnectionNotice";
-import { useText } from "@openbot/ui/text";
+} from "@whilo/ui/features/servers/ServerConnectionNotice";
+import { useText } from "@whilo/ui/text";
 import { createEffect, createMemo, createSignal, Show } from "solid-js";
 import { useAccountUsagePolling } from "./features/account/account-usage-polling";
 import { AgentDockHost, useAgentDockPlacement } from "./features/agent-dock/AgentDockHost";

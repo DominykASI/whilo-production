@@ -795,7 +795,7 @@ export class BillingService {
           Effect.mapError((error) => (error instanceof BillingError ? error : new BillingOperationError({}))),
         ))
       ) {
-        return yield* new BillingError(400, "invalid_signature", "The Stripe signature is invalid.");
+        return yield* new BillingError(401, "invalid_signature", "The Stripe signature is invalid.");
       }
       const event = parseStripeEvent(payload);
       if (!event) return yield* new BillingError(400, "invalid_event", "The Stripe event is invalid.");

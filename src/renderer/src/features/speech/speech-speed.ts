@@ -1,6 +1,6 @@
-import { nextSpeechSpeed, type OpenBotDesktopApi, type SpeechSettings, type SpeechSpeed } from "@openbot/contracts/ipc";
-import { toast } from "@openbot/ui";
-import { currentText } from "@openbot/ui/text";
+import { nextSpeechSpeed, type OpenBotDesktopApi, type SpeechSettings, type SpeechSpeed } from "@whilo/contracts/ipc";
+import { toast } from "@whilo/ui";
+import { currentText } from "@whilo/ui/text";
 import { createSignal } from "solid-js";
 import { setReplyPlaybackRate } from "./speech-playback";
 import { speechPort } from "./speech-port";

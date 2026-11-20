@@ -82,7 +82,14 @@ function WorkflowsCanvas(props: { host: WorkflowHost; admin: boolean }) {
     get slack() {
       return workflows.slack();
     },
-    imageModels: [],
+    imageModels: [
+      { id: "gpt-image-2.6-max", name: "GPT Image 2.6 Max · 20 imagens", provider: "codex", maker: "OpenAI" },
+      { id: "mai-image-2.6", name: "MAI-Image-2.6 · 100 imagens", provider: "unknown", maker: "Microsoft" },
+      { id: "muse-image", name: "Muse Image · 400 imagens", provider: "muse", maker: "Whilo" },
+      { id: "seedream-5.5", name: "Seedream 5.5 · 200 imagens", provider: "unknown", maker: "ByteDance" },
+      { id: "nano-banana-2.1", name: "Nano Banana 2.1 · 119 imagens", provider: "antigravity", maker: "Google" },
+      { id: "grok-imagine-2.0", name: "Grok Imagine 2.0 · 66 imagens", provider: "grok", maker: "xAI" },
+    ],
     files: [],
     get self() {
       return signedInAccount()?.name ?? undefined;

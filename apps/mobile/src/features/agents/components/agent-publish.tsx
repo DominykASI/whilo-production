@@ -1,5 +1,5 @@
-import type { AgentTemplatePreview } from "@whilo/contracts/ipc";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import type { AgentTemplatePreview } from "@whilo/contracts/ipc";
 import { Stack } from "expo-router";
 import { Button, Typography } from "heroui-native";
 import { useState } from "react";

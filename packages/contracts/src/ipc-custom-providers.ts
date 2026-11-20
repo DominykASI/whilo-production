@@ -90,7 +90,7 @@ export const CUSTOM_PROVIDER_HARNESS_INPUT_KINDS: Readonly<
 
 /**
  * What a model with no saved `inputs` accepts beside text. OpenCode 2.2.5 gives a configured model
- * text and image input (`Capabilities.default` in `packages/schema/src/model.ts`); OpenBot gives a Pi
+ * text and image input (`Capabilities.default` in `packages/schema/src/model.ts`); Whilo gives a Pi
  * model text only.
  */
 export const CUSTOM_PROVIDER_DEFAULT_INPUTS: Readonly<

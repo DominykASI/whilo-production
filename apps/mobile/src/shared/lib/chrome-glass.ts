@@ -11,7 +11,7 @@ import { useCSSVariable } from "uniwind";
  * of a 40 dp circle in a 48 dp button showed as a grey square around it.
  */
 export function useChromeGlass({ shadow = true }: { shadow?: boolean } = {}): ViewStyle {
-  const [fill, edge] = useCSSVariable(["--openbot-bg-chrome-glass", "--openbot-border-chrome-glass"]);
+  const [fill, edge] = useCSSVariable(["--whilo-bg-chrome-glass", "--whilo-border-chrome-glass"]);
   return useMemo(
     () => ({
       backgroundColor: String(fill),

@@ -1,7 +1,7 @@
 import { LOCAL_SERVER_ID } from "@whilo/contracts/ipc";
 import { onSettled } from "solid-js";
 import type { Meta, StoryObj } from "storybook-solidjs-vite";
-import type { MockOpenBotOptions } from "../src/preview/mock-openbot";
+import type { MockOpenBotOptions } from "../src/preview/mock-whilo";
 import { AGENT_ID, TABS_KEY, THREAD_OPTIONS, UNREAD_OPTIONS } from "./agent-threads-fixtures";
 import { createAppDom, openChat, PrototypeApp } from "./prototype-support";
 import "./agent-threads-story.css";

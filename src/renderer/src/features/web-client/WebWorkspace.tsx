@@ -1,7 +1,7 @@
-import { isKnownAgentProvider } from "@openbot/contracts/agent-providers";
-import type { AppAppearance } from "@openbot/contracts/app-appearance";
-import type { AppLanguage } from "@openbot/contracts/app-language";
-import { HOSTED_SERVER_CONTACT_URL } from "@openbot/contracts/hosted-servers";
+import { isKnownAgentProvider } from "@whilo/contracts/agent-providers";
+import type { AppAppearance } from "@whilo/contracts/app-appearance";
+import type { AppLanguage } from "@whilo/contracts/app-language";
+import { HOSTED_SERVER_CONTACT_URL } from "@whilo/contracts/hosted-servers";
 import {
   type AddedAgent,
   type AgentProviderId,
@@ -22,44 +22,44 @@ import {
   LEGACY_RESPONSE_STYLE,
   type ServerConnectionState,
   type ServerSummary,
-} from "@openbot/contracts/ipc";
-import type { PricingOrder } from "@openbot/contracts/license";
-import type { MarketplaceListingLink } from "@openbot/contracts/marketplace-links";
-import { AGENT_ACCESS_CAPABILITY } from "@openbot/contracts/team-protocol/agent-access-v1";
-import { AGENT_BACKUP_MODELS_ROUTES } from "@openbot/contracts/team-protocol/agent-backup-models-v1";
-import { AGENT_FAST_MODE_ROUTES } from "@openbot/contracts/team-protocol/agent-fast-mode-v1";
-import { AGENT_HOST_SETTINGS_ROUTES } from "@openbot/contracts/team-protocol/agent-host-settings-v1";
-import { AGENT_IMPORT_CAPABILITY } from "@openbot/contracts/team-protocol/agent-import-v1";
-import { AGENT_NEW_CHAT_ROUTES } from "@openbot/contracts/team-protocol/agent-new-chat-v1";
-import { AGENT_PLAN_CARD_ROUTES } from "@openbot/contracts/team-protocol/agent-plan-card-v1";
-import { AGENT_TASK_LIMIT_ROUTES } from "@openbot/contracts/team-protocol/agent-task-limit-v1";
-import { AGENT_TASKS_CAPABILITY } from "@openbot/contracts/team-protocol/agent-tasks-v1";
-import { AGENT_THREAD_FILES_CAPABILITY } from "@openbot/contracts/team-protocol/agent-thread-files-v1";
-import { BROWSER_PROFILES_CAPABILITY } from "@openbot/contracts/team-protocol/browser-profiles-v1";
-import { BROWSER_PROXIES_CAPABILITY } from "@openbot/contracts/team-protocol/browser-proxies-v1";
-import { CHANNEL_ISOLATION_CAPABILITY } from "@openbot/contracts/team-protocol/channel-isolation-v1";
-import { CONNECTORS_CAPABILITY } from "@openbot/contracts/team-protocol/connectors-v1";
-import { CONTEXT_RESET_CAPABILITY } from "@openbot/contracts/team-protocol/context-reset-v1";
-import { AGENT_HIDDEN_CAPABILITY, TEAM_AGENT_CREATE_MODEL_CAPABILITY } from "@openbot/contracts/team-protocol/current";
-import { DISCORD_ACCESS_CAPABILITY } from "@openbot/contracts/team-protocol/discord-access-v1";
-import { EVENTS_CAPABILITY } from "@openbot/contracts/team-protocol/events-v1";
-import { HOST_PERSONALITY_CAPABILITY } from "@openbot/contracts/team-protocol/host-personality-v1";
-import { HOST_RELEASE_CAPABILITY } from "@openbot/contracts/team-protocol/host-release-v1";
-import { HOSTED_SITES_CAPABILITY } from "@openbot/contracts/team-protocol/hosted-sites-v1";
-import { MCP_SIGN_IN_CAPABILITY } from "@openbot/contracts/team-protocol/mcp-sign-in-v1";
-import { MESSAGE_DELETE_CAPABILITY } from "@openbot/contracts/team-protocol/message-delete-v1";
-import { ROUTINE_FLOWS_CAPABILITY } from "@openbot/contracts/team-protocol/routine-flows-v1";
-import { ROUTINE_RECOVERY_CAPABILITY } from "@openbot/contracts/team-protocol/routine-recovery-v1";
-import { ROUTINE_RUN_PLACE_CAPABILITY } from "@openbot/contracts/team-protocol/routine-run-place-v1";
-import { SIDE_QUESTION_CAPABILITY } from "@openbot/contracts/team-protocol/side-question-v1";
-import { SIGN_IN_RELAY_CAPABILITY } from "@openbot/contracts/team-protocol/sign-in-relay-v1";
-import { VAULT_CAPABILITY } from "@openbot/contracts/team-protocol/vault-v1";
-import { VAULT_V2_CAPABILITY } from "@openbot/contracts/team-protocol/vault-v2";
-import { WEBHOOK_SENDER_SECRET_CAPABILITY } from "@openbot/contracts/team-protocol/webhook-sender-secret-v1";
-import { WEBHOOK_TESTS_CAPABILITY } from "@openbot/contracts/team-protocol/webhook-tests-v1";
-import { WHATSAPP_CONNECTOR_CAPABILITY } from "@openbot/contracts/team-protocol/whatsapp-connector-v1";
-import { runTeamEffect } from "@openbot/team-client";
-import { channelForThread } from "@openbot/team-client/channel-notifications";
+} from "@whilo/contracts/ipc";
+import type { PricingOrder } from "@whilo/contracts/license";
+import type { MarketplaceListingLink } from "@whilo/contracts/marketplace-links";
+import { AGENT_ACCESS_CAPABILITY } from "@whilo/contracts/team-protocol/agent-access-v1";
+import { AGENT_BACKUP_MODELS_ROUTES } from "@whilo/contracts/team-protocol/agent-backup-models-v1";
+import { AGENT_FAST_MODE_ROUTES } from "@whilo/contracts/team-protocol/agent-fast-mode-v1";
+import { AGENT_HOST_SETTINGS_ROUTES } from "@whilo/contracts/team-protocol/agent-host-settings-v1";
+import { AGENT_IMPORT_CAPABILITY } from "@whilo/contracts/team-protocol/agent-import-v1";
+import { AGENT_NEW_CHAT_ROUTES } from "@whilo/contracts/team-protocol/agent-new-chat-v1";
+import { AGENT_PLAN_CARD_ROUTES } from "@whilo/contracts/team-protocol/agent-plan-card-v1";
+import { AGENT_TASK_LIMIT_ROUTES } from "@whilo/contracts/team-protocol/agent-task-limit-v1";
+import { AGENT_TASKS_CAPABILITY } from "@whilo/contracts/team-protocol/agent-tasks-v1";
+import { AGENT_THREAD_FILES_CAPABILITY } from "@whilo/contracts/team-protocol/agent-thread-files-v1";
+import { BROWSER_PROFILES_CAPABILITY } from "@whilo/contracts/team-protocol/browser-profiles-v1";
+import { BROWSER_PROXIES_CAPABILITY } from "@whilo/contracts/team-protocol/browser-proxies-v1";
+import { CHANNEL_ISOLATION_CAPABILITY } from "@whilo/contracts/team-protocol/channel-isolation-v1";
+import { CONNECTORS_CAPABILITY } from "@whilo/contracts/team-protocol/connectors-v1";
+import { CONTEXT_RESET_CAPABILITY } from "@whilo/contracts/team-protocol/context-reset-v1";
+import { AGENT_HIDDEN_CAPABILITY, TEAM_AGENT_CREATE_MODEL_CAPABILITY } from "@whilo/contracts/team-protocol/current";
+import { DISCORD_ACCESS_CAPABILITY } from "@whilo/contracts/team-protocol/discord-access-v1";
+import { EVENTS_CAPABILITY } from "@whilo/contracts/team-protocol/events-v1";
+import { HOST_PERSONALITY_CAPABILITY } from "@whilo/contracts/team-protocol/host-personality-v1";
+import { HOST_RELEASE_CAPABILITY } from "@whilo/contracts/team-protocol/host-release-v1";
+import { HOSTED_SITES_CAPABILITY } from "@whilo/contracts/team-protocol/hosted-sites-v1";
+import { MCP_SIGN_IN_CAPABILITY } from "@whilo/contracts/team-protocol/mcp-sign-in-v1";
+import { MESSAGE_DELETE_CAPABILITY } from "@whilo/contracts/team-protocol/message-delete-v1";
+import { ROUTINE_FLOWS_CAPABILITY } from "@whilo/contracts/team-protocol/routine-flows-v1";
+import { ROUTINE_RECOVERY_CAPABILITY } from "@whilo/contracts/team-protocol/routine-recovery-v1";
+import { ROUTINE_RUN_PLACE_CAPABILITY } from "@whilo/contracts/team-protocol/routine-run-place-v1";
+import { SIDE_QUESTION_CAPABILITY } from "@whilo/contracts/team-protocol/side-question-v1";
+import { SIGN_IN_RELAY_CAPABILITY } from "@whilo/contracts/team-protocol/sign-in-relay-v1";
+import { VAULT_CAPABILITY } from "@whilo/contracts/team-protocol/vault-v1";
+import { VAULT_V2_CAPABILITY } from "@whilo/contracts/team-protocol/vault-v2";
+import { WEBHOOK_SENDER_SECRET_CAPABILITY } from "@whilo/contracts/team-protocol/webhook-sender-secret-v1";
+import { WEBHOOK_TESTS_CAPABILITY } from "@whilo/contracts/team-protocol/webhook-tests-v1";
+import { WHATSAPP_CONNECTOR_CAPABILITY } from "@whilo/contracts/team-protocol/whatsapp-connector-v1";
+import { runTeamEffect } from "@whilo/team-client";
+import { channelForThread } from "@whilo/team-client/channel-notifications";
 import {
   cancelHostUpdate,
   checkHostForUpdate,
@@ -90,43 +90,43 @@ import {
   setHostUpdateSettings,
   startHostUpdate,
   updateAgentAdminSettings,
-} from "@openbot/team-client/team-admin-requests";
-import { clearAgentContext, type TeamApiRequest } from "@openbot/team-client/team-api-requests";
-import { classifyFailure } from "@openbot/telemetry";
-import { hasVisibleToasts, toast } from "@openbot/ui";
-import type { AgentMessage } from "@openbot/ui/data";
-import { accountUsageProviderRows } from "@openbot/ui/features/account/account-usage-view";
-import { computeAgentAvatarMoods } from "@openbot/ui/features/agents/agent-avatar-mood";
-import { createFirstAgentDraft, type FirstAgentDraft } from "@openbot/ui/features/agents/FirstAgentSetup";
-import { BillingDialog } from "@openbot/ui/features/billing/BillingDialog";
-import { createBillingStore } from "@openbot/ui/features/billing/billing-store";
-import { LicenseSection } from "@openbot/ui/features/billing/LicenseSection";
-import { createLicenseStore } from "@openbot/ui/features/billing/license-store";
-import { unloadedHistory } from "@openbot/ui/features/conversation/ChatScrollRail";
-import type { DiagramModelChoice } from "@openbot/ui/features/diagrams/DiagramNewAgentCard";
-import { LeaveServerDialog } from "@openbot/ui/features/servers/LeaveServerDialog";
-import { RestartServerDialog } from "@openbot/ui/features/servers/RestartServerDialog";
-import type { ServerActionCallbacks } from "@openbot/ui/features/servers/ServerActionItems";
+} from "@whilo/team-client/team-admin-requests";
+import { clearAgentContext, type TeamApiRequest } from "@whilo/team-client/team-api-requests";
+import { classifyFailure } from "@whilo/telemetry";
+import { hasVisibleToasts, toast } from "@whilo/ui";
+import type { AgentMessage } from "@whilo/ui/data";
+import { accountUsageProviderRows } from "@whilo/ui/features/account/account-usage-view";
+import { computeAgentAvatarMoods } from "@whilo/ui/features/agents/agent-avatar-mood";
+import { createFirstAgentDraft, type FirstAgentDraft } from "@whilo/ui/features/agents/FirstAgentSetup";
+import { BillingDialog } from "@whilo/ui/features/billing/BillingDialog";
+import { createBillingStore } from "@whilo/ui/features/billing/billing-store";
+import { LicenseSection } from "@whilo/ui/features/billing/LicenseSection";
+import { createLicenseStore } from "@whilo/ui/features/billing/license-store";
+import { unloadedHistory } from "@whilo/ui/features/conversation/ChatScrollRail";
+import type { DiagramModelChoice } from "@whilo/ui/features/diagrams/DiagramNewAgentCard";
+import { LeaveServerDialog } from "@whilo/ui/features/servers/LeaveServerDialog";
+import { RestartServerDialog } from "@whilo/ui/features/servers/RestartServerDialog";
+import type { ServerActionCallbacks } from "@whilo/ui/features/servers/ServerActionItems";
 import {
   ConversationLoadNotice,
   ServerConnectionNotice,
   ServerPanelLoadNotice,
   serverWorkspacePhase,
-} from "@openbot/ui/features/servers/ServerConnectionNotice";
-import { ServerRail } from "@openbot/ui/features/servers/ServerRail";
-import type { SettingsPagePlacement } from "@openbot/ui/features/settings/SettingsDialogShell";
-import { createSettingsHostedServersStore } from "@openbot/ui/features/settings/stores/hosted-servers-store";
-import { Sidebar } from "@openbot/ui/features/sidebar/Sidebar";
-import { SidebarCommunityCard } from "@openbot/ui/features/sidebar/SidebarCommunityCard";
-import { sidebarAgentOrder } from "@openbot/ui/features/sidebar/sidebar-agent-order";
+} from "@whilo/ui/features/servers/ServerConnectionNotice";
+import { ServerRail } from "@whilo/ui/features/servers/ServerRail";
+import type { SettingsPagePlacement } from "@whilo/ui/features/settings/SettingsDialogShell";
+import { createSettingsHostedServersStore } from "@whilo/ui/features/settings/stores/hosted-servers-store";
+import { Sidebar } from "@whilo/ui/features/sidebar/Sidebar";
+import { SidebarCommunityCard } from "@whilo/ui/features/sidebar/SidebarCommunityCard";
+import { sidebarAgentOrder } from "@whilo/ui/features/sidebar/sidebar-agent-order";
 import {
   computeSidebarAgentStates,
   sidebarAgentWaits,
   sidebarChannelWaits,
-} from "@openbot/ui/features/sidebar/sidebar-agent-states";
-import type { SidebarView } from "@openbot/ui/features/sidebar/sidebar-types";
-import { PageRail, type PageRailPage } from "@openbot/ui/features/window/PageRail";
-import { useText } from "@openbot/ui/text";
+} from "@whilo/ui/features/sidebar/sidebar-agent-states";
+import type { SidebarView } from "@whilo/ui/features/sidebar/sidebar-types";
+import { PageRail, type PageRailPage } from "@whilo/ui/features/window/PageRail";
+import { useText } from "@whilo/ui/text";
 import { Effect } from "effect";
 import {
   createEffect,
@@ -152,7 +152,7 @@ import { toAgentMessage } from "../../app-message-projection";
 import { ProviderSignInDialogs } from "../../components/ProviderSignInDialogs";
 import { isGlobalSearchShortcut } from "../../global-search-shortcut";
 import { LayoutProvider, useLayout } from "../../layout";
-import { AgentUsagePanel, RoutineFlowsCanvas, ScheduleView, ServerOnboarding, TasksView } from "../../lazy-views";
+import { AgentUsagePanel, RoutineFlowsCanvas, ScheduleView, ServerOnboarding, TasksView, WorkflowsPage } from "../../lazy-views";
 import { PlatformProvider } from "../../platform";
 import { deviceSendShortcut } from "../../send-shortcut-preference";
 import { WorkspaceFrame } from "../../WorkspaceFrame";
@@ -164,6 +164,7 @@ import {
   ServerSettingsOverlay,
   SharedAgentInstallOverlay,
 } from "../../WorkspaceOverlayViews";
+import { SkillsMarketplace } from "../../WorkspaceOverlays";
 import { createUsageRefreshPoll } from "../account/usage-refresh-poll";
 import { conversationThreads } from "../agent-threads/conversation-threads";
 import { type NewAgentDraft, newAgentInput } from "../agents/agent-create-input";
@@ -279,11 +280,11 @@ const CONNECTING_STATUS: AgentStatus = {
  * What the web client reports as its build. The browser has no main process to ask, and the web frame
  * uses the macOS geometry.
  */
-const WEB_APP_INFO: AppInfo = { name: "OpenBot", version: "web", platform: "darwin", variant: "production" };
+const WEB_APP_INFO: AppInfo = { name: "Whilo", version: "web", platform: "darwin", variant: "production" };
 /** Below this width the web shows one pane at a time; see `web-client.css`. */
 const PHONE_QUERY = "(max-width: 720px)";
 /** The account whose queue edit the browser may hold under `QUEUE_EDIT_STORAGE_KEY`. */
-const QUEUE_EDIT_ACCOUNT_KEY = "openbot.web.queue-edit-account";
+const QUEUE_EDIT_ACCOUNT_KEY = "whilo.web.queue-edit-account";
 
 function newAgentAvatar(): Pick<FirstAgentDraft, "avatarSeed" | "avatarHue" | "avatarColor"> {
   const { avatarSeed, avatarHue } = createFirstAgentDraft();
@@ -306,7 +307,7 @@ async function reportedFailure(send: () => Promise<unknown>, options: PromptAnsw
 }
 
 /** The pages of the connected host that cover the conversation. */
-type HostPageView = "usage" | "schedule" | "tasks";
+type HostPageView = "usage" | "schedule" | "tasks" | "workflows" | "library";
 
 type WebWorkspaceProps = {
   accountId: string;
@@ -500,6 +501,12 @@ function WebWorkspaceFrame(props: WebWorkspaceProps) {
     onHostingReturnConsumed: () => props.onHostingReturnConsumed?.(),
     onJoin: () => setJoinOpen(true),
   });
+  onSettled(() => {
+    // The landing's Buy a Cloud Computer button lands here after sign-in.
+    if (new URLSearchParams(window.location.search).get("buy") === "cloud") {
+      hostedServers.openAddServer("deep_link");
+    }
+  });
   const [creating, setCreating] = createSignal(false);
   /** The new agent form's avatar. The first-agent row in an empty sidebar shows it. */
   const [agentAvatar, setAgentAvatar] = createSignal(newAgentAvatar());
@@ -658,6 +665,15 @@ function WebWorkspaceFrame(props: WebWorkspaceProps) {
     queueMicrotask(() => {
       if (trigger?.isConnected) trigger.focus({ preventScroll: true });
     });
+  }
+  /** A rail page opens when a host is connected; without one it opens the connect flow instead of doing nothing. */
+  function openHostPageOrConnect(view: HostPageView, trigger: HTMLElement | null): void {
+    const id = server()?.id;
+    if (!id) {
+      setJoinOpen(true);
+      return;
+    }
+    void openHostPage(id, view, trigger);
   }
   const usageCalls = createWebUsagePort(workspace, hostRequest, servers);
   async function openNotified(hostId: string, agentId: string) {
@@ -1169,7 +1185,7 @@ function WebWorkspaceFrame(props: WebWorkspaceProps) {
   const storageCalls: FilesPort = {
     agent: { listAgents: () => workspace.runtime.listAgents() },
     storage: {
-      // The host names previews with the desktop `openbot-attachment:` scheme, as it does in chat.
+      // The host names previews with the desktop `whilo-attachment:` scheme, as it does in chat.
       getUsage: async (input, serverId) => {
         const usage = await runTeamEffect(
           getStorageUsage(hostRequest(serverId), input).pipe(Effect.mapError((error) => error.cause)),
@@ -1517,7 +1533,7 @@ function WebWorkspaceFrame(props: WebWorkspaceProps) {
   };
   /**
    * A server with no agents shows the provider step before the first-agent form, for an account that
-   * can sign its host in. OpenBot includes no AI subscription, so an agent made first could not
+   * can sign its host in. Whilo includes no AI subscription, so an agent made first could not
    * answer. A member and an older host open the form as before.
    */
   const serverOnboarding = () =>
@@ -2015,23 +2031,16 @@ function WebWorkspaceFrame(props: WebWorkspaceProps) {
               onPinChange={layout.setRailPinned}
               usageRows={usageRows()}
               onAgents={() => showSidebarView("agents")}
-              onRoutines={routinesSupported() ? () => showSidebarView("routines") : undefined}
-              onTasks={
-                tasksSupported()
-                  ? (button) => {
-                      const id = server()?.id;
-                      if (id) void openHostPage(id, "tasks", button);
-                    }
-                  : undefined
-              }
-              onSchedule={(button) => {
-                const id = server()?.id;
-                if (id) void openHostPage(id, "schedule", button);
+              onRoutines={() => {
+                if (routinesSupported()) showSidebarView("routines");
+                else setJoinOpen(true);
               }}
-              onUsage={(button) => {
-                const id = server()?.id;
-                if (id) void openHostPage(id, "usage", button);
-              }}
+              onWorkflows={() => openHostPageOrConnect("workflows", null)}
+              onTasks={(button) => openHostPageOrConnect("tasks", button)}
+              onSchedule={(button) => openHostPageOrConnect("schedule", button)}
+              onLibrary={() => openHostPageOrConnect("library", null)}
+              onCloud={() => hostedServers.openAddServer("server_rail")}
+              onUsage={(button) => openHostPageOrConnect("usage", button)}
               onMarketplace={workspace.state.status === "online" ? openMarketplace : undefined}
               onSettings={openAccountSettings}
               help={
@@ -2084,7 +2093,7 @@ function WebWorkspaceFrame(props: WebWorkspaceProps) {
               sidebarHidden={tasksAgentsHidden()}
               page={
                 <Show
-                  when={page() === "usage" || page() === "schedule" ? server() : undefined}
+                  when={page() === "usage" || page() === "schedule" || page() === "workflows" || page() === "library" ? server() : undefined}
                   fallback={
                     <Show
                       when={settingsKind()}
@@ -2178,6 +2187,14 @@ function WebWorkspaceFrame(props: WebWorkspaceProps) {
                           />
                         </Loading>
                       </Match>
+                      <Match when={page() === "workflows"}>
+                        <Loading>
+                          <WorkflowsPage serverId={target().id} />
+                        </Loading>
+                      </Match>
+                      <Match when={page() === "library"}>
+                        <SkillsMarketplace />
+                      </Match>
                     </Switch>
                   )}
                 </Show>
@@ -2221,7 +2238,7 @@ function WebWorkspaceFrame(props: WebWorkspaceProps) {
                     // The browser client does not know the unread counts of agent chats it has not opened.
                     hasUnread
                     view={layout.sidebarView()}
-                    serverName={workspace.state.host?.name ?? "OpenBot"}
+                    serverName={workspace.state.host?.name ?? "Whilo"}
                     serverUpdate={(() => {
                       const id = server()?.id;
                       const badge = id ? serverUpdateBadge(id) : null;
@@ -2808,8 +2825,9 @@ function WebWorkspaceFrame(props: WebWorkspaceProps) {
                   onJoin={() => setJoinOpen(true)}
                   onCreateServer={
                     // An account with a hosted server that is not a host yet, such as one that waits for payment,
-                    // must not buy a second one from here.
-                    hostedServers.available() && !hostedServers.ownsHostedServer()
+                    // must not buy a second one from here. Without one, the buy button stays visible even while
+                    // the hosting service is still loading: the plans explain themselves.
+                    !hostedServers.ownsHostedServer()
                       ? () => hostedServers.openAddServer("empty_state")
                       : undefined
                   }

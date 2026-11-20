@@ -342,11 +342,7 @@ export class GitHubInstallationTokens {
     if (response.status === 401) {
       return yield* credential.kind === "user"
         ? new GitHubInstallationTokensError(401, "github_unauthorized", "GitHub refused the GitHub sign-in.")
-        : new GitHubInstallationTokensError(
-            503,
-            "github_app_unavailable",
-            "GitHub refused the Whilo GitHub App key.",
-          );
+        : new GitHubInstallationTokensError(503, "github_app_unavailable", "GitHub refused the Whilo GitHub App key.");
     }
     if (!response.ok)
       return yield* new GitHubInstallationTokensError(

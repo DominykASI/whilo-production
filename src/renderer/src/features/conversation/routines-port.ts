@@ -11,8 +11,8 @@ import type {
   RoutineRunFields,
   RoutineRunPlace,
   RoutineSchedule,
-} from "@openbot/contracts/ipc";
-import type { EventRoutine, EventRoutineOwner, EventRoutineTriggerInput } from "@openbot/contracts/ipc-events";
+} from "@whilo/contracts/ipc";
+import type { EventRoutine, EventRoutineOwner, EventRoutineTriggerInput } from "@whilo/contracts/ipc-events";
 import type { EventRoutinesApi, RoutineWebhooksApi } from "./routine-webhooks-api";
 
 interface RoutineSaveInput {
@@ -62,7 +62,7 @@ export interface RoutinesPort {
    */
   limitPolicy: boolean;
   /**
-   * Whether the host keeps what a routine does with a run that came due while OpenBot was closed:
+   * Whether the host keeps what a routine does with a run that came due while Whilo was closed:
    * this computer's host, and a remote host with `routine-recovery-v1`. `events-v1` drops the field.
    */
   missedPolicy: boolean;
@@ -92,7 +92,7 @@ export interface RoutinesPort {
 }
 
 function agentRoutineResults(agentId: string): RoutineResultsPort {
-  const api = window.openbot.routineResults;
+  const api = window.whilo.routineResults;
   return {
     options: () => api.options(),
     destination: (routineId) => api.destination({ agentId, routineId }),
@@ -112,7 +112,7 @@ export function agentRoutinesPort(
   agentId: string,
   automation = false,
   localHost = false,
-  api: AgentRoutinesApi = window.openbot.agent,
+  api: AgentRoutinesApi = window.whilo.agent,
   runPlace = localHost,
 ): RoutinesPort {
   return {
@@ -141,7 +141,7 @@ export function agentRoutinesPort(
       await api.testRoutine({ agentId, routineId });
     },
     ...(automation
-      ? { runCommand: (routineId: string) => window.openbot.agent.automationRunCommand({ agentId, routineId }) }
+      ? { runCommand: (routineId: string) => window.whilo.agent.automationRunCommand({ agentId, routineId }) }
       : {}),
     ...(localHost ? { results: agentRoutineResults(agentId) } : {}),
     subscribe: (reload) =>
@@ -165,7 +165,7 @@ export type ChannelRoutinesApi = Pick<
 
 export function channelRoutinesPort(
   channelId: string,
-  api: ChannelRoutinesApi = window.openbot.agent,
+  api: ChannelRoutinesApi = window.whilo.agent,
   localHost = false,
 ): RoutinesPort {
   return {

@@ -380,7 +380,7 @@ async function main(): Promise<void> {
         ),
     );
     const protectedTab = await runCauseEffect(
-      host.open("https://fill-protection.openbot.test/", "fixture-thread", "fixture-agent"),
+      host.open("https://fill-protection.whilo.test/", "fixture-thread", "fixture-agent"),
     );
     const protectedSnapshot = snapshotSchema.parse(
       json(await call("snapshot", { tabId: protectedTab.id, image: "never" })),

@@ -238,7 +238,7 @@ export const messages = {
   "mobile.chat.imageGallery.saved": "Bewaard in Foto’s",
   "mobile.chat.imageGallery.shareAll": "Alles delen",
   "mobile.chat.imageGallery.photosPermission":
-    "Sta OpenBot in Instellingen toe foto’s toe te voegen om deze afbeeldingen te bewaren.",
+    "Sta Whilo in Instellingen toe foto’s toe te voegen om deze afbeeldingen te bewaren.",
   "mobile.chat.imageGallery.saveFailed": "Kan afbeeldingen niet bewaren",
   "mobile.chat.imageGallery.shareFailed": "Kan afbeeldingen niet delen",
   "mobile.chat.imageGallery.shareNeedsUpdate":

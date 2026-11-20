@@ -8,12 +8,12 @@ export const messages = {
   "mobile.settings.language.system": "Как в системе",
   "mobile.settings.language.footer":
     "Вариант «Как в системе» берёт первый язык из настроек телефона. Непереведённый текст показывается на английском.",
-  "mobile.settings.language.restartTitle": "Перезапустить OpenBot?",
+  "mobile.settings.language.restartTitle": "Перезапустить Whilo?",
   "mobile.settings.language.restartBody":
-    "Этот язык читается в другом направлении. Экраны сменят направление при следующем запуске OpenBot. Если после перезапуска экраны выглядят неправильно, закройте OpenBot в переключателе приложений и откройте его снова.",
+    "Этот язык читается в другом направлении. Экраны сменят направление при следующем запуске Whilo. Если после перезапуска экраны выглядят неправильно, закройте Whilo в переключателе приложений и откройте его снова.",
   "mobile.settings.language.restartNow": "Перезапустить сейчас",
   "mobile.settings.language.restartFailed":
-    "Не удалось перезапустить OpenBot. Экраны сменят направление, когда вы снова откроете OpenBot.",
+    "Не удалось перезапустить Whilo. Экраны сменят направление, когда вы снова откроете Whilo.",
   "mobile.settings.dictation.language": "Язык диктовки",
   "mobile.settings.about.development": "Разработка",
   "mobile.settings.about.openFailed": "Не удалось открыть ссылку. Повторите попытку.",
@@ -275,10 +275,10 @@ export const messages = {
   "mobile.settings.voice.pause.title": "Пауза перед отправкой",
   "mobile.settings.voice.pause.label": "Ждать новые слова",
   "mobile.settings.voice.pause.footer":
-    "В голосовом разговоре OpenBot отправляет ваши слова, когда столько времени не распознаёт новых слов. Шум без слов не продлевает прослушивание. Выберите паузу длиннее, если говорите медленно или останавливаетесь подумать.",
+    "В голосовом разговоре Whilo отправляет ваши слова, когда столько времени не распознаёт новых слов. Шум без слов не продлевает прослушивание. Выберите паузу длиннее, если говорите медленно или останавливаетесь подумать.",
   "mobile.settings.voice.pause.seconds": "{seconds} с",
   "mobile.settings.voice.speed.title": "Скорость ответов",
-  "mobile.settings.voice.speed.footer": "Скорость ответов, которые OpenBot читает вслух, также в голосовом разговоре.",
+  "mobile.settings.voice.speed.footer": "Скорость ответов, которые Whilo читает вслух, также в голосовом разговоре.",
   "mobile.settings.voice.speed.value": "{speed}×",
   "mobile.settings.voice.elevenLabs.recognitionFooter":
     "Whilo передаёт вашу речь в ElevenLabs с одноразовым токеном, и ElevenLabs списывает оплату с вашего аккаунта. Ключ остаётся на этом телефоне.",

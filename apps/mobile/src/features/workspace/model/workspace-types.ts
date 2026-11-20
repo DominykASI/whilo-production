@@ -1,4 +1,4 @@
-import type { AttachmentSupport } from "@openbot/contracts/attachment-files";
+import type { AttachmentSupport } from "@whilo/contracts/attachment-files";
 import type {
   AddAgentFolderInput,
   AddedAgent,
@@ -166,7 +166,7 @@ import type {
   WorkflowVersion,
   WorkflowVersionInput,
   WorkflowWebhookSecret,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import type {
   EventActivity,
   EventRoutine,
@@ -176,16 +176,16 @@ import type {
   SaveEventRoutineInput,
   SaveEventRoutineResult,
   WebhookSecret,
-} from "@openbot/contracts/ipc-events";
-import type { QueueEditRequest } from "@openbot/contracts/team-protocol/queue-edit-v1";
-import type { RemoteConnectionFailure, RemoteRecoveryStatus, RemoteTeamDirectoryClient } from "@openbot/team-client";
-import type { PlanLimits } from "@openbot/team-client/plan-limits";
-import type { RemoteFileUpload } from "@openbot/team-client/remote-peer";
+} from "@whilo/contracts/ipc-events";
+import type { QueueEditRequest } from "@whilo/contracts/team-protocol/queue-edit-v1";
+import type { RemoteConnectionFailure, RemoteRecoveryStatus, RemoteTeamDirectoryClient } from "@whilo/team-client";
+import type { PlanLimits } from "@whilo/team-client/plan-limits";
+import type { RemoteFileUpload } from "@whilo/team-client/remote-peer";
 import type {
   HostLocalServer,
   HostLocalServerList,
   MessagingConnectorPage,
-} from "@openbot/team-client/team-admin-requests";
+} from "@whilo/team-client/team-admin-requests";
 import type { MobileBrowserTab } from "@/features/browser/model/browser-tabs";
 import type { BrowserViewBridgeEvent, RemoteBrowserViewSession } from "@/features/browser/model/browser-view-bridge";
 import type { MobileChannelStore } from "@/features/channels/model/channel-store";
@@ -201,7 +201,7 @@ type MessageDeleteTarget =
   | { kind: "agent"; agentId: string; taskId?: string; messageId: string }
   | { kind: "channel"; channelId: string; messageId: string };
 
-/** The route set that reaches a host's OpenBot update: the admin set or the member set. */
+/** The route set that reaches a host's Whilo update: the admin set or the member set. */
 export type ServerUpdateAccess = "admin" | "member";
 
 export type MobileServerState = "unknown" | "connecting" | "online" | "offline" | "error";
@@ -449,7 +449,7 @@ export interface MobileWorkspaceContextValue {
    */
   createLocalServer: (serverId: string, name: string) => Promise<HostLocalServer>;
   /**
-   * `computer`: the own server of an OpenBot desktop app, which the account cannot remove. `onComputer`:
+   * `computer`: the own server of an Whilo desktop app, which the account cannot remove. `onComputer`:
    * a server that such an app runs beside its own server, which only that app deletes. Known after the
    * computer server was online in this session.
    */
@@ -502,7 +502,7 @@ export interface MobileWorkspaceContextValue {
   /** True on an online host that takes a Grok Bot or Hermes export from any member (`agent-import-v1`). */
   canImportAgents: (serverId: string) => boolean;
   /**
-   * True for an owner or admin of an online host that moves its agents to or from an OpenBot
+   * True for an owner or admin of an online host that moves its agents to or from an Whilo
    * transfer file (`instance-transfer-v1`).
    */
   canTransferServer: (serverId: string) => boolean;
@@ -630,7 +630,7 @@ export interface MobileWorkspaceContextValue {
   answerWhatsAppRequest: (input: AnswerWhatsAppRequestInput, serverId: string) => Promise<void>;
   setWhatsAppOwnNumber: (input: SetWhatsAppOwnNumberInput, serverId: string) => Promise<void>;
   /**
-   * How this user reaches the OpenBot update of an online host: an owner or admin through
+   * How this user reaches the Whilo update of an online host: an owner or admin through
    * `host-update-v1`, any member through `host-member-update-v1`. Null when neither applies.
    */
   serverUpdateAccess: (serverId: string) => ServerUpdateAccess | null;
@@ -654,7 +654,7 @@ export interface MobileWorkspaceContextValue {
   canViewHostedSites: (serverId: string) => boolean;
   /** An owner or admin of an online host that serves `hosted-sites-v1`. The host checks the role again. */
   canDeleteHostedSites: (serverId: string) => boolean;
-  /** The openbot.site sites that agents on the server published, and the site limit of its plan. */
+  /** The whilo.site sites that agents on the server published, and the site limit of its plan. */
   loadHostedSites: (serverId: string) => Promise<HostedSiteList>;
   /** The address of the site returns 410 Gone immediately. */
   deleteHostedSite: (siteId: string, serverId: string) => Promise<void>;

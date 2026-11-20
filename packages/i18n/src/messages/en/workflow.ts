@@ -202,7 +202,7 @@ export const messages = defineMessages("workflow", {
   "workflow.telegram.anyChat": "Any linked chat",
   "workflow.telegram.sameChat": "Same as trigger",
   "workflow.telegram.event": "Event",
-  "workflow.telegram.event.mention": "OpenBot mentioned",
+  "workflow.telegram.event.mention": "Whilo mentioned",
   "workflow.telegram.text": "Text contains",
   "workflow.telegram.anyText": "Any text",
   "workflow.telegram.on": "On",

@@ -1,16 +1,16 @@
-import { isAvatarMimeType } from "@openbot/contracts/avatar-images";
-import { parseBillingPortalRequest } from "@openbot/contracts/billing";
-import { WEB_APP_COMPANY_SIGN_IN_ERROR_PARAM } from "@openbot/contracts/company-sign-in";
-import { parseHostedServerLifecycleInput } from "@openbot/contracts/hosted-servers";
+import { isAvatarMimeType } from "@whilo/contracts/avatar-images";
+import { parseBillingPortalRequest } from "@whilo/contracts/billing";
+import { WEB_APP_COMPANY_SIGN_IN_ERROR_PARAM } from "@whilo/contracts/company-sign-in";
+import { parseHostedServerLifecycleInput } from "@whilo/contracts/hosted-servers";
 import {
   LICENSE_UNAVAILABLE_STATE,
   parseLicenseCheckoutRequest,
   parseLicensePlanRequest,
   parseLicenseRenewalRequest,
   parseLicenseUsersRequest,
-} from "@openbot/contracts/license";
-import { type DynamicRecord, isBoolean, isNumber, isString } from "@openbot/contracts/runtime-values";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/license";
+import { type DynamicRecord, isBoolean, isNumber, isString } from "@whilo/contracts/runtime-values";
+import { sourceText } from "@whilo/i18n/source";
 import { Cause, Effect } from "effect";
 import { type AccountAttribution, requestFirstTouch } from "./account-attribution";
 import { type AuthService, AuthServiceError, readAnalyticsAnswer, readChatColor } from "./auth-service";
@@ -29,14 +29,14 @@ import { type RemoteControlPlane, RemoteControlPlaneError } from "./remote-contr
 import { sendTeamInviteEmail } from "./team-invite-email";
 import type { AuthUser, TeamInviteEmailDelivery } from "./types";
 
-const COOKIE = "__Host-openbot-web";
+const COOKIE = "__Host-whilo-web";
 const PREFIX = "/api/browser/";
 const COOKIE_ATTRIBUTES = "Path=/; Secure; HttpOnly; SameSite=Lax";
 /**
  * The company sign-in that this browser started: its state and verifier. Only this browser can finish
  * it, so a provider page that someone else opened cannot sign this browser in.
  */
-const COMPANY_COOKIE = "__Host-openbot-company";
+const COMPANY_COOKIE = "__Host-whilo-company";
 const COMPANY_FLOW_SECONDS = 600;
 
 export interface BrowserApiServices {
@@ -146,7 +146,7 @@ const AVATAR_PATH = "v1/me/avatar";
 
 /**
  * Every write sends JSON, except an avatar upload, which sends the image bytes as the bearer route
- * does. The `X-OpenBot-Browser` header and the same-origin check still apply to it: a cross-site
+ * does. The `X-Whilo-Browser` header and the same-origin check still apply to it: a cross-site
  * page cannot send that header without a CORS preflight, which this API never answers.
  */
 function browserWriteContentTypeAllowed(request: Request, path: string): boolean {
@@ -169,7 +169,7 @@ export function handleBrowserApi(request: Request, services: BrowserApiServices)
   if (
     request.method !== "GET" &&
     (request.headers.get("Origin") !== new URL(request.url).origin ||
-      request.headers.get("X-OpenBot-Browser") !== "1" ||
+      request.headers.get("X-Whilo-Browser") !== "1" ||
       !browserWriteContentTypeAllowed(request, path))
   )
     return Promise.resolve(failure(403, "browser_request_refused", "The browser request was refused."));
@@ -255,7 +255,12 @@ const handleBrowserOperation = Effect.fn("BrowserApi.handleOperation")(function*
       if (user) yield* services.remote.endAccountSession(user.id, yield* sha256(previous));
     }
     const response = json({ user: result.user });
-    response.headers.set("Set-Cookie", `${COOKIE}=${result.sessionToken}; ${COOKIE_ATTRIBUTES}; Max-Age=34560000`);
+    // A person who unticks "Keep me signed in" gets a session cookie that the browser drops when it closes.
+    const remember = body.remember !== false;
+    response.headers.set(
+      "Set-Cookie",
+      `${COOKIE}=${result.sessionToken}; ${COOKIE_ATTRIBUTES}${remember ? "; Max-Age=34560000" : ""}`,
+    );
     return response;
   }
   if (path === "company/start" && request.method === "POST") {

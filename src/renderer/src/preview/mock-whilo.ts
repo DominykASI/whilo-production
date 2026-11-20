@@ -121,7 +121,6 @@ import {
   nextBrowserProfileHue,
   normalizeMcpConfig,
   type OpenAttachmentInput,
-  type WhiloDesktopApi,
   type OpenSharedFileInput,
   type OpenWorkspaceFileInput,
   PLAN_CONTINUATION_ITEM_TYPE,
@@ -161,6 +160,7 @@ import {
   type UpdatePreference,
   type UpdateQueuedMessageInput,
   type UpdateStatus,
+  type WhiloDesktopApi,
   type WorkspaceDirectory,
 } from "@whilo/contracts/ipc";
 import { sourceText } from "@whilo/i18n/source";
@@ -1375,7 +1375,7 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
       onHighlightPlacement: () => () => undefined,
     },
     openExternal: async () => undefined,
-    // A preview user who has used OpenBot for a while, so the social toast can show.
+    // A preview user who has used Whilo for a while, so the social toast can show.
     getSentMessageStats: async () => ({ firstSentAt: "2026-10-01T09:00:00.000Z", sentCount: 40 }),
     connectProvider: async () => clone(agentStatus),
     connectProviderInMainlandChina: async () => clone(agentStatus),
@@ -1548,7 +1548,7 @@ export function createMockWhilo(options: MockWhiloOptions = {}): MockWhiloContro
       }),
       chooseDirectory: async () => "/mock/Whilo/Sites/launch-notes",
       publish: async (input) => {
-        const hostname = `${input.title.toLowerCase().replaceAll(/[^a-z0-9]+/gu, "-")}.openbot.site`;
+        const hostname = `${input.title.toLowerCase().replaceAll(/[^a-z0-9]+/gu, "-")}.whilo.site`;
         const site: HostedSiteSummary = {
           id: `site-${hostedSites.length + 1}`,
           hostname,

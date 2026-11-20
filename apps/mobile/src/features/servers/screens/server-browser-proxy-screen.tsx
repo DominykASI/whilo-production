@@ -7,7 +7,7 @@ import {
   editableBrowserProxyAddress,
   parseBrowserProxyAddress,
   type SaveBrowserProxyInput,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { usePreventRemove } from "expo-router/react-navigation";
 import { Typography } from "heroui-native";
@@ -43,7 +43,7 @@ function stackOf(agentId: string | undefined): BrowserProfileStack {
 
 /** The icon of a proxy row: a waypoint for a saved proxy, a monitor for a member's computer. */
 function ProxyIcon({ kind }: { kind: BrowserProxyChoice["kind"] }) {
-  const muted = String(useCSSVariable("--openbot-text-grouped-secondary"));
+  const muted = String(useCSSVariable("--whilo-text-grouped-secondary"));
   const Icon = kind === "computer" ? Monitor : Waypoints;
   return (
     <View className="size-8 items-center justify-center">
@@ -59,7 +59,7 @@ function ProxyIcon({ kind }: { kind: BrowserProxyChoice["kind"] }) {
  */
 export function BrowserProxiesSection({ serverId, stack }: { serverId: string; stack: BrowserProfileStack }) {
   const { t, errorMessage } = useText();
-  const accent = String(useCSSVariable("--openbot-accent"));
+  const accent = String(useCSSVariable("--whilo-accent"));
   const proxies = useServerBrowserProxies(serverId);
   const choices = useBrowserProxyChoices(proxies.list);
   const state = useBrowserProxyState();
@@ -376,7 +376,7 @@ export function ServerBrowserProxyScreen() {
  */
 export function BrowserProfileProxyScreen() {
   const { t, errorMessage } = useText();
-  const accent = String(useCSSVariable("--openbot-accent"));
+  const accent = String(useCSSVariable("--whilo-accent"));
   const { serverId, profileId, agentId } = useLocalSearchParams<{
     serverId: string;
     profileId: string;

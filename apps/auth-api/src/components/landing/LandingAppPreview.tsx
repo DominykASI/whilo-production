@@ -1,8 +1,8 @@
 import {
   LANDING_PREVIEW_READY_MESSAGE,
   LANDING_PREVIEW_START_MESSAGE,
-} from "@openbot/contracts/landing-preview-messages";
-import { prefersReducedMotion } from "@openbot/ui/utils";
+} from "@whilo/contracts/landing-preview-messages";
+import { prefersReducedMotion } from "@whilo/ui/utils";
 import { onSettled } from "solid-js";
 import { useLandingText } from "./LandingText";
 
@@ -11,9 +11,9 @@ const LANDING_PREVIEW_LOAD_DELAY_MS = 300;
 const LANDING_PREVIEW_REVEAL_FALLBACK_MS = 240;
 
 const LANDING_PREVIEW_MARKS = {
-  ready: "openbot:landing-preview:ready",
-  shown: "openbot:landing-preview:shown",
-  src: "openbot:landing-preview:src",
+  ready: "whilo:landing-preview:ready",
+  shown: "whilo:landing-preview:shown",
+  src: "whilo:landing-preview:src",
 } as const;
 
 function readDuration(name: string, fallback: number): number {

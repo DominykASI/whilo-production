@@ -1,4 +1,4 @@
-import * as SecureStore from "expo-secure-store";
+import * as SecureStore from "../../../shared/lib/persistent-storage";
 import { create } from "zustand";
 
 /** Follow the phone's language list. Any other value is a locale the recognizer listed. */

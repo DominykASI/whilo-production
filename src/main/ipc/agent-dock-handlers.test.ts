@@ -5,7 +5,7 @@ import type {
   AgentDockDragPhase,
   AgentDockPresentation,
   SetAgentDockInteractiveInput,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import { Effect } from "effect";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { agentDockIpcHandlers } from "./agent-dock-handlers";
@@ -69,7 +69,7 @@ const SEND: AgentDockAction = {
   clientMessageId: "draft-1",
 };
 
-function event(senderId: number, url = "openbot-app://app/helper.html?surface=agent-dock") {
+function event(senderId: number, url = "whilo-app://app/helper.html?surface=agent-dock") {
   return { senderFrame: { url }, sender: { id: senderId } };
 }
 

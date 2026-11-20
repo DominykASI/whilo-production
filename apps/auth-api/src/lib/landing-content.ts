@@ -4,8 +4,8 @@
 //
 // No JSX here, for the same reason `content-collection.ts` holds none.
 
-import type { ProviderLogoVariant } from "@openbot/brand";
-import type { AvatarHue } from "@openbot/contracts/ipc";
+import type { ProviderLogoVariant } from "@whilo/brand";
+import type { AvatarHue } from "@whilo/contracts/ipc";
 import { RIVAL_MARK_SHAPES, type RivalMarkName } from "../components/compare/rival-mark-shapes";
 import { COMPARE_COLLECTION } from "./compare";
 
@@ -141,7 +141,7 @@ export const LANDING_NETWORK_AGENTS: readonly { teammate: LandingTeammate; provi
 ];
 
 /** The name under the mark at the centre of the network picture. */
-export const LANDING_NETWORK_HUB = "OpenBot";
+export const LANDING_NETWORK_HUB = "Whilo";
 
 export interface LandingProvider {
   provider: ProviderLogoVariant;
@@ -213,7 +213,7 @@ function landingRank(slug: RivalMarkName): number {
 }
 
 /**
- * Every OpenBot comparison, labelled "OpenBot vs …": each title starts with
+ * Every Whilo comparison, labelled "Whilo vs …": each title starts with
  * that, and the part after the colon is too long for a card. The slug of each is
  * also the name of the compared product's mark. A matchup or the roundup has a
  * slug that names no mark, so it is not in this list.
@@ -233,7 +233,7 @@ export const LANDING_COMPARISON_LINKS: readonly LandingComparisonLink[] = COMPAR
   )
   .toSorted((left, right) => landingRank(left.mark) - landingRank(right.mark));
 
-/** Each offer of OpenBot for Teams has its own colour and icon, which the section sets for this id. */
+/** Each offer of Whilo for Teams has its own colour and icon, which the section sets for this id. */
 export type LandingTeamsOfferId = "servers" | "environments" | "integrations" | "support";
 
 /** In reading order. Each offer is one card of the stack. */

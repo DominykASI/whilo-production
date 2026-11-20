@@ -7,7 +7,7 @@ your account and connection set-up.
 Our Worker does not issue a ticket for another Signal. A ticket gives access to a host, and our key
 signs it, so a ticket for your Signal would also open our Signal. Thus a self-hosted Signal needs a
 self-hosted account service with its own keys. See
-[issue #1263](https://github.com/nightly-labs/openbot/issues/1263).
+[issue #1263](https://github.com/nightly-labs/whilo/issues/1263).
 
 ## What changes
 

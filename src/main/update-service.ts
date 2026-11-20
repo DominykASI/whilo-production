@@ -82,9 +82,9 @@ export async function loadElectronUpdater(): Promise<UpdateAdapter | null> {
     const updaterModule = await import("electron-updater");
     const adapter = updaterModule.autoUpdater ?? updaterModule.default?.autoUpdater ?? updaterModule.default;
     if (adapter) return adapter;
-    logger.warn("OpenBot updates are disabled: electron-updater did not export autoUpdater");
+    logger.warn("Whilo updates are disabled: electron-updater did not export autoUpdater");
   } catch {
-    logger.warn("OpenBot updates are disabled: electron-updater failed to load");
+    logger.warn("Whilo updates are disabled: electron-updater failed to load");
   }
   return null;
 }
@@ -100,7 +100,7 @@ export function electronUpdaterCacheDirectory(): string {
       : process.platform === "darwin"
         ? join(homedir(), "Library", "Caches")
         : process.env.XDG_CACHE_HOME || join(homedir(), ".cache");
-  return join(root, "openbot-updater");
+  return join(root, "whilo-updater");
 }
 
 export function isValidSemver(version: string): boolean {

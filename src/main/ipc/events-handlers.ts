@@ -7,26 +7,26 @@ import {
   decodeWebhookSecret,
   decodeWebhookTestResult,
   type EventRoutineOwner,
-} from "@openbot/contracts/ipc-events";
-import { EVENTS_CAPABILITY, EVENTS_ROUTES } from "@openbot/contracts/team-protocol/events-v1";
+} from "@whilo/contracts/ipc-events";
+import { EVENTS_CAPABILITY, EVENTS_ROUTES } from "@whilo/contracts/team-protocol/events-v1";
 import {
   ROUTINE_RECOVERY_CAPABILITY,
   ROUTINE_RECOVERY_ROUTES,
-} from "@openbot/contracts/team-protocol/routine-recovery-v1";
+} from "@whilo/contracts/team-protocol/routine-recovery-v1";
 import {
   decodeRoutineRunPlace,
   decodeRoutineRunPlaces,
   ROUTINE_RUN_PLACE_CAPABILITY,
   ROUTINE_RUN_PLACE_ROUTES,
-} from "@openbot/contracts/team-protocol/routine-run-place-v1";
+} from "@whilo/contracts/team-protocol/routine-run-place-v1";
 import {
   WEBHOOK_SENDER_SECRET_CAPABILITY,
   WEBHOOK_SENDER_SECRET_ROUTES,
-} from "@openbot/contracts/team-protocol/webhook-sender-secret-v1";
-import { WEBHOOK_TESTS_CAPABILITY, WEBHOOK_TESTS_ROUTES } from "@openbot/contracts/team-protocol/webhook-tests-v1";
-import { sourceText } from "@openbot/i18n/source";
-import { createOpenBotLogger } from "@openbot/logging";
-import { withRoutineRunPlaces } from "@openbot/team-client/team-api-requests";
+} from "@whilo/contracts/team-protocol/webhook-sender-secret-v1";
+import { WEBHOOK_TESTS_CAPABILITY, WEBHOOK_TESTS_ROUTES } from "@whilo/contracts/team-protocol/webhook-tests-v1";
+import { sourceText } from "@whilo/i18n/source";
+import { createWhiloLogger } from "@whilo/logging";
+import { withRoutineRunPlaces } from "@whilo/team-client/team-api-requests";
 import type { Effect } from "effect";
 import { runCauseEffect } from "../../backend/effect-boundary";
 import type { HostEventsApi } from "../host-events-api";
@@ -44,7 +44,7 @@ import type { RemoteWorkflowError } from "../remote-service-effects";
 import type { IpcGroupHandlers } from "./define-ipc-group";
 import { scopedHandler, scopedQueryHandler } from "./scoped-handler";
 
-const runPlaceLogger = createOpenBotLogger("routine-run-place");
+const runPlaceLogger = createWhiloLogger("routine-run-place");
 
 interface EventsRemoteServers {
   supportsCapability(

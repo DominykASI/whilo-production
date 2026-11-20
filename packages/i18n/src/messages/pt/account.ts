@@ -65,7 +65,7 @@ export const messages = {
   "account.login.signInDescription":
     "Use seu e-mail para entrar ou criar uma conta. Enviaremos um código de uso único.",
   "account.login.keyringChangedDescription":
-    "O chaveiro do sistema perdeu seu último login. Agora o OpenBot guarda os logins em um arquivo próprio neste computador. Entre mais uma vez.",
+    "O chaveiro do sistema perdeu seu último login. Agora o Whilo guarda os logins em um arquivo próprio neste computador. Entre mais uma vez.",
   "account.login.codeAccepted": "Seu código foi aceito.",
   "account.login.codeSent": "Enviamos um código para {email}.",
   "account.login.connectingSecurely": "Conectando com segurança…",
@@ -75,6 +75,7 @@ export const messages = {
   "account.login.checkDelivery": "Verificar entrega",
   "account.login.checkAgainIn": "Verificar de novo em {time}",
   "account.login.sendCode": "Enviar código de login",
+  "account.login.remember": "Manter conectado",
   "account.login.tryAgainIn": "Tentar de novo em {time}",
   "account.login.checkingDelivery": "Verificando entrega…",
   "account.login.sendingCode": "Enviando código…",

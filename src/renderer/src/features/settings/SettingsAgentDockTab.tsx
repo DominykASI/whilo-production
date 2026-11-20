@@ -1,5 +1,5 @@
-import type { AgentDockDisplay, AgentDockDisplayInfo, AgentDockEdge } from "@openbot/contracts/ipc";
-import type { AppTextKey } from "@openbot/i18n";
+import type { AgentDockDisplay, AgentDockDisplayInfo, AgentDockEdge } from "@whilo/contracts/ipc";
+import type { AppTextKey } from "@whilo/i18n";
 import {
   Item,
   ItemActions,
@@ -16,9 +16,9 @@ import {
   SettingsSection,
   Switch,
   SwitchField,
-} from "@openbot/ui";
-import type { ComposerAgent } from "@openbot/ui/data";
-import { AgentAvatar } from "@openbot/ui/features/agents/AgentAvatar";
+} from "@whilo/ui";
+import type { ComposerAgent } from "@whilo/ui/data";
+import { AgentAvatar } from "@whilo/ui/features/agents/AgentAvatar";
 import type { JSX } from "@solidjs/web";
 import { createMemo, createSignal, createUniqueId, For, onSettled, Show } from "solid-js";
 import { useI18n } from "../../i18n-context";

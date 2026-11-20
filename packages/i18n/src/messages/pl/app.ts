@@ -72,7 +72,7 @@ export const messages = {
   "app.githubStar.notNow": "Nie teraz",
   "app.githubStar.thanksTitle": "Dziękujemy!",
   "app.githubStar.thanksBody": "Dzięki Tobie mamy lepszy dzień.",
-  "app.socialFollow.title": "Podoba Ci się OpenBot?",
+  "app.socialFollow.title": "Podoba Ci się Whilo?",
   "app.socialFollow.description": "Opowiedz o nim w jednym poście. To pomaga nam bardziej niż reklama.",
   "app.socialFollow.networks": "Napisz o OpenBocie na",
   "app.socialFollow.post": "Napisz na {name}",

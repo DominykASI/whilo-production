@@ -15,7 +15,7 @@ import {
   Maximize2,
   PanelRight,
   X,
-} from "@openbot/ui";
+} from "@whilo/ui";
 import { createMemo, For, onCleanup, Show } from "solid-js";
 import type { AvatarMood } from "../../bloub-avatar";
 import { createScrollFades } from "../../components/createScrollFades";

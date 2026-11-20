@@ -1,5 +1,5 @@
-import type { UiBlockStatus } from "@openbot/contracts/ui-blocks";
-import { Bubble, BubbleContent, Button, CircleCheck, Clock3, Spinner, X } from "@openbot/ui";
+import type { UiBlockStatus } from "@whilo/contracts/ui-blocks";
+import { Bubble, BubbleContent, Button, CircleCheck, Clock3, Spinner, X } from "@whilo/ui";
 import type { JSX } from "@solidjs/web";
 import { createUniqueId, Match, Show, Switch } from "solid-js";
 import { useText } from "../../../text";

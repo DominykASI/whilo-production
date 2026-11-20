@@ -70,8 +70,8 @@ export const messages = {
   "settings.launchAtLogin.description": "Open de app wanneer je inlogt op deze computer.",
   "settings.keepRunning.title": "Laat Whilo op de achtergrond draaien",
   "settings.keepRunning.description": "Laat actieve taken doorlopen nadat je het venster sluit.",
-  "settings.menuBar.title": "OpenBot in de menubalk tonen",
-  "settings.menuBar.description": "Open of stop OpenBot via een symbool in de menubalk.",
+  "settings.menuBar.title": "Whilo in de menubalk tonen",
+  "settings.menuBar.description": "Open of stop Whilo via een symbool in de menubalk.",
   "settings.keepAwake.title": "Houd deze computer wakker",
   "settings.keepAwake.description":
     "Routines starten op tijd zolang de computer op netstroom is aangesloten. Het scherm kan nog steeds uitgaan.",
@@ -225,13 +225,13 @@ export const messages = {
   "settings.agentDock.show.description": "Toont je agents aan de schermrand, klaar voor een snelle chat.",
   "settings.agentDock.placement.title": "Positie",
   "settings.agentDock.placement.description":
-    "‘Boven andere apps’ houdt het dock in beeld als OpenBot op de achtergrond is.",
+    "‘Boven andere apps’ houdt het dock in beeld als Whilo op de achtergrond is.",
   "settings.agentDock.placement.screen": "Boven andere apps",
-  "settings.agentDock.placement.window": "In het OpenBot-venster",
+  "settings.agentDock.placement.window": "In het Whilo-venster",
   "settings.agentDock.display.title": "Scherm",
   "settings.agentDock.display.description":
-    "Als dat scherm niet is aangesloten, gaat het dock naar het scherm van het OpenBot-venster.",
-  "settings.agentDock.display.window": "Bij het OpenBot-venster",
+    "Als dat scherm niet is aangesloten, gaat het dock naar het scherm van het Whilo-venster.",
+  "settings.agentDock.display.window": "Bij het Whilo-venster",
   "settings.agentDock.display.primary": "Hoofdscherm",
   "settings.agentDock.display.all": "Alle schermen",
   "settings.agentDock.display.unnamed": "Scherm {number}",

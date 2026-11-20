@@ -2,7 +2,7 @@
 
 ## iPhone Live Activity updates
 
-The phone and a host build the same Live Activity view with `@openbot/team-client`:
+The phone and a host build the same Live Activity view with `@whilo/team-client`:
 `dynamic-island-coordinator.ts` gives the state, and `live-activity-props.ts` turns it into the props
 that the widget shows. While the app runs, `use-live-activity.ts` publishes them itself.
 
@@ -32,7 +32,7 @@ A host sends an iOS notification when an agent finishes a turn, stops with an er
 message or a routine run (`error` with the code `delivery_start_failed`), or waits for input, an
 approval, or a step in the browser (`browser-takeover-requested`, also for a password or a code).
 The desktop and the web client notify about the same events (`agentEventCanNotify`), and all three
-decide as one: `notificationForAgentEvent` in `@openbot/team-client` applies the level of the server
+decide as one: `notificationForAgentEvent` in `@whilo/team-client` applies the level of the server
 (`all`, or `needs-me` for the events that wait for the user), or the member's own level of the agent
 (`agent-notification-levels-v1`, see [servers](servers.md)), the switch of the agent, and the quiet
 routine runs. The desktop and the web client close the notification of a request when an
@@ -69,7 +69,7 @@ sends no notification, and uses the registration only to make the Live Activity 
 tells each host again after each connection and when a choice changes, and removes the registration
 when nothing is left for that host or the user signs out. A level of
 "Nothing" and a mute with no end remove it too. `PushNotificationService` in `src/main` keeps the
-registrations in `openbot-push-notifications-v1.json` in the user data folder, readable only by the
+registrations in `whilo-push-notifications-v1.json` in the user data folder, readable only by the
 user, so a phone that does not connect after the host restarts still gets notifications. It sends
 only while the phone is away or its connection is closed. iOS can suspend the app before it says
 that it goes away, and the host sees the lost path about 30 seconds later. So an event that comes
@@ -102,7 +102,7 @@ the user removes the activity, so until the app runs again such an event shows n
 The host sends it to `POST /v2/remote/hosts/:hostId/notification` with its machine credential and the
 account session of the phone. The Worker checks the credential and a per-host rate limit, and sends
 nothing for a session that has ended, a revoked membership, or a signed-out device, because the host
-does not learn about these. It makes the APNs alert itself, with "OpenBot" as the only text,
+does not learn about these. It makes the APNs alert itself, with "Whilo" as the only text,
 `mutable-content`, the sound, and the sealed bytes. It stores and logs nothing. A `410` answer, from
 the Worker or Apple, removes the registration.
 
@@ -160,7 +160,7 @@ Archiving stops channel work and retains its records. Restore makes the chat ava
 A channel can have a picture. `channel_json` keeps an optional icon (`{ name, hue }`) and an
 optional `imageUrl`. A channel save keeps both when its draft has no `icon` key. The image is a file
 for each version under `userData/avatars/channels/<sha256(channel id)>/`, served as
-`openbot-avatar://channel/<id>?v=<version>&type=<mime>`. `ChannelService.setImage` writes the new file,
+`whilo-avatar://channel/<id>?v=<version>&type=<mime>`. `ChannelService.setImage` writes the new file,
 commits the URL, and then removes the old file. Archiving keeps the file; only the permanent
 delete of the channel records removes the folder. An icon or
 color choice removes the image. A name or hue that this version does not know shows the member
@@ -226,7 +226,7 @@ the user. `list_channels` lists the open channels with their lead and members.
 `send_to_channel` posts one request (`ChannelService.handoff`): a complete brief, optional
 recipient agents, and optional file paths that the channel copies as attachments. The message has
 the sending agent as a member author with the id `agent:<agentId>`. The assignment of a root task
-from it starts with "Request from OpenBot teammate <name> (<agentId>)" (`assignmentText`), so the
+from it starts with "Request from Whilo teammate <name> (<agentId>)" (`assignmentText`), so the
 member does not read the agent's words as the user's. A follow-up under that line names its
 sender, such as "Follow-up from the user". Routing is the same as for a person's request: each named recipient and each opening @mention gets a root task, and with none the
 lead routes it. A channel without a lead refuses a request that names nobody
@@ -401,7 +401,7 @@ posted a `channel_result`: the result is the answer of that turn.
   review does. When the lead's provider or model is not available, the summary uses the model of
   another visible member (#3957).
 - An isolated channel (`Channel.isolated`, off by default, in `channel_json`, so no migration) keeps
-  what its members learn there (#4332). `OpenBotToolRouter` saves `openbot.remember` of a channel turn
+  what its members learn there (#4332). `OpenBotToolRouter` saves `whilo.remember` of a channel turn
   as a channel memory (`channel_remember`), and refuses a `memoryId`, so a channel cannot change an
   agent memory. Agent memories still reach the channel. The packet gives `isolated: true` in the
   channel facts with a rule line, and a line when a person turns it off. A save without the field
@@ -502,16 +502,16 @@ No account API, Signal, IPC contract, or database migration changes are required
 The agents of a computer can answer in an external chat platform: Slack, Discord (see **Discord**
 below), Telegram and WhatsApp (see **WhatsApp** below). [messaging.md](../messaging.md) has the setup, the limits and how to add a
 platform. Every workspace
-installs the one OpenBot Slack app (`apps/slack-app`), and the workspace is linked to the host that
-connected it. People mention @OpenBot or send it a direct message. The workspace's Slack Orchestrator,
+installs the one Whilo Slack app (`apps/slack-app`), and the workspace is linked to the host that
+connected it. People mention @Whilo or send it a direct message. The workspace's Slack Orchestrator,
 an agent that the connect dialog adds, receives each new conversation, asks its teammates and posts
-the answer. Every answer comes from OpenBot.
+the answer. Every answer comes from Whilo.
 
 - **Install.** The desktop asks `POST /v2/slack/authorize` for Slack's install URL, with a one-use host
   key. The Worker exchanges the code at `/v2/slack/callback`, because the app's client secret lives
   there. It links the workspace to the host in D1 (`slack_workspace_routes`: team, host, account; no
-  token) and seals the bot token to the host key (`@openbot/contracts/slack-workspace-grant`). The
-  page `/slack/connect` opens `openbot://slack-workspace`. Only the account that linked a workspace
+  token) and seals the bot token to the host key (`@whilo/contracts/slack-workspace-grant`). The
+  page `/slack/connect` opens `whilo://slack-workspace`. Only the account that linked a workspace
   can move it to another of its hosts; another account gets `slack_workspace_taken`.
 - **Events.** Slack posts every workspace's events and button presses to one URL,
   `https://signal.openbot.run/v1/slack/events`. Signal checks Slack's signature with the app's
@@ -530,9 +530,9 @@ the answer. Every answer comes from OpenBot.
   like `/v2/remote/resume/validate`) which links of each ticket D1 still has. The host trusts a delivery because Signal checked the signature; no host has the
   signing secret.
 
-Telegram uses the same socket with one difference: one OpenBot bot serves every user, so its token
+Telegram uses the same socket with one difference: one Whilo bot serves every user, so its token
 must not reach any host. Only Signal has it (`TELEGRAM_BOT_TOKENS`), and the contract is
-`@openbot/contracts/signal-protocol/telegram-route`.
+`@whilo/contracts/signal-protocol/telegram-route`.
 
 - **Link.** A connection is one chat. The desktop asks `POST /v2/remote/hosts/<id>/telegram-link`
   (machine token) for a one-use code, and opens `t.me/<bot>?startgroup=<code>` or `?start=<code>`.
@@ -547,7 +547,7 @@ must not reach any host. Only Signal has it (`TELEGRAM_BOT_TOKENS`), and the con
   secret header that Signal derives for each bot. Signal reads only the chat ID, a link code and a
   callback query ID, and sends `telegram-delivery` to the socket that holds the chat. It always
   answers 200: Telegram would hold back the bot's other chats behind one offline host. The Telegram
-  route ticket (`telegramRoute` in the hello, audience `openbot-telegram-route`, the Slack route key)
+  route ticket (`telegramRoute` in the hello, audience `whilo-telegram-route`, the Slack route key)
   and `telegram-route-revoked` work as the Slack ones do.
 - **Calls.** The host sends `telegram-call` only to a Signal whose `ready` names the `telegram`
   capability, because Signal closes a socket on a frame it does not know. Signal accepts only the
@@ -609,7 +609,7 @@ transport for its events. `messaging-types.ts` is the seam; the core never reads
   `MessagingService.#receive` names each user mention (`InboundMessage.mentionedUserIds`) with the
   adapter's name cache; the adapters do the same for context messages.
 - **Tools.** `messaging_remember`, `messaging_forget_memory` and `messaging_history` are deferred
-  `openbot` tools. `OpenBotToolRouter` finds the link from the calling turn's execution thread and
+  `whilo` tools. `OpenBotToolRouter` finds the link from the calling turn's execution thread and
   refuses a call from any other thread; no argument names a connection or a channel. The history
   tool calls the adapter's `recent` through `MessagingThreads.setHistorySource`. A fact is not saved
   from a direct message. The two outbound tools, `messaging_list_places` and `messaging_post`, are
@@ -625,46 +625,46 @@ transport for its events. `messaging-types.ts` is the seam; the core never reads
 - **Approvals and stop.** An approval of a messaging thread is also posted with buttons. Only the
   Slack user whose message started the turn can answer or stop it; the host can always answer. The
   button value is a random token that exists only in memory.
-- **Channels.** When a connection starts, OpenBot joins every public channel it is not in
+- **Channels.** When a connection starts, Whilo joins every public channel it is not in
   (`conversations.list`, `conversations.join`, scope `channels:join`), so people can mention it with
   no invitation. It joins each new public channel on `channel_created`. A private channel needs
   `/invite`.
 - **Deduplication.** An in-memory set drops a redelivered event at once; the mailbox idempotency key
   covers a restart, and a kept event that Signal sends again. Events that arrive while no socket is
   open are lost after Slack's retries, except for a hosted server that starts. A message that does
-  not address OpenBot gets 200 from Signal and is lost at once; other events get 503. Slack turns
+  not address Whilo gets 200 from Signal and is lost at once; other events get 503. Slack turns
   off events for the whole app when more than 95% of deliveries fail for 60 minutes, and a computer
   that is off would otherwise fail every channel message of its workspace.
 - **Screen.** **Marketplace → Apps → Slack** on the computer that runs the agents shows
   each workspace and its orchestrator, and a two-step dialog connects the workspace and adds the
   orchestrator on the model the user picks (`messaging:*`). A remote server shows no Slack page,
   because the install returns to the host's own browser. A live connection does not count as use:
-  a hosted server sleeps, and Signal starts it for the next message that addresses OpenBot and keeps
+  a hosted server sleeps, and Signal starts it for the next message that addresses Whilo and keeps
   that message, sealed to the host, until the host connects
   ([Connector events](../hosted-servers.md#connector-events)). **Apps → Discord** is the same page for Discord
   (`SlackIntegrationPanel` with `platform="discord"`). **Apps → Telegram** has its own page
   (`TelegramIntegrationPanel`), with one row per chat and one orchestrator for all chats.
 
-**Discord.** Every guild installs the one OpenBot Discord app (`apps/discord-app`), and a guild is a
+**Discord.** Every guild installs the one Whilo Discord app (`apps/discord-app`), and a guild is a
 connection with its own Discord Orchestrator (`discord-orchestrator.ts`). Discord pushes a bot's
 messages only over its Gateway WebSocket, and the bot token cannot go to each host, so Signal holds
 the token and does the platform work for the hosts:
 
 - **Install.** As for Slack: `POST /v2/discord/authorize`, `/v2/discord/callback` (scope `bot`, the
   Worker exchanges the code, revokes the user token it gets, and links the guild in D1
-  `discord_guild_routes`), the page `/discord/connect` and `openbot://discord-guild`. The sealed grant
-  (`@openbot/contracts/discord-guild-grant`, on `host-grant.ts`) names the guild and holds no token.
+  `discord_guild_routes`), the page `/discord/connect` and `whilo://discord-guild`. The sealed grant
+  (`@whilo/contracts/discord-guild-grant`, on `host-grant.ts`) names the guild and holds no token.
   Another account gets `discord_guild_taken`.
 - **Events.** Signal keeps one Gateway connection (`@discordjs/ws`) with the guilds, guild messages
   and direct messages intents, and no privileged intent. It passes on only a guild message that
-  mentions the bot or the bot's own role, and a press of an OpenBot button, which it acknowledges to
+  mentions the bot or the bot's own role, and a press of an Whilo button, which it acknowledges to
   Discord at once. Discord makes that role, with the bot's name, when the bot joins a guild, and its
   autocomplete can choose it instead of the bot. Signal finds the role by its `tags.bot_id` in the
   guild and role events, and keeps only its ID in memory. It normalizes each message into
-  `DiscordDelivery` (`@openbot/contracts/signal-protocol/discord-api`), takes the bot's own mention
+  `DiscordDelivery` (`@whilo/contracts/signal-protocol/discord-api`), takes the bot's own mention
   and role mention out, and sends a `discord-delivery` frame to the `ingress` socket that holds a
   Discord route ticket for the guild. The ticket mirrors the Slack one (audience
-  `openbot-discord-route`, `/v2/remote/hosts/:id/discord-route`, `discord-route-revoked`,
+  `whilo-discord-route`, `/v2/remote/hosts/:id/discord-route`, `discord-route-revoked`,
   `/v2/remote/discord-route/validate`). The socket asks for a route only for the platforms whose
   connections hold it.
 - **Removal.** When the bot leaves a guild, Signal drops its route and asks the account service to
@@ -683,16 +683,16 @@ the token and does the platform work for the hosts:
   of that guild, and makes the call with `@discordjs/rest`. A new text post allows only user mentions,
   so it pings each user that it mentions, never a role or `@everyone`. Other posts and edits ping
   nobody. Attachments are signed CDN addresses, which the host downloads directly.
-- **Conversations.** A conversation is a reply chain, keyed by its first message. Every OpenBot post
-  replies to that message, so a reply to an OpenBot post names the conversation through the replied
+- **Conversations.** A conversation is a reply chain, keyed by its first message. Every Whilo post
+  replies to that message, so a reply to an Whilo post names the conversation through the replied
   post's own reference. A direct message has no guild, so Signal answers it once with a fixed line.
 
 **WhatsApp.** A WhatsApp number links as a device of the host, so the host holds its own session and
-no OpenBot service takes part: no Signal route, no account service row, no route ticket. A connection
+no Whilo service takes part: no Signal route, no account service row, no route ticket. A connection
 is one linked number (`workspace_id` is the number in digits).
 
 - **Client.** `packages/whatsapp` vendors Baileys v7.0.0-rc14 (MIT) without its copyleft parts
-  (`libsignal`, `whatsapp-rust-bridge`); `src/signal/` is OpenBot's clean-room Signal code, and
+  (`libsignal`, `whatsapp-rust-bridge`); `src/signal/` is Whilo's clean-room Signal code, and
   `signal-repository.ts` gives it to Baileys as its `SignalRepository`. See
   [packages/whatsapp/README.md](../../packages/whatsapp/README.md). The main bundle includes the
   vendor; type checks read it only through its generated declarations.
@@ -719,8 +719,8 @@ is one linked number (`workspace_id` is the number in digits).
   connection starts.
 - **Senders.** `whatsapp-senders.ts` applies the rules before anything shows that a message was seen.
   The owner's own chat always counts. On the owner's personal number (the default) nobody else counts
-  unless the owner allowed them, and OpenBot never writes to anyone first. On a number used only by
-  OpenBot, an unknown direct sender gets one pairing code; at most three requests wait, for an hour,
+  unless the owner allowed them, and Whilo never writes to anyone first. On a number used only by
+  Whilo, an unknown direct sender gets one pairing code; at most three requests wait, for an hour,
   in memory. Groups count only when allowed (migration 51, `projection_messaging_allowed_senders`).
 - **Messages.** `whatsapp-events.ts` turns a message into an `InboundMessage`: a direct chat is
   keyed by the phone number (LID forms are mapped through `remoteJidAlt`, `participantAlt` and the

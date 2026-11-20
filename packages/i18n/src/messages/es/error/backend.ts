@@ -60,13 +60,13 @@ export const messages = {
   "error.backend.sunshineNotReadyReason": "Sunshine no llegó a estar listo. {reason}",
   "error.backend.channelLeadModelUnavailable": "El modelo del coordinador del canal no está disponible.",
   "error.backend.contextCompactionIneffective":
-    "La compactación no reduce este chat: tras dos compactaciones aún usa el {percent}% de la ventana de contexto del modelo, así que OpenBot deja de compactarlo. Las herramientas y las instrucciones usan la mayor parte de la ventana. Desactiva los servidores MCP o el uso del ordenador que este agente no necesita, o elige un modelo con una ventana mayor. Después, inicia un chat nuevo.",
+    "La compactación no reduce este chat: tras dos compactaciones aún usa el {percent}% de la ventana de contexto del modelo, así que Whilo deja de compactarlo. Las herramientas y las instrucciones usan la mayor parte de la ventana. Desactiva los servidores MCP o el uso del ordenador que este agente no necesita, o elige un modelo con una ventana mayor. Después, inicia un chat nuevo.",
   "error.backend.contextCompactionStopped":
-    "Dos compactaciones seguidas de este chat fallaron, así que OpenBot deja de compactarlo automáticamente. Cada intento envía todo el chat al modelo y consume el límite de tu plan. Selecciona «Compactar ahora» para intentarlo de nuevo o inicia un chat nuevo.",
+    "Dos compactaciones seguidas de este chat fallaron, así que Whilo deja de compactarlo automáticamente. Cada intento envía todo el chat al modelo y consume el límite de tu plan. Selecciona «Compactar ahora» para intentarlo de nuevo o inicia un chat nuevo.",
   "error.backend.providerRetrying":
     "El proveedor falló esta solicitud {attempts} veces y lo vuelve a intentar. Si el agente no continúa, detén el turno.",
   "error.backend.providerRetryingLargeContext":
-    "El proveedor falló esta solicitud {attempts} veces y lo vuelve a intentar. Este chat usa el {percent}% de la ventana de contexto del modelo. Si el agente no continúa, detén el turno: OpenBot compactará el chat antes del siguiente mensaje.",
+    "El proveedor falló esta solicitud {attempts} veces y lo vuelve a intentar. Este chat usa el {percent}% de la ventana de contexto del modelo. Si el agente no continúa, detén el turno: Whilo compactará el chat antes del siguiente mensaje.",
   "error.backend.sharedDataUnavailable": "Los datos compartidos no están disponibles.",
   "error.backend.shuttingDown": "Whilo se está cerrando.",
   "error.backend.channelUnconfirmedStart":

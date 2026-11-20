@@ -2,8 +2,8 @@ import {
   assertSupportedAttachmentName,
   isSupportedAttachmentNameFor,
   rasterImageMimeType,
-} from "@openbot/contracts/attachment-files";
-import { isAvatarMimeType } from "@openbot/contracts/avatar-images";
+} from "@whilo/contracts/attachment-files";
+import { isAvatarMimeType } from "@whilo/contracts/avatar-images";
 import type {
   AccountUsage,
   AgentColors,
@@ -54,7 +54,7 @@ import type {
   UpdateQueuedMessageInput,
   UpdateRoutineInput,
   WorkspaceDirectory,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   canAdministerServer,
   decodeAgentFastModels,
@@ -73,64 +73,64 @@ import {
   isTeamPresenceSnapshot,
   withFastServiceTiers,
   withModelListings,
-} from "@openbot/contracts/ipc";
-import { guardedListDecoder, optionalHistoryExtent, requiredString } from "@openbot/contracts/ipc-decoding";
-import { isDynamicRecord, isNumber, isString } from "@openbot/contracts/runtime-values";
-import { TEAM_API_ROUTES } from "@openbot/contracts/team-api-routes";
-import { AGENT_COLORS_CAPABILITY } from "@openbot/contracts/team-protocol/agent-colors-v1";
+} from "@whilo/contracts/ipc";
+import { guardedListDecoder, optionalHistoryExtent, requiredString } from "@whilo/contracts/ipc-decoding";
+import { isDynamicRecord, isNumber, isString } from "@whilo/contracts/runtime-values";
+import { TEAM_API_ROUTES } from "@whilo/contracts/team-api-routes";
+import { AGENT_COLORS_CAPABILITY } from "@whilo/contracts/team-protocol/agent-colors-v1";
 import {
   AGENT_FAST_MODE_CAPABILITY,
   AGENT_FAST_MODE_ROUTES,
-} from "@openbot/contracts/team-protocol/agent-fast-mode-v1";
-import { AGENT_NOTIFICATION_LEVELS_CAPABILITY } from "@openbot/contracts/team-protocol/agent-notification-levels-v1";
+} from "@whilo/contracts/team-protocol/agent-fast-mode-v1";
+import { AGENT_NOTIFICATION_LEVELS_CAPABILITY } from "@whilo/contracts/team-protocol/agent-notification-levels-v1";
 import {
   BROWSER_PAGE_STATE_CAPABILITY,
   BROWSER_PAGE_STATE_ROUTES,
   decodeBrowserPageStateSnapshot,
-} from "@openbot/contracts/team-protocol/browser-page-state-v1";
+} from "@whilo/contracts/team-protocol/browser-page-state-v1";
 import {
   BROWSER_USER_CONTROL_CAPABILITY,
   BROWSER_USER_CONTROL_ROUTES,
   decodeBrowserUserControlSnapshot,
-} from "@openbot/contracts/team-protocol/browser-user-control-v1";
+} from "@whilo/contracts/team-protocol/browser-user-control-v1";
 import {
   decodeBrowserViewInputValue,
   TEAM_BROWSER_VIEW_CLIPBOARD_CAPABILITY,
   TEAM_BROWSER_VIEW_FRAME_POINT_CAPABILITY,
-} from "@openbot/contracts/team-protocol/browser-view-v1";
-import { CHAT_COLORS_CAPABILITY } from "@openbot/contracts/team-protocol/chat-colors-v1";
-import { TEAM_BROWSER_NAVIGATION_CAPABILITY } from "@openbot/contracts/team-protocol/current";
-import { FOCUS_USE_ROUTES } from "@openbot/contracts/team-protocol/focus-use-v1";
-import { MESSAGE_DELETE_CAPABILITY, MESSAGE_DELETE_ROUTES } from "@openbot/contracts/team-protocol/message-delete-v1";
+} from "@whilo/contracts/team-protocol/browser-view-v1";
+import { CHAT_COLORS_CAPABILITY } from "@whilo/contracts/team-protocol/chat-colors-v1";
+import { TEAM_BROWSER_NAVIGATION_CAPABILITY } from "@whilo/contracts/team-protocol/current";
+import { FOCUS_USE_ROUTES } from "@whilo/contracts/team-protocol/focus-use-v1";
+import { MESSAGE_DELETE_CAPABILITY, MESSAGE_DELETE_ROUTES } from "@whilo/contracts/team-protocol/message-delete-v1";
 import {
   MODEL_VISIBILITY_CAPABILITY,
   MODEL_VISIBILITY_ROUTES,
-} from "@openbot/contracts/team-protocol/model-visibility-v1";
-import { PROVIDER_ACCOUNTS_CAPABILITY } from "@openbot/contracts/team-protocol/provider-accounts-v1";
-import { ROUTINE_FLOWS_CAPABILITY } from "@openbot/contracts/team-protocol/routine-flows-v1";
+} from "@whilo/contracts/team-protocol/model-visibility-v1";
+import { PROVIDER_ACCOUNTS_CAPABILITY } from "@whilo/contracts/team-protocol/provider-accounts-v1";
+import { ROUTINE_FLOWS_CAPABILITY } from "@whilo/contracts/team-protocol/routine-flows-v1";
 import {
   SIDEBAR_FOLDERS_CAPABILITY,
   SIDEBAR_FOLDERS_ROUTES,
-} from "@openbot/contracts/team-protocol/sidebar-folders-v1";
-import { type TeamProtocolSupportV1, teamProtocolUpdateDirection } from "@openbot/contracts/team-protocol/v1";
-import { TEAM_PROTOCOL_V2_MAX_FILE_BYTES, type TeamProtocolV2Json } from "@openbot/contracts/team-protocol/v2";
-import { TEAM_PROTOCOL_V3 } from "@openbot/contracts/team-protocol/v3";
-import { decodeTeamProtocolSupportV9 } from "@openbot/contracts/team-protocol/v9";
+} from "@whilo/contracts/team-protocol/sidebar-folders-v1";
+import { type TeamProtocolSupportV1, teamProtocolUpdateDirection } from "@whilo/contracts/team-protocol/v1";
+import { TEAM_PROTOCOL_V2_MAX_FILE_BYTES, type TeamProtocolV2Json } from "@whilo/contracts/team-protocol/v2";
+import { TEAM_PROTOCOL_V3 } from "@whilo/contracts/team-protocol/v3";
+import { decodeTeamProtocolSupportV9 } from "@whilo/contracts/team-protocol/v9";
 import {
   WORKSPACE_DIRECTORY_CAPABILITY,
   WORKSPACE_DIRECTORY_ROUTES,
-} from "@openbot/contracts/team-protocol/workspace-directory-v1";
-import { runTeamEffect } from "@openbot/team-client";
-import { bytesToBase64 } from "@openbot/team-client/base64";
-import { createRemoteBrowserView, type RemoteBrowserView } from "@openbot/team-client/browser-view";
-import { verifyEd25519Base64Url } from "@openbot/team-client/ed25519";
+} from "@whilo/contracts/team-protocol/workspace-directory-v1";
+import { runTeamEffect } from "@whilo/team-client";
+import { bytesToBase64 } from "@whilo/team-client/base64";
+import { createRemoteBrowserView, type RemoteBrowserView } from "@whilo/team-client/browser-view";
+import { verifyEd25519Base64Url } from "@whilo/team-client/ed25519";
 import {
   RemoteDirectoryError,
   RemoteTeamDirectoryClient,
   type RemoteTeamHost,
   type RemoteTeamInvite,
   type RemoteTeamMember,
-} from "@openbot/team-client/remote-directory";
+} from "@whilo/team-client/remote-directory";
 import {
   createRemoteTeamPeer,
   type RemoteFileUpload,
@@ -138,8 +138,8 @@ import {
   type RemoteTeamCommandResult,
   type RemoteTeamConnectionUpdate,
   type RemoteTeamPeerActions,
-} from "@openbot/team-client/remote-peer";
-import { remoteWorkspaceReadTimeout } from "@openbot/team-client/remote-recovery";
+} from "@whilo/team-client/remote-peer";
+import { remoteWorkspaceReadTimeout } from "@whilo/team-client/remote-recovery";
 import {
   listAgentNotificationLevels,
   listHiddenAgents,
@@ -154,7 +154,7 @@ import {
   setAgentProviderAccount,
   setOwnServerNotificationLevel,
   setSidebarPins,
-} from "@openbot/team-client/team-admin-requests";
+} from "@whilo/team-client/team-admin-requests";
 import {
   cancelQueuedMessage,
   deleteAgent,
@@ -172,10 +172,10 @@ import {
   teamRoutineFlowsApi,
   updateQueuedMessage,
   uploadAttachmentDraft,
-} from "@openbot/team-client/team-api-requests";
-import type { BrowserViewRuntime } from "@openbot/ui/features/browser/BrowserLiveView";
-import { currentText } from "@openbot/ui/text";
-import { referenceFrom } from "@openbot/user-errors";
+} from "@whilo/team-client/team-api-requests";
+import type { BrowserViewRuntime } from "@whilo/ui/features/browser/BrowserLiveView";
+import { currentText } from "@whilo/ui/text";
+import { referenceFrom } from "@whilo/user-errors";
 import { Effect } from "effect";
 import type { ServerAdminPort } from "../servers/servers-port";
 import {
@@ -352,7 +352,7 @@ export interface WebWorkspaceRuntime {
   ) => Promise<AgentNotificationLevelsSnapshot>;
   react(input: SetMessageReactionInput): Promise<void>;
   setAvatar(agentId: string, image: AvatarImageInput | null): Promise<void>;
-  /** The agent image as a data URL. The browser cannot open the host's `openbot-avatar:` URL. */
+  /** The agent image as a data URL. The browser cannot open the host's `whilo-avatar:` URL. */
   agentAvatar(agentId: string, avatarUrl: string): Promise<string>;
   models(): Promise<ClientAgentModelOption[]>;
   status(): Promise<AgentStatus>;
@@ -422,7 +422,7 @@ interface WebConnectionDependencies {
 }
 
 function hostProtocolKey(accountId: string, hostId: string): string {
-  return `openbot.web.host-protocol:${accountId}:${hostId}`;
+  return `whilo.web.host-protocol:${accountId}:${hostId}`;
 }
 
 function savedHostProtocol(accountId: string, hostId: string): number | undefined {
@@ -432,7 +432,7 @@ function savedHostProtocol(accountId: string, hostId: string): number | undefine
 
 /** Pin after directory validation and before connecting. Never silently replace a saved identity. */
 function pinWebHostKey(accountId: string, host: RemoteTeamHost): void {
-  const key = `openbot.web.host-key:${accountId}:${host.hostId}`;
+  const key = `whilo.web.host-key:${accountId}:${host.hostId}`;
   const pinned = localStorage.getItem(key);
   if (pinned && pinned !== host.devicePublicKey) throw new WebHostConnectionError("identity_changed");
   localStorage.setItem(key, host.devicePublicKey);
@@ -456,8 +456,8 @@ export function createWebWorkspaceRuntime(
     inviteLinks: { allowLocalDevelopmentApiUrl: import.meta.env.DEV },
     verifyHostKeySignature: verifyEd25519Base64Url,
     hostKeys: {
-      get: async (id) => localStorage.getItem(`openbot.web.host-key:${accountId}:${id}`),
-      set: async (id, key) => localStorage.setItem(`openbot.web.host-key:${accountId}:${id}`, key),
+      get: async (id) => localStorage.getItem(`whilo.web.host-key:${accountId}:${id}`),
+      set: async (id, key) => localStorage.setItem(`whilo.web.host-key:${accountId}:${id}`, key),
     },
   });
   let sessionsEnded = false;
@@ -583,7 +583,7 @@ export function createWebWorkspaceRuntime(
   const duplicateOperationIds = new Map<string, string>();
   const completedDraftIdsByHost = new Map<string, Set<string>>();
   const draftCleanupRetryHosts = new Set<string>();
-  // The host names a draft's preview with the desktop `openbot-attachment:` scheme, so a draft image
+  // The host names a draft's preview with the desktop `whilo-attachment:` scheme, so a draft image
   // shows from its local bytes. A discard revokes the URL. A sent draft keeps it until the runtime ends:
   // the pending row of the message shows it until the host's row comes.
   const localDraftPreviews = new Map<string, string>();
@@ -1075,7 +1075,7 @@ export function createWebWorkspaceRuntime(
       const response = await accountFetch(`/api/browser/v2/remote/hosts/${encodeURIComponent(hostId)}`, {
         method: "DELETE",
         credentials: "same-origin",
-        headers: { "X-OpenBot-Browser": "1", "Content-Type": "application/json" },
+        headers: { "X-Whilo-Browser": "1", "Content-Type": "application/json" },
         signal: AbortSignal.timeout(15_000),
       });
       if (!response.ok) throw new Error(currentText().t("server.settings.actionFailed"));

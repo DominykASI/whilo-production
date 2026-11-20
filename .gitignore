@@ -38,7 +38,7 @@ index-*.css
 .whilo-browser-test/
 .whilo-build/
 # The home page beam, a React Bits port. Its license forbids a public copy; CI checks it out
-# from the private nightly-labs/openbot-laser-flow repository.
+# from the private nightly-labs/whilo-laser-flow repository.
 /apps/auth-api/src/vendor/laser-flow/
 .worktrees/
 # Claude Code creates git worktrees here; they carry a nested biome.json.
@@ -67,4 +67,17 @@ keys
 
 # Persistent local development identity and migration recovery.
 .whilo/
-.openbot/
+.whilo/
+
+# Desktop fork working copies and upstream archives: large (multi-GB), never part of the product tree.
+/bots & pets - whilo/
+/.archive-bots-pets-pre-whilo-production-*/
+
+# Local diagnostics and merge-arbitration leftovers.
+/_diag_whilo_*.mjs
+/_inspect_whilo_*.mjs
+/conflicts-manual.txt
+
+# Live secrets and local deploy state. NEVER commit.
+/agentic/
+/.openbot/

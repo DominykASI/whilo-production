@@ -22,10 +22,10 @@ publish:
   provider: github
   # electron-builder writes these values into `app-update.yml`, and electron-updater reads the
   # release feed from them. They must name the repository that holds the releases: the git remote,
-  # `GITHUB_REPOSITORY`, the README download links and every published release use `openbot`.
+  # `GITHUB_REPOSITORY`, the README download links and every published release use `whilo`.
   # Change this pair together with the repository rename if the repository moves to `whilo`.
   owner: nightly-labs
-  repo: openbot
+  repo: whilo
 files:
   - out/**/*
   - package.json
@@ -37,7 +37,7 @@ files:
   # The TypeScript source of Effect. Its package exports point only to `dist`.
   - "!node_modules/effect/src/**/*"
   # Nothing reads the source maps of the dependencies, and they were 150 MB of the 414 MB app.asar.
-  # A hosted server fetches the whole app.asar from its lazy disk before OpenBot can start.
+  # A hosted server fetches the whole app.asar from its lazy disk before Whilo can start.
   - "!node_modules/**/*.map"
 asarUnpack:
   # The database host is loaded by path as a separate process, not required into the main bundle.

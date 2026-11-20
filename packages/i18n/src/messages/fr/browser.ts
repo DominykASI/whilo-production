@@ -180,7 +180,7 @@ export const messages = {
   "browser.proxies.addTitle": "Ajouter un proxy",
   "browser.proxies.editTitle": "Modifier {name}",
   "browser.proxies.dialogDescription":
-    "Utilisez socks5, http ou https. Le nom d’utilisateur et le mot de passe sont facultatifs pour chaque type. Le mot de passe reste chiffré sur l’ordinateur qui exécute OpenBot.",
+    "Utilisez socks5, http ou https. Le nom d’utilisateur et le mot de passe sont facultatifs pour chaque type. Le mot de passe reste chiffré sur l’ordinateur qui exécute Whilo.",
   "browser.proxies.address": "Adresse",
   "browser.proxies.addressPlaceholder": "socks5://user:password@host:1080",
   "browser.proxies.deleteUsed": {
@@ -190,7 +190,7 @@ export const messages = {
   "browser.proxies.deleteUnused": "Aucun profil n’utilise ce proxy.",
   "browser.proxies.failing": "{name} ne répond pas",
   "browser.proxies.signInRefused": "{name} a refusé l’identification",
-  "browser.proxies.unsupported": "Ce serveur ne peut pas utiliser de proxys. Mettez à jour OpenBot sur ce serveur.",
+  "browser.proxies.unsupported": "Ce serveur ne peut pas utiliser de proxys. Mettez à jour Whilo sur ce serveur.",
   "browser.proxies.yourComputer": "Votre ordinateur",
   "browser.proxies.memberComputer": "Ordinateur de {name}",
   "browser.proxies.unknownComputer": "Ordinateur d’un membre",
@@ -201,7 +201,7 @@ export const messages = {
   "browser.proxies.offlineBadge": "{name} est hors ligne",
   "browser.proxies.shareTitle": "Partager la connexion de cet ordinateur ?",
   "browser.proxies.shareDescription":
-    "Les profils qui utilisent votre ordinateur ouvrent les sites publics via la connexion Internet de cet ordinateur. Cela ne fonctionne que tant qu’OpenBot est ouvert ici. Le serveur ne peut pas ouvrir les adresses de votre réseau local.",
+    "Les profils qui utilisent votre ordinateur ouvrent les sites publics via la connexion Internet de cet ordinateur. Cela ne fonctionne que tant qu’Whilo est ouvert ici. Le serveur ne peut pas ouvrir les adresses de votre réseau local.",
   "browser.proxies.share": "Partager",
   "browser.proxies.stopSharing": "Arrêter le partage",
   "browser.proxies.closesTabs": {

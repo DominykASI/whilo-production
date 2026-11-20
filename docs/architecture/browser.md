@@ -163,7 +163,7 @@ person opened keeps its banner, and so does a secret tab. A takeover, user contr
 stops the script of the current page. The site stores the refusal in the profile of the tab, so a
 later tab on that site in the same profile shows no banner either. Banners in frames (for example
 Sourcepoint) are not handled. `bun run test:browser --scenario=cookie-banner` covers it and writes
-`.openbot-build/browser-cookie-banner.json`.
+`.whilo-build/browser-cookie-banner.json`.
 
 ### Fill inspected ordinary fields
 
@@ -309,7 +309,7 @@ settings > Browser profiles and in Agent info > Advanced > Browser profile.
 
 A named profile can use a saved proxy (migration 56: `browser_proxies` and `browser_profile_proxies`).
 Without one it is "Automatic": `{ mode: "system" }`, the proxy settings of the computer that runs
-OpenBot. The shared profile and "Only this agent" are always Automatic. A proxy is one address,
+Whilo. The shared profile and "Only this agent" are always Automatic. A proxy is one address,
 `scheme://[user[:password]@]host[:port]` with socks5, http or https (`parseBrowserProxyAddress`).
 Without a scheme it is http and needs a port: `user:password@host:port` or the
 `host:port:user:password` form of proxy sellers. The password can contain a raw `/`, `#` or `@`.
@@ -351,7 +351,7 @@ A proxy can also be the computer of a member (`kind = 'computer'`, one row for e
 The member selects "Use your computer…" in the Proxy submenu, or Share in the Proxies section, of a
 joined server. The desktop app then stores the server id in `browserEgressServerIds`
 (`remote-server-store.ts`), calls `/v1/admin/browser-proxies/computer`, and opens the
-`openbot.browser-egress.v1` data channel while it is connected (`BrowserEgressClient`). The host binds
+`whilo.browser-egress.v1` data channel while it is connected (`BrowserEgressClient`). The host binds
 the channel to the membership that signed in on that peer (`BrowserEgressHost.peerMemberChanged`);
 the newest open peer of a member carries its connections. A tab of a profile with a computer proxy
 uses the same loopback relay, with `BrowserEgressHost.exit` as its exit: each browser connection

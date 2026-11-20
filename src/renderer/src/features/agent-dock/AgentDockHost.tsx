@@ -1,4 +1,4 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import {
   AGENT_DOCK_LIMITS,
   type AgentDockAgent,
@@ -8,12 +8,12 @@ import {
   type AgentDockResult,
   type AgentDockSeatState,
   isAttachmentSummary,
-} from "@openbot/contracts/ipc";
-import type { AgentMessage, ComposerAgent } from "@openbot/ui/data";
-import { AgentDock, type AgentDockChatModel } from "@openbot/ui/features/agent-dock/AgentDock";
-import { isDockMessage } from "@openbot/ui/features/agent-dock/AgentDockChat";
-import { markdownPlainText } from "@openbot/ui/features/conversation/MarkdownMessageText";
-import type { SidebarAgentState } from "@openbot/ui/features/sidebar/sidebar-types";
+} from "@whilo/contracts/ipc";
+import type { AgentMessage, ComposerAgent } from "@whilo/ui/data";
+import { AgentDock, type AgentDockChatModel } from "@whilo/ui/features/agent-dock/AgentDock";
+import { isDockMessage } from "@whilo/ui/features/agent-dock/AgentDockChat";
+import { markdownPlainText } from "@whilo/ui/features/conversation/MarkdownMessageText";
+import type { SidebarAgentState } from "@whilo/ui/features/sidebar/sidebar-types";
 import { createEffect, createMemo, createSignal, Match, onCleanup, onSettled, Show, Switch } from "solid-js";
 import { appPort } from "../../app-port";
 import { useNavigation } from "../../navigation";

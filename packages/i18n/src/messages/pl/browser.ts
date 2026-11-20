@@ -200,7 +200,7 @@ export const messages = {
   "browser.proxies.addTitle": "Dodaj serwer proxy",
   "browser.proxies.editTitle": "Edytuj {name}",
   "browser.proxies.dialogDescription":
-    "Użyj socks5, http lub https. Nazwa użytkownika i hasło są opcjonalne dla każdego typu. Hasło pozostaje zaszyfrowane na komputerze, na którym działa OpenBot.",
+    "Użyj socks5, http lub https. Nazwa użytkownika i hasło są opcjonalne dla każdego typu. Hasło pozostaje zaszyfrowane na komputerze, na którym działa Whilo.",
   "browser.proxies.address": "Adres",
   "browser.proxies.addressPlaceholder": "socks5://user:password@host:1080",
   "browser.proxies.deleteUsed": {
@@ -212,7 +212,7 @@ export const messages = {
   "browser.proxies.deleteUnused": "Żaden profil nie używa tego serwera proxy.",
   "browser.proxies.failing": "{name} nie odpowiada",
   "browser.proxies.signInRefused": "{name} odrzucił logowanie",
-  "browser.proxies.unsupported": "Ten serwer nie może używać serwerów proxy. Zaktualizuj na nim OpenBot.",
+  "browser.proxies.unsupported": "Ten serwer nie może używać serwerów proxy. Zaktualizuj na nim Whilo.",
   "browser.proxies.yourComputer": "Twój komputer",
   "browser.proxies.memberComputer": "Komputer użytkownika {name}",
   "browser.proxies.unknownComputer": "Komputer członka",
@@ -223,7 +223,7 @@ export const messages = {
   "browser.proxies.offlineBadge": "{name} jest offline",
   "browser.proxies.shareTitle": "Udostępnić połączenie tego komputera?",
   "browser.proxies.shareDescription":
-    "Profile, które używają Twojego komputera, otwierają publiczne witryny przez połączenie internetowe tego komputera. Działa to tylko wtedy, gdy OpenBot jest tu otwarty. Serwer nie może otwierać adresów w Twojej sieci lokalnej.",
+    "Profile, które używają Twojego komputera, otwierają publiczne witryny przez połączenie internetowe tego komputera. Działa to tylko wtedy, gdy Whilo jest tu otwarty. Serwer nie może otwierać adresów w Twojej sieci lokalnej.",
   "browser.proxies.share": "Udostępnij",
   "browser.proxies.stopSharing": "Przestań udostępniać",
   "browser.proxies.closesTabs": {

@@ -219,7 +219,7 @@ async function main(): Promise<void> {
         }),
     );
     const protectedTab = await runCauseEffect(
-      host.open("https://steps-protection.openbot.test/", "fixture-thread", "fixture-agent"),
+      host.open("https://steps-protection.whilo.test/", "fixture-thread", "fixture-agent"),
     );
     const protectedSnapshot = z
       .object({ revision: z.number(), elements: z.array(z.object({ ref: z.string(), name: z.string() })) })

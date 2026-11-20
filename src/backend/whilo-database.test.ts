@@ -329,8 +329,8 @@ describe("WhiloDatabase", () => {
       details: {
         siteId: "site-1",
         title: "Launch page",
-        hostname: "launch-page-23456789ab.openbot.site",
-        url: "https://launch-page-23456789ab.openbot.site",
+        hostname: "launch-page-23456789ab.whilo.site",
+        url: "https://launch-page-23456789ab.whilo.site",
       },
       markerCommandId: "hosted-site-event:chief:operation-1:succeeded",
       createdAt: "2026-09-01T12:00:00.000Z",
@@ -387,8 +387,8 @@ describe("WhiloDatabase", () => {
     const details = {
       siteId: "site-1",
       title: "Launch page",
-      hostname: "launch-page-23456789ab.openbot.site",
-      url: "https://launch-page-23456789ab.openbot.site",
+      hostname: "launch-page-23456789ab.whilo.site",
+      url: "https://launch-page-23456789ab.whilo.site",
     };
     const recordActive = (operationId: string, createdAt: string) => {
       database.recordActiveHostedSiteConversationEvent({
@@ -2450,11 +2450,11 @@ describe("WhiloDatabase", () => {
   // Released builds stored a workflow handoff with the workflow title as `routine.name`. A title can have
   // 160 characters and the guard accepts 80, so the read failed for the whole page and stalled the queue.
   it("reads a workflow handoff that a released build stored with a long title", async () => {
-    const root = await mkdtemp(join(tmpdir(), "openbot-db-long-routine-name-"));
+    const root = await mkdtemp(join(tmpdir(), "whilo-db-long-routine-name-"));
     roots.push(root);
-    const database = new OpenBotDatabase(root);
+    const database = new WhiloDatabase(root);
     await runCauseEffect(database.initialize());
-    const threadId = "openbot-thread-agent-chief";
+    const threadId = "whilo-thread-agent-chief";
     database.connection
       .prepare(
         `INSERT INTO projection_threads (thread_id, agent_id, title, active_turn_id, created_at, updated_at, last_event_sequence)
@@ -4124,8 +4124,8 @@ function seedLegacyAgent(database: DatabaseSync, legacyId: string, workspacePath
     details: {
       siteId: "site-1",
       title: "Launch page",
-      hostname: "launch-page-23456789ab.openbot.site",
-      url: "https://launch-page-23456789ab.openbot.site",
+      hostname: "launch-page-23456789ab.whilo.site",
+      url: "https://launch-page-23456789ab.whilo.site",
     },
     markerCommandId: `hosted-site-event:${legacyId}:operation-1:succeeded`,
     createdAt: "2026-09-01T12:00:00.000Z",

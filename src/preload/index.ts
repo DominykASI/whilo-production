@@ -1,4 +1,4 @@
-import { ATTACHMENT_LIMITS, INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { ATTACHMENT_LIMITS, INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import {
   type AgentIpcRequest,
   type AttachmentImportEvent,

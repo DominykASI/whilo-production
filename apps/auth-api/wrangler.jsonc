@@ -33,7 +33,12 @@
     "required": [
       "REMOTE_TICKET_PRIVATE_JWK",
       "REMOTE_TICKET_PUBLIC_JWKS",
-      "REMOTE_AUTH_WEBHOOK_SECRET"
+      "REMOTE_AUTH_WEBHOOK_SECRET",
+      "STRIPE_SECRET_KEY",
+      "STRIPE_WEBHOOK_SECRET",
+      "BOAT_API_KEY",
+      "BOAT_WEBHOOK_SECRET",
+      "HOSTED_SERVER_TEMPLATE"
     ]
   },
   "vars": {
@@ -95,7 +100,7 @@
   "services": [
     {
       "binding": "EMAIL_RELAY",
-      "service": "openbot-email-relay"
+      "service": "whilo-email-relay"
     }
   ],
   // Cloudflare Email Service sends when the SMTP mailbox surely did not, such as when its hourly limit
@@ -161,7 +166,7 @@
       },
       "vars": {
         // No SMTP account on this deployment, so sign-in returns the code instead of mailing it.
-    "AUTH_EXPOSE_DEVELOPMENT_CODE": "true",
+        "AUTH_EXPOSE_DEVELOPMENT_CODE": "true",
         "EMAIL_SMTP_HOST": "mail.privateemail.com",
         "EMAIL_SMTP_PORT": "465",
         "EMAIL_SMTP_USERNAME": "hello@openbot.run",
@@ -257,7 +262,7 @@
       },
       "vars": {
         // No SMTP account on this deployment, so sign-in returns the code instead of mailing it.
-    "AUTH_EXPOSE_DEVELOPMENT_CODE": "true",
+        "AUTH_EXPOSE_DEVELOPMENT_CODE": "true",
         "EMAIL_SMTP_HOST": "mail.privateemail.com",
         "EMAIL_SMTP_PORT": "465",
         "EMAIL_SMTP_USERNAME": "hello@openbot.run",

@@ -1,8 +1,8 @@
-import type { AppTranslate } from "@openbot/i18n";
+import type { AppTranslate } from "@whilo/i18n";
 import { Menu, type MenuItemConstructorOptions, type NativeImage, Tray } from "electron";
 
 export interface BackgroundTray {
-  /** Shows the icon when OpenBot keeps running after its window closes, and removes it otherwise. */
+  /** Shows the icon when Whilo keeps running after its window closes, and removes it otherwise. */
   sync: (keepRunningInBackground: boolean) => void;
   /** Builds the menu again: a native label cannot be changed in place. */
   relabel: () => void;
@@ -10,7 +10,7 @@ export interface BackgroundTray {
   setIcon: (icon: NativeImage) => void;
   /**
    * The names of the members who control this computer now, one per remote desktop session. While
-   * there is one, the icon shows also when OpenBot does not run in the background, and its menu names
+   * there is one, the icon shows also when Whilo does not run in the background, and its menu names
    * them and can stop all remote control.
    */
   setRemoteControl: (memberNames: readonly string[]) => void;
@@ -24,7 +24,7 @@ export interface BackgroundTray {
  *
  * Linux desktops show the menu on a click and do not report the click, so the menu also opens the
  * window. A desktop with no tray, such as GNOME without an extension, shows nothing: a second
- * launch of OpenBot then shows the window.
+ * launch of Whilo then shows the window.
  */
 export function createBackgroundTray(options: {
   icon: NativeImage;
@@ -72,7 +72,7 @@ export function createBackgroundTray(options: {
     tray = null;
   }
 
-  /** The icon shows while OpenBot runs in the background or a member controls this computer. */
+  /** The icon shows while Whilo runs in the background or a member controls this computer. */
   function update(): void {
     if (!keepRunningInBackground && remoteControl.length === 0) {
       destroy();

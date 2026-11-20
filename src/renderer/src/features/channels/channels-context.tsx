@@ -1,6 +1,6 @@
-import { CHANNEL_CHATS_CAPABILITY, CHANNEL_TASK_CANCEL_CAPABILITY } from "@openbot/contracts/ipc";
-import { CHANNEL_ISOLATION_CAPABILITY } from "@openbot/contracts/team-protocol/channel-isolation-v1";
-import { MESSAGE_DELETE_CAPABILITY } from "@openbot/contracts/team-protocol/message-delete-v1";
+import { CHANNEL_CHATS_CAPABILITY, CHANNEL_TASK_CANCEL_CAPABILITY } from "@whilo/contracts/ipc";
+import { CHANNEL_ISOLATION_CAPABILITY } from "@whilo/contracts/team-protocol/channel-isolation-v1";
+import { MESSAGE_DELETE_CAPABILITY } from "@whilo/contracts/team-protocol/message-delete-v1";
 import { createContext, type ParentProps, untrack, useContext } from "solid-js";
 import { useAuth } from "../account/account-context";
 import { useAgents } from "../agents/agents-context";

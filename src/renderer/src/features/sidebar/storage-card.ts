@@ -46,7 +46,7 @@ function writeDismissed(serverId: string, dismissed: boolean): void {
  * The highest level at which the upgrade dialog showed for each server, on this computer. The dialog
  * shows once at "low" and once more at "full". When space comes back, the record is cleared.
  */
-const UPGRADE_OFFERED_KEY_PREFIX = "openbot:server-upgrade-offered:";
+const UPGRADE_OFFERED_KEY_PREFIX = "whilo:server-upgrade-offered:";
 
 export function readUpgradeOffered(serverId: string): SidebarStorageLevel | null {
   try {

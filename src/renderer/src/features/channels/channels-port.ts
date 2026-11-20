@@ -1,5 +1,5 @@
-import type { AttachmentSummary, FilePreview, OpenBotDesktopApi } from "@openbot/contracts/ipc";
-import type { AttachmentMediaSource } from "@openbot/ui/features/conversation/AttachmentCards";
+import type { AttachmentSummary, FilePreview, OpenBotDesktopApi } from "@whilo/contracts/ipc";
+import type { AttachmentMediaSource } from "@whilo/ui/features/conversation/AttachmentCards";
 import type { ChannelMemoriesApi } from "../conversation/memories-port";
 import type { EventRoutinesApi } from "../conversation/routine-webhooks-api";
 import type { ChannelRoutinesApi } from "../conversation/routines-port";
@@ -50,9 +50,9 @@ export interface ChannelsPort {
   onAttachmentImport?: OpenBotDesktopApi["agent"]["onAttachmentImport"];
 }
 
-/** Read on each call: tests and stories replace `window.openbot` per case. */
+/** Read on each call: tests and stories replace `window.whilo` per case. */
 export function channelsPort(): ChannelsPort {
-  const api = window.openbot;
+  const api = window.whilo;
   return {
     agent: api.agent,
     browser: api.browser,

@@ -6,19 +6,19 @@
 // generic webhook requests that Signal refuses (404, 415, 401, 503) and checks the second event: the
 // answers of that interval only, by status. Then runs the reporter without the OpenPanel client and
 // checks that it stops and sends nothing.
-// Writes .openbot-build/signal-capacity-report/report.json.
+// Writes .whilo-build/signal-capacity-report/report.json.
 import assert from "node:assert/strict";
 import { type ChildProcess, spawn } from "node:child_process";
 import { generateKeyPairSync, randomBytes } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { createServer, type IncomingMessage, type Server } from "node:http";
 import { resolve } from "node:path";
-import { createOpenBotLogger } from "@openbot/logging";
+import { createWhiloLogger } from "@whilo/logging";
 import { exportJWK } from "jose";
 
-const logger = createOpenBotLogger("signal-capacity-report-smoke");
+const logger = createWhiloLogger("signal-capacity-report-smoke");
 const root = resolve(import.meta.dirname, "..");
-const outputDirectory = resolve(root, ".openbot-build/signal-capacity-report");
+const outputDirectory = resolve(root, ".whilo-build/signal-capacity-report");
 const reporterPath = resolve(root, "remote/api/src/capacity-report.ts");
 const metricsToken = randomBytes(24).toString("hex");
 const clientSecret = `sec_${randomBytes(16).toString("hex")}`;
@@ -193,9 +193,9 @@ try {
   const json = { "content-type": "application/json" };
   const signed = {
     ...json,
-    "x-openbot-timestamp": String(Math.floor(Date.now() / 1000)),
-    "x-openbot-delivery-id": "smoke-delivery-1",
-    "x-openbot-signature": `sha256=${"0".repeat(64)}`,
+    "x-whilo-timestamp": String(Math.floor(Date.now() / 1000)),
+    "x-whilo-delivery-id": "smoke-delivery-1",
+    "x-whilo-signature": `sha256=${"0".repeat(64)}`,
   };
   const webhookStatuses = [
     // One character over the route ID limit, so Signal, not the router, answers 404.

@@ -65,7 +65,7 @@ export const messages = {
   "account.login.signInDescription":
     "Oturum açmak veya hesap oluşturmak için e-postanızı kullanın. Size tek kullanımlık bir kod göndereceğiz.",
   "account.login.keyringChangedDescription":
-    "Sistem anahtarlığı son oturumunuzu kaybetti. OpenBot artık oturumları bu bilgisayardaki kendi dosyasında saklıyor. Bir kez daha oturum açın.",
+    "Sistem anahtarlığı son oturumunuzu kaybetti. Whilo artık oturumları bu bilgisayardaki kendi dosyasında saklıyor. Bir kez daha oturum açın.",
   "account.login.codeAccepted": "Kodunuz kabul edildi.",
   "account.login.codeSent": "{email} adresine bir kod gönderdik.",
   "account.login.connectingSecurely": "Güvenli bir şekilde bağlanılıyor…",

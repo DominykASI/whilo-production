@@ -44,7 +44,7 @@ export const messages = defineMessages("error.connector", {
   "error.connector.bitwardenCliInstallFailed":
     "Could not install the Bitwarden CLI on this server. Check its network connection, then connect again.",
   "error.connector.bitwardenFileUnreadable": "The Bitwarden connection file is unreadable.",
-  "error.connector.passwordManagerUnknown": "OpenBot does not know this password manager.",
+  "error.connector.passwordManagerUnknown": "Whilo does not know this password manager.",
   "error.connector.passwordManagerMethod": "This password manager cannot connect this way.",
   "error.connector.passwordManagerNoSignIn": "No sign-in page is open. Connect again.",
   "error.connector.protonPassFailed": "Could not connect Proton Pass. Connect again.",
@@ -59,5 +59,5 @@ export const messages = defineMessages("error.connector", {
   "error.connector.protonPassFileUnreadable": "The Proton Pass connection file is unreadable.",
   "error.connector.protonPassSignInTimeout": "The Proton sign-in took too long. Connect again.",
   "error.connector.protonPassSetupFailed":
-    "Could not make the vault Shared with OpenBot or its access key in Proton Pass. Connect again.",
+    "Could not make the vault Shared with Whilo or its access key in Proton Pass. Connect again.",
 });

@@ -73,8 +73,8 @@ export const messages = {
   "settings.launchAtLogin.description": "Abra o app quando você entrar neste computador.",
   "settings.keepRunning.title": "Manter o Whilo em execução em segundo plano",
   "settings.keepRunning.description": "Mantenha as tarefas ativas em execução após fechar a janela.",
-  "settings.menuBar.title": "Mostrar o OpenBot na barra de menus",
-  "settings.menuBar.description": "Abra ou encerre o OpenBot por um ícone na barra de menus.",
+  "settings.menuBar.title": "Mostrar o Whilo na barra de menus",
+  "settings.menuBar.description": "Abra ou encerre o Whilo por um ícone na barra de menus.",
   "settings.keepAwake.title": "Manter o computador ativo",
   "settings.keepAwake.description":
     "As rotinas rodam no horário enquanto o computador está ligado na tomada. A tela ainda pode desligar.",
@@ -226,13 +226,13 @@ export const messages = {
   "settings.agentDock.show.description": "Mostra seus agentes na borda da tela, prontos para uma conversa rápida.",
   "settings.agentDock.placement.title": "Posição",
   "settings.agentDock.placement.description":
-    "“Sobre outros apps” mantém o dock na tela quando o OpenBot está em segundo plano.",
+    "“Sobre outros apps” mantém o dock na tela quando o Whilo está em segundo plano.",
   "settings.agentDock.placement.screen": "Sobre outros apps",
-  "settings.agentDock.placement.window": "Na janela do OpenBot",
+  "settings.agentDock.placement.window": "Na janela do Whilo",
   "settings.agentDock.display.title": "Tela",
   "settings.agentDock.display.description":
-    "Se essa tela não estiver conectada, o dock vai para a tela da janela do OpenBot.",
-  "settings.agentDock.display.window": "Com a janela do OpenBot",
+    "Se essa tela não estiver conectada, o dock vai para a tela da janela do Whilo.",
+  "settings.agentDock.display.window": "Com a janela do Whilo",
   "settings.agentDock.display.primary": "Tela principal",
   "settings.agentDock.display.all": "Todas as telas",
   "settings.agentDock.display.unnamed": "Tela {number}",
@@ -255,7 +255,7 @@ export const messages = {
   "settings.analytics.webDescription":
     "Ativado: os metadados de uso e confiabilidade vão para o serviço de análise hospedado pelo próprio Whilo com o ID e o e-mail da sua conta. Desativado: os mesmos metadados vão só com um ID de instalação aleatório. Chats, arquivos e prompts nunca são enviados. Esta configuração se aplica a este navegador.",
   "settings.tab.general.title": "Geral",
-  "settings.tab.general.description": "Controle como o OpenBot se comporta neste computador.",
+  "settings.tab.general.description": "Controle como o Whilo se comporta neste computador.",
   "settings.tab.agents.title": "Agentes",
   "settings.tab.agents.description":
     "Escolha o que os agentes deste computador podem fazer quando você não define isso para um agente.",

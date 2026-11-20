@@ -1,7 +1,7 @@
-import type { AgentDockAction, AgentDockPresentation } from "@openbot/contracts/ipc";
-import type { AgentMessage } from "@openbot/ui/data";
-import { AgentDock, type AgentDockChatModel, type AgentDockSeat } from "@openbot/ui/features/agent-dock/AgentDock";
-import { useText } from "@openbot/ui/text";
+import type { AgentDockAction, AgentDockPresentation } from "@whilo/contracts/ipc";
+import type { AgentMessage } from "@whilo/ui/data";
+import { AgentDock, type AgentDockChatModel, type AgentDockSeat } from "@whilo/ui/features/agent-dock/AgentDock";
+import { useText } from "@whilo/ui/text";
 import { createEffect, createMemo, createSignal, onSettled, Show } from "solid-js";
 import { agentDockPort } from "./agent-dock-port";
 import { createAgentDockVoice } from "./agent-dock-voice";

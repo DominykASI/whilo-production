@@ -8,7 +8,7 @@ import { type JSX, Portal } from "@solidjs/web";
 import { createStore, onSettled, Show, untrack } from "solid-js";
 import { App } from "../src/App";
 import { skipStartupSplash } from "../src/AppView";
-import { createMockOpenBot, type MockOpenBotControls, type MockOpenBotOptions } from "../src/preview/mock-openbot";
+import { createMockOpenBot, type MockOpenBotControls, type MockOpenBotOptions } from "../src/preview/mock-whilo";
 import { OpenBotPlayground } from "../src/preview/OpenBotPlayground";
 
 /**

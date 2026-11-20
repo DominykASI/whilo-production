@@ -1,11 +1,11 @@
-import { isKnownAgentProvider } from "@openbot/contracts/agent-providers";
-import type { AgentModelId, AgentProviderId, AgentReasoningEffort, UpdateAgentInput } from "@openbot/contracts/ipc";
-import { findModelOption } from "@openbot/ui/components/provider-accounts";
+import { isKnownAgentProvider } from "@whilo/contracts/agent-providers";
+import type { AgentModelId, AgentProviderId, AgentReasoningEffort, UpdateAgentInput } from "@whilo/contracts/ipc";
+import { findModelOption } from "@whilo/ui/components/provider-accounts";
 import type {
   AgentRuntimeSettings,
   AgentRuntimeSettingsPatch,
-} from "@openbot/ui/features/conversation/AgentSettingsPanel";
-import { currentText } from "@openbot/ui/text";
+} from "@whilo/ui/features/conversation/AgentSettingsPanel";
+import { currentText } from "@whilo/ui/text";
 import { agentConversationKey } from "../conversation-keys";
 import type { ConversationProps, ConversationTarget } from "../conversation-types";
 

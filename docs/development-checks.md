@@ -48,7 +48,7 @@ those counts.
 
 The root `dependencies` are what electron-builder copies into `app.asar`, and what the main and
 preload builds load from `node_modules` at run time. A package that the renderer uses, or that the
-main build bundles (the `@openbot/*` workspaces), goes in `devDependencies`: Vite puts its code in
+main build bundles (the `@whilo/*` workspaces), goes in `devDependencies`: Vite puts its code in
 `out/`, and a copy in `app.asar` only makes each download and hosted server wake larger.
 
 The Signal Dockerfile installs from a pruned checkout with one manifest copy per workspace.

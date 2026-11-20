@@ -130,7 +130,7 @@ body[data-skills-marketplace] :is(.integration-dialog-backdrop, .integration-wiz
 .marketplace-nav-mark > :is(svg, img) {
   width: 100%;
   height: 100%;
-  stroke-width: var(--openbot-icon-stroke-lg);
+  stroke-width: var(--whilo-icon-stroke-lg);
 }
 
 .marketplace-nav-name {
@@ -408,7 +408,7 @@ body[data-skills-marketplace] :is(.integration-dialog-backdrop, .integration-wiz
 .skills-marketplace-icon svg {
   width: 20px;
   height: 20px;
-  stroke-width: var(--openbot-icon-stroke-lg);
+  stroke-width: var(--whilo-icon-stroke-lg);
 }
 
 .marketplace-skill-mark[data-kind="icon"] > img {
@@ -1227,19 +1227,19 @@ html:active-view-transition-type(marketplace-back)::view-transition-new(marketpl
 
 /* A right-to-left page steps the other way. */
 html:dir(rtl):active-view-transition-type(marketplace-forward)::view-transition-old(marketplace-page) {
-  --marketplace-skill-to: var(--openbot-space-2);
+  --marketplace-skill-to: var(--whilo-space-2);
 }
 
 html:dir(rtl):active-view-transition-type(marketplace-forward)::view-transition-new(marketplace-page) {
-  --marketplace-skill-from: calc(var(--openbot-space-2) * -1);
+  --marketplace-skill-from: calc(var(--whilo-space-2) * -1);
 }
 
 html:dir(rtl):active-view-transition-type(marketplace-back)::view-transition-old(marketplace-page) {
-  --marketplace-skill-to: calc(var(--openbot-space-2) * -1);
+  --marketplace-skill-to: calc(var(--whilo-space-2) * -1);
 }
 
 html:dir(rtl):active-view-transition-type(marketplace-back)::view-transition-new(marketplace-page) {
-  --marketplace-skill-from: var(--openbot-space-2);
+  --marketplace-skill-from: var(--whilo-space-2);
 }
 
 /* Another kind in the side panel is a new list, not a step: it rises a little into place. */

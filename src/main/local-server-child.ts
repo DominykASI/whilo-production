@@ -1,5 +1,5 @@
 /**
- * A local server: a second OpenBot server on this computer, which the desktop app starts as a
+ * A local server: a second Whilo server on this computer, which the desktop app starts as a
  * headless child process of itself (`local-servers/local-servers.ts`). It has its own user data
  * directory and its own agent root, so its database, agents, chats and files stay apart from the
  * app's own server. It shows no window and listens only on the loopback Team API.
@@ -28,8 +28,8 @@ import { randomUUID } from "node:crypto";
 import { Socket } from "node:net";
 import { isAbsolute } from "node:path";
 import type { Readable } from "node:stream";
-import type { AgentSummary } from "@openbot/contracts/ipc";
-import { sourceText } from "@openbot/i18n/source";
+import type { AgentSummary } from "@whilo/contracts/ipc";
+import { sourceText } from "@whilo/i18n/source";
 import { Deferred, Effect, Exit, Schema, Semaphore } from "effect";
 import { CentralAuthOperationError } from "./central-auth-effects";
 import { decodeRemoteMembers, type RemoteMemberRecord } from "./central-auth-records";
@@ -87,7 +87,7 @@ export const LOCAL_SERVER_ENVIRONMENT = {
 } as const;
 
 export interface LocalServerChildEnvironment {
-  /** The folder that holds the agents of this server, in place of `~/OpenBot`. */
+  /** The folder that holds the agents of this server, in place of `~/Whilo`. */
   agentRoot: string;
   /** The name of the server when it is made. A rename later goes through the Team API. */
   serverName: string;

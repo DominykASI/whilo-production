@@ -1,9 +1,9 @@
 import { isManagedRuntimeProvider, type ManagedProviderId } from "@whilo/contracts/agent-providers";
 import type {
   AgentProviderId,
-  WhiloDesktopApi,
   ProviderRuntimeSnapshot,
   ProviderRuntimeStatus,
+  WhiloDesktopApi,
 } from "@whilo/contracts/ipc";
 import { clone, type Listener, type MockRuntime } from "./mock-support";
 

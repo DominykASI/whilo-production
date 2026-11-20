@@ -1,4 +1,4 @@
-package run.openbot.sharefiles
+package run.whilo.sharefiles
 
 import android.content.ClipData
 import android.content.Intent

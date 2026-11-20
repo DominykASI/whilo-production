@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { sortConversationMessages } from "@openbot/contracts/conversation-order";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { sortConversationMessages } from "@whilo/contracts/conversation-order";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import type {
   AgentEvent,
   AgentSummary,
@@ -17,12 +17,12 @@ import type {
   RoutineRunConversationEventStatus,
   TestRoutineInput,
   UpdateRoutineInput,
-} from "@openbot/contracts/ipc";
-import { routineConversationEventItemType, routineRunConversationEventItemType } from "@openbot/contracts/ipc";
-import type { EventRoutine } from "@openbot/contracts/ipc-events";
-import { type DynamicRecord, isBoolean } from "@openbot/contracts/runtime-values";
-import { sourceText } from "@openbot/i18n/source";
-import { collapseMissedOccurrences, RoutineInputError } from "@openbot/team-client/routine-schedule";
+} from "@whilo/contracts/ipc";
+import { routineConversationEventItemType, routineRunConversationEventItemType } from "@whilo/contracts/ipc";
+import type { EventRoutine } from "@whilo/contracts/ipc-events";
+import { type DynamicRecord, isBoolean } from "@whilo/contracts/runtime-values";
+import { sourceText } from "@whilo/i18n/source";
+import { collapseMissedOccurrences, RoutineInputError } from "@whilo/team-client/routine-schedule";
 import { Effect, Schema } from "effect";
 import { AgentRoutineStore } from "../agent-routine-store";
 import { AGENT_PREVIEW_MAX_LENGTH, type AgentStore } from "../agent-store";
@@ -541,7 +541,7 @@ export class RoutineScheduler implements RoutineDueSource {
   }
 
   /**
-   * The eight `openbot` routine tools. Returns null when `tool` is not one of them.
+   * The eight `whilo` routine tools. Returns null when `tool` is not one of them.
    *
    * A request the model can correct is a tool failure, not a throw: a throw becomes a provider error
    * toast, although the model's corrected retry then creates the routine. Other errors are faults

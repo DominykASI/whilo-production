@@ -203,7 +203,7 @@ export const messages = {
   "workflow.telegram.anyChat": "Toute discussion liée",
   "workflow.telegram.sameChat": "Comme le déclencheur",
   "workflow.telegram.event": "Événement",
-  "workflow.telegram.event.mention": "OpenBot mentionné",
+  "workflow.telegram.event.mention": "Whilo mentionné",
   "workflow.telegram.text": "Le texte contient",
   "workflow.telegram.anyText": "Tout texte",
   "workflow.telegram.on": "Sur",

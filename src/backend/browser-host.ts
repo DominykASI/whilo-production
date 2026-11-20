@@ -1584,9 +1584,9 @@ export class BrowserHost {
   }
 
   /**
-   * Whether agent code can read what OpenBot fills into the tab's fields of these origins. A page that
+   * Whether agent code can read what Whilo fills into the tab's fields of these origins. A page that
    * a service worker served could run code that a script put in Cache Storage, so that page must
-   * reload after OpenBot clears the origin's Cache Storage and service workers. When no other page of
+   * reload after Whilo clears the origin's Cache Storage and service workers. When no other page of
    * the origin is open in the session, nothing can write that cache again and the origin is clean.
    */
   readonly #agentCodeCanRead = Effect.fn("BrowserHost.agentCodeCanRead")(function* (

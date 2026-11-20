@@ -1,13 +1,13 @@
-import { type ChatWindowTarget, canAdministerServer } from "@openbot/contracts/ipc";
-import { AGENT_HIDDEN_CAPABILITY } from "@openbot/contracts/team-protocol/current";
-import { Sidebar } from "@openbot/ui/features/sidebar/Sidebar";
-import { SidebarCommunityCard } from "@openbot/ui/features/sidebar/SidebarCommunityCard";
-import { SidebarMachineCard } from "@openbot/ui/features/sidebar/SidebarMachineCard";
-import { SidebarMobileAppCard } from "@openbot/ui/features/sidebar/SidebarMobileAppCard";
-import { SidebarStorageCard } from "@openbot/ui/features/sidebar/SidebarStorageCard";
-import { sidebarChannelWaits } from "@openbot/ui/features/sidebar/sidebar-agent-states";
-import { teamMemberName } from "@openbot/ui/features/team/TeamPersonAvatar";
-import { useText } from "@openbot/ui/text";
+import { type ChatWindowTarget, canAdministerServer } from "@whilo/contracts/ipc";
+import { AGENT_HIDDEN_CAPABILITY } from "@whilo/contracts/team-protocol/current";
+import { Sidebar } from "@whilo/ui/features/sidebar/Sidebar";
+import { SidebarCommunityCard } from "@whilo/ui/features/sidebar/SidebarCommunityCard";
+import { SidebarMachineCard } from "@whilo/ui/features/sidebar/SidebarMachineCard";
+import { SidebarMobileAppCard } from "@whilo/ui/features/sidebar/SidebarMobileAppCard";
+import { SidebarStorageCard } from "@whilo/ui/features/sidebar/SidebarStorageCard";
+import { sidebarChannelWaits } from "@whilo/ui/features/sidebar/sidebar-agent-states";
+import { teamMemberName } from "@whilo/ui/features/team/TeamPersonAvatar";
+import { useText } from "@whilo/ui/text";
 import { createEffect, createMemo, createSignal, onSettled, Show } from "solid-js";
 import { appPort } from "../../app-port";
 import { type ChatHistoryEntry, chatHistoryKeys } from "../../chat-history";
@@ -41,7 +41,7 @@ import { createStorageCard } from "./storage-card";
 
 /** Dismissing the mobile app card is a choice of this computer, like the sidebar width. The key is
  * new with the Android release, so a computer that dismissed the iPhone-only card sees it once more. */
-const MOBILE_APP_DISMISSED_STORAGE_KEY = "openbot:mobile-app-card-dismissed";
+const MOBILE_APP_DISMISSED_STORAGE_KEY = "whilo:mobile-app-card-dismissed";
 
 /**
  * The list of Agents and people. It reads the most domains of any pane, and every

@@ -14,12 +14,12 @@ import { supportLog } from "@/features/support/model/support-log";
 import { clearSupportLog, supportLogFileText } from "@/features/support/model/support-log-capture";
 import { useText } from "@/shared/lib/text";
 
-/** The OpenBot Discord community, the same address as the desktop app. Its tickets get the fastest answer. */
-const DISCORD_URL = "https://discord.openbot.run";
-/** The OpenBot account, the same contact as the website. */
-const SUPPORT_X_HANDLE = "@OpenBot_";
-const SUPPORT_X_URL = "https://x.com/OpenBot_";
-const ISSUES_URL = "https://github.com/nightly-labs/openbot/issues/new";
+/** The Whilo Discord community, the same address as the desktop app. Its tickets get the fastest answer. */
+const DISCORD_URL = "https://discord.whilo.onerall.com";
+/** The Whilo account, the same contact as the website. */
+const SUPPORT_X_HANDLE = "@Whilo_";
+const SUPPORT_X_URL = "https://x.com/Whilo_";
+const ISSUES_URL = "https://github.com/nightly-labs/whilo/issues/new";
 
 export function SupportSettingsScreen() {
   const { t } = useText();
@@ -40,7 +40,7 @@ export function SupportSettingsScreen() {
       return;
     }
     setSaving(true);
-    const file = new File(Paths.cache, `openbot-support-log-${new Date().toISOString().replace(/[:.]/gu, "-")}.txt`);
+    const file = new File(Paths.cache, `whilo-support-log-${new Date().toISOString().replace(/[:.]/gu, "-")}.txt`);
     try {
       file.writeSync(supportLogFileText());
       await Sharing.shareAsync(file.uri, {

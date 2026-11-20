@@ -1,3 +1,4 @@
+import { OpenPanelBase, type OpenPanelOptions } from "@openpanel/web";
 import { isKeyOnlyProvider } from "@whilo/contracts/agent-providers";
 import {
   BILLING_CURRENCIES,
@@ -25,7 +26,6 @@ import {
 import { isBoolean, isDynamicRecord, isFunction, isNumber, isOneOf, isString } from "@whilo/contracts/runtime-values";
 import { normalizeEmailAddress } from "@whilo/contracts/validation";
 import { ANALYTICS_GENERATIONS } from "@whilo/telemetry";
-import { OpenPanelBase, type OpenPanelOptions } from "@openpanel/web";
 import {
   ANALYTICS_SCHEMA_VERSION,
   configureDesktopReports,

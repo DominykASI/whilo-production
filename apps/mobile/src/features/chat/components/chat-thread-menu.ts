@@ -1,5 +1,5 @@
-import { avatarHeadColor } from "@openbot/brand/bloub-avatar";
-import type { AvatarColor, AvatarHue } from "@openbot/contracts/ipc";
+import { avatarHeadColor } from "@whilo/brand/bloub-avatar";
+import type { AvatarColor, AvatarHue } from "@whilo/contracts/ipc";
 import { router } from "expo-router";
 import { useMemo } from "react";
 import { useAgentThreadReads } from "@/features/chat/components/use-agent-thread-reads";

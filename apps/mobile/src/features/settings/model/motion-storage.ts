@@ -1,4 +1,4 @@
-import * as SecureStore from "expo-secure-store";
+import * as SecureStore from "../../../shared/lib/persistent-storage";
 import {
   decodeMotionPreferences,
   MOTION_PREFERENCE_NAMES,

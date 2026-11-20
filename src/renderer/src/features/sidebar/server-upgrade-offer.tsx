@@ -3,11 +3,11 @@ import {
   type BillingPlanId,
   type BillingServerPlan,
   isOpenBillingStatus,
-} from "@openbot/contracts/billing";
-import type { ServerSummary } from "@openbot/contracts/ipc";
-import { ServerUpgradeDialog } from "@openbot/ui/features/servers/ServerUpgradeDialog";
-import type { SidebarStorageLevel } from "@openbot/ui/features/sidebar/SidebarStorageCard";
-import { useText } from "@openbot/ui/text";
+} from "@whilo/contracts/billing";
+import type { ServerSummary } from "@whilo/contracts/ipc";
+import { ServerUpgradeDialog } from "@whilo/ui/features/servers/ServerUpgradeDialog";
+import type { SidebarStorageLevel } from "@whilo/ui/features/sidebar/SidebarStorageCard";
+import { useText } from "@whilo/ui/text";
 import { createEffect, createStore, Show, untrack } from "solid-js";
 import { appPort } from "../../app-port";
 import { usePlatform } from "../../platform";

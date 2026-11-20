@@ -21,14 +21,14 @@ import {
   type SessionNotification,
   type SessionUpdate,
 } from "@agentclientprotocol/sdk";
-import { agentProviderName } from "@openbot/contracts/agent-providers";
-import { attachmentMimeTypeForName } from "@openbot/contracts/attachment-files";
-import type { AgentSessionSettingsSnapshot, AgentSessionSettingValue } from "@openbot/contracts/ipc";
-import { type DynamicRecord, isBoolean, isString } from "@openbot/contracts/runtime-values";
-import { sourceText } from "@openbot/i18n/source";
-import { createOpenBotLogger, redactText } from "@openbot/logging";
-import { type CauseCode, classifyFailure, httpStatusCause, structuredCause } from "@openbot/telemetry";
-import { classifyUserError } from "@openbot/user-errors";
+import { agentProviderName } from "@whilo/contracts/agent-providers";
+import { attachmentMimeTypeForName } from "@whilo/contracts/attachment-files";
+import type { AgentSessionSettingsSnapshot, AgentSessionSettingValue } from "@whilo/contracts/ipc";
+import { type DynamicRecord, isBoolean, isString } from "@whilo/contracts/runtime-values";
+import { sourceText } from "@whilo/i18n/source";
+import { createWhiloLogger, redactText } from "@whilo/logging";
+import { type CauseCode, classifyFailure, httpStatusCause, structuredCause } from "@whilo/telemetry";
+import { classifyUserError } from "@whilo/user-errors";
 import { Deferred, Effect, Exit, Fiber, Result, Scope, Semaphore } from "effect";
 import {
   AcpConfiguration,
@@ -112,7 +112,7 @@ import type {
 } from "./provider-history";
 import { TimeoutError } from "./with-timeout";
 
-const logger = createOpenBotLogger("acp-client");
+const logger = createWhiloLogger("acp-client");
 
 /** How long the second `session/load` waits after a failure that lists the sessions (OpenCode). */
 const RESTORE_LIST_RETRY_MS = 500;
@@ -120,7 +120,7 @@ const RESTORE_LIST_RETRY_MS = 500;
 /** How long the second `session/resume` waits while the new process still starts (OpenCode). */
 const RESTORE_START_RETRY_MS = 2_000;
 
-/** How many `session/list` pages OpenBot reads to find a session before it stops looking. */
+/** How many `session/list` pages Whilo reads to find a session before it stops looking. */
 const SESSION_LIST_PAGES = 50;
 
 /** Maximum replay work waiting for the storage consumer before the import fails safely. */
@@ -135,7 +135,7 @@ const ACP_PROMPT_AUDIO_BASE64_BYTES = 19 * 1024 * 1024;
 
 /**
  * How long a turn may send nothing, with no tool call open and no question to the user, before
- * OpenBot ends it. An OpenCode prompt can stay open for an hour with no update (#2858).
+ * Whilo ends it. An OpenCode prompt can stay open for an hour with no update (#2858).
  */
 const ACP_TURN_STALL_MS = 5 * 60_000;
 
@@ -162,18 +162,18 @@ const SESSION_STATE_UPDATES: ReadonlySet<SessionUpdate["sessionUpdate"]> = new S
   "user_message_chunk",
 ]);
 
-/** How long a stopped turn may take to end before OpenBot ends it itself. */
+/** How long a stopped turn may take to end before Whilo ends it itself. */
 const ACP_STOP_GRACE_MS = 10_000;
 
-/** How often OpenBot asks `session/list` whether a session with a background task has changed. */
+/** How often Whilo asks `session/list` whether a session with a background task has changed. */
 const ACP_BACKGROUND_POLL_MS = 2_000;
 
-/** How long OpenBot watches a session after a background task starts or the session last changes. */
+/** How long Whilo watches a session after a background task starts or the session last changes. */
 const ACP_BACKGROUND_WATCH_MS = 30 * 60_000;
 
 /**
  * How long a turn that the agent started for a finished background task may stay unchanged, with
- * no tool call open, before OpenBot ends it. The agent's store changes when that turn ends, but it
+ * no tool call open, before Whilo ends it. The agent's store changes when that turn ends, but it
  * can also stay unchanged while the model writes a long step.
  */
 const ACP_BACKGROUND_TURN_QUIET_MS = 15_000;
@@ -212,7 +212,7 @@ interface AcpTurn {
   /** The agent's process lost its sign-in (`AcpFlavor.signInLostChunk`), and ends after this turn. */
   signInLost: boolean;
   /**
-   * The cause of the failure that ends this turn, when OpenBot knows it better than the error that
+   * The cause of the failure that ends this turn, when Whilo knows it better than the error that
    * the turn ends with: that error is then a sentence for the user. Null: the error decides.
    */
   failureCause: CauseCode | null;
@@ -241,11 +241,11 @@ interface AcpTurn {
   answered: boolean;
   /** Questions and approvals that wait for the user. The turn is not stalled while one is open. */
   waitingOnUser: number;
-  /** OpenBot ended the turn because the agent did not. Its open tool calls get no more updates. */
+  /** Whilo ended the turn because the agent did not. Its open tool calls get no more updates. */
   abandoned: boolean;
   /** The session's total cost in USD at this turn's last `usage_update`, when the agent sends one. */
   reportedCost: number | null;
-  /** The agent started this turn for a finished background task. OpenBot replays it from `session/load`. */
+  /** The agent started this turn for a finished background task. Whilo replays it from `session/load`. */
   unprompted: boolean;
   /** The ACP `messageId` of the last text in `text`, and where that message's text starts in it. */
   textMessageId: string | null;
@@ -280,7 +280,7 @@ interface AcpThread {
   workspaceRoots: string[];
   /** Whether the session got the Computer Use server. Its MCP servers are fixed when it opens. */
   computerUse: boolean;
-  /** The agent whose session this is, named to the MCP servers that OpenBot signed in to. */
+  /** The agent whose session this is, named to the MCP servers that Whilo signed in to. */
   agentId: string | null;
   idleRelease: ReturnType<typeof setTimeout> | null;
   /** Also set when the session was loaded only for a read. */
@@ -289,7 +289,7 @@ interface AcpThread {
   restore: AcpSessionRestore;
   /** The ACP message and tool call IDs that this session already showed (`unsentBackgroundTurns`). */
   shownIds: Set<string>;
-  /** Until when OpenBot watches the session for turns of a background task. 0: no watch. */
+  /** Until when Whilo watches the session for turns of a background task. 0: no watch. */
   backgroundUntil: number;
   /** The session's `updatedAt` in the last `session/list`. */
   backgroundUpdatedAt: string | null;
@@ -366,7 +366,7 @@ interface HistoryReplay {
 }
 
 /**
- * What OpenBot offers every ACP agent in `initialize`. One value, so the trial start that "Check
+ * What Whilo offers every ACP agent in `initialize`. One value, so the trial start that "Check
  * agent" makes (`acp-agent-check.ts`) and the real client cannot differ.
  */
 export const OPENBOT_ACP_CLIENT_CAPABILITIES = {
@@ -376,7 +376,7 @@ export const OPENBOT_ACP_CLIENT_CAPABILITIES = {
   session: { configOptions: { boolean: {} } },
 } as const;
 
-export const OPENBOT_ACP_CLIENT_INFO = { name: "openbot", title: "OpenBot", version: "0.1.0" } as const;
+export const OPENBOT_ACP_CLIENT_INFO = { name: "whilo", title: "Whilo", version: "0.1.0" } as const;
 
 export interface AcpProviderOptions {
   provider: AgentProvider;
@@ -439,7 +439,7 @@ export interface AcpProviderOptions {
    */
   servesModel?: ((modelId: string) => boolean) | undefined;
   /**
-   * The user's own MCP servers, read at spawn. OpenBot's bridge servers are appended after these,
+   * The user's own MCP servers, read at spawn. Whilo's bridge servers are appended after these,
    * so a configuration can never displace the tools the agent depends on.
    */
   mcpServers?: McpServerSource | undefined;
@@ -755,7 +755,7 @@ export class AcpAgentClient extends EventEmitter<ClientEvents> {
           ),
         );
       } catch (error) {
-        // A provider can delete an old session. Stored OpenBot history remains valid, so a read
+        // A provider can delete an old session. Stored Whilo history remains valid, so a read
         // reports the available fragments and leaves the caller to create a replacement session.
         if (error instanceof MissingAcpSessionError) {
           if (stored && durableReplay) yield* readStored(request);
@@ -871,7 +871,7 @@ export class AcpAgentClient extends EventEmitter<ClientEvents> {
 
   #publishSessionSettings(thread: AcpThread): void {
     this.emit("notification", {
-      method: "openbot/sessionSettings/updated",
+      method: "whilo/sessionSettings/updated",
       params: { threadId: thread.id, ...sessionSettingsSnapshot(thread.configOptions) },
     });
   }
@@ -883,7 +883,7 @@ export class AcpAgentClient extends EventEmitter<ClientEvents> {
   #compacted(thread: AcpThread): void {
     thread.instructionsSent = null;
     this.emit("notification", {
-      method: "openbot/context-compaction",
+      method: "whilo/context-compaction",
       params: { threadId: thread.id, status: "completed" },
     });
   }
@@ -1185,7 +1185,7 @@ export class AcpAgentClient extends EventEmitter<ClientEvents> {
         const thread = this.#threads.get(threadId);
         const turn = thread?.activeTurn;
         // A stopped turn drops the message, and an agent that has ended its turn starts the message
-        // as a turn of its own, which OpenBot did not start. The message then waits in the queue.
+        // as a turn of its own, which Whilo did not start. The message then waits in the queue.
         if (!thread || !turn || turn.id !== getString(params, "expectedTurnId") || turn.stopped || turn.completing)
           return yield* providerFailure(new Error(sourceText("error.backend.steerTurnChanged")));
         const blocks = yield* promptBlocksEffect(params, this.#acceptsAudio);
@@ -1489,7 +1489,7 @@ export class AcpAgentClient extends EventEmitter<ClientEvents> {
     return this.#initialization?.agentCapabilities?.promptCapabilities?.audio === true;
   }
 
-  /** Whether the agent can resume without replaying its transcript, and OpenBot uses that resume. */
+  /** Whether the agent can resume without replaying its transcript, and Whilo uses that resume. */
   get #supportsSessionResume(): boolean {
     if (this.#flavor.loadInsteadOfResume) return false;
     return this.#initialization?.agentCapabilities?.sessionCapabilities?.resume != null;
@@ -1611,7 +1611,7 @@ export class AcpAgentClient extends EventEmitter<ClientEvents> {
             let id: string;
             let configOptions: SessionConfigOption[];
             let currentModelId: string | null;
-            // OpenBot's bridge servers last: all providers key MCP servers by name, so a user
+            // Whilo's bridge servers last: all providers key MCP servers by name, so a user
             // configuration that reached one of those names would take the agent's own tools away.
             const handoff = acpMcpServers(
               providerResult(
@@ -1636,7 +1636,7 @@ export class AcpAgentClient extends EventEmitter<ClientEvents> {
                   Effect.sync(() =>
                     this.emit(
                       "diagnostic",
-                      this.#redact(`OpenBot could not turn on its ${this.#label} MCP servers: ${error}`),
+                      this.#redact(`Whilo could not turn on its ${this.#label} MCP servers: ${error}`),
                     ),
                   ),
                 ),
@@ -1665,7 +1665,7 @@ export class AcpAgentClient extends EventEmitter<ClientEvents> {
               configOptions = response.configOptions ?? [];
               currentModelId = currentModelFromSessionSetup(response);
             }
-            // The turn would run with no OpenBot tools, and the model would make up their errors (#3058).
+            // The turn would run with no Whilo tools, and the model would make up their errors (#3058).
             if (this.#flavor.mcpServersLoadWithSession && !mcp.reached())
               throw new Error(sourceText("error.provider.acpMcpNotLoaded", { provider: this.#label }));
             mcp.setThreadId(id);
@@ -1744,7 +1744,7 @@ export class AcpAgentClient extends EventEmitter<ClientEvents> {
    *
    * OpenCode 2.1.1 can fail a `session/resume` in its first seconds with "Internal service failure"
    * and `ServiceUnavailableError`, because its plugins have not started yet (OpenCode issue #57204).
-   * The session is there, and a resume a few seconds later works, so OpenBot tries once more.
+   * The session is there, and a resume a few seconds later works, so Whilo tries once more.
    */
 
   readonly #restoreSessionEffect = Effect.fn("AcpAgentClient.restoreSession")(function* (
@@ -2105,7 +2105,7 @@ export class AcpAgentClient extends EventEmitter<ClientEvents> {
     ) {
       blocks.unshift({
         type: "text",
-        text: `<openbot-developer-instructions>\n${thread.developerInstructions}\n</openbot-developer-instructions>`,
+        text: `<whilo-developer-instructions>\n${thread.developerInstructions}\n</whilo-developer-instructions>`,
       });
       thread.instructionsSent = thread.developerInstructions;
       thread.promptsSinceInstructions = 1;
@@ -2150,7 +2150,7 @@ export class AcpAgentClient extends EventEmitter<ClientEvents> {
     }
   });
 
-  /** A turn of the agent's own ends when OpenBot sees it end, so a message waits for it rather than joining it. */
+  /** A turn of the agent's own ends when Whilo sees it end, so a message waits for it rather than joining it. */
   #turnActiveError(turn: AcpTurn): Error {
     return turn.unprompted
       ? new ProviderTurnActiveError(this.#label)
@@ -2239,7 +2239,7 @@ export class AcpAgentClient extends EventEmitter<ClientEvents> {
       const usage = this.#flavor.promptUsage ? this.#flavor.promptUsage(response) : response.usage;
       if (usage)
         this.emit("notification", {
-          method: "openbot/usage",
+          method: "whilo/usage",
           params: {
             threadId: thread.id,
             turnId: turn.id,
@@ -2336,7 +2336,7 @@ export class AcpAgentClient extends EventEmitter<ClientEvents> {
         // As after any request that timed out, a process that does not answer a probe is ended.
         if (resumed.failure.cause instanceof TimeoutError)
           yield* Effect.forkIn(this.#endIfUnresponsive(thread), this.#scope);
-        logger.warn("OpenBot ended a turn whose prompt got no update.", {
+        logger.warn("Whilo ended a turn whose prompt got no update.", {
           provider: this.provider,
           reason: this.#redact(failureText(resumed.failure.cause)),
         });
@@ -2383,15 +2383,15 @@ export class AcpAgentClient extends EventEmitter<ClientEvents> {
 
   /**
    * Antigravity ends the whole turn when one MCP server does not start, such as a server that asks
-   * for a sign-in that OpenBot does not hold and answers 401 (#3824). The user then cannot use Gemini
+   * for a sign-in that Whilo does not hold and answers 401 (#3824). The user then cannot use Gemini
    * at all until they find and remove the server. Other providers start without that server.
    *
-   * When the failed server is one that OpenBot gave, the user is told which server was left out, and
+   * When the failed server is one that Whilo gave, the user is told which server was left out, and
    * the session opens again without it. The caller then sends the prompt again. Only a failure that
    * came before any output is retried: the user saw nothing of it. Only this session leaves the
    * server out: a new or reopened session gets it again, so a sign-in or a fix takes effect with the
    * fresh sessions that every MCP change starts. A server from the user's own Antigravity
-   * configuration is not OpenBot's to leave out, so its failure stays the turn's error.
+   * configuration is not Whilo's to leave out, so its failure stays the turn's error.
    */
   readonly #leaveOutFailedMcpServer = Effect.fn("AcpAgentClient.leaveOutFailedMcpServer")(function* (
     this: AcpAgentClient,
@@ -2470,7 +2470,7 @@ export class AcpAgentClient extends EventEmitter<ClientEvents> {
     // A compaction replaces the prompt that carried the instructions with a summary. The context
     // shrinks, so a large drop counts as one when the agent sends no compaction update.
     // The update is also the context fill. Its cost is the session's total, which OpenCode sends
-    // before the prompt result. Antigravity sends the last one after a turn that OpenBot already ended.
+    // before the prompt result. Antigravity sends the last one after a turn that Whilo already ended.
     if (update.sessionUpdate === "usage_update") {
       if (thread.contextUsed !== null && update.used < thread.contextUsed * ACP_COMPACTION_CONTEXT_RATIO)
         this.#compacted(thread);
@@ -2828,7 +2828,7 @@ export class AcpAgentClient extends EventEmitter<ClientEvents> {
    * Shows the turns that the agent starts for a finished background task (`unsentBackgroundTurns`).
    * The session's `updatedAt` in `session/list` changes when such a turn starts and when it ends.
    * A `session/load` then replays the session, and its entries after the last one that the chat
-   * showed go through the live update path, in a turn that OpenBot ends when the session is quiet.
+   * showed go through the live update path, in a turn that Whilo ends when the session is quiet.
    */
   readonly #watchBackgroundTurns = Effect.fn("AcpAgentClient.watchBackgroundTurns")(function* (
     this: AcpAgentClient,
@@ -2952,7 +2952,7 @@ export class AcpAgentClient extends EventEmitter<ClientEvents> {
   #applyBackgroundEntries(thread: AcpThread, updates: SessionUpdate[]): void {
     const ids = updates.map(shownEntryId);
     const lastShown = ids.findLastIndex((id) => id !== null && thread.shownIds.has(id));
-    // Without a shown entry, OpenBot cannot tell which part of the session is new.
+    // Without a shown entry, Whilo cannot tell which part of the session is new.
     if (lastShown < 0) return;
     const fresh = new Set(ids.slice(lastShown + 1).filter((id) => id !== null && !thread.shownIds.has(id)));
     if (Date.now() < thread.backgroundSkipUntil) {
@@ -3018,7 +3018,7 @@ export class AcpAgentClient extends EventEmitter<ClientEvents> {
     }
   }
 
-  /** ACP extension notifications. OpenBot reads only OpenCode's updates of its subagents' sessions. */
+  /** ACP extension notifications. Whilo reads only OpenCode's updates of its subagents' sessions. */
   #extNotification(method: string, params: DynamicRecord): void {
     if (method.replace(/^_/, "") !== OPENCODE_CHILD_UPDATE_METHOD || !this.#flavor.childSessionUpdates) return;
     const thread = isString(params.rootSessionId) ? this.#threads.get(params.rootSessionId) : undefined;
@@ -3269,7 +3269,7 @@ export class AcpAgentClient extends EventEmitter<ClientEvents> {
       .call("item/tool/call", params, signal)
       .pipe(toProviderClientOperationError);
     if (!isDynamicToolResult(result))
-      return yield* providerFailure(new Error("OpenBot returned an invalid dynamic tool result."));
+      return yield* providerFailure(new Error("Whilo returned an invalid dynamic tool result."));
     return yield* providerSync(() => result);
   });
 
@@ -3493,7 +3493,7 @@ const HARNESS_ERROR_CHUNK = /^\s*API Error: [^\n]*The response above may be inco
 /**
  * A sign-out: ACP's `authRequired` code, or a failure that names the account, such as `401
  * Unauthorized`. Text that only mentions a token or a login, such as a failed token refresh on a
- * busy network, is not one: Cursor stayed signed in and OpenBot asked for a sign-in (#3796).
+ * busy network, is not one: Cursor stayed signed in and Whilo asked for a sign-in (#3796).
  * Google's refusal of a saved key is one, so the row says that the key was refused (#1913).
  */
 function isAuthenticationError(error: unknown): boolean {

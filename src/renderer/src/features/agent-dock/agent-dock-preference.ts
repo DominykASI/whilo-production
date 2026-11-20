@@ -3,7 +3,7 @@ import {
   type AgentDockDisplay,
   type AgentDockEdge,
   type AgentDockOffset,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import { createSignal } from "solid-js";
 import { z } from "zod";
 
@@ -35,8 +35,8 @@ const DEFAULT_PREFERENCE: AgentDockPreference = {
 };
 
 /* The dock is a choice of this computer, like the sidebar width, so it stays in this profile's storage. */
-const PREFERENCE_KEY = "openbot:agent-dock-preference";
-const SEATS_PREFIX = "openbot:agent-dock:";
+const PREFERENCE_KEY = "whilo:agent-dock-preference";
+const SEATS_PREFIX = "whilo:agent-dock:";
 
 const preferenceSchema = z
   .object({

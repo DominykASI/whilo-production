@@ -10,18 +10,18 @@
 //      the work steps and no error.
 //   3. Quota after a tool step, set to ask: the backup continues the work too, as after a plan limit.
 //   4. As 3, but the first backup's quota is spent too: the next backup continues the same work.
-// `bun run test:antigravity-quota-failover`. Writes .openbot-build/antigravity-quota-failover-e2e/report.json.
+// `bun run test:antigravity-quota-failover`. Writes .whilo-build/antigravity-quota-failover-e2e/report.json.
 import assert from "node:assert/strict";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { AGENT_PROVIDERS, type AgentEvent } from "@openbot/contracts/ipc";
+import { AGENT_PROVIDERS, type AgentEvent } from "@whilo/contracts/ipc";
 import { Effect } from "effect";
 import type { AgentBrowserHost } from "../src/backend/agent/turn-lifecycle";
 
-const OUT = resolve(import.meta.dirname, "../.openbot-build/antigravity-quota-failover-e2e");
-const root = await mkdtemp(join(tmpdir(), "openbot-antigravity-quota-failover-"));
+const OUT = resolve(import.meta.dirname, "../.whilo-build/antigravity-quota-failover-e2e");
+const root = await mkdtemp(join(tmpdir(), "whilo-antigravity-quota-failover-"));
 const userData = join(root, "user-data");
 const home = join(root, "home");
 const install = join(root, "antigravity");
@@ -41,7 +41,7 @@ const { AgentService } = await import("../src/backend/agent-service");
 const { AgentStore } = await import("../src/backend/agent-store");
 const { runCauseEffect } = await import("../src/backend/effect-boundary");
 const { MailboxStore } = await import("../src/backend/mailbox-store");
-const { OpenBotDatabase } = await import("../src/backend/openbot-database");
+const { WhiloDatabase } = await import("../src/backend/whilo-database");
 
 /** An Antigravity ACP server that keeps each session's model and sends a spent quota as 1.4.5 does. */
 const FAKE_AGY = `#!/usr/bin/env node
@@ -161,7 +161,7 @@ function prompts(): Prompt[] {
 await mkdir(join(install, "bin"), { recursive: true });
 await writeFile(join(install, "antigravity-package.json"), `${JSON.stringify({ version: "1.4.5" })}\n`);
 await writeFile(fakeAgy, FAKE_AGY, { mode: 0o755 });
-const database = new OpenBotDatabase(userData);
+const database = new WhiloDatabase(userData);
 const store = new AgentStore(userData, home, database);
 const mailbox = new MailboxStore(userData, store.sharedRoot, store.database);
 const agents = new AgentService({

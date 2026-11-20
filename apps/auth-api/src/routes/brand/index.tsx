@@ -5,7 +5,7 @@ import { OPENBOT_X_HANDLE, type PageSocialImage, pageSocialImageMeta } from "../
 
 const BRAND_SOCIAL_IMAGE: PageSocialImage = {
   path: "/social/brand.jpg",
-  alt: "One idea. More possibilities. OpenBot agents around a glass globe",
+  alt: "One idea. More possibilities. Whilo agents around a glass globe",
 };
 
 export const Route = createFileRoute("/brand/")({
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/brand/")({
         { title },
         { name: "description", content: description },
         { property: "og:type", content: "website" },
-        { property: "og:site_name", content: "OpenBot" },
+        { property: "og:site_name", content: "Whilo" },
         { property: "og:locale", content: "en_US" },
         { property: "og:url", content: url },
         { property: "og:title", content: title },

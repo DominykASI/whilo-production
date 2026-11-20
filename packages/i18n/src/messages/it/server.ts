@@ -243,7 +243,7 @@ export const messages = {
   "server.settings.storageDescription": "Vedi cosa Whilo conserva sul disco di questo server e libera spazio.",
   "server.settings.hostedSitesTitle": "Siti",
   "server.settings.hostedSitesDescription":
-    "I siti statici che gli agenti di questo server hanno pubblicato su openbot.site.",
+    "I siti statici che gli agenti di questo server hanno pubblicato su whilo.site.",
   "server.settings.importTitle": "Importa",
   "server.settings.importDescription": "Sposta i tuoi agenti da Grok Bot o Hermes Agent a questo server.",
   "server.settings.transferTitle": "Trasferimento",
@@ -300,7 +300,7 @@ export const messages = {
   "server.settings.addLogo": "Aggiungi il logo del server",
   "server.settings.removeLogo": "Rimuovi il logo del server",
   "server.settings.access": "Accesso",
-  "server.companySignIn.desktopOnly": "Configura il single sign-on nell’app desktop di OpenBot.",
+  "server.companySignIn.desktopOnly": "Configura il single sign-on nell’app desktop di Whilo.",
   "server.settings.publish": "Pubblica questo server",
   "server.settings.published": "Il server è pubblicato",
   "server.settings.setUpDesktopTitle": "Configura il desktop remoto",
@@ -470,7 +470,7 @@ export const messages = {
   "server.desktop.accessMembers": "Tutti i membri",
   "server.desktop.askLabel": "Chiedi su questo computer",
   "server.desktop.askDescription":
-    "Ogni sessione attende che una persona a questo computer la consenta. Senza risposta entro 30 secondi, OpenBot la rifiuta.",
+    "Ogni sessione attende che una persona a questo computer la consenta. Senza risposta entro 30 secondi, Whilo la rifiuta.",
   "server.desktop.activeTitle": "Sessioni di desktop remoto attive: {active}",
   "server.desktop.activeDescription": "Termina subito ogni sessione. I membri possono chiedere di nuovo.",
   "server.desktop.stopAll": "Interrompi tutto il controllo remoto",
@@ -511,7 +511,7 @@ export const messages = {
   "server.update.path.container":
     "Sull'host Docker, scarica la nuova immagine di Whilo e crea di nuovo il container con gli stessi volumi di dati. Attendi prima la fine del lavoro in corso. Mantieni i volumi esistenti per conservare i tuoi dati.",
   "server.update.path.manual":
-    "Questa installazione non può aggiornarsi da sola. Chiedi all'amministratore dell'host di installare la versione compatibile da github.com/nightly-labs/openbot/releases. Mantieni i dati di Whilo esistenti.",
+    "Questa installazione non può aggiornarsi da sola. Chiedi all'amministratore dell'host di installare la versione compatibile da github.com/nightly-labs/whilo/releases. Mantieni i dati di Whilo esistenti.",
   "server.update.path.unavailable":
     "Questa è una build di sviluppo. Usa una versione di Whilo installata per cercare aggiornamenti.",
   "server.update.check": "Cerca aggiornamenti",

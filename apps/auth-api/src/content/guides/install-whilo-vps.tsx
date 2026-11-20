@@ -23,8 +23,8 @@ export function InstallWhiloVPS() {
       </p>
 
       <p>
-        Have your SSH login details ready, plus access to the email address you use for Whilo. You will also need
-        access to an AI provider when you create an agent. The server installation does not include an AI subscription.
+        Have your SSH login details ready, plus access to the email address you use for Whilo. You will also need access
+        to an AI provider when you create an agent. The server installation does not include an AI subscription.
       </p>
 
       <p>
@@ -90,9 +90,8 @@ export function InstallWhiloVPS() {
       </pre>
 
       <p>
-        The installer downloads the latest released Linux build, verifies its checksum and sets up the Whilo service.
-        On a fresh installation, it creates a separate <code>whilo</code> service user and starts Whilo in the
-        background.
+        The installer downloads the latest released Linux build, verifies its checksum and sets up the Whilo service. On
+        a fresh installation, it creates a separate <code>whilo</code> service user and starts Whilo in the background.
       </p>
 
       <p>Sign in and give the server a name you will recognize in the app:</p>
@@ -102,8 +101,8 @@ export function InstallWhiloVPS() {
       </pre>
 
       <p>
-        Enter the email address for your Whilo account, then the code sent to it. Use the same account when you open
-        the app later.
+        Enter the email address for your Whilo account, then the code sent to it. Use the same account when you open the
+        app later.
       </p>
 
       <p>Check the result:</p>
@@ -140,9 +139,9 @@ export function InstallWhiloVPS() {
       </pre>
 
       <p>
-        Use another new folder name if <code>whilo-vps</code> already exists. The official Compose file uses the
-        latest release image and a persistent data volume. It also includes the security profile and shared-memory
-        setting required by the container.
+        Use another new folder name if <code>whilo-vps</code> already exists. The official Compose file uses the latest
+        release image and a persistent data volume. It also includes the security profile and shared-memory setting
+        required by the container.
       </p>
 
       <p>
@@ -155,9 +154,7 @@ export function InstallWhiloVPS() {
 
       <pre>
         <code>
-          {
-            'sudo docker compose exec whilo whilo login --name "Whilo VPS"\nsudo docker compose exec whilo whilo status'
-          }
+          {'sudo docker compose exec whilo whilo login --name "Whilo VPS"\nsudo docker compose exec whilo whilo status'}
         </code>
       </pre>
 
@@ -174,8 +171,8 @@ export function InstallWhiloVPS() {
       <h2>3. Open the server in Whilo</h2>
 
       <p>
-        Open the Whilo desktop app or <Link to="/app">Whilo in your browser</Link> and sign in to the same account.
-        Find <strong>Whilo VPS</strong> in the server list and select it.
+        Open the Whilo desktop app or <Link to="/app">Whilo in your browser</Link> and sign in to the same account. Find{" "}
+        <strong>Whilo VPS</strong> in the server list and select it.
       </p>
 
       <p>
@@ -196,8 +193,8 @@ export function InstallWhiloVPS() {
       </p>
 
       <p>
-        If this is a new server with no agents, Whilo offers provider setup before the first-agent form. Once
-        connected, create an agent, give it clear instructions and start with a small task.
+        If this is a new server with no agents, Whilo offers provider setup before the first-agent form. Once connected,
+        create an agent, give it clear instructions and start with a small task.
       </p>
 
       <p>For example:</p>
@@ -225,7 +222,7 @@ export function InstallWhiloVPS() {
       <h3>Use Hermes Agent on the server</h3>
 
       <p>
-        Open the server's provider settings and select Download on the Hermes row. OpenBot installs Hermes Agent for its
+        Open the server's provider settings and select Download on the Hermes row. Whilo installs Hermes Agent for its
         service user, then the row shows Connect.
       </p>
 
@@ -237,7 +234,7 @@ export function InstallWhiloVPS() {
       <pre>
         <code>
           {
-            "sudo -u openbot -i bash -c \\\n  'curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash -s -- --non-interactive'\nsudo openbot restart"
+            "sudo -u whilo -i bash -c \\\n  'curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash -s -- --non-interactive'\nsudo whilo restart"
           }
         </code>
       </pre>
@@ -247,7 +244,7 @@ export function InstallWhiloVPS() {
       <pre>
         <code>
           {
-            "sudo docker compose exec openbot bash -c \\\n  'curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash -s -- --non-interactive'\nsudo docker compose restart openbot"
+            "sudo docker compose exec whilo bash -c \\\n  'curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash -s -- --non-interactive'\nsudo docker compose restart whilo"
           }
         </code>
       </pre>
@@ -388,8 +385,8 @@ export function InstallWhiloVPS() {
       <h2>Frequently asked questions</h2>
 
       <p>
-        <strong>Will agents keep working when I close my laptop?</strong> Yes, while Whilo is running on the VPS and
-        the required services remain available. Your laptop is the client; the VPS runs the agents.
+        <strong>Will agents keep working when I close my laptop?</strong> Yes, while Whilo is running on the VPS and the
+        required services remain available. Your laptop is the client; the VPS runs the agents.
       </p>
 
       <p>
@@ -410,3 +407,6 @@ export function InstallWhiloVPS() {
     </>
   );
 }
+
+/** Older pages import this guide under the OpenBot name. */
+export const InstallOpenBotVPS = InstallWhiloVPS;

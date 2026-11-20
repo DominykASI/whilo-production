@@ -3,13 +3,13 @@ import {
   MESSAGING_LIMITS,
   type OpenBotDesktopApi,
   type ServerSummary,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import type {
   WorkflowDiscordServer,
   WorkflowPlace,
   WorkflowSlackWorkspace,
   WorkflowTelegramChat,
-} from "@openbot/ui/features/workflows/workflow-model";
+} from "@whilo/ui/features/workflows/workflow-model";
 import {
   type GitHubConnectorPort,
   githubConnectorPort,
@@ -65,11 +65,11 @@ export interface WorkflowHost {
 }
 
 /**
- * The desktop adapter for one server. `window.openbot` and `server` are read on each call: tests and
+ * The desktop adapter for one server. `window.whilo` and `server` are read on each call: tests and
  * stories replace them per case, and a role can change.
  */
 export function desktopWorkflowHost(serverId: string, server: () => ServerSummary | undefined): WorkflowHost {
-  const api = () => window.openbot.workflows;
+  const api = () => window.whilo.workflows;
   /** A server that has not loaded yet is this computer, as the page reads it. */
   const local = () => server()?.kind !== "remote";
   const githubSupported = () => serverSupportsCapability(server(), "workflows-github-v1");
@@ -101,12 +101,12 @@ export function desktopWorkflowHost(serverId: string, server: () => ServerSummar
       githubRunLastEvent: (input) => api().githubRunLastEvent(input, serverId),
     },
     onChanged(changed) {
-      const unsubscribe = window.openbot.agent.onScopedEvent((scoped) => {
+      const unsubscribe = window.whilo.agent.onScopedEvent((scoped) => {
         if (scoped.serverId !== serverId) return;
         if (scoped.event.type === "workflows-changed") changed(scoped.event.workflowId, scoped.event.agentId);
         else if (scoped.event.type === "agent-access-changed") changed(null);
       });
-      const reconnect = window.openbot.servers.onEvent((servers) => {
+      const reconnect = window.whilo.servers.onEvent((servers) => {
         if (servers.some((server) => server.id === serverId && server.state === "online")) changed(null);
       });
       return () => {
@@ -116,7 +116,7 @@ export function desktopWorkflowHost(serverId: string, server: () => ServerSummar
     },
     async places() {
       if (!local()) return [];
-      const connections = await window.openbot.routineResults.options();
+      const connections = await window.whilo.routineResults.options();
       return connections.flatMap((connection) =>
         connection.places.map((place) => ({
           connectionId: connection.connectionId,
@@ -128,8 +128,8 @@ export function desktopWorkflowHost(serverId: string, server: () => ServerSummar
     async discordServers() {
       if (!local()) return [];
       const [options, overview] = await Promise.all([
-        window.openbot.routineResults.options(),
-        window.openbot.messaging.getDiscordOverview(),
+        window.whilo.routineResults.options(),
+        window.whilo.messaging.getDiscordOverview(),
       ]);
       const discord = options.filter((option) => option.platform === "discord");
       return Promise.all(
@@ -140,7 +140,7 @@ export function desktopWorkflowHost(serverId: string, server: () => ServerSummar
           );
           const guild = guilds.length === 1 ? guilds[0] : undefined;
           const roles = guild
-            ? await window.openbot.messaging.listDiscordRoles({ workspaceId: guild.workspaceId }).then(
+            ? await window.whilo.messaging.listDiscordRoles({ workspaceId: guild.workspaceId }).then(
                 (list) => list.roles,
                 () => [],
               )
@@ -157,14 +157,14 @@ export function desktopWorkflowHost(serverId: string, server: () => ServerSummar
     },
     async telegramChats() {
       if (!local()) return [];
-      const options = await window.openbot.routineResults.options();
+      const options = await window.whilo.routineResults.options();
       return options
         .filter((option) => option.platform === "telegram")
         .map((option) => ({ connectionId: option.connectionId, name: option.connectionName }));
     },
     async slackWorkspaces() {
       if (!local()) return [];
-      const options = await window.openbot.routineResults.options();
+      const options = await window.whilo.routineResults.options();
       return options
         .filter((option) => option.platform === "slack")
         .map((option) => ({
@@ -176,13 +176,13 @@ export function desktopWorkflowHost(serverId: string, server: () => ServerSummar
     },
     async agentLevels() {
       if (local() || serverRoleCanAdminister(server())) return null;
-      return (await window.openbot.hostAdmin.getAgentAccess(serverId)).mine;
+      return (await window.whilo.hostAdmin.getAgentAccess(serverId)).mine;
     },
     githubSupported,
     get githubConnector() {
       return local() ? githubConnectorPort() : hostGitHub;
     },
     hostName: () => (local() ? undefined : server()?.name),
-    openUrl: (url) => window.openbot.openUrl(url),
+    openUrl: (url) => window.whilo.openUrl(url),
   };
 }

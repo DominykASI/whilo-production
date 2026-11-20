@@ -41,7 +41,7 @@ the same. Copy the new URL into the sending service.
 
 In the routine editor, select **Send test event**. The host makes an event that matches the event
 type and the filters, signs it with the routine secret, and receives it as it receives a relayed
-request. The event type is `openbot.test` when the routine accepts all types. The test shows in the
+request. The event type is `whilo.test` when the routine accepts all types. The test shows in the
 history, and a match starts one run. A paused routine does not run. The test does not go through
 the relay, so it does not show whether a sender can reach the URL.
 
@@ -151,7 +151,7 @@ like all routine input. The data cannot give tools to the agent or skip approval
 
 The URL also accepts requests in the [Standard Webhooks](https://www.standardwebhooks.com/) format.
 Composio, Svix, Clerk, and Resend send this format. These senders make their own signing secret, so
-you cannot give them the OpenBot secret:
+you cannot give them the Whilo secret:
 
 1. Copy the URL of the routine into the sender.
 2. Copy the signing secret that the sender shows.
@@ -161,15 +161,15 @@ you cannot give them the OpenBot secret:
 
 | Header | Value |
 | --- | --- |
-| `webhook-id` | A unique ID for this event, with the same rules as `X-OpenBot-Delivery-Id`. |
+| `webhook-id` | A unique ID for this event, with the same rules as `X-Whilo-Delivery-Id`. |
 | `webhook-timestamp` | The current Unix time in seconds. It must be within 5 minutes of the host clock. |
 | `webhook-signature` | One to eight space-separated `v1,<base64 HMAC-SHA256>` values. One value must match. |
 
-Svix also sends these headers with the `svix-` prefix. OpenBot accepts both names. The signed bytes
+Svix also sends these headers with the `svix-` prefix. Whilo accepts both names. The signed bytes
 are `<webhook-id>.<webhook-timestamp>.<body>`. The HMAC key is the base64 data after `whsec_` in the
 secret, as the specification says, or the complete secret as UTF-8 text, as Composio uses it.
 
-The body must be a JSON object with a `type` string. OpenBot reads the request as follows:
+The body must be a JSON object with a `type` string. Whilo reads the request as follows:
 
 | Event field | Value |
 | --- | --- |
@@ -177,8 +177,8 @@ The body must be a JSON object with a `type` string. OpenBot reads the request a
 | `occurredAt` | The `timestamp` field of the body when it is a date string, otherwise the receipt time. |
 | `data` | The complete body. A filter reads it from the root, for example `/metadata/trigger_slug` for a Composio trigger. |
 
-The responses and the retry rules are the same as for the OpenBot format. A host that has an older
-OpenBot version cannot check this format, and the relay answers `401`.
+The responses and the retry rules are the same as for the Whilo format. A host that has an older
+Whilo version cannot check this format, and the relay answers `401`.
 
 ## History
 

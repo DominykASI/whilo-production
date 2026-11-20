@@ -9,8 +9,10 @@ export const PRICING_ROUTE = "/pricing";
 /** The social image. Its alt text is the `sitePage.pricing.imageAlt` key. */
 export const PRICING_SOCIAL_IMAGE_PATH = "/social/pricing.jpg";
 
-/** The plans that no new server can take. Servers that have one keep it. */
-export const SOLD_OUT_PLANS: ReadonlySet<BillingPlanId> = new Set(["starter"]);
+/** Plans blocked from new purchases (operational stock guard). Keep this as the single
+ *  switch; add a BillingPlanId here to stop new sales while existing servers keep it.
+ *  `starter` is intentionally sellable — do not re-add it without a real stock reason. */
+export const SOLD_OUT_PLANS: ReadonlySet<BillingPlanId> = new Set([]);
 
 /** The sitemap date of the page. Change it when its text changes. */
 export const PRICING_PAGE_UPDATED_AT = "2026-10-29";

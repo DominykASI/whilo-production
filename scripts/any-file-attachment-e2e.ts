@@ -8,15 +8,15 @@ import {
   assertSupportedAttachmentName,
   isOpenableAttachmentName,
   isSupportedAttachmentNameFor,
-} from "@openbot/contracts/attachment-files";
+} from "@whilo/contracts/attachment-files";
 import {
   legacyTeamCapabilities,
   TEAM_ANY_FILE_ATTACHMENTS_CAPABILITY,
   TEAM_CURRENT_CAPABILITIES,
   TEAM_PROTOCOL_V9_ONLY_CAPABILITIES,
   teamCapabilitiesForProtocol,
-} from "@openbot/contracts/team-protocol/current";
-import { TEAM_PROTOCOL_V9_CAPABILITY_LIMIT } from "@openbot/contracts/team-protocol/v9";
+} from "@whilo/contracts/team-protocol/current";
+import { TEAM_PROTOCOL_V9_CAPABILITY_LIMIT } from "@whilo/contracts/team-protocol/v9";
 import { Effect } from "effect";
 import { AttachmentFiles } from "../src/backend/attachment-files";
 
@@ -24,7 +24,7 @@ import { AttachmentFiles } from "../src/backend/attachment-files";
 // path. A remote host without any-file-attachments still gets only the known types.
 
 const workspace = dirname(dirname(import.meta.filename));
-const artifactPath = join(workspace, ".openbot-build", "any-file-attachment-e2e", "report.json");
+const artifactPath = join(workspace, ".whilo-build", "any-file-attachment-e2e", "report.json");
 
 function digest(bytes: Uint8Array): string {
   return createHash("sha256").update(bytes).digest("hex");
@@ -35,7 +35,7 @@ const binary = new Uint8Array([0x7f, 0x45, 0x4c, 0x46, 0x00, 0x01, 0xff, 0xfe, 0
 const png = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 
 async function run() {
-  const root = await mkdtemp(join(tmpdir(), "openbot-any-file-attachment-"));
+  const root = await mkdtemp(join(tmpdir(), "whilo-any-file-attachment-"));
   try {
     const sharedRoot = join(root, "shared");
     const files = new AttachmentFiles({ userDataPath: join(root, "user-data"), sharedRoot });

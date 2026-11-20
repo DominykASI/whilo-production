@@ -1,12 +1,12 @@
-import type { AgentApproval, AgentContextState, AgentEvent, AgentTask } from "@openbot/contracts/ipc";
-import { isAgentTaskActive, taskApproval } from "@openbot/team-client/agent-tasks";
-import type { AgentThreadOlderMessages } from "@openbot/ui/features/conversation/threads/AgentThreadView";
+import type { AgentApproval, AgentContextState, AgentEvent, AgentTask } from "@whilo/contracts/ipc";
+import { isAgentTaskActive, taskApproval } from "@whilo/team-client/agent-tasks";
+import type { AgentThreadOlderMessages } from "@whilo/ui/features/conversation/threads/AgentThreadView";
 import {
   activeThreadId,
   type ThreadListsInput,
   threadLists,
-} from "@openbot/ui/features/conversation/threads/thread-items";
-import { DRAFT_THREAD_ID, MAIN_THREAD_ID } from "@openbot/ui/features/conversation/threads/thread-types";
+} from "@whilo/ui/features/conversation/threads/thread-items";
+import { DRAFT_THREAD_ID, MAIN_THREAD_ID } from "@whilo/ui/features/conversation/threads/thread-types";
 import type { AgentTasks } from "../agent-tasks/agent-tasks-state";
 import type {
   BrowserTakeoverRequest,

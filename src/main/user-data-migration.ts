@@ -9,7 +9,7 @@ import { join } from "node:path";
 export interface UserDataDirectoryNames {
   /** The directory this build resolves, such as `Whilo Dev`. */
   current: string;
-  /** The directory the same profile resolved before the rename, such as `OpenBot Dev`. */
+  /** The directory the same profile resolved before the rename, such as `Whilo Dev`. */
   legacy: string;
 }
 

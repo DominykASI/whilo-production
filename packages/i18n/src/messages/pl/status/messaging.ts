@@ -40,7 +40,7 @@ export const messages = {
   "status.messaging.telegramOrchestratorName": "Telegram Orchestrator",
   "status.messaging.telegramOrchestratorTitle": "Odpowiada w Telegramie i pyta zespół",
   "status.messaging.whatsappNoAgent":
-    "Żaden agent nie może tu jeszcze odpowiadać. Dodaj WhatsApp Orchestrator w OpenBot.",
+    "Żaden agent nie może tu jeszcze odpowiadać. Dodaj WhatsApp Orchestrator w Whilo.",
   "status.messaging.whatsappApprovalMenu": "Odpowiedz 1, aby zatwierdzić, lub 2, aby odrzucić.",
   "status.messaging.whatsappStopMenu": "Odpowiedz „stop”, aby zatrzymać.",
   "status.messaging.whatsappPairingCode":
@@ -48,9 +48,9 @@ export const messages = {
   "status.messaging.whatsappPairingApproved": "Możesz teraz wysyłać prośby na ten numer.",
   "status.messaging.whatsappOwnChat": "Wiadomość do siebie",
   "status.messaging.whatsappWelcomeOwn":
-    "👋 *OpenBot jest połączony*\n\nNapisz tutaj, aby poprosić swoich agentów. WhatsApp Orchestrator odpowiada albo przekazuje pracę właściwemu agentowi.\n\nWyślij *stop*, aby zatrzymać prośbę.",
+    "👋 *Whilo jest połączony*\n\nNapisz tutaj, aby poprosić swoich agentów. WhatsApp Orchestrator odpowiada albo przekazuje pracę właściwemu agentowi.\n\nWyślij *stop*, aby zatrzymać prośbę.",
   "status.messaging.whatsappWelcomeDedicated":
-    "👋 *OpenBot jest połączony*\n\nOsoby, na które pozwolisz w OpenBot, mogą już pisać na ten numer. Nowa osoba dostaje kod: zatwierdź go w OpenBot w sekcji Prośby.\n\nWyślij *stop*, aby zatrzymać prośbę.",
+    "👋 *Whilo jest połączony*\n\nOsoby, na które pozwolisz w Whilo, mogą już pisać na ten numer. Nowa osoba dostaje kod: zatwierdź go w Whilo w sekcji Prośby.\n\nWyślij *stop*, aby zatrzymać prośbę.",
   "status.messaging.whatsappOrchestratorName": "WhatsApp Orchestrator",
   "status.messaging.whatsappOrchestratorTitle": "Odpowiada w WhatsApp i pyta zespół",
 } as const satisfies PartialTranslation<typeof source>;

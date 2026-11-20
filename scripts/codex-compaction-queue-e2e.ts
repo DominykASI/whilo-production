@@ -3,28 +3,28 @@
 // service on a temporary profile with a fake Codex app-server that, like Codex 0.160.1, refuses
 // `turn/start` with `ActiveTurnNotSteerable { turn_kind: Compact }` while a compaction turn runs.
 // Four cases: a compaction that ends by itself, one that runs past the start deadline and ends by
-// itself (#3466), one that the run deadline stops, and one that does not stop, so that OpenBot sends
+// itself (#3466), one that the run deadline stops, and one that does not stop, so that Whilo sends
 // a turn that Codex refuses. Then a turn end that fails after it reserved a compaction does not hold
 // the next message (#4960). Then a side thread: the runtime snapshot carries its context, and
 // `compactTaskContext` compacts its session and not the agent's own chat (#3503), and a side thread
 // deleted while it compacts does not hold the agent's own chat. Then a chat whose compactions fail
-// and whose turns grow it each time: OpenBot stops after 2 failures in a row and says so, and the
+// and whose turns grow it each time: Whilo stops after 2 failures in a row and says so, and the
 // messages still run. One such chat compacted every 19 seconds for 7 hours and used up the plan
 // limit. Last, a usage
 // report that Codex sends while the stop ends it does not reach the closed database (#3808).
-// `bun scripts/codex-compaction-queue-e2e.ts`. Writes .openbot-build/codex-compaction-queue-e2e/report.json.
+// `bun scripts/codex-compaction-queue-e2e.ts`. Writes .whilo-build/codex-compaction-queue-e2e/report.json.
 import assert from "node:assert/strict";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { AGENT_PROVIDERS, type AgentEvent } from "@openbot/contracts/ipc";
+import { AGENT_PROVIDERS, type AgentEvent } from "@whilo/contracts/ipc";
 import { Effect } from "effect";
 import type { AgentBrowserHost } from "../src/backend/agent/turn-lifecycle";
 import { getString, isRecord } from "../src/backend/protocol";
 
-const OUT = resolve(import.meta.dirname, "../.openbot-build/codex-compaction-queue-e2e");
-const root = await mkdtemp(join(tmpdir(), "openbot-compaction-queue-"));
+const OUT = resolve(import.meta.dirname, "../.whilo-build/codex-compaction-queue-e2e");
+const root = await mkdtemp(join(tmpdir(), "whilo-compaction-queue-"));
 const userData = join(root, "user-data");
 const home = join(root, "home");
 const logPath = join(root, "protocol.jsonl");
@@ -46,7 +46,7 @@ const { USAGE_CHANGE_DELAY_MS } = await import("../src/backend/agent/context-com
 const { AgentStore } = await import("../src/backend/agent-store");
 const { runCauseEffect } = await import("../src/backend/effect-boundary");
 const { MailboxStore } = await import("../src/backend/mailbox-store");
-const { OpenBotDatabase } = await import("../src/backend/openbot-database");
+const { WhiloDatabase } = await import("../src/backend/whilo-database");
 const { StoredStateFailure } = await import("../src/backend/stored-state-effects");
 
 /**
@@ -75,7 +75,7 @@ process.stdout.on("error", (error) => {
   throw error;
 });
 const write = (message) => process.stdout.write(JSON.stringify(message) + "\\n");
-// Like a Codex in the middle of a turn, it can report usage while OpenBot stops it (#3808).
+// Like a Codex in the middle of a turn, it can report usage while Whilo stops it (#3808).
 process.on("SIGTERM", () => {
   if (!control().usageOnStop) process.exit(0);
   for (let thread = 1; thread <= threads; thread++) {
@@ -171,7 +171,7 @@ process.stdin.on("data", (chunk) => {
 });
 `;
 
-/** One line of the fake Codex log: a message that OpenBot sent, or a fact that the fake reports. */
+/** One line of the fake Codex log: a message that Whilo sent, or a fact that the fake reports. */
 interface ProtocolEntry {
   method: string | null;
   threadId: string | null;
@@ -261,7 +261,7 @@ async function waitFor<T>(label: string, read: () => T | null | undefined | fals
 }
 
 await writeFile(fakeCodex, FAKE_CODEX, { mode: 0o755 });
-const database = new OpenBotDatabase(userData);
+const database = new WhiloDatabase(userData);
 const store = new AgentStore(userData, home, database);
 const mailbox = new MailboxStore(userData, store.sharedRoot, store.database);
 const agents = new AgentService({
@@ -476,7 +476,7 @@ try {
   assert.ok(sideThread.mainContextUnchanged, "side thread: the agent's own context changed");
 
   // A side thread deleted while Codex compacts its session. No turn of the deleted session ends the
-  // compaction for OpenBot, so its hold stayed, and the agent's own chat waited until a restart.
+  // compaction for Whilo, so its hold stayed, and the agent's own chat waited until a restart.
   await writeFile(controlPath, JSON.stringify({ compactionMs: 5_000, ignoreInterrupt: false }));
   const deleted = await runCauseEffect(agents.startTask({ agentId: owner.id, text: "Thread message." }));
   const deletedSession = await waitFor(
@@ -552,12 +552,12 @@ try {
   };
   Object.assign(report, { failedCompactions });
   assert.equal(failedCompactions.turns, 4, "failed compactions: not every message ran");
-  assert.equal(failedCompactions.compactStarts, 2, "failed compactions: OpenBot did not stop after 2 failures");
+  assert.equal(failedCompactions.compactStarts, 2, "failed compactions: Whilo did not stop after 2 failures");
   assert.equal(failedCompactions.failedEnds, 2, "failed compactions: the compactions did not fail");
   assert.equal(failedCompactions.stoppedNotices, 1, "failed compactions: one notice");
 
   // Codex reports usage while the stop ends it. The quit closes the database next, and a late
-  // usage snapshot then failed with "OpenBot database is not initialized." (#3808).
+  // usage snapshot then failed with "Whilo database is not initialized." (#3808).
   await writeFile(controlPath, JSON.stringify({ compactionMs: 200, ignoreInterrupt: false, usageOnStop: true }));
   const lateErrors: string[] = [];
   const collect = (error: unknown) => lateErrors.push(error instanceof Error ? error.message : String(error));

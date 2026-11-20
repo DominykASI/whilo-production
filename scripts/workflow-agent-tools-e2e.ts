@@ -1,4 +1,4 @@
-// Checks the `openbot` workflow tools that agents use, on the real SQLite and the real workflow
+// Checks the `whilo` workflow tools that agents use, on the real SQLite and the real workflow
 // service, on a temporary profile. Each call goes through `tool_search` and the `tool_call`
 // envelope as an agent sends it. Only the agent mailbox is a stand-in that keeps each delivery
 // running, so no provider, app, account or network is started.
@@ -11,7 +11,7 @@
 // user and a decline keeps the workflow, and that the change event names the agent that built it.
 //
 // Run: bun scripts/workflow-agent-tools-e2e.ts
-// Writes .openbot-build/workflow-agent-tools-e2e/report.json and exits non-zero on a failure.
+// Writes .whilo-build/workflow-agent-tools-e2e/report.json and exits non-zero on a failure.
 import assert from "node:assert/strict";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { mkdtemp, rm } from "node:fs/promises";
@@ -21,7 +21,7 @@ import { Effect } from "effect";
 import { z } from "zod";
 import { discoverTools, resolveDeferredTool } from "../src/backend/agent/tool-catalog";
 import { runCauseEffect } from "../src/backend/effect-boundary";
-import { OpenBotDatabase } from "../src/backend/openbot-database";
+import { WhiloDatabase } from "../src/backend/whilo-database";
 import type { DynamicToolCallParams } from "../src/backend/protocol";
 import { WorkflowGitHubStore } from "../src/backend/workflows/workflow-github-store";
 import { WorkflowRunStore } from "../src/backend/workflows/workflow-run-store";
@@ -30,7 +30,7 @@ import { handleWorkflowTool } from "../src/backend/workflows/workflow-tools";
 import { workflowScheduleDueAt } from "../src/backend/workflows/workflow-triggers";
 import { createWorkflows, type WorkflowsHandle } from "../src/backend/workflows/workflows";
 
-const OUT = resolve(import.meta.dirname, "../.openbot-build/workflow-agent-tools-e2e");
+const OUT = resolve(import.meta.dirname, "../.whilo-build/workflow-agent-tools-e2e");
 const WAIT_MS = 5_000;
 const AGENTS = new Set(["agent-research"]);
 /** The agent that calls the tools. */
@@ -91,13 +91,13 @@ const params = (tool: string, args: unknown): DynamicToolCallParams => ({
   threadId: "thread-e2e",
   turnId: "turn-e2e",
   callId: crypto.randomUUID(),
-  namespace: "openbot",
+  namespace: "whilo",
   tool,
   arguments: args,
 });
 
-const directory = await mkdtemp(join(tmpdir(), "openbot-workflow-agent-tools-"));
-const database = new OpenBotDatabase(directory);
+const directory = await mkdtemp(join(tmpdir(), "whilo-workflow-agent-tools-"));
+const database = new WhiloDatabase(directory);
 let workflows: WorkflowsHandle | null = null;
 
 /** The titles that a delete asked the user about, and the user's next answer. */
@@ -150,8 +150,8 @@ async function call(
   callKey = `call-${++calls}`,
 ): Promise<{ ok: boolean; value: unknown }> {
   assert.ok(workflows);
-  const resolved = resolveDeferredTool(params("tool_call", { name: `openbot.${name}`, arguments: args }));
-  assert.ok(resolved, `tool_call refused openbot.${name}`);
+  const resolved = resolveDeferredTool(params("tool_call", { name: `whilo.${name}`, arguments: args }));
+  assert.ok(resolved, `tool_call refused whilo.${name}`);
   const response = await runCauseEffect(
     handleWorkflowTool(resolved.tool, resolved.arguments, workflows, CALLER, callKey, AGENTS, confirmDelete),
   );
@@ -215,7 +215,7 @@ try {
     search.call?.includes("tool_call") === true && !("note" in search),
     search,
   );
-  const alias = resolveDeferredTool(params("tool_call", { tool: "openbot.list_workflows", arguments: {} }));
+  const alias = resolveDeferredTool(params("tool_call", { tool: "whilo.list_workflows", arguments: {} }));
   check("tool_call accepts the qualified name as tool", alias?.tool === "list_workflows", alias);
 
   // 2. One call builds a workflow with refs.

@@ -6,8 +6,8 @@ import {
   type FirstTouchSourcePlatform,
   firstTouchDay,
   rememberFirstTouch,
-} from "@openbot/contracts/first-touch";
-import { isBoolean, isOneOf } from "@openbot/contracts/runtime-values";
+} from "@whilo/contracts/first-touch";
+import { isBoolean, isOneOf } from "@whilo/contracts/runtime-values";
 import { OpenPanel, OpenPanelBase, type OpenPanelOptions, type TrackProperties } from "@openpanel/web";
 import { BRAND_ROUTE } from "./brand-page";
 import { CLA_ROUTE } from "./cla";
@@ -362,7 +362,7 @@ class LandingAnalytics {
     const handleClick = (event: MouseEvent) => {
       const target = event.target;
       const link = target instanceof Element ? target.closest<HTMLAnchorElement>("a[href]") : null;
-      if (link?.getAttribute("href")?.startsWith("openbot://")) {
+      if (link?.getAttribute("href")?.startsWith("whilo://")) {
         this.#track("join_page_action", { action: "open_app" });
         return;
       }

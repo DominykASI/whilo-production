@@ -48,7 +48,7 @@ export type ResourceLink = {
   id: SiteResourceId;
   /** The seed of the gradient behind the icon. It is the English label, so each row keeps its colours. */
   seed: string;
-  /** "logo" draws the OpenBot mark. */
+  /** "logo" draws the Whilo mark. */
   icon: LandingIconName | "logo";
 } & ({ to: typeof CHANGELOG_ROUTE | typeof BRAND_ROUTE | "/download" } | { href: string });
 

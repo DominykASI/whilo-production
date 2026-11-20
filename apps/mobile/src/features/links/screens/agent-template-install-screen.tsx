@@ -1,6 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
 import { type AgentTemplateDetail, canAdministerServer, type RoutineSchedule } from "@whilo/contracts/ipc";
 import type { MobileTextKey } from "@whilo/i18n/mobile";
-import { useQuery } from "@tanstack/react-query";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { usePreventRemove } from "expo-router/react-navigation";
 import { Button, Typography } from "heroui-native";

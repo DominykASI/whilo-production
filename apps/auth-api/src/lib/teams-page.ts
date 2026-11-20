@@ -1,4 +1,4 @@
-// The /teams page: OpenBot for Teams, with its setups, benefits and custom deployments. The landing
+// The /teams page: Whilo for Teams, with its setups, benefits and custom deployments. The landing
 // page's Teams section links here. The text is in `sitePage.teams.*` catalog keys
 // (`components/teams/teams-page-text.ts`).
 //

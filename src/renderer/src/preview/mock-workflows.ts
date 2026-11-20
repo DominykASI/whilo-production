@@ -25,9 +25,9 @@ import {
   type WorkflowTriggerState,
   type WorkflowVersion,
   workflowGitHubTriggerRepositories,
-} from "@openbot/contracts/ipc";
-import { sourceText } from "@openbot/i18n/source";
-import { nextValidRoutineOccurrence } from "@openbot/team-client/routine-schedule";
+} from "@whilo/contracts/ipc";
+import { sourceText } from "@whilo/i18n/source";
+import { nextValidRoutineOccurrence } from "@whilo/team-client/routine-schedule";
 
 const PREVIEW_HOOKS = "https://hooks.openbot.run/wf";
 
@@ -35,8 +35,8 @@ const PREVIEW_HOOKS = "https://hooks.openbot.run/wf";
 const PREVIEW_GITHUB_CATALOG: WorkflowGitHubCatalog = {
   connected: true,
   repositories: [
-    { fullName: "openbot-preview/app", private: false, canWrite: true, events: true },
-    { fullName: "openbot-preview/docs", private: true, canWrite: false, events: true },
+    { fullName: "whilo-preview/app", private: false, canWrite: true, events: true },
+    { fullName: "whilo-preview/docs", private: true, canWrite: false, events: true },
   ],
 };
 
@@ -56,7 +56,7 @@ const PREVIEW_GITHUB_OPTIONS: WorkflowGitHubRepositoryOptions = {
 function previewItem(node: WorkflowNode, number: number, title: string): WorkflowGitHubItem {
   const repositories = workflowGitHubTriggerRepositories(node.fields);
   return {
-    repository: repositories[number % Math.max(repositories.length, 1)] ?? "openbot-preview/app",
+    repository: repositories[number % Math.max(repositories.length, 1)] ?? "whilo-preview/app",
     number,
     pullRequest: false,
     title,

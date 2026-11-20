@@ -57,7 +57,7 @@ export const messages = {
   "sitePage.billing.cancelledBody": "Деньги не списаны. Вернитесь в Whilo.",
   "sitePage.report.pageTitle": "Пожаловаться на размещённый сайт — Whilo",
   "sitePage.report.title": "Пожаловаться на размещённый сайт",
-  "sitePage.report.intro": "Отправьте жалобу на вредный или незаконный контент по адресу openbot.site.",
+  "sitePage.report.intro": "Отправьте жалобу на вредный или незаконный контент по адресу whilo.site.",
   "sitePage.report.hostnameLabel": "Адрес сайта",
   "sitePage.report.hostnameMissing": "Введите адрес сайта",
   "sitePage.report.reasonLabel": "Причина",

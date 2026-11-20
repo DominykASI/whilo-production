@@ -29,7 +29,7 @@ export class LocalSkillLibrary {
         if (revisions.some((name) => /^[1-9]\d*$/u.test(name))) published.push(entry.name);
       }
       const results = yield* Effect.forEach(published, (id) => this.get(id), { concurrency: "unbounded" });
-      // An older version took a skill with the name of an OpenBot skill. It can never install, so it stays hidden.
+      // An older version took a skill with the name of an Whilo skill. It can never install, so it stays hidden.
       return results
         .filter((skill) => !MANAGED_SKILL_SLUGS.has(skill.slug))
         .sort((a, b) => a.name.localeCompare(b.name));

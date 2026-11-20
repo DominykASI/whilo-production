@@ -2,7 +2,7 @@ import type { ServerNotificationLevel } from "@whilo/contracts/ipc";
 import { NOTIFICATION_SOUNDS, type NotificationSound } from "@whilo/contracts/notification-relay";
 import { isDynamicRecord } from "@whilo/contracts/runtime-values";
 import type { PushNotificationSound } from "@whilo/contracts/team-protocol/push-notifications-v1";
-import * as SecureStore from "expo-secure-store";
+import * as SecureStore from "../../../shared/lib/persistent-storage";
 import { create } from "zustand";
 
 const key = "whilo.mobile.push-notifications.v1";

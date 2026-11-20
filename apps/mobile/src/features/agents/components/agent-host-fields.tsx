@@ -1,3 +1,4 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AGENT_TASK_LIMIT_DEFAULT,
   AGENT_TASK_LIMIT_MAX,
@@ -14,7 +15,6 @@ import {
   type UpdateAgentHostSettingsInput,
 } from "@whilo/contracts/ipc";
 import type { MobileTextKey } from "@whilo/i18n/mobile";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Typography } from "heroui-native";
 import { useRef, useState } from "react";
 import { useUniwind } from "uniwind";

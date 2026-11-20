@@ -18,7 +18,7 @@ export interface SavedApiKey {
   path: string;
   /**
    * Present for a key from the Vault, which every agent can read. The user changes it, or an agent with
-   * `save_api_key` when a person asked in the OpenBot chat.
+   * `save_api_key` when a person asked in the Whilo chat.
    */
   source?: "vault";
 }

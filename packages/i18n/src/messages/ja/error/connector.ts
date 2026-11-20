@@ -34,7 +34,7 @@ export const messages = {
   "error.connector.bitwardenCliInstallFailed":
     "このサーバーに Bitwarden CLI をインストールできませんでした。ネットワーク接続を確認してから、もう一度接続してください。",
   "error.connector.bitwardenFileUnreadable": "Bitwarden の接続ファイルを読み取れません。",
-  "error.connector.passwordManagerUnknown": "OpenBot はこのパスワードマネージャーに対応していません。",
+  "error.connector.passwordManagerUnknown": "Whilo はこのパスワードマネージャーに対応していません。",
   "error.connector.passwordManagerMethod": "このパスワードマネージャーはこの方法では接続できません。",
   "error.connector.passwordManagerNoSignIn": "サインインページが開いていません。もう一度接続してください。",
   "error.connector.protonPassFailed": "Proton Pass に接続できませんでした。もう一度接続してください。",
@@ -50,5 +50,5 @@ export const messages = {
   "error.connector.protonPassSignInTimeout":
     "Proton へのサインインに時間がかかりすぎました。もう一度接続してください。",
   "error.connector.protonPassSetupFailed":
-    "Proton Pass で保管庫 Shared with OpenBot またはそのアクセスキーを作成できませんでした。もう一度接続してください。",
+    "Proton Pass で保管庫 Shared with Whilo またはそのアクセスキーを作成できませんでした。もう一度接続してください。",
 } as const satisfies PartialTranslation<typeof source>;

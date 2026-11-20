@@ -258,7 +258,7 @@ export const messages = {
   "server.settings.storageDescription": "Bekijk wat Whilo op de schijf van deze server bewaart, en maak ruimte vrij.",
   "server.settings.hostedSitesTitle": "Sites",
   "server.settings.hostedSitesDescription":
-    "De statische sites die agents op deze server op openbot.site hebben gepubliceerd.",
+    "De statische sites die agents op deze server op whilo.site hebben gepubliceerd.",
   "server.settings.importTitle": "Importeren",
   "server.settings.importDescription": "Verplaats je agents van Grok Bot of Hermes Agent naar deze server.",
   "server.settings.transferTitle": "Overdracht",
@@ -314,7 +314,7 @@ export const messages = {
   "server.settings.addLogo": "Voeg serverlogo toe",
   "server.settings.removeLogo": "Verwijder serverlogo",
   "server.settings.access": "Toegang",
-  "server.companySignIn.desktopOnly": "Stel single sign-on in via de desktop-app van OpenBot.",
+  "server.companySignIn.desktopOnly": "Stel single sign-on in via de desktop-app van Whilo.",
   "server.settings.publish": "Publiceer deze server",
   "server.settings.published": "Server is gepubliceerd",
   "server.settings.setUpDesktopTitle": "Stel extern bureaublad in",
@@ -538,7 +538,7 @@ export const messages = {
   "server.desktop.accessMembers": "Alle leden",
   "server.desktop.askLabel": "Vragen op deze computer",
   "server.desktop.askDescription":
-    "Elke sessie wacht tot iemand bij deze computer hem toestaat. Zonder antwoord binnen 30 seconden weigert OpenBot hem.",
+    "Elke sessie wacht tot iemand bij deze computer hem toestaat. Zonder antwoord binnen 30 seconden weigert Whilo hem.",
   "server.desktop.activeTitle": "Actieve sessies van extern bureaublad: {active}",
   "server.desktop.activeDescription": "Beëindigt elke sessie direct. Leden kunnen het opnieuw vragen.",
   "server.desktop.stopAll": "Alle bediening op afstand stoppen",
@@ -579,7 +579,7 @@ export const messages = {
   "server.update.path.container":
     "Haal op de Docker-host de nieuwe Whilo-image op en maak de container opnieuw met dezelfde datavolumes. Wacht eerst tot actief werk klaar is. Behoud de bestaande volumes om je gegevens te bewaren.",
   "server.update.path.manual":
-    "Deze installatie kan zichzelf niet vervangen. Vraag de beheerder van de host om de compatibele release te installeren vanaf github.com/nightly-labs/openbot/releases. Behoud de bestaande Whilo-gegevens.",
+    "Deze installatie kan zichzelf niet vervangen. Vraag de beheerder van de host om de compatibele release te installeren vanaf github.com/nightly-labs/whilo/releases. Behoud de bestaande Whilo-gegevens.",
   "server.update.path.unavailable":
     "Dit is een ontwikkelbuild. Gebruik een geïnstalleerde Whilo-release om naar updates te zoeken.",
   "server.update.check": "Zoek naar updates",

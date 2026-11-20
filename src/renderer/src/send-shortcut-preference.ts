@@ -1,4 +1,4 @@
-import type { QuoteShortcutModifier } from "@openbot/ui/features/conversation/SelectionActions";
+import type { QuoteShortcutModifier } from "@whilo/ui/features/conversation/SelectionActions";
 import {
   parseSendShortcutMode,
   resolveSendShortcut,

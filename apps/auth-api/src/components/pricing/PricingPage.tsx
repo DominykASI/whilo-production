@@ -135,7 +135,7 @@ export function PricingPage(props: {
           aria-labelledby="pricing-title"
           style={{ "--pricing-accent": rarity().rgb }}
         >
-          {/* Personal use is free. This comes first, so that nobody thinks that OpenBot needs a server or a license. */}
+          {/* Personal use is free. This comes first, so that nobody thinks that Whilo needs a server or a license. */}
           <section class="pricing-enterprise pricing-personal" aria-labelledby="pricing-personal">
             <div>
               <h2 id="pricing-personal">{props.text.personal.title}</h2>

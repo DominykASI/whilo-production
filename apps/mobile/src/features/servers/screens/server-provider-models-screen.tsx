@@ -1,4 +1,4 @@
-import { type AgentModelId, isAgentProvider } from "@openbot/contracts/ipc";
+import { type AgentModelId, isAgentProvider } from "@whilo/contracts/ipc";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Typography } from "heroui-native";
 import { useThemeColor } from "heroui-native/hooks";
@@ -31,7 +31,7 @@ const END_DISTANCE = 600;
  */
 export function ServerProviderModelsScreen() {
   const { t, errorMessage } = useText();
-  const accent = String(useCSSVariable("--openbot-accent"));
+  const accent = String(useCSSVariable("--whilo-accent"));
   const [foreground, muted] = useThemeColor(["foreground", "muted"]);
   const params = useLocalSearchParams<{ serverId: string; provider: string }>();
   const serverId = params.serverId;

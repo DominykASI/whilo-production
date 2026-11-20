@@ -1,4 +1,4 @@
-import type { AgentModelOption } from "@openbot/contracts/ipc";
+import type { AgentModelOption } from "@whilo/contracts/ipc";
 import { describe, expect, it } from "vitest";
 import { decodeAgentStatusFromMain } from "./agent-decoding";
 

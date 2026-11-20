@@ -76,12 +76,12 @@ export const messages = {
   "remoteDesktop.setup.finishTest": "Test afronden",
   "remoteDesktop.host.questionTitle": "{name} wil deze computer bedienen",
   "remoteDesktop.host.questionDetail":
-    "{name} ziet je scherm en kan je muis en toetsenbord gebruiken. Als je niet binnen 30 seconden antwoordt, weigert OpenBot het verzoek.",
+    "{name} ziet je scherm en kan je muis en toetsenbord gebruiken. Als je niet binnen 30 seconden antwoordt, weigert Whilo het verzoek.",
   "remoteDesktop.host.allow": "Toestaan",
   "remoteDesktop.host.deny": "Weigeren",
   "remoteDesktop.host.startedTitle": "Bediening op afstand gestart",
   "remoteDesktop.host.startedBody": "{name} bedient deze computer nu.",
-  "remoteDesktop.host.trayTooltip": "OpenBot: bediening op afstand is aan",
+  "remoteDesktop.host.trayTooltip": "Whilo: bediening op afstand is aan",
   "remoteDesktop.host.trayControlledBy": "{name} bedient deze computer",
   "remoteDesktop.host.stopAll": "Alle bediening op afstand stoppen",
 } as const satisfies PartialTranslation<typeof source>;

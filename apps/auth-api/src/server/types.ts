@@ -1,6 +1,6 @@
-import type { AvatarColor } from "@openbot/contracts/ipc";
-import type { AccountSession } from "@openbot/contracts/mobile-connect";
-import { isDynamicRecord, isFunction } from "@openbot/contracts/runtime-values";
+import type { AvatarColor } from "@whilo/contracts/ipc";
+import type { AccountSession } from "@whilo/contracts/mobile-connect";
+import { isDynamicRecord, isFunction } from "@whilo/contracts/runtime-values";
 import type { Effect } from "effect";
 import type { AuthStoreError } from "./d1-auth-repository";
 import type { EmailDeliveryError } from "./email-delivery";
@@ -109,6 +109,8 @@ export interface WorkerBindings {
   HOSTED_SERVERS_ALLOWED_USER_IDS?: string;
   /** A request with this key in `Whilo-Hosting-Developer-Key` can create hosted servers. Test Worker only. */
   HOSTED_SERVERS_DEVELOPER_KEY?: string;
+  /** At most this many hosted servers per account. Absent or invalid uses the server default. */
+  HOSTED_SERVERS_MAX_PER_ACCOUNT?: string;
   /** The boat named snapshot that new hosted servers start from. */
   HOSTED_SERVER_TEMPLATE?: string;
   BOAT_API_KEY?: string;
@@ -144,9 +146,7 @@ export interface WorkerBindings {
 /** A bucket that is absent is fine; a bucket that is present must be one. */
 function isOptionalBucket(value: unknown): boolean {
   if (value === undefined || value === null) return true;
-  return (
-    isDynamicRecord(value) && isFunction(value.get) && isFunction(value.put) && isFunction(value.delete)
-  );
+  return isDynamicRecord(value) && isFunction(value.get) && isFunction(value.put) && isFunction(value.delete);
 }
 
 function isWorkerBindings(value: unknown): value is WorkerBindings {

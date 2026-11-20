@@ -1,16 +1,16 @@
-import { isOpenBillingStatus } from "@openbot/contracts/billing";
-import { DEFAULT_TEAM_MEMBER_LIMIT, INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import type { InviteSummary, TeamInviteSummary, TeamPresenceMember, TeamRole } from "@openbot/contracts/ipc";
+import { isOpenBillingStatus } from "@whilo/contracts/billing";
+import { DEFAULT_TEAM_MEMBER_LIMIT, INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import type { InviteSummary, TeamInviteSummary, TeamPresenceMember, TeamRole } from "@whilo/contracts/ipc";
 import {
   LICENSE_INCLUDED_USERS,
   LICENSE_MAX_USERS,
   type License,
   licenseMonthlyAmount,
   licensePlanOf,
-} from "@openbot/contracts/license";
-import { normalizeEmailAddress } from "@openbot/contracts/validation";
-import type { AppTextKey } from "@openbot/i18n";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/license";
+import { normalizeEmailAddress } from "@whilo/contracts/validation";
+import type { AppTextKey } from "@whilo/i18n";
+import { sourceText } from "@whilo/i18n/source";
 import {
   Alert,
   AlertContent,
@@ -49,12 +49,12 @@ import {
   Text,
   Trash2,
   UserRound,
-} from "@openbot/ui";
-import { formatMinorMoney } from "@openbot/ui/features/billing/LicenseSection";
-import { MemberRoleMenu } from "@openbot/ui/features/servers/ServerRoles";
-import { teamMemberName } from "@openbot/ui/features/team/TeamPersonAvatar";
-import { useText } from "@openbot/ui/text";
-import { prefersReducedMotion } from "@openbot/ui/utils";
+} from "@whilo/ui";
+import { formatMinorMoney } from "@whilo/ui/features/billing/LicenseSection";
+import { MemberRoleMenu } from "@whilo/ui/features/servers/ServerRoles";
+import { teamMemberName } from "@whilo/ui/features/team/TeamPersonAvatar";
+import { useText } from "@whilo/ui/text";
+import { prefersReducedMotion } from "@whilo/ui/utils";
 import type { JSX } from "@solidjs/web";
 import { createEffect, createMemo, createSignal, createStore, For, onCleanup, Show, untrack } from "solid-js";
 import { desktopAnalytics } from "../../analytics";

@@ -1,12 +1,12 @@
-import type { AvatarMood } from "@openbot/ui/bloub-avatar";
-import type { AgentMessage, AgentProfile } from "@openbot/ui/data";
+import type { AvatarMood } from "@whilo/ui/bloub-avatar";
+import type { AgentMessage, AgentProfile } from "@whilo/ui/data";
 import {
   AgentDock,
   type AgentDockChatModel,
   type AgentDockSeat,
   type AgentDockShelfResult,
-} from "@openbot/ui/features/agent-dock/AgentDock";
-import type { SidebarAgentState } from "@openbot/ui/features/sidebar/sidebar-types";
+} from "@whilo/ui/features/agent-dock/AgentDock";
+import type { SidebarAgentState } from "@whilo/ui/features/sidebar/sidebar-types";
 import { createStore, onCleanup } from "solid-js";
 import type { Meta, StoryObj } from "storybook-solidjs-vite";
 import { requireFixture, STORY_AGENTS } from "./fixtures";
@@ -148,7 +148,7 @@ function AgentDockStory(props: { seats: string[]; results?: AgentDockShelfResult
   };
 
   return (
-    <div style={{ height: "100vh", background: "var(--openbot-bg-canvas)" }}>
+    <div style={{ height: "100vh", background: "var(--whilo-bg-canvas)" }}>
       <AgentDock
         seats={seats()}
         available={AGENTS.filter((agent) => !state.seats.includes(agent.id))}

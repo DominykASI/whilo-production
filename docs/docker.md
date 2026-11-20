@@ -1,8 +1,8 @@
 # Docker
 
-The OpenBot image is the Linux release, run as a [self-hosted server](self-hosted-server.md) in a
+The Whilo image is the Linux release, run as a [self-hosted server](self-hosted-server.md) in a
 container. It is a normal Remote host of your account. You use it from the desktop app, the iPhone
-app or `openbot.run/app`. The image is `ghcr.io/nightly-labs/openbot`, for `linux/amd64` and
+app or `openbot.run/app`. The image is `ghcr.io/nightly-labs/whilo`, for `linux/amd64` and
 `linux/arm64`.
 
 ## Run
@@ -10,26 +10,26 @@ app or `openbot.run/app`. The image is `ghcr.io/nightly-labs/openbot`, for `linu
 With Docker Compose:
 
 ```sh
-curl -fsSLO https://raw.githubusercontent.com/nightly-labs/openbot/main/docker/compose.yaml
-curl -fsSLO https://raw.githubusercontent.com/nightly-labs/openbot/main/docker/seccomp.json
+curl -fsSLO https://raw.githubusercontent.com/nightly-labs/whilo/main/docker/compose.yaml
+curl -fsSLO https://raw.githubusercontent.com/nightly-labs/whilo/main/docker/seccomp.json
 docker compose up -d
-docker compose exec openbot openbot login
+docker compose exec whilo whilo login
 ```
 
 With `docker run`:
 
 ```sh
-curl -fsSLO https://raw.githubusercontent.com/nightly-labs/openbot/main/docker/seccomp.json
-docker run -d --name openbot --restart unless-stopped \
+curl -fsSLO https://raw.githubusercontent.com/nightly-labs/whilo/main/docker/seccomp.json
+docker run -d --name whilo --restart unless-stopped \
   --security-opt seccomp=seccomp.json --security-opt no-new-privileges:true \
   --shm-size 1g --stop-timeout 60 \
-  -v openbot-data:/data \
-  ghcr.io/nightly-labs/openbot:latest
-docker exec -it openbot openbot login
+  -v whilo-data:/data \
+  ghcr.io/nightly-labs/whilo:latest
+docker exec -it whilo whilo login
 ```
 
-`openbot login` asks for your email and the code that OpenBot sends to it. An operator who sets up
-the container for somebody else can use `openbot login --claim` instead (see
+`whilo login` asks for your email and the code that Whilo sends to it. An operator who sets up
+the container for somebody else can use `whilo login --claim` instead (see
 [server claims](self-hosted-server.md#sign-in-with-a-server-claim)). After the sign-in, the
 server shows in the server list of that account. Then connect a provider from the app, as on a
 [hosted server](hosted-servers.md#providers).
@@ -37,7 +37,7 @@ server shows in the server list of that account. Then connect a provider from th
 To connect the phone app, show a Mobile Connect code in the terminal and scan it with the app:
 
 ```sh
-docker exec -it openbot openbot mobile-connect
+docker exec -it whilo whilo mobile-connect
 ```
 
 See [Phone app](self-hosted-server.md#phone-app).
@@ -48,14 +48,14 @@ The options in both examples are necessary:
 | --- | --- |
 | `seccomp=seccomp.json` | The Electron sandbox makes user namespaces. The default seccomp profile of Docker refuses them, and the container stops with a message. See [Security](#security). |
 | `--shm-size 1g` | Chromium uses shared memory. The Docker default of 64 MB is too small. When `/dev/shm` is smaller than 1 GiB, Chromium uses `/tmp`, which is slower. |
-| `--stop-timeout 60` | OpenBot stops its agents and closes its database before it exits. |
-| `-v openbot-data:/data` | All data is in `/data`. Without a volume, it goes away with the container. |
+| `--stop-timeout 60` | Whilo stops its agents and closes its database before it exits. |
+| `-v whilo-data:/data` | All data is in `/data`. Without a volume, it goes away with the container. |
 
 For Amazon ECS, see [AWS ECS](aws-ecs.md).
 
-The container publishes no port. OpenBot only connects out: to the account server, to the providers,
+The container publishes no port. Whilo only connects out: to the account server, to the providers,
 and to Signal and TURN for remote use. The Team API listens on `127.0.0.1` in the container.
-The container does not serve a web interface. After `openbot login`, use
+The container does not serve a web interface. After `whilo login`, use
 [`openbot.run/app`](https://openbot.run/app) with the same account to select the server. A web
 client at your own origin is not included in this image. The
 [self-hosted account service](self-hosting.md#what-changes) is a separate deployment with its own
@@ -63,20 +63,20 @@ client limits.
 
 ## Network
 
-The container uses the Docker bridge network. In the container, OpenBot sees only its bridge
+The container uses the Docker bridge network. In the container, Whilo sees only its bridge
 address. Devices connect to it through the public address of the host or through TURN. On a public
 server, this is sufficient: a test on a VPS gave the same connection time with the bridge network
 and with host networking.
 
 When the devices are on the same local network or Tailscale tailnet as the host, the bridge network
 can make the connection slow: the container does not see the local or `tailscale0` addresses of the
-host, so devices often use TURN. With host networking, OpenBot sees all addresses of the host, and
+host, so devices often use TURN. With host networking, Whilo sees all addresses of the host, and
 devices can connect directly. Add `network_mode: host` to the service in `compose.yaml`, or
 `--network host` to `docker run`. Host networking is available on Linux with Docker Engine.
 
 Host networking removes the network isolation of the container:
 
-- Other programs on the host can connect to the listeners of OpenBot on `127.0.0.1`. These
+- Other programs on the host can connect to the listeners of Whilo on `127.0.0.1`. These
   listeners take tokens and team requests.
 - Agents can connect to the services of the host that listen only on `127.0.0.1`.
 - The virtual displays `:0` and `:1` of the container use abstract X sockets, which are in the
@@ -85,7 +85,7 @@ Host networking removes the network isolation of the container:
 
 Use it only on a host where you trust the other programs and users. Do not use it with
 [several instances on one host](#several-instances-on-one-host): their firewall works only on the
-`openbot` bridge network.
+`whilo` bridge network.
 
 ## Tags
 
@@ -103,19 +103,19 @@ Public images need no GHCR sign-in. If `latest` or a version without `v` returns
 
 ## Data
 
-`/data` is the home folder of the user `openbot` (UID 1000, GID 1000). OpenBot and its agents run as
+`/data` is the home folder of the user `whilo` (UID 1000, GID 1000). Whilo and its agents run as
 that user and keep everything there:
 
 | Path | Contents |
 | --- | --- |
-| `/data/.config/OpenBot` | The database `openbot.db`, logs, the downloaded provider runtimes and the browser data. |
-| `/data/OpenBot` | The agent workspaces (`Agents`), `Shared` and `Downloads`. |
-| `/data/.local/share/keyrings`, `/data/.config/openbot-container` | The keyring and its password. The keyring has the key of the encrypted data in `/data`. |
+| `/data/.config/Whilo` | The database `openbot.db`, logs, the downloaded provider runtimes and the browser data. |
+| `/data/Whilo` | The agent workspaces (`Agents`), `Shared` and `Downloads`. |
+| `/data/.local/share/keyrings`, `/data/.config/whilo-container` | The keyring and its password. The keyring has the key of the encrypted data in `/data`. |
 | `/data/.local/bin` | Programs that you or agents install, for example with `uv` or `pipx`. The image puts this folder on `PATH`. |
 | Other files in `/data` | Provider sign-ins and the files of agent tools, for example `~/.codex` and `~/.claude`. |
 
 An update makes a new container from the new image, so a package that you install outside `/data`,
-for example with `apt-get`, goes away. Install tools as the user `openbot` into `~/.local`. For
+for example with `apt-get`, goes away. Install tools as the user `whilo` into `~/.local`. For
 example, `curl -LsSf https://astral.sh/uv/install.sh | sh`, then `~/.local/bin/uv python install`,
 gives agents a Python that stays after updates.
 
@@ -125,7 +125,7 @@ open without its password file. Use one volume for one container at a time.
 For a bind mount, give the folder to the user of the image first:
 
 ```sh
-mkdir openbot-data && sudo chown 1000:1000 openbot-data
+mkdir whilo-data && sudo chown 1000:1000 whilo-data
 ```
 
 The data has your account session, your provider sign-ins and your conversations. Protect it as you
@@ -134,40 +134,40 @@ protect a home folder. To back it up, stop the container and copy the volume. An
 
 ## Commands
 
-In the container, `openbot status`, `login`, `mobile-connect`, `logout`, `name` and `version` work as on a
+In the container, `whilo status`, `login`, `mobile-connect`, `logout`, `name` and `version` work as on a
 [self-hosted server](self-hosted-server.md#commands). Do the other tasks with Docker on the host:
 
 | Task | Command |
 | --- | --- |
-| Read the log | `docker logs openbot` |
-| Stop, start, restart | `docker stop openbot`, `docker start openbot`, `docker restart openbot` |
+| Read the log | `docker logs whilo` |
+| Stop, start, restart | `docker stop whilo`, `docker start whilo`, `docker restart whilo` |
 | Upgrade | `docker compose pull && docker compose up -d`, or pull the image and make the container again with the same volume |
-| Remove | `docker exec openbot openbot logout`, then `docker stop openbot && docker rm openbot`. The data stays in the volume. `docker volume rm openbot-data` deletes it. |
+| Remove | `docker exec whilo whilo logout`, then `docker stop whilo && docker rm whilo`. The data stays in the volume. `docker volume rm whilo-data` deletes it. |
 
 ## Several instances on one host
 
-`docker/instances/` runs more than one OpenBot container on one Linux host with systemd. Each
+`docker/instances/` runs more than one Whilo container on one Linux host with systemd. Each
 instance has its own CPU, memory and disk limit, its own data and its own account. Copy the `docker`
-folder of the repository to the host, for example to `/opt/openbot-docker`, and run as root:
+folder of the repository to the host, for example to `/opt/whilo-docker`, and run as root:
 
 ```sh
-/opt/openbot-docker/instances/openbot-instance setup
-/opt/openbot-docker/instances/openbot-instance create main --cpus 8 --mem 32g --disk 200G
-/opt/openbot-docker/instances/openbot-instance run main login
+/opt/whilo-docker/instances/whilo-instance setup
+/opt/whilo-docker/instances/whilo-instance create main --cpus 8 --mem 32g --disk 200G
+/opt/whilo-docker/instances/whilo-instance run main login
 ```
 
 | Path | Contents |
 | --- | --- |
-| `instances/<name>.env` | The name and the limits of the instance. Change `OPENBOT_CPUS` or `OPENBOT_MEM`, then run `openbot-instance up <name>`. `OPENBOT_DISK` is for information only: a change to it does nothing. |
-| `/srv/openbot/<name>/data.img` | An ext4 image. Its size is the disk limit. `create` reserves all of it on the disk of the host, so the images can never need more space than the host has. |
-| `/srv/openbot/<name>/data` | The mount of the image, which is `/data` in the container. `/etc/fstab` mounts it before Docker starts. `X-fstrim.notrim` stops `fstrim.timer` from freeing the reserved space. |
-| `/srv/openbot/<name>/update-requests` | The update requests of the app. The container writes empty files here. It is a tmpfs of 64 KiB and 16 files, which `/etc/fstab` mounts. |
-| `/srv/openbot/<name>/update-status` | The state of an update, which root writes. The container can only read it. |
+| `instances/<name>.env` | The name and the limits of the instance. Change `OPENBOT_CPUS` or `OPENBOT_MEM`, then run `whilo-instance up <name>`. `OPENBOT_DISK` is for information only: a change to it does nothing. |
+| `/srv/whilo/<name>/data.img` | An ext4 image. Its size is the disk limit. `create` reserves all of it on the disk of the host, so the images can never need more space than the host has. |
+| `/srv/whilo/<name>/data` | The mount of the image, which is `/data` in the container. `/etc/fstab` mounts it before Docker starts. `X-fstrim.notrim` stops `fstrim.timer` from freeing the reserved space. |
+| `/srv/whilo/<name>/update-requests` | The update requests of the app. The container writes empty files here. It is a tmpfs of 64 KiB and 16 files, which `/etc/fstab` mounts. |
+| `/srv/whilo/<name>/update-status` | The state of an update, which root writes. The container can only read it. |
 
-The container is `openbot-<name>`. Its root file system is read-only: the container layer is on the
+The container is `whilo-<name>`. Its root file system is read-only: the container layer is on the
 disk of the host, where Docker on ext4 cannot limit its size. Outside `/data`, the container writes
 only to `tmpfs` folders that count toward the memory limit: `/tmp` (8 GiB), `/var/tmp` (1 GiB),
-`/run/lock` and `/run/openbot`, and to the small tmpfs of its update requests. Before the image is mounted, root owns the folder, so the container cannot write to
+`/run/lock` and `/run/whilo`, and to the small tmpfs of its update requests. Before the image is mounted, root owns the folder, so the container cannot write to
 `/data` and stops. It never starts with an empty home folder.
 
 ### CPU and memory of the instances
@@ -175,21 +175,21 @@ only to `tmpfs` folders that count toward the memory limit: `/tmp` (8 GiB), `/va
 `--cpus` is a CPU time limit. The container still sees every CPU of the host in `/proc/cpuinfo` and
 `/proc/stat`, so a program that sizes itself from the CPU count starts too many workers: `next build`
 started 63 on a 64-CPU host that gives the instance 8, and two builds filled 32 GiB. `setup`
-installs LXCFS with `--enable-cfs` (`lxcfs-openbot.conf`) as its last step; when that fails, it
-prints a warning and the rest of the setup stays done. When LXCFS runs, `openbot-instance` adds
+installs LXCFS with `--enable-cfs` (`lxcfs-whilo.conf`) as its last step; when that fails, it
+prints a warning and the rest of the setup stays done. When LXCFS runs, `whilo-instance` adds
 `lxcfs.yaml`: the container then reads its own CPU limit in `/proc/cpuinfo`, and its memory limit in
 `/proc/meminfo` and `/proc/swaps`. On cgroup v2, LXCFS 5.0 does not limit the CPU lines of
-`/proc/stat`, which Node's `os.cpus()` counts, so OpenBot limits the Node programs of agents itself
+`/proc/stat`, which Node's `os.cpus()` counts, so Whilo limits the Node programs of agents itself
 (see [agent processes](hosted-servers.md#memory)). `nproc`, Python's `os.cpu_count()` and other
 programs that read the CPU affinity or `/sys/devices/system/cpu/online` still see the CPUs of the
 host. That file is not mounted: LXCFS lists CPUs 0 to limit-1 in it, but a process still runs on any
 CPU of the host, and the Gemini CLI then exits with SIGILL. Without LXCFS, an instance still starts
 (an update from the app must not fail), and `ready` prints a warning.
 
-An instance gets the LXCFS files when its container is made again: run `openbot-instance up <name>`
+An instance gets the LXCFS files when its container is made again: run `whilo-instance up <name>`
 after `setup`. A restart of LXCFS breaks its files in the containers that run, so `setup` does not
 restart it while a container uses it; each `setup` prints a warning until LXCFS runs with
-`--enable-cfs`. Docker starts after LXCFS (`docker-openbot.conf`).
+`--enable-cfs`. Docker starts after LXCFS (`docker-whilo.conf`).
 
 `start` also checks that the container cannot swap (`memory.swap.max` is 0), and prints a warning if
 it can, or if it cannot read the value. A container that swaps stops for seconds at a time when its memory is full, and its clients
@@ -198,20 +198,20 @@ lose the connection.
 ### Logs
 
 The container log goes through the `syslog` log driver to a socket of rsyslog,
-`/var/lib/openbot-docker/dev/log`, and not to the journal or `/var/log/syslog`, whose size limits
-other services share. rsyslog writes `/var/log/openbot/openbot-<name>.log`. logrotate rotates it each
-day, or sooner when it is larger than 200 MB. `openbot-logrotate.timer` checks every 5 minutes. It keeps
+`/var/lib/whilo-docker/dev/log`, and not to the journal or `/var/log/syslog`, whose size limits
+other services share. rsyslog writes `/var/log/whilo/whilo-<name>.log`. logrotate rotates it each
+day, or sooner when it is larger than 200 MB. `whilo-logrotate.timer` checks every 5 minutes. It keeps
 the 30 newest rotated files and none older than 30 days, so one instance keeps at most 31 files of
 about 200 MB. An instance that writes very much keeps less than 30 days. `docker logs` reads the local
 cache of Docker, which keeps
 only the recent lines. rsyslog cuts a line longer than 8 KB. `setup` installs the rsyslog and logrotate
-files and the timer. Its drop-in `docker.service.d/openbot.conf` makes Docker start after rsyslog, because
-a container does not start without the socket, and require `openbot-firewall.service`: when the
+files and the timer. Its drop-in `docker.service.d/whilo.conf` makes Docker start after rsyslog, because
+a container does not start without the socket, and require `whilo-firewall.service`: when the
 firewall fails, Docker does not start.
 
 ### Host settings
 
-`setup` also installs `/etc/sysctl.d/90-openbot-docker.conf`. With userns-remap, all containers run as
+`setup` also installs `/etc/sysctl.d/90-whilo-docker.conf`. With userns-remap, all containers run as
 one host user and share its inotify limits, so the file raises them. Each container may open 65536
 files (Docker gives 1024 by default). Add `"live-restore": true` to `/etc/docker/daemon.json`, then run
 `systemctl reload docker`: a restart or upgrade of Docker then does not stop the instances.
@@ -220,21 +220,21 @@ files (Docker gives 1024 by default). Add `"live-restore": true` to `/etc/docker
 
 Agents have full access in their container, so the host limits what a container can reach.
 
-- **Network.** `setup` makes the Docker network `openbot` (`172.30.0.0/16`, bridge `br-openbot`)
+- **Network.** `setup` makes the Docker network `whilo` (`172.30.0.0/16`, bridge `br-whilo`)
   with inter-container traffic off, so instances cannot reach each other. It installs
-  `openbot-firewall.service`, which runs `instances/openbot-firewall` before Docker starts. The
-  chain `OPENBOT-EGRESS` in `DOCKER-USER` drops traffic to private, local and multicast ranges and to
-  the addresses in `/etc/openbot-docker/deny`. A rule at the start of `INPUT` drops traffic from the
+  `whilo-firewall.service`, which runs `instances/whilo-firewall` before Docker starts. The
+  chain `WHILO-EGRESS` in `DOCKER-USER` drops traffic to private, local and multicast ranges and to
+  the addresses in `/etc/whilo-docker/deny`. A rule at the start of `INPUT` drops traffic from the
   bridge to the host. The containers reach only the internet. `create`, `up` and `upgrade` refuse
   to start a container when the firewall is off.
 - **Other servers.** Traffic from a container leaves with the address of the host. Put servers that
-  trust that address in `/etc/openbot-docker/deny`, one per line, then run `setup` again.
+  trust that address in `/etc/whilo-docker/deny`, one per line, then run `setup` again.
 - **Users.** With `"userns-remap": "default"` in `/etc/docker/daemon.json`, UID 1000 in the
   container is the start of the `dockremap` range in `/etc/subuid` plus 1000 on the host, a user with
   no rights there. `create` gives the data to that user. This setting is for the whole Docker
   daemon: Docker then uses another data folder, so containers, images and networks made before are
   not visible until it is removed. To turn it on for existing instances: `down` each instance, add
-  the setting, restart Docker, run `setup`, `chown -R <uid>:<gid>` each `/srv/openbot/<name>/data`,
+  the setting, restart Docker, run `setup`, `chown -R <uid>:<gid>` each `/srv/whilo/<name>/data`,
   then `up` each instance. `setup` shows a warning when it is off.
 - **DNS.** Docker sends the DNS queries of a container from the network of the container, so the
   firewall also applies to them. When the host uses a resolver on a private or link-local address,
@@ -245,24 +245,24 @@ Agents have full access in their container, so the host limits what a container 
 
 | Task | Command |
 | --- | --- |
-| Show the instances | `openbot-instance list` |
-| Stop, start, restart | `openbot-instance down <name>`, `up <name>`, `restart <name>` |
-| Read the log | `openbot-instance logs <name> -f` (recent lines), or `/var/log/openbot/openbot-<name>.log*` (30 days) |
-| Upgrade | In the app (see [Updates from the app](#updates-from-the-app)), or `openbot-instance upgrade <name>` or `upgrade --all` |
-| `openbot` commands | `openbot-instance run <name> status`, `login`, `mobile-connect`, `name <name>` |
-| Make the disk larger | `down <name>`, `umount /srv/openbot/<name>/data`, `fallocate --length <new size> data.img`, `e2fsck -f data.img`, `resize2fs data.img`, `mount /srv/openbot/<name>/data`, `up <name>` |
+| Show the instances | `whilo-instance list` |
+| Stop, start, restart | `whilo-instance down <name>`, `up <name>`, `restart <name>` |
+| Read the log | `whilo-instance logs <name> -f` (recent lines), or `/var/log/whilo/whilo-<name>.log*` (30 days) |
+| Upgrade | In the app (see [Updates from the app](#updates-from-the-app)), or `whilo-instance upgrade <name>` or `upgrade --all` |
+| `whilo` commands | `whilo-instance run <name> status`, `login`, `mobile-connect`, `name <name>` |
+| Make the disk larger | `down <name>`, `umount /srv/whilo/<name>/data`, `fallocate --length <new size> data.img`, `e2fsck -f data.img`, `resize2fs data.img`, `mount /srv/whilo/<name>/data`, `up <name>` |
 
 There is no command to remove an instance. To remove one and delete its data: `run <name> logout`,
-`down <name>`, `systemctl disable --now openbot-instance-update@<name>.path`,
-`umount /srv/openbot/<name>/data /srv/openbot/<name>/update-requests`, delete its two lines in
-`/etc/fstab`, then delete `/srv/openbot/<name>` and `instances/<name>.env`.
+`down <name>`, `systemctl disable --now whilo-instance-update@<name>.path`,
+`umount /srv/whilo/<name>/data /srv/whilo/<name>/update-requests`, delete its two lines in
+`/etc/fstab`, then delete `/srv/whilo/<name>` and `instances/<name>.env`.
 
 ### Updates from the app
 
 The owner or an admin updates an instance in Server settings › Updates, or in the update dialog, as on a
-hosted server. The container never gets the Docker socket. OpenBot writes an empty request file to
-`/srv/openbot/<name>/update-requests`. `openbot-instance-update@<name>.path` sees it and runs
-`openbot-instance update-request <name>` as root. Root only tests and removes the request; it never
+hosted server. The container never gets the Docker socket. Whilo writes an empty request file to
+`/srv/whilo/<name>/update-requests`. `whilo-instance-update@<name>.path` sees it and runs
+`whilo-instance update-request <name>` as root. Root only tests and removes the request; it never
 reads or follows it. It pulls the image of the instance and writes its version to `update-status` only
 when it is newer than the container. For an install, it makes the container again from that image,
 with the same data. It writes the state of the request to `update-status`, which the container mounts
@@ -271,12 +271,12 @@ read-only.
 `setup` installs the units. `create`, `up` and `upgrade` make the folders, add the tmpfs of the
 requests to `/etc/fstab` and enable the path unit of the instance. An instance with `OPENBOT_TAG` in
 its env file keeps that tag and offers no update in the app. An instance made before this release gets them with `setup`, then
-`openbot-instance upgrade <name>` once. A container started with `docker/compose.yaml` or
+`whilo-instance upgrade <name>` once. A container started with `docker/compose.yaml` or
 `docker run` has no request folders, so it offers no update in the app.
 
 ### Backups
 
-`openbot-instance backup <name>` copies all of `/data` of an instance into one archive: the
+`whilo-instance backup <name>` copies all of `/data` of an instance into one archive: the
 conversations, attachments, agents, routines, memories, skills, workspaces, `Shared` with the shared
 tables, both databases, the provider sign-ins and the keyring with its password. A restore of this
 archive gives back the same instance, with the same agent, conversation and memory IDs. It is not a
@@ -285,8 +285,8 @@ archive gives back the same instance, with the same agent, conversation and memo
 Set the folder of the backups in `instances/<name>.env`, then run the first backup as root:
 
 ```sh
-echo OPENBOT_BACKUP_DIR=/var/backups/openbot >>/opt/openbot-docker/instances/main.env
-/opt/openbot-docker/instances/openbot-instance backup main --verify
+echo OPENBOT_BACKUP_DIR=/var/backups/whilo >>/opt/whilo-docker/instances/main.env
+/opt/whilo-docker/instances/whilo-instance backup main --verify
 ```
 
 | Setting | Use |
@@ -296,14 +296,14 @@ echo OPENBOT_BACKUP_DIR=/var/backups/openbot >>/opt/openbot-docker/instances/mai
 | `OPENBOT_BACKUP_MAX_AGE` | Hours. When the newest complete backup is older, `backups` shows it as overdue and exits with 1. |
 | `OPENBOT_BACKUP_WORK` | The folder where `verify` unpacks a backup. The default is `/var/tmp`. It needs free space for the data, and the user of the data must be able to reach it. |
 
-A backup stops the container, waits until OpenBot closes its databases, writes the archive and starts
+A backup stops the container, waits until Whilo closes its databases, writes the archive and starts
 the container again. The instance is offline while the archive is written. The output and the status
 show how long. A running turn stops, as on a restart. Each backup is a folder `<UTC time>` with:
 
 | File | Contents |
 | --- | --- |
 | `data.tar.zst` | `/data` without `lost+found`. With `gzip` (`data.tar.gz`) when the host has no `zstd`. |
-| `manifest.json` | The OpenBot version and image, the size, the checksum of the archive, the folders in `/data`, the stop and the time offline. |
+| `manifest.json` | The Whilo version and image, the size, the checksum of the archive, the folders in `/data`, the stop and the time offline. |
 | `required.sha256` | The checksums of `openbot.db`, the keyring, its password and `agent-data.db`. |
 | `instance.env` | A copy of the env file of the instance. |
 | `SHA256SUMS` | The checksums of the other files. |
@@ -313,7 +313,7 @@ The backup writes to `<UTC time>.partial` and renames the folder only when all f
 backup fails, and keeps the earlier backups, when a file cannot be read, the folder has less free space
 than the data uses, the copy stops, or the database or the keyring is missing.
 
-`openbot-instance verify <name> [<backup>]` checks the newest backup or the one given. It needs
+`whilo-instance verify <name> [<backup>]` checks the newest backup or the one given. It needs
 `sqlite3` 3.37 or later on the host. It compares the checksums, unpacks the archive into a temporary
 folder in `OPENBOT_BACKUP_WORK`, and checks that the database, the keyring and its password are there and
 are the files that were copied. It runs `PRAGMA integrity_check` on both databases, reads the schema
@@ -324,18 +324,18 @@ out. Root does not unpack the archive or open a database, because agents can cha
 without user namespace remapping) can read the temporary folder until verification deletes it.
 Verification does not check each attachment file.
 
-`openbot-instance backups <name>` shows the backups and the last backup and verification, with the
+`whilo-instance backups <name>` shows the backups and the last backup and verification, with the
 error when one failed. `--json` gives the same for a monitor, with `lastBackup` and `lastVerify` set to
 `ok`, `failed`, `running`, `stopped` or `none`. `stopped` means that the run ended without a result, for
 example when it was killed or the host restarted. It exits with 1 when the last backup or verification
 failed or stopped, or the newest backup is overdue. Root keeps the state in
-`/srv/openbot/<name>/backup-status`.
+`/srv/whilo/<name>/backup-status`.
 
 A daily backup at 04:00, with a verification after it:
 
 ```sh
-systemctl enable --now openbot-instance-backup@main.timer
-systemctl edit openbot-instance-backup@main.timer   # another time: OnCalendar= under [Timer]
+systemctl enable --now whilo-instance-backup@main.timer
+systemctl edit whilo-instance-backup@main.timer   # another time: OnCalendar= under [Timer]
 ```
 
 The timer runs outside the container, so it also backs up an instance that does not work. `setup`
@@ -346,8 +346,8 @@ while another runs.
 To restore, the instance must exist. For a new host, `create` it with the same name first.
 
 ```sh
-openbot-instance restore main 20261014T040000Z --replace
-openbot-instance up main
+whilo-instance restore main 20261014T040000Z --replace
+whilo-instance up main
 ```
 
 `restore` checks the checksums and verifies the backup in a temporary folder before it stops the
@@ -359,24 +359,24 @@ the backup next to the data. Only when the archive is unpacked does it replace `
 instance has data, `restore` needs `--replace`, which deletes that data, so back it up first.
 Because the old data stays until the end, the disk of the instance needs free space for the data of
 the backup. When it has less, copy the old data to another disk, delete it from
-`/srv/openbot/<name>/data`, and restore into the empty folder.
+`/srv/whilo/<name>/data`, and restore into the empty folder.
 `restore` does not start the instance:
 
 - Start it only when the instance of the backup does not run anywhere else. Two copies would use the
   same server identity and the same account session.
-- `restore` refuses a backup from a newer OpenBot than the image of the instance. Pull a newer image
-  first. An older OpenBot cannot open a database that a newer one migrated. Do not use a backup to go
+- `restore` refuses a backup from a newer Whilo than the image of the instance. Pull a newer image
+  first. An older Whilo cannot open a database that a newer one migrated. Do not use a backup to go
   back to an older version.
-- A newer OpenBot migrates the database on its first start. Back up the restored data again before you
+- A newer Whilo migrates the database on its first start. Back up the restored data again before you
   upgrade when you want to keep the version that the backup had.
 - The provider sign-ins are in the backup. A provider can still ask for a new sign-in when its session
   expired. The account session is in the backup too.
 
 ## Upgrades
 
-OpenBot does not update itself in a container. A new image replaces it. An instance of
+Whilo does not update itself in a container. A new image replaces it. An instance of
 `docker/instances` can ask the host for that from the app, see
-[Updates from the app](#updates-from-the-app). Do not go back to an older tag: an older OpenBot cannot
+[Updates from the app](#updates-from-the-app). Do not go back to an older tag: an older Whilo cannot
 open a database that a newer one migrated, so it does not start.
 
 ### Update automation
@@ -390,7 +390,7 @@ is the machine-readable source for the newest full release. For example, this re
 prints its tag:
 
 ```sh
-gh api repos/nightly-labs/openbot/releases/latest --jq '.tag_name'
+gh api repos/nightly-labs/whilo/releases/latest --jq '.tag_name'
 ```
 
 Automation can poll that metadata and download an image. Installation needs these checks:
@@ -406,15 +406,15 @@ Automation can poll that metadata and download an image. Installation needs thes
    container. The release workflow publishes the GitHub release before the image tags, so a new
    release can appear while its image is not available yet. A failed pull leaves installation pending.
 4. Back up the complete `/data` recovery unit, including the keyring and password file. For an
-   instance of `docker/instances`, run `openbot-instance backup <name> --verify`, see
+   instance of `docker/instances`, run `whilo-instance backup <name> --verify`, see
    [Backups](#backups). For a container from `docker/compose.yaml` or `docker run`, stop the
    container, confirm that it stopped, and copy the volume, see [Data](#data). Keep the previous
    complete backup.
 5. Replace the container with the chosen image and the same volume and runtime options. For an
    instance of `docker/instances`, set `OPENBOT_TAG` in its env file and run
-   `openbot-instance upgrade <name>`. This command takes the lock of the instance, so no backup,
+   `whilo-instance upgrade <name>`. This command takes the lock of the instance, so no backup,
    restore or update from the app runs at the same time. A manual replacement does not take the
-   lock. Check `openbot status` and the container log before the upgrade is reported as complete.
+   lock. Check `whilo status` and the container log before the upgrade is reported as complete.
 
 An unattended image watcher does not perform these checks or make a consistent backup. Keep the
 installation step under operator control unless your own job implements them. A failed upgrade
@@ -430,7 +430,7 @@ message from a person starts first. The browser opens no new tab and unloads idl
 The memory ceiling is the smaller of the memory of the host and the memory limit of the container
 (`--memory`, or `mem_limit` in Compose). Without a limit, the ceiling is the memory of the host. A
 fixed number of turns run at the same time: 2 up to 5 GiB of ceiling, 8 up to 10 GiB, and 16 above.
-`/dev/shm` and the `tmpfs` folders count toward the limit too. `docker exec openbot openbot status`
+`/dev/shm` and the `tmpfs` folders count toward the limit too. `docker exec whilo whilo status`
 shows the ceiling, the free memory, the level (`ok`, `low` or `critical`) and the turn limit.
 
 The guard reads cgroup v2, which current Docker hosts use. On a host with cgroup v1, the container
@@ -438,14 +438,14 @@ sees only the memory of the host, so the guard uses it, and the log has one warn
 
 Main has an OOM score adjustment of 0 in the container, and each process that it starts gets 500.
 So when the container is out of memory, the kernel is more likely to stop a provider CLI, an MCP
-server or an agent tool than OpenBot. Agent processes also run at nice 10, and at the `critical` level
+server or an agent tool than Whilo. Agent processes also run at nice 10, and at the `critical` level
 main stops leftover agent processes, such as the workers of a build whose parent was stopped. See
 [agent processes](hosted-servers.md#memory).
 
 ## Environment
 
 Pass these with `-e` or the `environment` of the Compose file, never in an image. Agents inherit the
-environment of OpenBot, so they can read these values.
+environment of Whilo, so they can read these values.
 
 | Variable | Use |
 | --- | --- |
@@ -470,24 +470,24 @@ environment of OpenBot, so they can read these values.
 - **Check the image.** Each release image has a build provenance attestation:
 
   ```sh
-  gh attestation verify oci://ghcr.io/nightly-labs/openbot:<version> --repo nightly-labs/openbot
+  gh attestation verify oci://ghcr.io/nightly-labs/whilo:<version> --repo nightly-labs/whilo
   ```
 
 ## How it works
 
 The release workflow (`.github/workflows/release.yml`) builds the image on a runner of each
 architecture from the AppImage of that release, after it checks the AppImage against the release
-checksums. `docker/Dockerfile` unpacks the AppImage to `/opt/OpenBot/app` and installs the packages
+checksums. `docker/Dockerfile` unpacks the AppImage to `/opt/Whilo/app` and installs the packages
 of a self-hosted server from that release. The workflow starts and stops each image once, and pushes
 the images to GHCR only after the GitHub Release is published.
 
-`tini` is process 1. It starts `resources/hosting/openbot-container` from the release, which checks
+`tini` is process 1. It starts `resources/hosting/whilo-container` from the release, which checks
 that it can make a user namespace, starts D-Bus, two virtual displays and the keyring, and then
-becomes OpenBot with `OPENBOT_SERVER=1`. OpenBot shows its windows on `:0`, at 1280x800. The agents
+becomes Whilo with `OPENBOT_SERVER=1`. Whilo shows its windows on `:0`, at 1280x800. The agents
 work on `:1`, at the size of `OPENBOT_DISPLAY_SIZE`, which the script names in
-`OPENBOT_AGENT_DISPLAY`. Computer Use and remote desktop use `:1`, so they do not show the OpenBot
-window. On a stop, tini gives the signal to OpenBot and waits for it.
-`/opt/OpenBot/hosted/mode` is `container`, so the `openbot` command talks to the control socket and
+`OPENBOT_AGENT_DISPLAY`. Computer Use and remote desktop use `:1`, so they do not show the Whilo
+window. On a stop, tini gives the signal to Whilo and waits for it.
+`/opt/Whilo/hosted/mode` is `container`, so the `whilo` command talks to the control socket and
 does not use systemd.
 
 ## Limits
@@ -505,17 +505,17 @@ does not use systemd.
 ## Not confirmed
 
 - Tested on Docker Desktop 4.45 (Docker Engine 28.3, `linux/arm64`) with the 0.29.0 AppImage and the
-  scripts of this image: the start with the sandbox on, `openbot status`, a restart, a new container
+  scripts of this image: the start with the sandbox on, `whilo status`, a restart, a new container
   on the same volume after a kill, a stop that exits with 0, and the messages for a missing seccomp
   profile and for a volume that the user cannot write. The release workflow also starts each image.
-- Not tested: a sign-in with `openbot login` in a container, remote use of a container from the app,
+- Not tested: a sign-in with `whilo login` in a container, remote use of a container from the app,
   Podman, Kubernetes, rootless Docker, and hosts that restrict user namespaces with AppArmor, such as
   Ubuntu 23.10 or newer. On such a host, the container can need an AppArmor profile that permits
   `userns`.
 - Host networking: users report that it makes the connection fast on a local network and on a
   Tailscale tailnet. This was not tested here. On a public Ubuntu 24.04 VPS with Docker 29, the
   bridge network connected in 2.0 to 2.6 s and host networking in 2.0 to 2.4 s.
-- The two displays of the entrypoint were tested with a stand-in for OpenBot: `:0` is 1280x800 and
+- The two displays of the entrypoint were tested with a stand-in for Whilo: `:0` is 1280x800 and
   `:1` has the display size. Computer Use and remote desktop on `:1` were not tested.
 - Not tested: a Codex agent with Workspace only access in a container. Codex runs its commands in
   bubblewrap, which mounts its root in a user namespace. The seccomp profile allows `mount` only with

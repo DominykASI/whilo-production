@@ -6,7 +6,7 @@ import { readDevelopmentState } from "./development-secrets";
 
 function projectWithLegacyState(state: unknown): { root: string; legacyDir: string } {
   const root = mkdtempSync(join(tmpdir(), "whilo-dev-state-"));
-  const legacyDir = join(root, ".openbot");
+  const legacyDir = join(root, ".whilo");
   mkdirSync(legacyDir, { mode: 0o700 });
   writeFileSync(join(legacyDir, "dev-state.json"), JSON.stringify(state), { mode: 0o600 });
   return { root, legacyDir };

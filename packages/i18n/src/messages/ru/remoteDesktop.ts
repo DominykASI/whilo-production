@@ -76,12 +76,12 @@ export const messages = {
   "remoteDesktop.setup.finishTest": "Завершить проверку",
   "remoteDesktop.host.questionTitle": "{name} хочет управлять этим компьютером",
   "remoteDesktop.host.questionDetail":
-    "{name} увидит ваш экран и сможет пользоваться мышью и клавиатурой. Если вы не ответите в течение 30 секунд, OpenBot отклонит запрос.",
+    "{name} увидит ваш экран и сможет пользоваться мышью и клавиатурой. Если вы не ответите в течение 30 секунд, Whilo отклонит запрос.",
   "remoteDesktop.host.allow": "Разрешить",
   "remoteDesktop.host.deny": "Отклонить",
   "remoteDesktop.host.startedTitle": "Удалённое управление началось",
   "remoteDesktop.host.startedBody": "{name} сейчас управляет этим компьютером.",
-  "remoteDesktop.host.trayTooltip": "OpenBot: удалённое управление включено",
+  "remoteDesktop.host.trayTooltip": "Whilo: удалённое управление включено",
   "remoteDesktop.host.trayControlledBy": "{name} управляет этим компьютером",
   "remoteDesktop.host.stopAll": "Остановить всё удалённое управление",
 } as const satisfies PartialTranslation<typeof source>;

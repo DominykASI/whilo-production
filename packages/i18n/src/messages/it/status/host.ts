@@ -2,12 +2,12 @@ import type { PartialTranslation } from "../../../message";
 import type { messages as source } from "../../en/status/host";
 
 export const messages = {
-  "status.host.registered": "Questo OpenBot è stato registrato per l'accesso WebRTC.",
+  "status.host.registered": "Questo Whilo è stato registrato per l'accesso WebRTC.",
   "status.host.keyRotated": "Chiave del server cambiata. I dispositivi associati restano associati.",
   "status.host.identityUpdated": "Identità del server aggiornata.",
   "status.host.starting": "Avvio dell'host WebRTC…",
-  "status.host.ready": "Questo OpenBot è pronto per le connessioni WebRTC.",
-  "status.host.stopping": "Questo OpenBot sta diventando privato…",
-  "status.host.private": "Questo OpenBot è privato.",
-  "status.host.removed": "Questo OpenBot è stato rimosso dal tuo account. Pubblicalo di nuovo per condividerlo.",
+  "status.host.ready": "Questo Whilo è pronto per le connessioni WebRTC.",
+  "status.host.stopping": "Questo Whilo sta diventando privato…",
+  "status.host.private": "Questo Whilo è privato.",
+  "status.host.removed": "Questo Whilo è stato rimosso dal tuo account. Pubblicalo di nuovo per condividerlo.",
 } as const satisfies PartialTranslation<typeof source>;

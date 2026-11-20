@@ -1,4 +1,4 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import {
   type EventRoutineOwner,
   type EventRoutineRef,
@@ -9,9 +9,9 @@ import {
   type ListEventRoutinesInput,
   type SaveEventRoutineInput,
   type SetWebhookSecretInput,
-} from "@openbot/contracts/ipc-events";
-import { type DynamicRecord, isDynamicRecord } from "@openbot/contracts/runtime-values";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/ipc-events";
+import { type DynamicRecord, isDynamicRecord } from "@whilo/contracts/runtime-values";
+import { sourceText } from "@whilo/i18n/source";
 
 // Each parser decodes an untrusted renderer or Team API body. A failure has only catalog text.
 

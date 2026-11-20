@@ -1,21 +1,21 @@
 // Drives the MCP probe and McpOAuth against a local MCP server for issue #5440.
 // bun scripts/mcp-sign-in-client-metadata-document-e2e.ts
 // The authorization server acts as ElevenLabs' does: it has no registration endpoint and sets
-// `client_id_metadata_document_supported`. OpenBot must send its client metadata document URL as
+// `client_id_metadata_document_supported`. Whilo must send its client metadata document URL as
 // the `client_id`, with no secret, and keep a record that the encrypted store can read again after
 // a restart. A server that offers registration as well must keep the registration.
 import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import { resolve } from "node:path";
-import type { McpServerConfig } from "@openbot/contracts/ipc";
+import type { McpServerConfig } from "@whilo/contracts/ipc";
 import { Effect } from "effect";
 import { z } from "zod";
 import { runCauseEffect } from "../src/backend/effect-boundary";
 import { McpOAuth, type McpOAuthRecord, mcpOAuthRecordSchema } from "../src/backend/mcp-oauth-provider";
 import { testMcpServer } from "../src/backend/mcp-probe";
 
-const out = resolve(import.meta.dirname, "../.openbot-build/mcp-sign-in-client-metadata-document-e2e");
+const out = resolve(import.meta.dirname, "../.whilo-build/mcp-sign-in-client-metadata-document-e2e");
 const CLIENT_METADATA_URL = "https://openbot.run/oauth/mcp-client.json";
 const REDIRECT_URL = "http://127.0.0.1:28417/mcp-auth";
 /** The address when another program holds the preferred port. */

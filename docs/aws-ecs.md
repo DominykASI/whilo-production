@@ -40,7 +40,7 @@ chown 1000:1000 /srv/whilo-data
 # The seccomp profile of that image version, and no-new-privileges, for each container.
 [ ! -e /etc/docker/daemon.json ] || { echo "Add the two keys to /etc/docker/daemon.json." >&2; exit 1; }
 curl -fsSL -o /etc/docker/whilo-seccomp.json \
-  "https://raw.githubusercontent.com/nightly-labs/openbot/v$version/docker/seccomp.json"
+  "https://raw.githubusercontent.com/nightly-labs/whilo/v$version/docker/seccomp.json"
 cat >/etc/docker/daemon.json <<'EOF'
 { "seccomp-profile": "/etc/docker/whilo-seccomp.json", "no-new-privileges": true }
 EOF
@@ -64,7 +64,7 @@ the profile of that version again.
   "containerDefinitions": [
     {
       "name": "whilo",
-      "image": "ghcr.io/nightly-labs/openbot:<version>",
+      "image": "ghcr.io/nightly-labs/whilo:<version>",
       "essential": true,
       "memory": 4096,
       "linuxParameters": { "sharedMemorySize": 1024 },

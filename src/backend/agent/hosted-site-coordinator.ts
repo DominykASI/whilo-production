@@ -32,7 +32,7 @@ import {
 import { type WhiloToolResponse, whiloToolResult, siteToolString } from "./routine-tools";
 import { checkAgentFolders, workspaceWritableRoots } from "./workspace-sandbox";
 
-/** The openbot.site host, injected so the backend never depends on the account Worker directly. */
+/** The whilo.site host, injected so the backend never depends on the account Worker directly. */
 export interface AgentHostedSites {
   list(): Effect.Effect<HostedSiteList, HostedSiteOperationFailed>;
   publish(
@@ -88,7 +88,7 @@ interface HostedSiteMutationResult {
 export const HOSTED_SITE_APPROVAL_METHOD = "whilo/hosted-site-mutation";
 
 /**
- * Owns publishing to openbot.site: the approval a mutation needs, the mutation itself, and the
+ * Owns publishing to whilo.site: the approval a mutation needs, the mutation itself, and the
  * conversation markers that record it.
  *
  * The markers are the reason this is a class rather than a set of functions. A terminal marker
@@ -252,7 +252,7 @@ export class HostedSiteCoordinator {
       const siteId = yield* siteStep(() => siteToolString(args.siteId, "siteId", INPUT_LIMITS.identifier));
       const site = yield* this.#ownedSiteEffect(siteId);
       return {
-        reason: `Delete ${site.hostname} from openbot.site.`,
+        reason: `Delete ${site.hostname} from whilo.site.`,
         permissions: { fileSystem: { read: [], write: [] }, network: true },
         eventDetails: hostedSiteEventDetails(site, siteId),
       };
@@ -267,7 +267,7 @@ export class HostedSiteCoordinator {
     const permissions = { fileSystem: { read: [sourcePath], write: [] }, network: true };
     if (tool === "publish_site") {
       return {
-        reason: `Publish ${JSON.stringify(title)} as a public site on openbot.site.`,
+        reason: `Publish ${JSON.stringify(title)} as a public site on whilo.site.`,
         permissions,
         eventDetails: { siteId: null, title, hostname: null, url: null },
       };

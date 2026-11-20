@@ -57,7 +57,7 @@ export const messages = {
   "sitePage.billing.cancelledBody": "No se cobró nada. Vuelve a Whilo.",
   "sitePage.report.pageTitle": "Denunciar un sitio alojado — Whilo",
   "sitePage.report.title": "Denunciar un sitio alojado",
-  "sitePage.report.intro": "Envía una denuncia sobre contenido dañino o ilegal en una dirección de openbot.site.",
+  "sitePage.report.intro": "Envía una denuncia sobre contenido dañino o ilegal en una dirección de whilo.site.",
   "sitePage.report.hostnameLabel": "Dirección del sitio",
   "sitePage.report.hostnameMissing": "Introduce la dirección del sitio",
   "sitePage.report.reasonLabel": "Motivo",

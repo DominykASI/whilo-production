@@ -9,19 +9,19 @@
 //   2. A restart while the earlier process's activation still waits: the earlier activation does not
 //      move the agent on the new process's first lists, and the agent keeps its model.
 //   3. Control: after a restart whose lists all lack the model, the agent moves to the first built-in model.
-// `bun run test:grok-partial-model-list`. Writes .openbot-build/grok-partial-model-list-e2e/report.json.
+// `bun run test:grok-partial-model-list`. Writes .whilo-build/grok-partial-model-list-e2e/report.json.
 import assert from "node:assert/strict";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { AGENT_PROVIDERS } from "@openbot/contracts/ipc";
+import { AGENT_PROVIDERS } from "@whilo/contracts/ipc";
 import { Effect } from "effect";
 import type { AgentBrowserHost } from "../src/backend/agent/turn-lifecycle";
 import { installFakeAgent, readJsonl } from "./provider-fakes/host";
 
-const OUT = resolve(import.meta.dirname, "../.openbot-build/grok-partial-model-list-e2e");
-const root = await mkdtemp(join(tmpdir(), "openbot-grok-partial-list-"));
+const OUT = resolve(import.meta.dirname, "../.whilo-build/grok-partial-model-list-e2e");
+const root = await mkdtemp(join(tmpdir(), "whilo-grok-partial-list-"));
 const userData = join(root, "user-data");
 const home = join(root, "home");
 const fakeGrok = join(root, "grok");
@@ -40,7 +40,7 @@ const { AgentService } = await import("../src/backend/agent-service");
 const { AgentStore } = await import("../src/backend/agent-store");
 const { runCauseEffect } = await import("../src/backend/effect-boundary");
 const { MailboxStore } = await import("../src/backend/mailbox-store");
-const { OpenBotDatabase } = await import("../src/backend/openbot-database");
+const { WhiloDatabase } = await import("../src/backend/whilo-database");
 
 interface SetupLine {
   event: string;
@@ -91,7 +91,7 @@ const report: {
 
 writeFileSync(controlPath, JSON.stringify({ partial: 0 }));
 await installFakeAgent(fakeGrok, "grok-partial-list", { FAKE_LOG: logPath, FAKE_CONTROL: controlPath });
-const database = new OpenBotDatabase(userData);
+const database = new WhiloDatabase(userData);
 const store = new AgentStore(userData, home, database);
 const mailbox = new MailboxStore(userData, store.sharedRoot, store.database);
 const agents = new AgentService({

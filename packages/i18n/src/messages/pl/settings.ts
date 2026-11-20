@@ -70,8 +70,8 @@ export const messages = {
   "settings.launchAtLogin.description": "Otwieraj aplikację, gdy logujesz się na tym komputerze.",
   "settings.keepRunning.title": "Utrzymuj Whilo w tle",
   "settings.keepRunning.description": "Aktywne zadania działają dalej po zamknięciu okna.",
-  "settings.menuBar.title": "Pokazuj OpenBot na pasku menu",
-  "settings.menuBar.description": "Otwieraj i zamykaj OpenBot z ikony na pasku menu.",
+  "settings.menuBar.title": "Pokazuj Whilo na pasku menu",
+  "settings.menuBar.description": "Otwieraj i zamykaj Whilo z ikony na pasku menu.",
   "settings.keepAwake.title": "Nie usypiaj komputera",
   "settings.keepAwake.description":
     "Rutyny działają o czasie, gdy komputer jest podłączony do zasilania. Ekran nadal może się wyłączyć.",
@@ -228,13 +228,13 @@ export const messages = {
   "settings.agentDock.show.description": "Pokazuje twoich agentów przy krawędzi ekranu, gotowych do szybkiego czatu.",
   "settings.agentDock.placement.title": "Położenie",
   "settings.agentDock.placement.description":
-    "„Nad innymi aplikacjami” zostawia dok na ekranie, gdy OpenBot działa w tle.",
+    "„Nad innymi aplikacjami” zostawia dok na ekranie, gdy Whilo działa w tle.",
   "settings.agentDock.placement.screen": "Nad innymi aplikacjami",
-  "settings.agentDock.placement.window": "W oknie OpenBot",
+  "settings.agentDock.placement.window": "W oknie Whilo",
   "settings.agentDock.display.title": "Ekran",
   "settings.agentDock.display.description":
-    "Jeśli ten ekran nie jest podłączony, dok przechodzi na ekran okna OpenBot.",
-  "settings.agentDock.display.window": "Razem z oknem OpenBot",
+    "Jeśli ten ekran nie jest podłączony, dok przechodzi na ekran okna Whilo.",
+  "settings.agentDock.display.window": "Razem z oknem Whilo",
   "settings.agentDock.display.primary": "Ekran główny",
   "settings.agentDock.display.all": "Wszystkie ekrany",
   "settings.agentDock.display.unnamed": "Ekran {number}",
@@ -256,7 +256,7 @@ export const messages = {
   "settings.analytics.webDescription":
     "Włączone: metadane użycia i niezawodności trafiają do samodzielnie hostowanej analityki Whilo wraz z ID konta i adresem e-mail. Wyłączone: te same metadane trafiają tylko z losowym ID instalacji. Czaty, pliki i prompty nigdy nie są wysyłane. To ustawienie dotyczy tej przeglądarki.",
   "settings.tab.general.title": "Ogólne",
-  "settings.tab.general.description": "Określ, jak OpenBot działa na tym komputerze.",
+  "settings.tab.general.description": "Określ, jak Whilo działa na tym komputerze.",
   "settings.tab.agents.title": "Agenci",
   "settings.tab.agents.description":
     "Wybierz, co mogą robić agenci na tym komputerze, gdy nie ustawisz tego dla agenta.",

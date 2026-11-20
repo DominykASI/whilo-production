@@ -1,4 +1,4 @@
-import { createOpenBotLogger, toLogValue } from "@openbot/logging";
+import { createWhiloLogger, toLogValue } from "@whilo/logging";
 import type { WebContents } from "electron";
 
 /** The isolated world of the consent script. The page cannot read its state or its functions. */
@@ -7,7 +7,7 @@ export const CONSENT_WORLD = 1_019;
 /** How long a document can show its banner after `dom-ready`. After this, the script stops watching. */
 const WATCH_MS = 15_000;
 
-const logger = createOpenBotLogger("browser-consent");
+const logger = createWhiloLogger("browser-consent");
 
 /** The buttons of common consent platforms that refuse all optional cookies in one click. */
 const REJECT_SELECTORS = [

@@ -63,7 +63,7 @@ export function createMockAuth(options: MockAuthOptions, { emit }: MockRuntime) 
   let companySignIn: CompanySignInSettings = {
     redirectUri: "https://api.openbot.run/v1/auth/company/callback",
     scimUrl: "https://api.openbot.run/scim/v2",
-    domainRecord: { name: "_openbot", value: "openbot-domain=preview" },
+    domainRecord: { name: "_openbot", value: "whilo-domain=preview" },
     domainCheck: false,
     connection: null,
   };
@@ -120,8 +120,7 @@ export function createMockAuth(options: MockAuthOptions, { emit }: MockRuntime) 
       return clone(authState);
     },
     createMobileConnect: async () => ({
-      qrData:
-        "whilo://mobile-connect?api=https%3A%2F%2Fapi.openbot.run&ticket=preview-mobile-ticket_1234567890abcdef",
+      qrData: "whilo://mobile-connect?api=https%3A%2F%2Fapi.openbot.run&ticket=preview-mobile-ticket_1234567890abcdef",
       expiresAt: Date.now() + 120_000,
     }),
     cancelMobileConnect: async () => undefined,

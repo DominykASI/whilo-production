@@ -71,8 +71,8 @@ export const messages = {
   "settings.launchAtLogin.description": "このコンピューターにサインインするとアプリを開きます。",
   "settings.keepRunning.title": "Whilo をバックグラウンドで実行し続ける",
   "settings.keepRunning.description": "ウィンドウを閉じたあとも実行中のタスクを続けます。",
-  "settings.menuBar.title": "OpenBot をメニューバーに表示",
-  "settings.menuBar.description": "メニューバーのアイコンから OpenBot を開いたり終了したりします。",
+  "settings.menuBar.title": "Whilo をメニューバーに表示",
+  "settings.menuBar.description": "メニューバーのアイコンから Whilo を開いたり終了したりします。",
   "settings.keepAwake.title": "このコンピュータをスリープさせない",
   "settings.keepAwake.description":
     "電源に接続している間、ルーティンが予定どおりに実行されます。ディスプレイはオフになることがあります。",
@@ -223,13 +223,13 @@ export const messages = {
   "settings.agentDock.show.description": "エージェントを画面の端に表示して、すぐにチャットできるようにします。",
   "settings.agentDock.placement.title": "位置",
   "settings.agentDock.placement.description":
-    "「他のアプリの上」にすると、OpenBot がバックグラウンドのときもドックが表示されます。",
+    "「他のアプリの上」にすると、Whilo がバックグラウンドのときもドックが表示されます。",
   "settings.agentDock.placement.screen": "他のアプリの上",
-  "settings.agentDock.placement.window": "OpenBot のウィンドウ内",
+  "settings.agentDock.placement.window": "Whilo のウィンドウ内",
   "settings.agentDock.display.title": "ディスプレイ",
   "settings.agentDock.display.description":
-    "そのディスプレイが接続されていない場合、ドックは OpenBot ウィンドウのディスプレイに表示されます。",
-  "settings.agentDock.display.window": "OpenBot ウィンドウと同じ",
+    "そのディスプレイが接続されていない場合、ドックは Whilo ウィンドウのディスプレイに表示されます。",
+  "settings.agentDock.display.window": "Whilo ウィンドウと同じ",
   "settings.agentDock.display.primary": "メインディスプレイ",
   "settings.agentDock.display.all": "すべてのディスプレイ",
   "settings.agentDock.display.unnamed": "ディスプレイ {number}",
@@ -251,7 +251,7 @@ export const messages = {
   "settings.analytics.webDescription":
     "オン: 利用状況と安定性のメタデータを、アカウント ID とメールアドレスとともに Whilo の自社運用の分析基盤に送信します。オフ: 同じメタデータをランダムなインストール ID のみとともに送信します。チャット、ファイル、プロンプトは送信しません。この設定はこのブラウザーに適用されます。",
   "settings.tab.general.title": "一般",
-  "settings.tab.general.description": "このコンピューターでの OpenBot の動作を設定します。",
+  "settings.tab.general.description": "このコンピューターでの Whilo の動作を設定します。",
   "settings.tab.agents.title": "エージェント",
   "settings.tab.agents.description":
     "エージェントごとに設定しないときに、このコンピューターのエージェントができることを選びます。",

@@ -11,7 +11,7 @@
 // and B's writes come after it.
 //
 // Run: bun apps/auth-api/scripts/remote-membership-race-e2e.ts
-// It writes .openbot-build/remote-membership-race-e2e/report.json and exits non-zero on a failure.
+// It writes .whilo-build/remote-membership-race-e2e/report.json and exits non-zero on a failure.
 // The local D1 lives in a temporary directory, so the worktree's own local D1 stays as it is. The
 // control plane has no webhook URLs and a fetch stub, so it uses no network.
 import { execFile } from "node:child_process";
@@ -25,7 +25,7 @@ import { RemoteControlPlane } from "../src/server/remote-control-plane";
 
 const run = promisify(execFile);
 const ROOT = resolve(import.meta.dirname, "../../..");
-const OUT = join(ROOT, ".openbot-build", "remote-membership-race-e2e");
+const OUT = join(ROOT, ".whilo-build", "remote-membership-race-e2e");
 const MIGRATIONS = join(ROOT, "apps", "auth-api", "migrations");
 const WRANGLER = join(ROOT, "node_modules", ".bin", process.platform === "win32" ? "wrangler.cmd" : "wrangler");
 const HOUR = 60 * 60 * 1000;
@@ -94,7 +94,7 @@ await writeFile(
     d1_databases: [
       {
         binding: "DB",
-        database_name: "openbot-auth",
+        database_name: "whilo-auth",
         database_id: "remote-membership-race-e2e",
         migrations_dir: MIGRATIONS,
       },
@@ -102,7 +102,7 @@ await writeFile(
   }),
 );
 const env = { ...process.env, CI: "1", WRANGLER_SEND_METRICS: "false" };
-await run(WRANGLER, ["d1", "migrations", "apply", "openbot-auth", "--local", "--persist-to", state, "-c", config], {
+await run(WRANGLER, ["d1", "migrations", "apply", "whilo-auth", "--local", "--persist-to", state, "-c", config], {
   cwd: work,
   env,
 });

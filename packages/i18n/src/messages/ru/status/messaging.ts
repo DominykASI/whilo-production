@@ -41,7 +41,7 @@ export const messages = {
   "status.messaging.telegramOrchestratorName": "Оркестратор Telegram",
   "status.messaging.telegramOrchestratorTitle": "Отвечает в Telegram и обращается к команде",
   "status.messaging.whatsappNoAgent":
-    "Пока нет агента, который мог бы здесь ответить. Добавьте Оркестратора WhatsApp в OpenBot.",
+    "Пока нет агента, который мог бы здесь ответить. Добавьте Оркестратора WhatsApp в Whilo.",
   "status.messaging.whatsappApprovalMenu": "Ответьте 1, чтобы одобрить, или 2, чтобы отклонить.",
   "status.messaging.whatsappStopMenu": "Ответьте «stop», чтобы остановить.",
   "status.messaging.whatsappPairingCode":
@@ -49,9 +49,9 @@ export const messages = {
   "status.messaging.whatsappPairingApproved": "Теперь вы можете отправлять запросы на этот номер.",
   "status.messaging.whatsappOwnChat": "Сообщение себе",
   "status.messaging.whatsappWelcomeOwn":
-    "👋 *OpenBot подключён*\n\nПишите сюда, чтобы обратиться к своим агентам. WhatsApp Orchestrator отвечает сам или передаёт работу нужному агенту.\n\nОтправьте *stop*, чтобы остановить запрос.",
+    "👋 *Whilo подключён*\n\nПишите сюда, чтобы обратиться к своим агентам. WhatsApp Orchestrator отвечает сам или передаёт работу нужному агенту.\n\nОтправьте *stop*, чтобы остановить запрос.",
   "status.messaging.whatsappWelcomeDedicated":
-    "👋 *OpenBot подключён*\n\nЛюди, которым вы разрешите в OpenBot, теперь могут писать на этот номер. Новый человек получит код: одобрите его в OpenBot в разделе «Запросы».\n\nОтправьте *stop*, чтобы остановить запрос.",
+    "👋 *Whilo подключён*\n\nЛюди, которым вы разрешите в Whilo, теперь могут писать на этот номер. Новый человек получит код: одобрите его в Whilo в разделе «Запросы».\n\nОтправьте *stop*, чтобы остановить запрос.",
   "status.messaging.whatsappOrchestratorName": "Оркестратор WhatsApp",
   "status.messaging.whatsappOrchestratorTitle": "Отвечает в WhatsApp и обращается к команде",
 } as const satisfies PartialTranslation<typeof source>;

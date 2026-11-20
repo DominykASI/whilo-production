@@ -6,8 +6,8 @@ import {
   PROVIDER_ACCOUNT_LABEL_MAX_LENGTH,
   type ProviderAccountStatus,
   type ProviderUsageResetOutcome,
-} from "@openbot/contracts/ipc";
-import { CLAUDE_API_KEY_ACCOUNT_ID } from "@openbot/contracts/team-protocol/claude-api-key-v1";
+} from "@whilo/contracts/ipc";
+import { CLAUDE_API_KEY_ACCOUNT_ID } from "@whilo/contracts/team-protocol/claude-api-key-v1";
 import { skipToken, useQuery } from "@tanstack/react-query";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Typography } from "heroui-native";

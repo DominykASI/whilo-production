@@ -1,24 +1,24 @@
-import { agentTemplateIdFromWebAppSearch, WEB_APP_AGENT_TEMPLATE_PARAM } from "@openbot/contracts/agent-template-links";
-import { companySignInErrorKey, WEB_APP_COMPANY_SIGN_IN_ERROR_PARAM } from "@openbot/contracts/company-sign-in";
-import { type FirstTouch, readFirstTouch } from "@openbot/contracts/first-touch";
-import { inviteUrlFromWebAppSearch, WEB_APP_INVITE_FIELDS } from "@openbot/contracts/invite-links";
-import { type AppVariant, type CentralAuthState, type CentralAuthUser, isAvatarColor } from "@openbot/contracts/ipc";
+import { agentTemplateIdFromWebAppSearch, WEB_APP_AGENT_TEMPLATE_PARAM } from "@whilo/contracts/agent-template-links";
+import { companySignInErrorKey, WEB_APP_COMPANY_SIGN_IN_ERROR_PARAM } from "@whilo/contracts/company-sign-in";
+import { type FirstTouch, readFirstTouch } from "@whilo/contracts/first-touch";
+import { inviteUrlFromWebAppSearch, WEB_APP_INVITE_FIELDS } from "@whilo/contracts/invite-links";
+import { type AppVariant, type CentralAuthState, type CentralAuthUser, isAvatarColor } from "@whilo/contracts/ipc";
 import {
   type MarketplaceListingLink,
   marketplaceListingFromWebAppSearch,
   WEB_APP_MARKETPLACE_AGENT_PARAM,
   WEB_APP_MARKETPLACE_SKILL_PARAM,
-} from "@openbot/contracts/marketplace-links";
-import { pluginSlugFromWebAppSearch, WEB_APP_PLUGIN_PARAM } from "@openbot/contracts/plugin-links";
-import { isBoolean, isDynamicRecord, isString } from "@openbot/contracts/runtime-values";
-import { formatLocale, resolveLocale } from "@openbot/i18n";
-import { sourceText } from "@openbot/i18n/source";
-import { markRemoteSync } from "@openbot/team-client/sync-profile";
-import { classifyFailure } from "@openbot/telemetry";
-import { NotificationObserver, Toaster, toast } from "@openbot/ui";
-import { AccountLogin } from "@openbot/ui/features/account/AccountLogin";
-import { AppLoadingScreen } from "@openbot/ui/features/account/AppLoadingScreen";
-import { currentText } from "@openbot/ui/text";
+} from "@whilo/contracts/marketplace-links";
+import { pluginSlugFromWebAppSearch, WEB_APP_PLUGIN_PARAM } from "@whilo/contracts/plugin-links";
+import { isBoolean, isDynamicRecord, isString } from "@whilo/contracts/runtime-values";
+import { formatLocale, resolveLocale } from "@whilo/i18n";
+import { sourceText } from "@whilo/i18n/source";
+import { markRemoteSync } from "@whilo/team-client/sync-profile";
+import { classifyFailure } from "@whilo/telemetry";
+import { NotificationObserver, Toaster, toast } from "@whilo/ui";
+import { AccountLogin } from "@whilo/ui/features/account/AccountLogin";
+import { AppLoadingScreen } from "@whilo/ui/features/account/AppLoadingScreen";
+import { currentText } from "@whilo/ui/text";
 import { Dynamic } from "@solidjs/web";
 import { createEffect, createSignal, createStore, onSettled, Show } from "solid-js";
 import type { DesktopAnalyticsProperties } from "../../analytics";
@@ -272,14 +272,14 @@ export function WebApp(props: { createRuntime?: WebRuntimeFactory } = {}) {
     path: string,
     body?:
       | { email: string }
-      | { challengeId: string | null; code: string; firstTouch?: FirstTouch }
+      | { challengeId: string | null; code: string; remember?: boolean; firstTouch?: FirstTouch }
       | Record<string, never>,
   ) {
     const response = await accountFetch(`/api/browser/${path}`, {
       method: body ? "POST" : "GET",
       credentials: "same-origin",
       cache: "no-store",
-      headers: body ? { "Content-Type": "application/json", "X-OpenBot-Browser": "1" } : {},
+      headers: body ? { "Content-Type": "application/json", "X-Whilo-Browser": "1" } : {},
       ...(body ? { body: JSON.stringify(body) } : {}),
     });
     const value = await response.json();
@@ -441,7 +441,7 @@ export function WebApp(props: { createRuntime?: WebRuntimeFactory } = {}) {
       method: "POST",
       credentials: "same-origin",
       cache: "no-store",
-      headers: { "Content-Type": "application/json", "X-OpenBot-Browser": "1" },
+      headers: { "Content-Type": "application/json", "X-Whilo-Browser": "1" },
       body: JSON.stringify({ email }),
     });
     const value = await response.json().catch(() => null);
@@ -457,10 +457,15 @@ export function WebApp(props: { createRuntime?: WebRuntimeFactory } = {}) {
       draft.login = { status: "company_sign_in", email, issue: companySignInIssue(code) };
     });
   }
-  async function verify(challengeId: string, code: string) {
+  async function verify(challengeId: string, code: string, remember = true) {
     // The first website visit of this browser, so that reports can name the source of a new account.
     const firstTouch = readFirstTouch(() => window.localStorage, Date.now());
-    const value = await signInRequest("email/verify", { challengeId, code, ...(firstTouch ? { firstTouch } : {}) });
+    const value = await signInRequest("email/verify", {
+      challengeId,
+      code,
+      remember,
+      ...(firstTouch ? { firstTouch } : {}),
+    });
     if (value === null) return;
     const account = accountFrom(value);
     sessionGeneration += 1;
@@ -489,7 +494,7 @@ export function WebApp(props: { createRuntime?: WebRuntimeFactory } = {}) {
     channel?.postMessage("session-changed");
   }
   onSettled(() => {
-    channel = new BroadcastChannel("openbot.web.session");
+    channel = new BroadcastChannel("whilo.web.session");
     channel.onmessage = () => {
       clearSession();
       void checkSession();

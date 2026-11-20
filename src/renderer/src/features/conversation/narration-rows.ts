@@ -1,6 +1,6 @@
-import type { AgentProviderRef } from "@openbot/contracts/agent-providers";
-import { isNarrationItemId } from "@openbot/contracts/conversation-narration";
-import type { AgentMessage } from "@openbot/ui/data";
+import type { AgentProviderRef } from "@whilo/contracts/agent-providers";
+import { isNarrationItemId } from "@whilo/contracts/conversation-narration";
+import type { AgentMessage } from "@whilo/ui/data";
 import { formatMessageTime } from "../../app-message-projection";
 
 /**

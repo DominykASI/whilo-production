@@ -3,7 +3,7 @@
 // `bun run dev:test-client`; the test client joins this worktree's app as an owner. The script makes
 // one inactive routine on the host's first agent through the released routine calls that every member
 // uses, moves it between the chat and a thread, does the same through the event calls of an owner,
-// and deletes the routine. Writes .openbot-build/routine-run-place-e2e/report.json. Needs
+// and deletes the routine. Writes .whilo-build/routine-run-place-e2e/report.json. Needs
 // `--allow-mutations`: `bun scripts/routine-run-place-e2e.ts --allow-mutations`.
 import assert from "node:assert/strict";
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -13,21 +13,21 @@ import {
   canAdministerServer,
   type OpenBotDesktopApi,
   type UpdateRoutineInput,
-} from "@openbot/contracts/ipc";
-import type { SaveEventRoutineInput } from "@openbot/contracts/ipc-events";
-import { ROUTINE_RUN_PLACE_CAPABILITY } from "@openbot/contracts/team-protocol/routine-run-place-v1";
-import { createOpenBotLogger } from "@openbot/logging";
+} from "@whilo/contracts/ipc";
+import type { SaveEventRoutineInput } from "@whilo/contracts/ipc-events";
+import { ROUTINE_RUN_PLACE_CAPABILITY } from "@whilo/contracts/team-protocol/routine-run-place-v1";
+import { createWhiloLogger } from "@whilo/logging";
 import { assertMutationAllowed, connectToDevApp } from "./dev-automation/cdp-client";
 import { readDevInstanceRecords } from "./dev-automation/instance-registry";
 
 // The page functions below run in the app window, where the preload bridge sets this.
 declare global {
   interface Window {
-    openbot: OpenBotDesktopApi;
+    whilo: OpenBotDesktopApi;
   }
 }
 
-const OUT = resolve(import.meta.dirname, "../.openbot-build/routine-run-place-e2e");
+const OUT = resolve(import.meta.dirname, "../.whilo-build/routine-run-place-e2e");
 
 interface Check {
   name: string;
@@ -47,7 +47,7 @@ assertMutationAllowed({
   instanceNamed: true,
   target: instance.instanceId,
 });
-const logger = createOpenBotLogger("routine-run-place-e2e");
+const logger = createWhiloLogger("routine-run-place-e2e");
 const session = await connectToDevApp(instance.remoteDebuggingPort, logger, {
   expectedRendererPort: instance.rendererPort,
   ownerPid: instance.pid,
@@ -60,7 +60,7 @@ const skipped: string[] = [];
 const check = (name: string, passed: boolean, detail: unknown = null) => checks.push({ name, passed, detail });
 let cleanup: (() => Promise<void>) | null = null;
 try {
-  const servers = await page.evaluate(() => window.openbot.servers.list());
+  const servers = await page.evaluate(() => window.whilo.servers.list());
   const server = servers.find(
     (item) =>
       item.kind === "remote" && item.compatibility?.capabilities.includes(ROUTINE_RUN_PLACE_CAPABILITY) === true,
@@ -72,12 +72,12 @@ try {
   );
   assert.ok(server, "No joined server advertises routine-run-place-v1. Start the host from this worktree.");
   const serverId = server.id;
-  const agents = await page.evaluate((id) => window.openbot.agent.listAgents(id), serverId);
+  const agents = await page.evaluate((id) => window.whilo.agent.listAgents(id), serverId);
   const agent = agents[0];
   assert.ok(agent, "The joined host has no agent. Add one on the host first.");
   const agentId = agent.id;
   const placeOf = async (routineId: string) => {
-    const routines = await page.evaluate(([id, s]) => window.openbot.agent.listRoutines(id, s), [
+    const routines = await page.evaluate(([id, s]) => window.whilo.agent.listRoutines(id, s), [
       agentId,
       serverId,
     ] as const);
@@ -95,13 +95,13 @@ try {
     schedule: { kind: "hourly", minute: 0 },
     runIn: "thread",
   } satisfies CreateRoutineInput;
-  const created = await page.evaluate(([value, s]) => window.openbot.agent.createRoutine(value, s), [
+  const created = await page.evaluate(([value, s]) => window.whilo.agent.createRoutine(value, s), [
     input,
     serverId,
   ] as const);
   const routineId = created.id;
   cleanup = () =>
-    page.evaluate(([value, s]) => window.openbot.agent.deleteRoutine(value, s), [
+    page.evaluate(([value, s]) => window.whilo.agent.deleteRoutine(value, s), [
       { agentId, routineId },
       serverId,
     ] as const);
@@ -116,11 +116,11 @@ try {
     active: false,
     schedule: input.schedule,
   } satisfies UpdateRoutineInput;
-  await page.evaluate(([value, s]) => window.openbot.agent.updateRoutine(value, s), [rename, serverId] as const);
+  await page.evaluate(([value, s]) => window.whilo.agent.updateRoutine(value, s), [rename, serverId] as const);
   check("an update with no runIn keeps the thread place", (await placeOf(routineId)) === "thread", null);
 
   const toChat = { ...rename, runIn: "chat" } satisfies UpdateRoutineInput;
-  const updated = await page.evaluate(([value, s]) => window.openbot.agent.updateRoutine(value, s), [
+  const updated = await page.evaluate(([value, s]) => window.whilo.agent.updateRoutine(value, s), [
     toChat,
     serverId,
   ] as const);
@@ -149,10 +149,10 @@ try {
       runIn: "thread",
     } satisfies SaveEventRoutineInput;
     const saved = await page.evaluate(
-      async ([value, s]) => (await window.openbot.events.saveRoutine(value, s)).routine,
+      async ([value, s]) => (await window.whilo.events.saveRoutine(value, s)).routine,
       [event, serverId] as const,
     );
-    const listed = await page.evaluate(([o, s]) => window.openbot.events.listRoutines({ owner: o }, s), [
+    const listed = await page.evaluate(([o, s]) => window.whilo.events.listRoutines({ owner: o }, s), [
       owner,
       serverId,
     ] as const);
@@ -163,7 +163,7 @@ try {
     );
     const { runIn: _eventPlace, ...eventWithoutPlace } = event;
     const eventKept = await page.evaluate(
-      async ([value, s]) => (await window.openbot.events.saveRoutine(value, s)).routine,
+      async ([value, s]) => (await window.whilo.events.saveRoutine(value, s)).routine,
       [eventWithoutPlace, serverId] as const,
     );
     check(

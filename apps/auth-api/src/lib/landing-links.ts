@@ -54,10 +54,11 @@ export const OPENBOT_LINKS = {
   anthropicAgents: "https://www.anthropic.com/engineering/building-effective-agents",
 } as const;
 
-/**
- * The name of a footer entry: a product or page name that stays the same in every language, or the
- * id of its text in `SiteText`.
- */
+/** The same links under the Whilo name, for the pages written after the rename. */
+export const WHILO_DOWNLOAD_LINKS = OPENBOT_DOWNLOAD_LINKS;
+export const WHILO_ALTERNATE_DOWNLOAD_LINKS = OPENBOT_ALTERNATE_DOWNLOAD_LINKS;
+export const WHILO_DOWNLOAD_PAGE_LINKS = OPENBOT_DOWNLOAD_PAGE_LINKS;
+export const WHILO_LINKS = OPENBOT_LINKS;
 type FooterLabel = string | { readonly text: FooterTextId };
 
 /**
@@ -157,17 +158,17 @@ export const FOOTER_COLUMNS: readonly FooterColumn[] = [
   {
     id: "compare",
     links: [
-      { label: "OpenBot vs Grok Bot", external: false, to: "/compare/$slug", slug: "grok-bot" },
-      { label: "OpenBot vs Hermes Agent", external: false, to: "/compare/$slug", slug: "hermes-agent" },
-      { label: "OpenBot vs Muse", external: false, to: "/compare/$slug", slug: "muse" },
-      { label: "OpenBot vs OpenClaw", external: false, to: "/compare/$slug", slug: "openclaw" },
-      { label: "OpenBot vs Claude Cowork", external: false, to: "/compare/$slug", slug: "claude-cowork" },
-      { label: "OpenBot vs ChatGPT dots", external: false, to: "/compare/$slug", slug: "chatgpt-dots" },
-      { label: "OpenBot vs Manus", external: false, to: "/compare/$slug", slug: "manus" },
-      { label: "OpenBot vs Devin", external: false, to: "/compare/$slug", slug: "devin" },
-      { label: "OpenBot vs Paperclip", external: false, to: "/compare/$slug", slug: "paperclip" },
-      { label: "OpenBot vs Viktor", external: false, to: "/compare/$slug", slug: "viktor" },
-      { label: "OpenBot vs Instinct", external: false, to: "/compare/$slug", slug: "instinct" },
+      { label: "Whilo vs Grok Bot", external: false, to: "/compare/$slug", slug: "grok-bot" },
+      { label: "Whilo vs Hermes Agent", external: false, to: "/compare/$slug", slug: "hermes-agent" },
+      { label: "Whilo vs Muse", external: false, to: "/compare/$slug", slug: "muse" },
+      { label: "Whilo vs OpenClaw", external: false, to: "/compare/$slug", slug: "openclaw" },
+      { label: "Whilo vs Claude Cowork", external: false, to: "/compare/$slug", slug: "claude-cowork" },
+      { label: "Whilo vs ChatGPT dots", external: false, to: "/compare/$slug", slug: "chatgpt-dots" },
+      { label: "Whilo vs Manus", external: false, to: "/compare/$slug", slug: "manus" },
+      { label: "Whilo vs Devin", external: false, to: "/compare/$slug", slug: "devin" },
+      { label: "Whilo vs Paperclip", external: false, to: "/compare/$slug", slug: "paperclip" },
+      { label: "Whilo vs Viktor", external: false, to: "/compare/$slug", slug: "viktor" },
+      { label: "Whilo vs Instinct", external: false, to: "/compare/$slug", slug: "instinct" },
       { label: { text: "bestApps" }, external: false, to: "/compare/$slug", slug: "best-ai-agent-apps" },
       { label: { text: "allComparisons" }, external: false, to: "/compare" },
     ],

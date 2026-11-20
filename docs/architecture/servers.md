@@ -99,10 +99,10 @@ as an enterprise customer's, from 1 to 1000. It has the rules of `server_member_
 [hosted servers](../hosted-servers.md)): the row names the owner account and applies only while that
 account owns the server, it stays when the owner registers the host again, and it stops when the
 account is deleted. The unlinked bucket has no custom limit. No route writes the row; add, change or
-delete it by hand (`openbot-auth-test` for the test Worker):
+delete it by hand (`whilo-auth-test` for the test Worker):
 
 ```sh
-bunx wrangler d1 execute openbot-auth --cwd apps/auth-api --remote --command \
+bunx wrangler d1 execute whilo-auth --cwd apps/auth-api --remote --command \
   "INSERT INTO server_site_limits(server_id, owner_user_id, site_limit, created_at, updated_at)
    SELECT host_id, owner_user_id, 200, unixepoch() * 1000, unixepoch() * 1000
      FROM remote_hosts WHERE host_id = '<server id>'
@@ -553,7 +553,7 @@ host advertises a capability only when its `TeamApiAdmin` member exists.
 | `agent-instructions-v1` | Read and save the instruction file at the root of an agent's workspace (`AGENTS.md`, or `CLAUDE.md` in an older workspace). A save sends the text that the edit started from; the host refuses it with 409 when the file changed. The workspace path does not cross the wire, and a client cannot show the file in its file manager. Protocol 9 only | `agentInstructions` |
 | `browser-profiles-v1` | Named browser profiles of the host: list, create, rename, recolor, clear, delete, and the profile of each agent. One route, `/v1/browser/tab-profiles`, also answers a member: the profile label of each tab that the member can see. Cookies and site data stay on the host. Advertised when the host has `browserProfiles` | `agentAdmin` |
 | `browser-proxies-v1` | Saved proxies of the host's named browser profiles: list, save, delete, and the proxy of each named profile (`/v1/admin/browser-proxies`, `/save`, `/delete`, `/v1/admin/browser-profiles/proxy`). The list also has the computers of members, and `/computer` adds the computer of the member who sends it; no member can add the computer of another. A password goes to the host only in a save request and never comes back. Advertised when the host has `browserProfiles` | `agentAdmin` |
-| `browser-egress-v1` | The data channel `openbot.browser-egress.v1`, which a desktop client opens only while its member shares the internet connection of that computer with the server. Only the host opens streams: each is one TCP connection of a browser profile with that member's computer as its proxy. The client connects only to a public internet address that it resolved itself, on any port. At most 256 streams, 256 KiB of credit for each stream. A lost egress channel never closes the connection. Advertised when the host has `browserProfiles` | the member's own computer |
+| `browser-egress-v1` | The data channel `whilo.browser-egress.v1`, which a desktop client opens only while its member shares the internet connection of that computer with the server. Only the host opens streams: each is one TCP connection of a browser profile with that member's computer as its proxy. The client connects only to a public internet address that it resolved itself, on any port. At most 256 streams, 256 KiB of credit for each stream. A lost egress channel never closes the connection. Advertised when the host has `browserProfiles` | the member's own computer |
 | `browser-profiles-events-v1` | One event with no data, `browser-profiles-changed`, after each change of the named browser profiles or of an agent's profile. A client reads the `browser-profiles-v1` routes again. Advertised when the host has `browserProfiles` | `browserProfiles` |
 | `skills-admin-v1` | List, install, remove, enable skills by marketplace id | `agentAdmin` |
 | `shared-tables-v1` | List and delete shared tables | `sharedTables` |
@@ -638,7 +638,7 @@ zone stays in memory only, so after a restart a queued message uses the server t
 and instance transfer use it in place of the system zone. A change does not move existing routines.
 
 `host-personality-v1` reads and sets how the agents of a server talk while they work
-(`openbot-server-personality-v1.json`, Server settings → Personality). `natural`, the default, tells
+(`whilo-server-personality-v1.json`, Server settings → Personality). `natural`, the default, tells
 the agents to send short updates between their steps, and the chat shows them as messages.
 `classic` keeps the earlier prompt, and the chat keeps those updates in the steps. Any member reads
 the style, so each client knows what to show; only an owner or admin changes it. A change unloads the
@@ -723,7 +723,7 @@ The Cache section of the Claude page in Server settings → Providers sets it fo
 for a joined server.
 
 `model-visibility-v1` reads every model that one provider of the host lists, and sets which of them
-the model picker shows. The file `openbot-model-visibility-v1.json` keeps, for each provider, only the
+the model picker shows. The file `whilo-model-visibility-v1.json` keeps, for each provider, only the
 models that an admin turned off (`hidden`); the picker leaves them out. Every other model shows, so a
 new release shows after an admin edits the list too. The default below puts a model in the main list
 or under Older models; an admin cannot move a model between them. `shown: null` on the update route
@@ -781,7 +781,7 @@ the host advertises the capability.
 `codex-api-key-v1` has no routes. It tells a client that the host logs Codex in with an OpenAI API
 key that the released `apiKeySet` route of `providers-v1`, `-v5` or `-v8` sends for `codex`, as
 `codex login --with-api-key` does on this computer. Codex keeps the key in its own login, not in the
-OpenBot key store. The released agent status does not carry the login type, so `apiKeyState` for
+Whilo key store. The released agent status does not carry the login type, so `apiKeyState` for
 `codex` answers from that login: `saved` while Codex runs on a key. `apiKeyClear` does not remove the
 login, as on this computer. OpenAI bills each request to the key. The ChatGPT sign-in and the sign-out
 replace the key.
@@ -897,7 +897,7 @@ has no page or date filter.
 
 Company sign-in connects one server to the company's OpenID Connect provider (Entra ID, Okta, Google
 Workspace or another one). The account service does all provider work
-(`apps/auth-api/src/server/company-sign-in.ts`); the host and the clients see only OpenBot sessions.
+(`apps/auth-api/src/server/company-sign-in.ts`); the host and the clients see only Whilo sessions.
 Migration `0047_company_sign_in.sql` adds the tables. SAML is not supported.
 
 Setup is desktop only: Server settings → Members → Company sign-in (`ServerCompanySignInSection.tsx`),
@@ -929,8 +929,8 @@ once between the account service and the provider, and once between the app and 
   `127.0.0.1`, opens the provider page in the user's browser, and gets a one-time code (2 minutes)
   at the listener. It exchanges the code and its verifier for an account session.
 - Web `/app`: `POST /api/browser/company/start` keeps the state and the verifier in the HttpOnly
-  `__Host-openbot-company` cookie (10 minutes) and opens the provider in the same tab.
-  `GET /api/browser/company/return` exchanges the code, sets the `__Host-openbot-web` session cookie,
+  `__Host-whilo-company` cookie (10 minutes) and opens the provider in the same tab.
+  `GET /api/browser/company/return` exchanges the code, sets the `__Host-whilo-web` session cookie,
   and answers 303 to `/app`. The cookie stops a login CSRF.
 
 The provider's subject is linked to an account (`company_sign_in_identities`). A first sign-in uses
@@ -950,7 +950,7 @@ member limit of the server and the license users of the owner. The rules:
 SCIM 2.0 (`/scim/v2/Users`, `company-sign-in-scim.ts`) supports what Entra ID and Okta send: list
 with the filter `userName eq "…"`, create, read, and PATCH, PUT and DELETE of `active`. The bearer
 token starts with `obscim_`, shows once, and D1 keeps only its hash. Other attributes belong to the
-OpenBot account and do not change. `active` accepts the strings `"True"` and `"False"`. Off, and
+Whilo account and do not change. `active` accepts the strings `"True"` and `"False"`. Off, and
 DELETE, end every session of the account, spend its open email and company sign-in codes, and revoke the membership. A
 create for a person who exists sets `active` as a PATCH does. Off → on joins the person again,
 also after that revocation. A repeated on does not change a membership that the owner revoked.

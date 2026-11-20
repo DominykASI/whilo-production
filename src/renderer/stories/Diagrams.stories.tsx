@@ -475,7 +475,7 @@ const webhookDiagram: Diagram = {
       instruction: "Check the published release's notes and assets, then list the three things the team does next.",
       schedule: null,
       webhook: {
-        url: "https://relay.openbot.example/v1/webhooks/2e2faecf-ce55-4bb5-9d70-04ff5e40a1fc",
+        url: "https://relay.whilo.example/v1/webhooks/2e2faecf-ce55-4bb5-9d70-04ff5e40a1fc",
         eventType: "release.published",
         filters: [{ pointer: "/release/prerelease", value: false }],
       },

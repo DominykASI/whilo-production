@@ -189,7 +189,7 @@ export class BrowserRecorder {
                   },
                 });
               });
-              yield* browserCall(() => recorderWindow.loadURL("https://recorder.openbot.invalid/"));
+              yield* browserCall(() => recorderWindow.loadURL("https://recorder.whilo.invalid/"));
               const sourceId = contents.getMediaSourceId(recorderWindow.webContents);
               const startResult = yield* browserCall(() =>
                 recorderWindow.webContents.executeJavaScript(startScript(sourceId, this.#maxRecordingMs), true),

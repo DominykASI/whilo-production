@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
-import { KEY_ONLY_PROVIDERS } from "@openbot/contracts/agent-providers";
+import { KEY_ONLY_PROVIDERS } from "@whilo/contracts/agent-providers";
 import {
   type AgentAnalytics,
   type AgentAnalyticsInput,

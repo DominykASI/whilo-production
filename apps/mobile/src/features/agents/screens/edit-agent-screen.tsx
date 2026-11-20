@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
 import {
   agentPermissionLevel,
@@ -6,7 +7,6 @@ import {
   type HostProviderAccounts,
   type UpdateAgentInput,
 } from "@whilo/contracts/ipc";
-import { useQueryClient } from "@tanstack/react-query";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { usePreventRemove } from "expo-router/react-navigation";
 import { Typography } from "heroui-native";

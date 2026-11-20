@@ -11,7 +11,7 @@ import type {
   ConversationSnapshot,
   HostedSiteConversationEventStatus,
   SentMessageStats,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import { AgentHistoryQueries, type AgentHistorySelection } from "./database/agent-history-queries";
 import { type AgentModelChange, AgentRoster } from "./database/agent-roster";
 import { AgentUsage } from "./database/agent-usage";
@@ -64,12 +64,12 @@ export type { ProviderSession } from "./database/provider-sessions";
 export type { StoredThreadSummary } from "./database/thread-summaries";
 
 /**
- * The local OpenBot event log and its read projections.
+ * The local Whilo event log and its read projections.
  *
  * A command appends events, changes projections, and stores its receipt in one
  * SQLite transaction. Providers never receive direct access to this database.
  */
-export class OpenBotDatabase {
+export class WhiloDatabase {
   readonly #core: DatabaseCore;
   readonly usage: AgentUsage;
   readonly #conversations: ConversationQueries;
@@ -611,5 +611,5 @@ export class OpenBotDatabase {
 }
 
 export function stableThreadId(agentId: string): string {
-  return `openbot-thread-${agentId}`;
+  return `whilo-thread-${agentId}`;
 }

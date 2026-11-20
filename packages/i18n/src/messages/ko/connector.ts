@@ -327,7 +327,7 @@ export const messages = {
   "connector.whatsapp.rowAction": "{action}: {name}",
   "connector.whatsapp.ownNumber": "개인 번호",
   "connector.whatsapp.ownNumberDescription":
-    "“나에게 메시지 보내기” 채팅과 허용한 사람들만 메시지를 보낼 수 있어요. OpenBot 전용 번호라면 끄세요.",
+    "“나에게 메시지 보내기” 채팅과 허용한 사람들만 메시지를 보낼 수 있어요. Whilo 전용 번호라면 끄세요.",
   "connector.whatsapp.orchestratorTitle": "WhatsApp 오케스트레이터",
   "connector.whatsapp.orchestratorDescription":
     "이 에이전트가 연결된 모든 번호에서 OpenBot에게 오는 메시지를 받아요. 짧은 요청은 직접 답하고, 나머지는 알맞은 에이전트에게 맡긴 뒤 WhatsApp에서 답해요.",
@@ -344,7 +344,7 @@ export const messages = {
   "connector.whatsapp.kindLabel": "번호",
   "connector.whatsapp.kindPersonal": "내 개인 번호",
   "connector.whatsapp.kindPersonalDescription": "OpenBot은 “나에게 메시지 보내기” 채팅과 허용한 사람들에게만 답해요.",
-  "connector.whatsapp.kindDedicated": "OpenBot 전용 번호",
+  "connector.whatsapp.kindDedicated": "Whilo 전용 번호",
   "connector.whatsapp.kindDedicatedDescription": "모르는 사람은 나에게 알려 줄 코드를 받아요. 여기에서 승인하세요.",
   "connector.whatsapp.methodLabel": "연결 방법",
   "connector.whatsapp.methodQr": "QR 코드",
@@ -521,7 +521,7 @@ export const messages = {
     "연결을 누르면 브라우저에서 Proton 로그인이 열립니다. 그다음 OpenBot이 공유 보관함을 만들고 읽기 전용 키만 보관합니다.",
   "connector.protonPass.setupDescriptionHost":
     "연결을 누르면 브라우저에서 Proton 로그인이 열립니다. 그다음 {host}이(가) 공유 보관함을 만들고 읽기 전용 키만 보관합니다.",
-  "connector.protonPass.vaultName": "Shared with OpenBot",
+  "connector.protonPass.vaultName": "Shared with Whilo",
   "connector.protonPass.vaultSetup": "연결하면 OpenBot이 이 보관함을 만듭니다. 공유할 로그인 정보를 여기로 옮기세요.",
   "connector.protonPass.showSteps": "단계 보기",
   "connector.protonPass.stepsLabel": "연결 단계",

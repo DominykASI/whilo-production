@@ -4,7 +4,7 @@ import { isQueueEditRejected } from "@whilo/contracts/team-protocol/queue-edit-v
 import { type MobileTextKey, sourceText } from "@whilo/i18n/mobile";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import * as Crypto from "expo-crypto";
-import * as SecureStore from "expo-secure-store";
+import * as SecureStore from "../../../shared/lib/persistent-storage";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMobileSession } from "@/features/auth/context/mobile-session-context";
 import { useAgentWaits } from "@/features/workspace/components/use-agent-activity";

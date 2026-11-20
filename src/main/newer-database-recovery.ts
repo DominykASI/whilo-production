@@ -1,12 +1,12 @@
-// A newer OpenBot migrated the database, and then an older copy started, for example from an old
+// A newer Whilo migrated the database, and then an older copy started, for example from an old
 // shortcut or a second install (#4969). The older copy cannot read the data, and it must not change
 // it. It installs the latest release instead, which opens the data. When it cannot, the user gets a
 // download link in place of a dead-end error.
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import type { UpdateStatus } from "@openbot/contracts/ipc";
-import type { AppTranslate } from "@openbot/i18n";
-import { createOpenBotLogger, toLogValue } from "@openbot/logging";
+import type { UpdateStatus } from "@whilo/contracts/ipc";
+import type { AppTranslate } from "@whilo/i18n";
+import { createWhiloLogger, toLogValue } from "@whilo/logging";
 import { Effect } from "effect";
 import { app, type BrowserWindow, dialog, shell } from "electron";
 import { runCauseEffect } from "../backend/effect-boundary";
@@ -23,11 +23,11 @@ import {
 } from "./update-service";
 import { listSiblingOpenBotInstances } from "./update-sibling-instances";
 
-const logger = createOpenBotLogger("update");
+const logger = createWhiloLogger("update");
 // The time that the user has to read the download dialog after a stalled install, before the app exits.
 const STALLED_INSTALL_DIALOG_MS = 10 * 60_000;
 const GUIDE_URL =
-  "https://github.com/nightly-labs/openbot/blob/main/docs/TROUBLESHOOTING.md#openbot-says-a-newer-version-saved-your-data";
+  "https://github.com/nightly-labs/whilo/blob/main/docs/TROUBLESHOOTING.md#whilo-says-a-newer-version-saved-your-data";
 
 interface NewerDatabaseRecoveryOptions {
   window: BrowserWindow | null;
@@ -123,7 +123,7 @@ async function installLatest(updater: UpdateService, quit: { readonly chosen: bo
   const downloaded = nextPhase(updater, ["ready", "up-to-date", "unsupported", "error"]);
   // With automatic download on, the check starts the download of an available release.
   const checked = await Effect.runPromise(updater.checkForUpdates());
-  logger.info(`An older OpenBot started over newer data. Update check: ${checked.phase}.`);
+  logger.info(`An older Whilo started over newer data. Update check: ${checked.phase}.`);
   if (checked.phase !== "available" && checked.phase !== "downloading" && checked.phase !== "ready") {
     downloaded.cancel();
     return;

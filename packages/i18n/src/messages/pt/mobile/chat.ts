@@ -269,7 +269,7 @@ export const messages = {
   "mobile.chat.imageGallery.saved": "Salvas em Fotos",
   "mobile.chat.imageGallery.shareAll": "Compartilhar todas",
   "mobile.chat.imageGallery.photosPermission":
-    "Permita que o OpenBot adicione fotos em Ajustes para salvar estas imagens.",
+    "Permita que o Whilo adicione fotos em Ajustes para salvar estas imagens.",
   "mobile.chat.imageGallery.saveFailed": "Não foi possível salvar as imagens",
   "mobile.chat.imageGallery.shareFailed": "Não foi possível compartilhar as imagens",
   "mobile.chat.imageGallery.shareNeedsUpdate":

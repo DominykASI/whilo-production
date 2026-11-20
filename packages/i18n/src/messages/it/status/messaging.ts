@@ -41,7 +41,7 @@ export const messages = {
   "status.messaging.telegramOrchestratorName": "Telegram Orchestrator",
   "status.messaging.telegramOrchestratorTitle": "Risponde su Telegram e consulta il team",
   "status.messaging.whatsappNoAgent":
-    "Nessun agente può ancora rispondere qui. Aggiungi il WhatsApp Orchestrator in OpenBot.",
+    "Nessun agente può ancora rispondere qui. Aggiungi il WhatsApp Orchestrator in Whilo.",
   "status.messaging.whatsappApprovalMenu": "Rispondi 1 per approvare o 2 per rifiutare.",
   "status.messaging.whatsappStopMenu": "Rispondi «stop» per interrompere.",
   "status.messaging.whatsappPairingCode":
@@ -49,9 +49,9 @@ export const messages = {
   "status.messaging.whatsappPairingApproved": "Ora puoi inviare richieste a questo numero.",
   "status.messaging.whatsappOwnChat": "Messaggio a te stesso",
   "status.messaging.whatsappWelcomeOwn":
-    "👋 *OpenBot è collegato*\n\nScrivi qui per chiedere ai tuoi agenti. Il WhatsApp Orchestrator risponde o passa il lavoro all'agente giusto.\n\nInvia *stop* per fermare una richiesta.",
+    "👋 *Whilo è collegato*\n\nScrivi qui per chiedere ai tuoi agenti. Il WhatsApp Orchestrator risponde o passa il lavoro all'agente giusto.\n\nInvia *stop* per fermare una richiesta.",
   "status.messaging.whatsappWelcomeDedicated":
-    "👋 *OpenBot è collegato*\n\nLe persone che autorizzi in OpenBot ora possono scrivere a questo numero. Una persona nuova riceve un codice: approvalo in OpenBot, in Richieste.\n\nInvia *stop* per fermare una richiesta.",
+    "👋 *Whilo è collegato*\n\nLe persone che autorizzi in Whilo ora possono scrivere a questo numero. Una persona nuova riceve un codice: approvalo in Whilo, in Richieste.\n\nInvia *stop* per fermare una richiesta.",
   "status.messaging.whatsappOrchestratorName": "WhatsApp Orchestrator",
   "status.messaging.whatsappOrchestratorTitle": "Risponde su WhatsApp e consulta il team",
 } as const satisfies PartialTranslation<typeof source>;

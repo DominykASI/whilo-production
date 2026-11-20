@@ -203,7 +203,7 @@ export const messages = {
   "workflow.telegram.anyChat": "연결된 모든 채팅",
   "workflow.telegram.sameChat": "트리거와 같음",
   "workflow.telegram.event": "이벤트",
-  "workflow.telegram.event.mention": "OpenBot 멘션",
+  "workflow.telegram.event.mention": "Whilo 멘션",
   "workflow.telegram.text": "텍스트 포함",
   "workflow.telegram.anyText": "모든 텍스트",
   "workflow.telegram.on": "대상",

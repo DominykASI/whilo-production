@@ -14,10 +14,10 @@ import {
   isChannelMessage,
   isChannelTask,
   SIGNED_OUT_CHANNEL_MEMBER_ID,
-} from "@openbot/contracts/ipc";
-import { markdownPreviewText } from "@openbot/contracts/markdown-preview-text";
-import { isDynamicRecord, isString } from "@openbot/contracts/runtime-values";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/ipc";
+import { markdownPreviewText } from "@whilo/contracts/markdown-preview-text";
+import { isDynamicRecord, isString } from "@whilo/contracts/runtime-values";
+import { sourceText } from "@whilo/i18n/source";
 import { changesModelContent } from "./channel-history";
 import { deleteAggregateHistory, deleteReceiptsOf, deleteThreadAttachments } from "./database/database-core";
 import {
@@ -27,7 +27,7 @@ import {
   requiredNumberColumn,
   requiredStringColumn,
 } from "./database/database-rows";
-import type { OpenBotDatabase } from "./openbot-database";
+import type { WhiloDatabase } from "./whilo-database";
 import { revokeRoutineWebhooks } from "./webhook-route-store";
 
 /**
@@ -115,7 +115,7 @@ export class ChannelStore {
   /** By channel: how many times a message changed in place after it was complete, in this process. */
   readonly #completedMessageChanges = new Map<string, number>();
 
-  constructor(readonly database: OpenBotDatabase) {}
+  constructor(readonly database: WhiloDatabase) {}
 
   /** A packet built before this count changed can show a message as it was before. */
   completedMessageChanges(channelId: string): number {
@@ -613,7 +613,7 @@ export class ChannelStore {
         throughSequence: requiredNumberColumn(row, "through_sequence"),
         summaryVersion: requiredNumberColumn(row, "summary_version"),
       };
-    const threadId = `openbot-thread-${randomUUID()}`;
+    const threadId = `whilo-thread-${randomUUID()}`;
     return this.database.dispatch(
       `channel-context:${channelId}:${agentId}`,
       [

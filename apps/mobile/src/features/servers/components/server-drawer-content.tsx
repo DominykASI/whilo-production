@@ -100,7 +100,7 @@ interface ServerDrawerContentProps {
   onNavigate: (href: Href) => void;
   onLeave: (serverId: string) => Promise<void>;
   onRemove: (serverId: string) => Promise<void>;
-  /** Deletes a server that an OpenBot desktop app runs beside its own server, through that app. */
+  /** Deletes a server that an Whilo desktop app runs beside its own server, through that app. */
   onDelete: (serverId: string) => Promise<void>;
   /** See `MobileWorkspaceState.localServerKind`. */
   localServerKind: (serverId: string) => "computer" | "onComputer" | null;
@@ -819,7 +819,7 @@ function DrawerEditRow({
   onPinnedChange: (pinned: boolean) => void;
 }) {
   const { t } = useText();
-  const [secondary, foreground] = useCSSVariable(["--openbot-text-secondary", "--openbot-text-primary"]);
+  const [secondary, foreground] = useCSSVariable(["--whilo-text-secondary", "--whilo-text-primary"]);
   return (
     <View className="flex-row items-center gap-3 pl-3" style={{ height: DRAWER_ROW_HEIGHT }}>
       <View

@@ -16,11 +16,12 @@ export function hostedSetupStatus(server: HostedServerSummary, listed: boolean):
     case "waking":
       return "starting";
     case "running":
+      // Never show ready before observed_state is actually running (and the host is listed).
       return listed ? "ready" : "connecting";
-    // A listed server can stop for no use before the user opens it. It starts again on use.
     case "stopping":
     case "stopped":
-      return listed && server.error === null ? "ready" : "error";
+      // Never present as "ready" unless observed_state is running.
+      return "error";
     default:
       return "error";
   }

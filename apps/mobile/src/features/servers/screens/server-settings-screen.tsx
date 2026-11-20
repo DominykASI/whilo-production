@@ -1,5 +1,5 @@
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import { canAdministerServer } from "@openbot/contracts/ipc";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import { canAdministerServer } from "@whilo/contracts/ipc";
 import { router, useLocalSearchParams } from "expo-router";
 import { usePreventRemove } from "expo-router/react-navigation";
 import { Typography } from "heroui-native";
@@ -73,7 +73,7 @@ function ServerSettingsHome({ server }: { server: MobileServer }) {
 }
 
 /**
- * The connection status and the OpenBot version of the host, under the server name. The text of the
+ * The connection status and the Whilo version of the host, under the server name. The text of the
  * connection, such as an error, goes under them.
  */
 function ServerStatusLine({ server }: { server: MobileServer }) {

@@ -1,4 +1,4 @@
-import { prefersReducedMotion } from "@openbot/ui/utils";
+import { prefersReducedMotion } from "@whilo/ui/utils";
 
 /**
  * A theme change as a soft wash of brand colors that moves across the window, as glimm does it. A

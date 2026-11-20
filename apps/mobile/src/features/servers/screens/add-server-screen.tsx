@@ -275,7 +275,7 @@ export function AddServerScreen({
             </Button>
           )}
 
-          {/* Another way to get a server: one more on a computer that runs OpenBot, while no link is typed. */}
+          {/* Another way to get a server: one more on a computer that runs Whilo, while no link is typed. */}
           {localServerPathname && !inviteLink.trim() ? <LocalServerOptions pathname={localServerPathname} /> : null}
 
           {underHeader ? null : (

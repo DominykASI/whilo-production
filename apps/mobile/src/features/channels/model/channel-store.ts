@@ -1,3 +1,4 @@
+import { replaceEqualDeep } from "@tanstack/react-query";
 import {
   CHANNEL_CHATS_CAPABILITY,
   CHANNEL_DELETE_CAPABILITY,
@@ -20,7 +21,6 @@ import { CHANNEL_ROUTES } from "@whilo/contracts/team-protocol/channels-v1";
 import { decodeTeamProtocolV2Json, type TeamProtocolV2Json } from "@whilo/contracts/team-protocol/v2";
 import { sourceText } from "@whilo/i18n/source";
 import type { RemoteFileUpload } from "@whilo/team-client/remote-peer";
-import { replaceEqualDeep } from "@tanstack/react-query";
 import { answeredPromptResolution } from "../../chat/model/question-prompt";
 
 export type ChannelRequest = <T>(

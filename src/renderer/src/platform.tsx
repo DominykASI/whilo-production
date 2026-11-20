@@ -1,5 +1,5 @@
-import type { AppInfo } from "@openbot/contracts/ipc";
-import { SOFTWARE_RENDERING_ATTRIBUTE } from "@openbot/ui/document-rendering";
+import type { AppInfo } from "@whilo/contracts/ipc";
+import { SOFTWARE_RENDERING_ATTRIBUTE } from "@whilo/ui/document-rendering";
 import { createSignal, flush, onSettled } from "solid-js";
 import { appPort } from "./app-port";
 import type { AppProps } from "./app-providers";
@@ -49,7 +49,7 @@ const Platform = createSimpleContext({
           })
           .catch(() =>
             setAppInfo({
-              name: "OpenBot",
+              name: "Whilo",
               version: "unavailable",
               platform: "darwin",
               variant: "production",

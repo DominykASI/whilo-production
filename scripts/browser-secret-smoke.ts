@@ -13,7 +13,7 @@ export async function runSecretHandoffScenario(browser: BrowserHost, localOrigin
   const protocol = seedContents.session.protocol;
   await protocol.handle("https", (request) => {
     const url = new URL(request.url);
-    if (url.hostname !== "authentication.openbot.test") return new Response("Not found", { status: 404 });
+    if (url.hostname !== "authentication.whilo.test") return new Response("Not found", { status: 404 });
     if (url.pathname === "/bitwarden-password") return bitwardenLoginFixture("password");
     if (url.pathname === "/bitwarden-authenticator") return bitwardenLoginFixture("authenticator");
     const html =
@@ -51,7 +51,7 @@ export async function runSecretHandoffScenario(browser: BrowserHost, localOrigin
       ["password", "native-submit"],
     ] as const) {
       const tab = await runCauseEffect(
-        browser.open(`https://authentication.openbot.test/${path}`, "secret-thread", "secret-agent"),
+        browser.open(`https://authentication.whilo.test/${path}`, "secret-thread", "secret-agent"),
       );
       // The submission clicks Sign in; a tab with no frame yet would drop that click.
       const tabContents = webContents.getAllWebContents().find((contents) => contents.getURL() === tab.url);
@@ -120,7 +120,7 @@ export async function runSecretHandoffScenario(browser: BrowserHost, localOrigin
       ["#script-password", true, "/complete", "submitted"],
     ] as const) {
       const tab = await runCauseEffect(
-        browser.open("https://authentication.openbot.test/login", "secret-thread", "secret-agent"),
+        browser.open("https://authentication.whilo.test/login", "secret-thread", "secret-agent"),
       );
       try {
         const handoff = await runCauseEffect(
@@ -168,7 +168,7 @@ export async function runSecretHandoffScenario(browser: BrowserHost, localOrigin
       ],
     ] as const) {
       const staleTab = await runCauseEffect(
-        browser.open("https://authentication.openbot.test/login", "secret-thread", "secret-agent"),
+        browser.open("https://authentication.whilo.test/login", "secret-thread", "secret-agent"),
       );
       try {
         const handoff = await runCauseEffect(
@@ -214,7 +214,7 @@ export async function runSecretHandoffScenario(browser: BrowserHost, localOrigin
       [[{ kind: "css", selector: "#password" }], undefined, "submission=click needs submitTarget"],
     ] as const) {
       const wrongTab = await runCauseEffect(
-        browser.open("https://authentication.openbot.test/login", "secret-thread", "secret-agent"),
+        browser.open("https://authentication.whilo.test/login", "secret-thread", "secret-agent"),
       );
       try {
         const failure = await runCauseEffect(

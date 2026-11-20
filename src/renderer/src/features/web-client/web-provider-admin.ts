@@ -1,4 +1,4 @@
-import { isKnownAgentProvider } from "@openbot/contracts/agent-providers";
+import { isKnownAgentProvider } from "@whilo/contracts/agent-providers";
 import type {
   AgentProviderId,
   AgentStatus,
@@ -6,35 +6,35 @@ import type {
   HostDefaultProvider,
   ProviderAdminDesktopApi,
   ServerSummary,
-} from "@openbot/contracts/ipc";
-import { decodeRegistryEntries, decodeRegistryInstallResult, decodeRegistryOperations } from "@openbot/contracts/ipc";
-import { ACP_REGISTRY_ROUTES } from "@openbot/contracts/team-protocol/acp-registry-v1";
-import { CLAUDE_API_KEY_CAPABILITY } from "@openbot/contracts/team-protocol/claude-api-key-v1";
-import { CODEX_API_KEY_CAPABILITY } from "@openbot/contracts/team-protocol/codex-api-key-v1";
+} from "@whilo/contracts/ipc";
+import { decodeRegistryEntries, decodeRegistryInstallResult, decodeRegistryOperations } from "@whilo/contracts/ipc";
+import { ACP_REGISTRY_ROUTES } from "@whilo/contracts/team-protocol/acp-registry-v1";
+import { CLAUDE_API_KEY_CAPABILITY } from "@whilo/contracts/team-protocol/claude-api-key-v1";
+import { CODEX_API_KEY_CAPABILITY } from "@whilo/contracts/team-protocol/codex-api-key-v1";
 import {
   CUSTOM_PROVIDER_HARNESS_CAPABILITY,
   CUSTOM_PROVIDER_HARNESS_ROUTES,
-} from "@openbot/contracts/team-protocol/custom-provider-harness-v1";
+} from "@whilo/contracts/team-protocol/custom-provider-harness-v1";
 import {
   type ProviderAccountRelay,
   providerAccountRelay,
-} from "@openbot/contracts/team-protocol/provider-account-relays";
-import { PROVIDER_ACCOUNTS_CAPABILITY } from "@openbot/contracts/team-protocol/provider-accounts-v1";
-import { PROVIDER_SIGN_OUT_CAPABILITY } from "@openbot/contracts/team-protocol/provider-sign-out-v1";
-import { PROVIDER_USAGE_RESET_CAPABILITY } from "@openbot/contracts/team-protocol/provider-usage-reset-v1";
-import { PROVIDERS_ADMIN_ROUTES } from "@openbot/contracts/team-protocol/providers-v1";
+} from "@whilo/contracts/team-protocol/provider-account-relays";
+import { PROVIDER_ACCOUNTS_CAPABILITY } from "@whilo/contracts/team-protocol/provider-accounts-v1";
+import { PROVIDER_SIGN_OUT_CAPABILITY } from "@whilo/contracts/team-protocol/provider-sign-out-v1";
+import { PROVIDER_USAGE_RESET_CAPABILITY } from "@whilo/contracts/team-protocol/provider-usage-reset-v1";
+import { PROVIDERS_ADMIN_ROUTES } from "@whilo/contracts/team-protocol/providers-v1";
 import {
   PROVIDERS_RUNTIMES_V2_CAPABILITY,
   PROVIDERS_RUNTIMES_V2_ROUTES,
-} from "@openbot/contracts/team-protocol/providers-v2";
+} from "@whilo/contracts/team-protocol/providers-v2";
 import {
   PROVIDERS_SIGN_IN_V3_CAPABILITY,
   PROVIDERS_SIGN_IN_V3_ROUTES,
-} from "@openbot/contracts/team-protocol/providers-v3";
-import { PROVIDERS_V4_CAPABILITY, PROVIDERS_V4_ROUTES } from "@openbot/contracts/team-protocol/providers-v4";
-import { PROVIDERS_V5_CAPABILITY, PROVIDERS_V5_ROUTES } from "@openbot/contracts/team-protocol/providers-v5";
-import { PROVIDERS_V8_CAPABILITY, PROVIDERS_V8_ROUTES } from "@openbot/contracts/team-protocol/providers-v8";
-import { runTeamEffect } from "@openbot/team-client";
+} from "@whilo/contracts/team-protocol/providers-v3";
+import { PROVIDERS_V4_CAPABILITY, PROVIDERS_V4_ROUTES } from "@whilo/contracts/team-protocol/providers-v4";
+import { PROVIDERS_V5_CAPABILITY, PROVIDERS_V5_ROUTES } from "@whilo/contracts/team-protocol/providers-v5";
+import { PROVIDERS_V8_CAPABILITY, PROVIDERS_V8_ROUTES } from "@whilo/contracts/team-protocol/providers-v8";
+import { runTeamEffect } from "@whilo/team-client";
 import {
   type CustomProviderRoutes,
   cancelProviderAccountSignIn,
@@ -68,14 +68,14 @@ import {
   startProviderCodeLogin,
   startProviderHostSignIn,
   submitProviderCodeLogin,
-} from "@openbot/team-client/team-admin-requests";
-import type { TeamApiRequest } from "@openbot/team-client/team-api-requests";
-import type { ProviderAccountActions } from "@openbot/ui/components/provider-accounts";
-import { isAgentAccount } from "@openbot/ui/components/provider-accounts";
-import type { AgentProfile } from "@openbot/ui/data";
-import type { BrowserViewRuntime } from "@openbot/ui/features/browser/BrowserLiveView";
-import type { AcpRegistrySettingsApi } from "@openbot/ui/features/custom-providers/AcpRegistrySettings";
-import { currentText } from "@openbot/ui/text";
+} from "@whilo/team-client/team-admin-requests";
+import type { TeamApiRequest } from "@whilo/team-client/team-api-requests";
+import type { ProviderAccountActions } from "@whilo/ui/components/provider-accounts";
+import { isAgentAccount } from "@whilo/ui/components/provider-accounts";
+import type { AgentProfile } from "@whilo/ui/data";
+import type { BrowserViewRuntime } from "@whilo/ui/features/browser/BrowserLiveView";
+import type { AcpRegistrySettingsApi } from "@whilo/ui/features/custom-providers/AcpRegistrySettings";
+import { currentText } from "@whilo/ui/text";
 import { Effect } from "effect";
 import { createEffect, createMemo } from "solid-js";
 import { createHostAccounts, withHostAccounts, withHostProfileAccount } from "../agents/host-provider-accounts";

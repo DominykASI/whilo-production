@@ -208,7 +208,7 @@ export const messages = {
   "workflow.telegram.anyChat": "Dowolny połączony czat",
   "workflow.telegram.sameChat": "Jak wyzwalacz",
   "workflow.telegram.event": "Zdarzenie",
-  "workflow.telegram.event.mention": "Wzmianka o OpenBot",
+  "workflow.telegram.event.mention": "Wzmianka o Whilo",
   "workflow.telegram.text": "Tekst zawiera",
   "workflow.telegram.anyText": "Dowolny tekst",
   "workflow.telegram.on": "Na",

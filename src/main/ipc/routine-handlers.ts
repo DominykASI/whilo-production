@@ -11,19 +11,19 @@ import {
   type Routine,
   type RoutineCalendarOwner,
   type RoutineRunPlace,
-} from "@openbot/contracts/ipc";
-import { TEAM_API_ROUTES } from "@openbot/contracts/team-api-routes";
-import { CHANNEL_ROUTES } from "@openbot/contracts/team-protocol/channels-v1";
+} from "@whilo/contracts/ipc";
+import { TEAM_API_ROUTES } from "@whilo/contracts/team-api-routes";
+import { CHANNEL_ROUTES } from "@whilo/contracts/team-protocol/channels-v1";
 import {
   decodeRoutineRunPlace,
   decodeRoutineRunPlaces,
   ROUTINE_RUN_PLACE_CAPABILITY,
   ROUTINE_RUN_PLACE_ROUTES,
-} from "@openbot/contracts/team-protocol/routine-run-place-v1";
-import { sourceText } from "@openbot/i18n/source";
-import { createOpenBotLogger } from "@openbot/logging";
-import { buildRoutineCalendar, type RoutineCalendarSource } from "@openbot/team-client/routine-calendar";
-import { withRoutineRunPlaces } from "@openbot/team-client/team-api-requests";
+} from "@whilo/contracts/team-protocol/routine-run-place-v1";
+import { sourceText } from "@whilo/i18n/source";
+import { createWhiloLogger } from "@whilo/logging";
+import { buildRoutineCalendar, type RoutineCalendarSource } from "@whilo/team-client/routine-calendar";
+import { withRoutineRunPlaces } from "@whilo/team-client/team-api-requests";
 import type { AgentService } from "../../backend/agent-service";
 import { runCauseEffect } from "../../backend/effect-boundary";
 import { localRoutineCalendarSource } from "../local-routine-calendar";
@@ -48,7 +48,7 @@ import {
 import type { IpcGroupHandlers } from "./define-ipc-group";
 import { scopedHandler } from "./scoped-handler";
 
-const runPlaceLogger = createOpenBotLogger("routine-run-place");
+const runPlaceLogger = createWhiloLogger("routine-run-place");
 
 interface RoutineIpcDependencies {
   service: AgentService;

@@ -36,7 +36,7 @@ Messages use `AgentService.sendMessage` and its persisted retry keys. The attent
 each pending object an opaque local handle. Responses match that handle and agent together; an
 expired handle cannot answer a later provider request. Pending details are not trimmed to the UI
 snapshot budget. The HTTP boundary redacts outgoing values. Browser takeovers and secret questions
-are notices only and direct the person to OpenBot. Messages and routine runs share the rate limit.
+are notices only and direct the person to Whilo. Messages and routine runs share the rate limit.
 
 ## Scheduled routine changes
 
@@ -109,7 +109,7 @@ thread. The routine settings show a switch for it on this computer's host, and o
 the optional `routine-run-place-v1` capability (`packages/contracts/src/team-protocol/routine-run-place-v1.ts`,
 host route `routeRoutineRunPlace` in `src/main/team-api/route-routine-run-place.ts`). The released
 routine routes and the `events-v1` and `routine-recovery-v1` routes do not carry `runIn`, so the remote
-adapters (main IPC for desktop, `@openbot/team-client` for `/app`) read the places on their own list
+adapters (main IPC for desktop, `@whilo/team-client` for `/app`) read the places on their own list
 route and send a change to the set route after the save. Any member reads the places of an agent that
 they can see; a change needs manage access. The host saves the stored record again with only the new
 place, for schedule and webhook routines. A save without `runIn`, or to a host without the capability,
@@ -172,7 +172,7 @@ the chat. A restart during a run marks the run interrupted: the session is not s
 computer as an iCalendar feed (`src/main/routine-feed-ics.ts`) for Server Settings > Routines. It
 runs only after the user makes a feed URL, and binds `127.0.0.1`. The URL is
 `/routines/<token>.ics`, with an optional `?agent=<id>`: a calendar app cannot send a header, so the
-token is in the path. `<userData>/openbot-routine-feed-v1.json` keeps the token, encrypted with the
+token is in the path. `<userData>/whilo-routine-feed-v1.json` keeps the token, encrypted with the
 secret storage cipher, and the port, so the URL stays the same after a restart. When the port is not
 free, the listener takes a new one and saves it. **New URL** replaces the token, and **Turn off**
 deletes the file. A wrong token gets 404. A request with an `Origin` header or a foreign `Host`
@@ -219,7 +219,7 @@ on a joined host.
   runs a test through the events API, as the routine settings do. On a joined host only an owner or
   admin has that API (`events-v1`); a member sees no webhook config and cannot change or run a
   webhook routine from the canvas.
-- Agents read and change flows with the `openbot` tools `list_routine_flows`, `connect_routine_agents`
+- Agents read and change flows with the `whilo` tools `list_routine_flows`, `connect_routine_agents`
   and `disconnect_routine_agents` (`routine-flow-tools.ts`). `RoutineFlows` is built after the agent
   service, so the tool router reads it through a getter. The canvas chat panel sends the user's request
   to the open agent's own conversation and shows the answer of the turn that read it.
@@ -237,7 +237,7 @@ changed, on this computer and on a joined host.
   the document, catalogs, run state and callbacks as props. Edits stay local for fast drags and
   undo, and the canvas gives the new document after each history step.
   `src/renderer/src/features/workflows/` holds `WorkflowsPage.tsx`, `workflows-port.ts` (the port
-  over `window.openbot.workflows`) and `workflows-controller.ts`. The controller is the same for the
+  over `window.whilo.workflows`) and `workflows-controller.ts`. The controller is the same for the
   page and the stories. It saves the graph 400 ms after the last edit, one save at a time on its
   base revision. A failed save keeps the edit for the next save. A change from another device, a
   conflict or a restore loads the graph again, and undo on the canvas gets the edits back.
@@ -271,7 +271,7 @@ changed, on this computer and on a joined host.
   extra due source. An occurrence is skipped while the workflow has an open run, and missed
   occurrences become one run. A webhook trigger has a route of its own owner kind (`workflow`); see
   [Route lifecycle](events.md#route-lifecycle).
-- A GitHub trigger starts a run for each event of the OpenBot GitHub App that matches it
+- A GitHub trigger starts a run for each event of the Whilo GitHub App that matches it
   (`github-matching.ts`); see [Workflow GitHub triggers](events.md#workflow-github-triggers). A
   GitHub run blocks only its own issue or pull request: a second event for the same item waits, and
   events for other items run at the same time. Schedule and webhook triggers keep one open run per
@@ -281,7 +281,7 @@ changed, on this computer and on a joined host.
   each change, so a restart does not post a comment, review or issue again. When a Discord mention
   started the run, a new issue or a comment links the files of the mention and of the message that it
   replies to (`discordTriggerFiles` in `discord-matching.ts`). GitHub has no attachment API for an App
-  token, so `attachFiles` in `github-rest.ts` commits them, before the change is recorded as sent, with the Git Data API to the orphan `openbot-attachments` branch, which has no workflow files
+  token, so `attachFiles` in `github-rest.ts` commits them, before the change is recorded as sent, with the Git Data API to the orphan `whilo-attachments` branch, which has no workflow files
   and so starts no Actions. A file that it cannot copy keeps its Discord link, which expires.
 - A restart keeps approvals and agent steps, because their state is in the database and the
   mailbox. The first pass fails a model step that was running, and ends a run that was stopping. An
@@ -289,7 +289,7 @@ changed, on this computer and on a joined host.
   post that was on its way fails as uncertain, and the user retries the step.
 - Image, asset, file output and message trigger nodes are kept in the graph but do not run yet; a
   run that reaches one fails with `nodeUnsupported`.
-- Agents use workflows with six `openbot` tools (`workflow-tools.ts`): `list_workflows`,
+- Agents use workflows with six `whilo` tools (`workflow-tools.ts`): `list_workflows`,
   `read_workflow`, `edit_workflow`, `delete_workflow`, `run_workflow` and `read_workflow_runs`. They
   are not in the visible set, so before `tool_search` finds them they cost only their names. A search
   word `workflow` or `workflows` gives the schemas of all six, and no other schema or guidance, so one
@@ -470,7 +470,7 @@ The chat header shows a tab for the main thread and one for each open side threa
 menu of all threads with an "Archived" group (`packages/ui/src/features/conversation/threads/`). The
 user starts a side thread with "+" (a draft tab that becomes a thread with its first message) or moves
 a queued message to one ("Run in new thread"). Which tabs are open, their order and the open tab are
-kept per device in `localStorage` (`openbot:thread-tabs:v1`, server id → agent id); closing a tab
+kept per device in `localStorage` (`whilo:thread-tabs:v1`, server id → agent id); closing a tab
 does not change the thread. Archive is the task close; opening or sending to an archived thread
 restores it. Rename sets a `user` title, which later messages do not change. Delete hides the thread
 at once and shows an Undo toast; when the toast ends, `AgentService.deleteTask` cancels the queued
@@ -493,7 +493,7 @@ each branch under its source. The branch has no provider session, so its first t
 its own transcript, with a note that workspace files were not rolled back. A branch counts toward the
 open-thread limit.
 
-The agent starts a side thread with the `start_task` OpenBot tool, up to 8 open tasks. On desktop and
+The agent starts a side thread with the `start_task` Whilo tool, up to 8 open tasks. On desktop and
 the web, it opens as a tab of the agent and does not take focus. An agent has at most 50
 open tasks (`INPUT_LIMITS.agentTasks`, the size of the task list), so each open task stays visible. A message to a
 running task waits in the task, or steers the turn when the agent's busy-message mode is "steer"
@@ -583,7 +583,7 @@ agents of the active server and opens a task beside the list in `AgentThreadView
 The panel archives, restores and opens the task in the chat. A read there marks the thread read. A running
 task that waits for an approval, a question or a browser takeover goes to Needs you; the chat answers a
 question or takeover, so the panel links there. The Tasks page and the phone share the section and title
-rules in `@openbot/team-client/agent-tasks`.
+rules in `@whilo/team-client/agent-tasks`.
 On the phone, the server drawer opens the Tasks screen (`apps/mobile/src/app/(app)/server-tasks.tsx`) when
 the host serves the capability. A task opens as a full screen (`apps/mobile/src/app/(app)/task/[taskId].tsx`)
 with the message list and header of the agent's chat, the task actions in place of the browser
@@ -596,10 +596,10 @@ instead, as on desktop: a finished task stays with its result until the person c
 opens the task.
 
 Shared writes: each task thread owns its own browser tabs and tab queue. Computer Use is an MCP
-server that the provider starts, so OpenBot cannot queue its calls; `ThreadLifecycle` starts a task
+server that the provider starts, so Whilo cannot queue its calls; `ThreadLifecycle` starts a task
 session without it, and the instructions send desktop work to the agent's own chat. A routine thread
 is the exception (see above). Tasks share the
-workspace, and OpenBot does not lock files; the `start_task` guidance warns the agent about this.
+workspace, and Whilo does not lock files; the `start_task` guidance warns the agent about this.
 
 A provider, account or custom-agent change that a user or an agent asks for while a turn, a task or
 a queued message waits is stored on the agent as `pendingRuntime`. The running work keeps its
@@ -644,7 +644,7 @@ the user can ask for a detailed coordination report.
 
 An agent does not refuse a task, or say that it has no access to a service, before it tries each
 path. When the task is outside its profile, or names a service that a teammate may own, it calls
-`openbot.list_agents` first and delegates to a teammate whose name, title or description covers
+`whilo.list_agents` first and delegates to a teammate whose name, title or description covers
 the work. In a channel task it delegates only to a channel member. MCP servers are host-global, so
 a specialist teammate differs only by its profile, skills and memories. Otherwise the agent uses its
 connected MCP servers, its skills, the embedded browser and Computer Use.
@@ -687,13 +687,13 @@ checked unless a tool result or a reply shows it. When nothing works, the agent 
 and the one action that unblocks it; for a service with a plugin, that action is to install or
 enable the plugin. It can offer to create a specialist teammate, but it creates one only after the user agrees.
 
-An agent that delegates work can follow and stop it. `openbot.list_agents` reports each agent's
+An agent that delegates work can follow and stop it. `whilo.list_agents` reports each agent's
 description to 300 characters (`read_agent` returns all of it), its
 `status` (a starting delivery and a context compaction count as `working`), `queuedMessages`
 (channel work excluded), `turnStartedAt`, and `lastActivityAt`. The last two come from the provider
 notifications that `TurnLifecycle` sees; they are in memory only, so after a restart
-`lastActivityAt` falls back to the newest message for the agent. OpenBot does not record which
-files a turn changed. `openbot.interrupt_agent` (`src/backend/agent/agent-interrupt-tool.ts`)
+`lastActivityAt` falls back to the newest message for the agent. Whilo does not record which
+files a turn changed. `whilo.interrupt_agent` (`src/backend/agent/agent-interrupt-tool.ts`)
 refuses the caller itself, a channel turn, and a turn that any delivery other than the caller's
 started, so an agent cannot stop work from the user, a routine, or another agent. It cancels the
 caller's queued requests to the target before it sends `turn/interrupt`, because the interrupted
@@ -750,15 +750,15 @@ These are manual model evaluations, separate from the fake-provider lifecycle re
 ## Prompt-driven agent profiles
 
 Users create and edit agent profiles by asking an agent in the normal desktop or mobile
-conversation. `openbot.create_agent` creates a persistent teammate with instructions and a first
-task; `openbot.update_profile` changes an existing agent's name, title, instructions, generated
+conversation. `whilo.create_agent` creates a persistent teammate with instructions and a first
+task; `whilo.update_profile` changes an existing agent's name, title, instructions, generated
 or custom avatar, provider, model, reasoning effort, account, backup models, access, Computer Use, or notifications. `avatarPath` accepts a local PNG, JPEG, or WebP file up to 512 KB, with relative
 paths resolved from the calling agent’s workspace. The agent uses its available tools to resize or
-compress a copy when needed. OpenBot validates the prepared file before profile changes and copies
+compress a copy when needed. Whilo validates the prepared file before profile changes and copies
 it into managed avatar storage. Generated avatar settings remove the custom image. Both run through
 the existing agent service and validate arguments before changing state.
-`openbot.create_agent` also accepts an optional `provider`, `model` and `reasoningEffort`. The
-read-only `openbot.list_models` returns the models of each provider that the model picker shows, with
+`whilo.create_agent` also accepts an optional `provider`, `model` and `reasoningEffort`. The
+read-only `whilo.list_models` returns the models of each provider that the model picker shows, with
 their reasoning efforts and the default model for a request that names only a provider. With no
 `query`, a provider lists its default model, the models that local agents use as their model or as a
 backup model, then its first catalog models up to 8 models in total; `omittedModels` counts the
@@ -769,24 +769,24 @@ that can hold more than one account also lists its accounts, with the provider's
 (`default`) first: the id, the name the user gave it (or null), and the state. It never lists the
 account email, credentials or account folders. `update_profile` takes the
 agent's `providerAccountId` and its `backupModels` (`automatic` and an `order` of provider, model
-and account), the same choices that the settings page offers. OpenBot checks each backup model and
+and account), the same choices that the settings page offers. Whilo checks each backup model and
 account against the lists before it writes, and the agent service checks the primary account; an
 account change, like a provider change, waits until the agent is idle. These changes apply at once,
 as the other profile fields do. `read_agent` and the `update_profile` result return the account,
 the backup models and `usageLimitReturn`, the model that the agent left for a usage limit or a provider error (`cause: "provider-error"`). A spent credit balance
 that names no reset sets no `usageLimitReturn`, so the agent does not go back to it by itself. An unknown
-model or an unsupported effort is an error that names the valid values; OpenBot checks them before
+model or an unsupported effort is an error that names the valid values; Whilo checks them before
 it creates the agent. Without a provider and a model, the new agent starts on the calling agent's
 provider, model and reasoning effort, so a team that one agent creates runs where that agent runs.
 When the caller's provider no longer lists its model, the new agent starts on the user's default.
 Creation stays this small. The calling agent then configures the new agent, or any other local
-agent, with the same tools that act on itself. `openbot.read_agent` returns one agent's setup:
+agent, with the same tools that act on itself. `whilo.read_agent` returns one agent's setup:
 profile, runtime, access, Computer Use, notifications, auto-approve, installed skills, routines,
 and the names and transports of the MCP servers it gets. It does not return MCP commands,
 environment values, URLs, or headers, because they can hold secrets. `install_local_skill`,
 `set_skill_enabled`, `uninstall_skill`, and the routine tools take an optional `agentId`; without
 it they act on the caller. `uninstall_skill` never removes skill files that the user changed.
-`openbot.update_agents` gives several agents the same provider, model, reasoning effort, access,
+`whilo.update_agents` gives several agents the same provider, model, reasoning effort, access,
 Computer Use, or notifications setting in one call. Each agent gets the checks of `update_profile`
 and its own `updateAgent` write, in order. A failure for one agent does not stop or undo the others,
 and the result reports `ok` with the new settings, or the error, for each agent id. A provider or
@@ -798,7 +798,7 @@ the access and Computer Use limits of the agent that creates it, so a Workspace-
 get around its sandbox through a teammate. There is no creation step for skills or routines in
 the UI.
 The other providers receive the dynamic tool definitions; Claude exposes the same operations through
-its SDK MCP bridge. `src/backend/openbot-tools.ts` owns the tool names, descriptions, and Zod
+its SDK MCP bridge. `src/backend/whilo-tools.ts` owns the tool names, descriptions, and Zod
 argument shapes used by both declarations. It reuses the profile, section, and routine schemas.
 Claude uses the SDK’s `AskUserQuestion` flow instead of the `ask_user` MCP tool.
 There is no separate prompt-generation button or review dialog.
@@ -811,10 +811,10 @@ and change events delivered to desktop and connected clients.
 
 `html_render` publishes a visual reply: an HTML page that shows above the agent's reply. The router
 stores the page as a generated `text/html` attachment and adds an assistant message with the item
-type `visual-reply:<height>` and the page title as its text (`@openbot/contracts/chat-visual`). A
+type `visual-reply:<height>` and the page title as its text (`@whilo/contracts/chat-visual`). A
 client that does not know the item type shows the title and the file. A visual message is not
 readable: unread counts, latest-message previews and mobile read state skip it. The desktop serves
-the page on `openbot-visual:` (`openbot-remote-visual:` for a remote host) with
+the page on `whilo-visual:` (`whilo-remote-visual:` for a remote host) with
 `Content-Security-Policy: sandbox allow-scripts allow-forms` and the frame script, and the frame has
 the same sandbox without `allow-same-origin`. The page runs its scripts and can load files from the
 network, but it has an opaque origin, gets no permission, and talks to the app only with the checked
@@ -844,7 +844,7 @@ without the native module shows the page with no scripts. `html_preview` lets th
 process draws it in a hidden window with its own in-memory session (`ChatVisualPreviewer`)
 and returns a PNG, the content height and the console lines. The file preview shows an HTML file in
 the same frame. On desktop, a shared or workspace HTML file preview gives the client a temporary
-`openbot-visual://preview/<token>` page URL beside its bytes. `FilePreviewPages` keeps only local HTML
+`whilo-visual://preview/<token>` page URL beside its bytes. `FilePreviewPages` keeps only local HTML
 that already passed the existing file-access checks, in a bounded in-memory registry. The page
 protocol accepts only an opaque token, never a file path, and uses the same sandbox response as
 HTML attachments. The server-owned preview state releases its page on replacement, close or
@@ -867,7 +867,7 @@ Unchanged fingerprints resume the existing session. Pending history handoffs are
 the replacement is bound, reloaded after restart, and removed after a turn accepts the handoff.
 
 The same handoff carries a chat to another provider after a provider switch. It holds the user and
-assistant messages after the last context-reset marker, with attachment names only. OpenBot stores
+assistant messages after the last context-reset marker, with attachment names only. Whilo stores
 no tool steps, so the work log comes from the providers. At the switch, before the old sessions are
 retired, `ThreadLifecycle.readWorkSteps` reads each active session with the provider history read
 through the client that holds it, with a 10-second limit. The switch then checks again that no turn started.
@@ -947,7 +947,7 @@ for teammates and the Team API; it keeps its meaning and its 2,000-character lim
 
 Server Settings > Import moves agents from a `.zip` export into the local host, or into a remote host
 that serves `agent-import-v1` (see [Agent import from a joined server](servers.md#agent-import-from-a-joined-server)).
-The format is `openbot-import.json` plus `agents/<key>/`
+The format is `whilo-import.json` plus `agents/<key>/`
 folders. `resources/agent-import/grok-bot/SKILL.md` writes it and `src/main/agent-import-manifest.ts`
 reads it; both are a product contract, so add only optional fields and raise `version` for a change
 of meaning. The renderer never names a path: `agent-import:choose` opens the dialog in main, and
@@ -965,7 +965,7 @@ memory step fails is deleted. Step 1 offers two ways to add the export agent: it
 
 ## Instance transfer
 
-Server settings > Transfer moves a server's agents and server settings to another OpenBot server with
+Server settings > Transfer moves a server's agents and server settings to another Whilo server with
 one `.zip` file. It is a separate format from the Grok Bot agent import. The first screen offers "Export
 from this server" and "Import into this server". The section shows for this computer's server, and for a
 joined server with `instance-transfer-v1` when the user is an owner or admin (see
@@ -973,9 +973,9 @@ joined server with `instance-transfer-v1` when the user is an owner or admin (se
 client and mobile do not show it. App preferences, the default model and the providers that are off
 belong to the app, not to a server, so they are not in the file.
 
-The file has `openbot-transfer.json` at its root, `agents/<key>/` folders (`avatar.<ext>`,
-`skills/<slug>/` and `workspace/`), and `shared/` for `~/OpenBot/Shared`. The manifest is
-`{ format: "openbot-instance-transfer", version: 1, source, agents, settings, shared, signedIn }`.
+The file has `whilo-transfer.json` at its root, `agents/<key>/` folders (`avatar.<ext>`,
+`skills/<slug>/` and `workspace/`), and `shared/` for `~/Whilo/Shared`. The manifest is
+`{ format: "whilo-instance-transfer", version: 1, source, agents, settings, shared, signedIn }`.
 `src/main/instance-transfer-manifest.ts` writes and reads it with Effect `Schema`; it is a contract
 between app versions, so add only optional fields and raise `version` for a change of meaning. A file
 with a higher `version` is refused. An invalid agent is left out with a warning and the others are
@@ -986,8 +986,8 @@ colour is in the optional `avatarColor` field, and an older app draws the neares
 and reasoning effort, notifications and busy-message mode, its routines (schedule, limit and missed
 policies; one-time routines are in the optional `oneTimeRoutines` field, so an older app skips them and
 keeps the agent), its memories (with the essential or searchable choice the user made) and the skill folders
-in `.agents/skills` and `.claude/skills` that OpenBot does not manage. Workspace files are optional
-and leave out `.openbot/`, the skill folders, links, and every path `isUnsafeArchivePath` refuses
+in `.agents/skills` and `.claude/skills` that Whilo does not manage. Workspace files are optional
+and leave out `.whilo/`, the skill folders, links, and every path `isUnsafeArchivePath` refuses
 (`.git`, `node_modules`, `.env*`, private keys, nested archives). Server settings are optional: MCP servers,
 custom model providers, custom ACP agents (as a warning, see below), sidebar sections and routine flows
 between exported agents. A custom provider model keeps its optional `contextWindow`, `maxOutput`,
@@ -1012,7 +1012,7 @@ and the user adds it again after checking it. The models of an added provider ar
 model discovery, and the provider has no key until the user enters it. So an agent on such a model starts
 on the default model, and a warning asks the user to choose it again when the provider is ready. Then it creates each selected agent through
 `AgentService` and the local skill library. Files go to the workspace root, and a name that is already
-there is saved beside it. Like the export, the import never writes `.openbot/` or the skill folders. An agent whose step fails is deleted with the skill revisions it published,
+there is saved beside it. Like the export, the import never writes `.whilo/` or the skill folders. An agent whose step fails is deleted with the skill revisions it published,
 and the others continue. A model that this computer does not offer, or whose provider is off, leaves
 the agent on the default model with a warning. Last, it adds MCP servers whose name is new, turned off, because a file can name any command, creates
 missing sidebar sections by name and assigns the new agents, connects routine flows with the new
@@ -1038,7 +1038,7 @@ refuses `blob:` images. The Worker accepts only a PNG of that size, stores it in
 as the page's `og:image`, so a post on X shows the agent. `openbot.run/agents/<id>` is a public
 card page, tinted with the avatar colour. The Bloub library uses browser-only APIs when its module
 loads, so the page loads the avatar and its colour in the browser after hydration. Its button opens
-`openbot://agents/<id>`, the third renderer link kind in
+`whilo://agents/<id>`, the third renderer link kind in
 `src/main/deep-link-router.ts`. The app then shows the template in `AgentTemplateInstallDialog`;
 like a plugin link, the link itself installs nothing. The page's fallback line also links
 `/app?agent=<id>`, where the browser client shows the same preview. In the same way, the invitation

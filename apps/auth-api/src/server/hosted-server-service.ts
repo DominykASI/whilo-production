@@ -7,7 +7,7 @@ import {
   type BillingPlanId,
   isOpenBillingStatus,
   memberLimitForPlan,
-} from "@openbot/contracts/billing";
+} from "@whilo/contracts/billing";
 import {
   HOSTED_PLAN_SIZE,
   HOSTED_SERVER_ENTRY_POINTS,
@@ -24,11 +24,11 @@ import {
   type HostedServerStatus,
   type HostedServerSummary,
   parseHostedServerName,
-} from "@openbot/contracts/hosted-servers";
-import { type LicenseOrder, parseLicenseOrder } from "@openbot/contracts/license";
-import { isDynamicRecord, isOneOf, isString } from "@openbot/contracts/runtime-values";
-import type { RouteHostState } from "@openbot/contracts/signal-protocol/ingress-queue";
-import { sourceText } from "@openbot/i18n/source";
+} from "@whilo/contracts/hosted-servers";
+import { type LicenseOrder, parseLicenseOrder } from "@whilo/contracts/license";
+import { isDynamicRecord, isOneOf, isString } from "@whilo/contracts/runtime-values";
+import type { RouteHostState } from "@whilo/contracts/signal-protocol/ingress-queue";
+import { sourceText } from "@whilo/i18n/source";
 import { Context, Effect, Layer, Result, Schema } from "effect";
 import { SOLD_OUT_PLANS } from "../lib/pricing-page";
 import {
@@ -68,7 +68,10 @@ const RATE_LIMIT_RETRY_MIN_MS = 30_000;
 const RATE_LIMIT_RETRY_MAX_MS = 5 * 60_000;
 /** boat retries a delivery for hours, so a delivery ID is kept longer than the 5 minute replay window. */
 const DELIVERY_RETENTION_MS = 7 * 24 * 60 * 60_000;
-const MAX_SERVERS_PER_ACCOUNT = 50;
+function maxServersPerAccount(env: { HOSTED_SERVERS_MAX_PER_ACCOUNT?: string }): number {
+  const n = Number(env.HOSTED_SERVERS_MAX_PER_ACCOUNT);
+  return Number.isFinite(n) && n >= 1 ? Math.floor(n) : 50;
+}
 const TICK_BATCH_SIZE = 20;
 /**
  * A server that waits for its first payment this long is removed. Its Checkout page (35 minutes)
@@ -102,21 +105,21 @@ const LEASE_TTL_SECONDS = 2 * 60 * 60;
 const LEASE_EXTEND_BEFORE_MS = 60 * 60_000;
 /**
  * boat can keep a stopped machine in memory and continue it at a resume, with no boot. Then `/run` keeps
- * the flag of the pre-stop hook (`scripts/hosting/openbot-boat-pre-stop`), the condition of
- * `openbot.service` fails, and OpenBot does not start. This command removes the flag and starts OpenBot.
+ * the flag of the pre-stop hook (`scripts/hosting/whilo-boat-pre-stop`), the condition of
+ * `whilo.service` fails, and Whilo does not start. This command removes the flag and starts Whilo.
  * With no flag it does nothing, so it does not change a machine that boat started with a boot.
  */
 const HELD_RESUME_START_COMMAND =
-  "if [ -e /run/openbot-pre-stop ]; then sudo -n rm -f /run/openbot-pre-stop && sudo -n systemctl start --no-block openbot.service && echo started; fi";
+  "if [ -e /run/whilo-pre-stop ]; then sudo -n rm -f /run/whilo-pre-stop && sudo -n systemctl start --no-block whilo.service && echo started; fi";
 const HELD_RESUME_START_TIMEOUT_SECONDS = 10;
 /**
  * boat can cancel a stop after the pre-stop hook, for example when it cannot pause a Docker container
- * that restarts. The machine then runs with the flag, and OpenBot stays stopped. This command starts
- * OpenBot only for a flag older than 5 minutes: boat runs the hook again before each new try of the stop,
+ * that restarts. The machine then runs with the flag, and Whilo stays stopped. This command starts
+ * Whilo only for a flag older than 5 minutes: boat runs the hook again before each new try of the stop,
  * so a newer flag can belong to a disk save that still runs. The hook also sets a timer that does the same.
  */
 const FAILED_STOP_START_COMMAND =
-  "if find /run/openbot-pre-stop -mmin +5 2>/dev/null | grep -q .; then sudo -n rm -f /run/openbot-pre-stop && sudo -n systemctl start --no-block openbot.service && echo started; fi";
+  "if find /run/whilo-pre-stop -mmin +5 2>/dev/null | grep -q .; then sudo -n rm -f /run/whilo-pre-stop && sudo -n systemctl start --no-block whilo.service && echo started; fi";
 /**
  * The cron starts an idle server this long before its next routine run: one cron interval (5 minutes)
  * and the time that the server takes to start. A server does not stop for no use in this time.
@@ -305,6 +308,7 @@ export class HostedServerService {
   /** Account IDs and emails (lowercase) that can create servers. `*` allows each account. */
   readonly #allowed: ReadonlySet<string>;
   readonly #developerAccess: boolean;
+  readonly #maxServers: number;
   readonly #now: () => number;
   readonly #billing: HostedServerBilling | null;
   readonly #analytics: AccountAnalytics;
@@ -328,6 +332,7 @@ export class HostedServerService {
         .filter(Boolean),
     );
     this.#developerAccess = isDeveloperKey(bindings.HOSTED_SERVERS_DEVELOPER_KEY, options.developerKey);
+    this.#maxServers = maxServersPerAccount(bindings);
     this.#now = options.now ?? Date.now;
     const removeHost = options.removeHost ?? null;
     this.#billing = options.billing ?? null;
@@ -384,7 +389,7 @@ export class HostedServerService {
         available: this.isAvailableFor(user),
         lifecycleAvailable: true,
         servers: rows.results.map(summary),
-        maxServers: MAX_SERVERS_PER_ACCOUNT,
+        maxServers: this.#maxServers,
       };
     },
     (operation) => operation.pipe(Effect.provide(this.#layer)),
@@ -473,7 +478,7 @@ export class HostedServerService {
           .bind(user.id)
           .first<{ count: number }>(),
       );
-      if ((count?.count ?? 0) >= MAX_SERVERS_PER_ACCOUNT) {
+      if ((count?.count ?? 0) >= this.#maxServers) {
         return yield* new HostedServerServiceError(
           409,
           "hosted_server_limit",
@@ -883,7 +888,7 @@ export class HostedServerService {
         return summary(yield* this.#requireRow(serverId));
       }
       if (!boat)
-        return yield* new HostedServerServiceError(503, "hosting_not_configured", "Hosting is not configured.");
+        return yield* new HostedServerServiceError(403, "hosting_unavailable", "Hosted servers are not available.");
       // The restart counts as use, so a sleeping server runs again and does not stop before a client connects.
       const now = dependencies.now();
       const claimed = yield* hostedCall(() =>
@@ -1100,7 +1105,7 @@ export class HostedServerService {
       const dependencies = yield* HostedServerDependencies;
       const webhookSecret = this.#webhookSecret;
       if (!webhookSecret) {
-        return yield* new HostedServerServiceError(503, "hosting_not_configured", "Hosted servers are not configured.");
+        return yield* new HostedServerServiceError(403, "hosting_unavailable", "Hosted servers are not available.");
       }
       const now = dependencies.now();
       const valid =
@@ -1648,7 +1653,7 @@ export class HostedServerService {
     const secret = yield* this.#claimKey();
     // Thrown before the row changes, so the webhook retry or the cron provisions it later.
     if (!boat || !template || !secret) {
-      return yield* new HostedServerServiceError(503, "hosting_not_configured", "Hosted servers are not configured.");
+      return yield* new HostedServerServiceError(403, "hosting_unavailable", "Hosted servers are not available.");
     }
     // The claim works from now, so its lifetime counts from the start of the sandbox, not from the payment page.
     // A VM that signed in during a lost attempt keeps its session, and the claim stays spent.
@@ -2195,7 +2200,7 @@ export class HostedServerService {
 
   /**
    * A client or a connector cannot reach a server that boat runs. A stop that boat cancelled after the
-   * pre-stop hook leaves OpenBot stopped there, so the Worker starts it (`FAILED_STOP_START_COMMAND`).
+   * pre-stop hook leaves Whilo stopped there, so the Worker starts it (`FAILED_STOP_START_COMMAND`).
    * The command runs after the reply, and on a server with no old flag it does nothing. A stop that boat
    * cannot finish (`stopFailing`) sets the row to `stopping`, but the machine runs, so the command runs too.
    */
@@ -2315,7 +2320,7 @@ export class HostedServerService {
         );
         return yield* this.#resume({ ...row, pending_size: null });
       }
-      // 409: the provider already resumes or runs it; the webhook or the cron reports the result. boat
+          // 409: the provider already resumes or runs it; the webhook or the cron reports the result. boat
       // kept its old stop time, so the next activity sets a new one. A rate limit no longer applies, so the
       // cron reads the provider when the webhook does not come.
       if (error instanceof BoatApiError && error.status === 409) {
@@ -2356,7 +2361,20 @@ export class HostedServerService {
           .bind(providerError(error), dependencies.now(), row.server_id)
           .run(),
       );
-      return yield* error;
+      // Config/credential errors (401/403) or transport errors must surface as clean availability
+      // failures to the user, never as raw provider errors or 500s.
+      if (error instanceof BoatApiError && (error.status === 401 || error.status === 403)) {
+        return yield* new HostedServerServiceError(
+          403,
+          "hosting_unavailable",
+          "Hosted servers are not available.",
+        );
+      }
+      return yield* new HostedServerServiceError(
+        502,
+        "hosted_server_provider_failed",
+        "The hosting provider could not complete the request.",
+      );
     }
     if (row.observed_error === "provider_limit") {
       yield* hostedCall(() =>
@@ -2397,7 +2415,7 @@ export class HostedServerService {
     let observed = row.observed_state;
     let error = row.observed_error;
     // boat could not save the disk for a stop and tries again until the save works. The sandbox keeps a
-    // usable state, but the pre-stop hook stopped OpenBot, and each new try stops it again.
+    // usable state, but the pre-stop hook stopped Whilo, and each new try stops it again.
     const failingStop = stopFailing && isUsable(state);
     if (isUsable(state)) {
       observed = failingStop ? "stopping" : "running";
@@ -2448,15 +2466,21 @@ export class HostedServerService {
     if (sandboxId) {
       const boat = dependencies.boat;
       if (!boat)
-        return yield* new HostedServerServiceError(503, "hosting_not_configured", "Hosting is not configured.");
+        return yield* new HostedServerServiceError(403, "hosting_unavailable", "Hosted servers are not available.");
       const operationResult3 = yield* Effect.result(boat.deleteSandbox(sandboxId));
       if (Result.isFailure(operationResult3)) {
         const error = operationResult3.failure;
-
+        if (error instanceof BoatApiError && (error.status === 401 || error.status === 403)) {
+          return yield* new HostedServerServiceError(
+            403,
+            "hosting_unavailable",
+            "Hosted servers are not available.",
+          );
+        }
         return yield* new HostedServerServiceError(
           502,
           "hosted_server_provider_failed",
-          `Deletion failed: ${safeErrorCode(error)}`,
+          "The hosting provider could not complete the request.",
         );
       }
     }
@@ -2505,10 +2529,17 @@ export class HostedServerService {
         Effect.gen({ self: this }, function* () {
           // A refusal does not prove that the earlier create made no sandbox: the template can be gone
           // since. The deletion stays pending, and the cron asks again.
+          if (error instanceof BoatApiError && (error.status === 401 || error.status === 403)) {
+            return yield* new HostedServerServiceError(
+              403,
+              "hosting_unavailable",
+              "Hosted servers are not available.",
+            );
+          }
           return yield* new HostedServerServiceError(
             502,
             "hosted_server_provider_failed",
-            `Deletion failed: ${safeErrorCode(error)}`,
+            "The hosting provider could not complete the request.",
           );
         }),
       ),
@@ -2526,7 +2557,7 @@ export class HostedServerService {
     const ticketKey = this.#ticketKey;
     if (!ticketKey) return null;
     const privateValue = yield* hostedValidate(() => ticketPrivateValue(ticketKey));
-    this.#claimSecret ??= yield* deriveSecret(privateValue, "openbot-hosted-claim-key:v1").pipe(
+    this.#claimSecret ??= yield* deriveSecret(privateValue, "whilo-hosted-claim-key:v1").pipe(
       Effect.mapError(hostedFailure),
     );
     return this.#claimSecret;
@@ -2648,7 +2679,7 @@ function summary(row: HostedServerRow): HostedServerSummary {
   };
 }
 
-/** `openbot-{plan}-{email}-{first 8 characters of the server ID}`, in the characters of a boat name. */
+/** `whilo-{plan}-{email}-{first 8 characters of the server ID}`, in the characters of a boat name. */
 /**
  * The claim of a server is the same on each call, so a create retry sends the same request body and
  * boat returns the sandbox that it made. The Worker stores only its hash, and accepts it only while
@@ -2683,7 +2714,7 @@ function isDeveloperKey(expected: string | undefined, provided: string | null | 
 }
 
 function hostedClaim(secret: string, serverId: string) {
-  return hmacSha256(secret, `openbot-hosted-claim:v1:${serverId}`);
+  return hmacSha256(secret, `whilo-hosted-claim:v1:${serverId}`);
 }
 
 function sandboxName(plan: BillingPlanId, email: string, serverId: string): string {
@@ -2692,7 +2723,7 @@ function sandboxName(plan: BillingPlanId, email: string, serverId: string): stri
       .toLowerCase()
       .replace(/[^a-z0-9]+/gu, "-")
       .replace(/^-+|-+$/gu, "");
-  const prefix = `openbot-${plan}-`;
+  const prefix = `whilo-${plan}-`;
   const suffix = `-${slug(serverId).slice(0, 8)}`;
   const owner = slug(email)
     .slice(0, SANDBOX_NAME_MAX_LENGTH - prefix.length - suffix.length)
@@ -2723,9 +2754,11 @@ function parseWebhookEvent(
       ? "archived"
       : payload.type === "sandbox.error"
         ? "error"
-        : payload.type === "sandbox.ready" && isBoatState(payload.data.state)
-          ? payload.data.state
-          : null;
+        : payload.type === "sandbox.hydrated"
+          ? "starting"
+          : payload.type === "sandbox.ready" && isBoatState(payload.data.state)
+            ? payload.data.state
+            : null;
   if (!state) return null;
   const createdAt = isString(payload.createdAt) ? Date.parse(payload.createdAt) : Number.NaN;
   return { sandboxId, state, createdAt: Number.isFinite(createdAt) ? createdAt : now };
@@ -2752,8 +2785,8 @@ function rateLimitRetryAt(row: HostedServerRow): number {
 }
 
 /**
- * Runs a command that starts OpenBot when the pre-stop flag stopped it. A failure does not change the
- * wake. OpenBot then stays stopped until the next stop and resume, or until the timer of the hook.
+ * Runs a command that starts Whilo when the pre-stop flag stopped it. A failure does not change the
+ * wake. Whilo then stays stopped until the next stop and resume, or until the timer of the hook.
  */
 const startOpenBot = Effect.fn("HostedServerService.startOpenBot")(function* (
   boat: BoatClient,

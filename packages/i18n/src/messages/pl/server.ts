@@ -252,7 +252,7 @@ export const messages = {
   "server.settings.storageTitle": "Pamięć dyskowa",
   "server.settings.storageDescription": "Zobacz, co Whilo przechowuje na dysku tego serwera, i zwolnij miejsce.",
   "server.settings.hostedSitesTitle": "Witryny",
-  "server.settings.hostedSitesDescription": "Statyczne witryny, które agenci tego serwera opublikowali w openbot.site.",
+  "server.settings.hostedSitesDescription": "Statyczne witryny, które agenci tego serwera opublikowali w whilo.site.",
   "server.settings.importTitle": "Import",
   "server.settings.importDescription": "Przenieś swoich agentów z Grok Bot lub Hermes Agent na ten serwer.",
   "server.settings.transferTitle": "Przeniesienie",
@@ -307,7 +307,7 @@ export const messages = {
   "server.settings.addLogo": "Dodaj logo serwera",
   "server.settings.removeLogo": "Usuń logo serwera",
   "server.settings.access": "Dostęp",
-  "server.companySignIn.desktopOnly": "Skonfiguruj logowanie jednokrotne w aplikacji OpenBot na komputer.",
+  "server.companySignIn.desktopOnly": "Skonfiguruj logowanie jednokrotne w aplikacji Whilo na komputer.",
   "server.settings.publish": "Opublikuj ten serwer",
   "server.settings.published": "Serwer jest opublikowany",
   "server.settings.setUpDesktopTitle": "Skonfiguruj zdalny pulpit",
@@ -528,7 +528,7 @@ export const messages = {
   "server.desktop.accessMembers": "Wszyscy członkowie",
   "server.desktop.askLabel": "Pytaj na tym komputerze",
   "server.desktop.askDescription":
-    "Każda sesja czeka, aż osoba przy tym komputerze na nią zezwoli. Bez odpowiedzi w ciągu 30 sekund OpenBot ją odrzuci.",
+    "Każda sesja czeka, aż osoba przy tym komputerze na nią zezwoli. Bez odpowiedzi w ciągu 30 sekund Whilo ją odrzuci.",
   "server.desktop.activeTitle": "Aktywne sesje pulpitu zdalnego: {active}",
   "server.desktop.activeDescription": "Od razu kończy każdą sesję. Członkowie mogą poprosić ponownie.",
   "server.desktop.stopAll": "Zatrzymaj całe zdalne sterowanie",
@@ -569,7 +569,7 @@ export const messages = {
   "server.update.path.container":
     "Na hoście Docker pobierz nowy obraz Whilo i utwórz kontener ponownie z tymi samymi woluminami danych. Najpierw poczekaj na zakończenie aktywnej pracy. Zachowaj istniejące woluminy, aby nie stracić danych.",
   "server.update.path.manual":
-    "Ta instalacja nie może sama się zastąpić. Poproś administratora hosta o zainstalowanie zgodnego wydania z github.com/nightly-labs/openbot/releases. Zachowaj istniejące dane Whilo.",
+    "Ta instalacja nie może sama się zastąpić. Poproś administratora hosta o zainstalowanie zgodnego wydania z github.com/nightly-labs/whilo/releases. Zachowaj istniejące dane Whilo.",
   "server.update.path.unavailable":
     "To jest kompilacja deweloperska. Użyj zainstalowanego wydania Whilo, aby sprawdzać aktualizacje.",
   "server.update.check": "Sprawdź aktualizacje",

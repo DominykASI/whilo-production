@@ -1,5 +1,5 @@
-import { Button, ChevronRight } from "@openbot/ui";
-import { cx, prefersReducedMotion } from "@openbot/ui/utils";
+import { Button, ChevronRight } from "@whilo/ui";
+import { cx, prefersReducedMotion } from "@whilo/ui/utils";
 import { type JSX, Portal } from "@solidjs/web";
 import { createEffect, createSignal, createUniqueId, onCleanup, Show, untrack } from "solid-js";
 

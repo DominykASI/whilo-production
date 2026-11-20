@@ -360,16 +360,16 @@ export const messages = {
   "connector.whatsapp.numbersTitle": "Números",
   "connector.whatsapp.linkNumber": "Vincular un número",
   "connector.whatsapp.ownNumberNote":
-    "Tu chat «Envíate un mensaje» y las personas que permitas pueden contactar con OpenBot.",
+    "Tu chat «Envíate un mensaje» y las personas que permitas pueden contactar con Whilo.",
   "connector.whatsapp.dedicatedNote":
-    "Las personas que permitas pueden contactar con OpenBot. Las demás reciben un código para dártelo.",
+    "Las personas que permitas pueden contactar con Whilo. Las demás reciben un código para dártelo.",
   "connector.whatsapp.helpLoggedOut":
     "WhatsApp quitó este equipo de los dispositivos vinculados. Vuelve a vincular el número.",
   "connector.whatsapp.helpLoggedOutHost":
     "WhatsApp quitó este servidor de los dispositivos vinculados. Vuelve a vincular el número.",
   "connector.whatsapp.helpError":
-    "OpenBot no puede acceder a WhatsApp en este número. Vuelve a conectar o desconecta el número.",
-  "connector.whatsapp.retryAt": "WhatsApp pidió a OpenBot que esperara. Lo intentará de nuevo a las {time}.",
+    "Whilo no puede acceder a WhatsApp en este número. Vuelve a conectar o desconecta el número.",
+  "connector.whatsapp.retryAt": "WhatsApp pidió a Whilo que esperara. Lo intentará de nuevo a las {time}.",
   "connector.whatsapp.pause": "Pausar",
   "connector.whatsapp.resume": "Reanudar",
   "connector.whatsapp.reconnect": "Reconectar",
@@ -379,14 +379,14 @@ export const messages = {
   "connector.whatsapp.disconnectAllSummary":
     "Se desconectan todos los números. Nadie podrá contactar con tus agentes a través de WhatsApp.",
   "connector.whatsapp.disconnectAllSummaryOrchestrator":
-    "Se desconectan todos los números. El Orquestador de WhatsApp y sus conversaciones se eliminan de OpenBot.",
+    "Se desconectan todos los números. El Orquestador de WhatsApp y sus conversaciones se eliminan de Whilo.",
   "connector.whatsapp.rowAction": "{action}: {name}",
   "connector.whatsapp.ownNumber": "Número personal",
   "connector.whatsapp.ownNumberDescription":
-    "Solo pueden escribir tu chat «Envíate un mensaje» y las personas que permitas. Desactívalo para un número solo para OpenBot.",
+    "Solo pueden escribir tu chat «Envíate un mensaje» y las personas que permitas. Desactívalo para un número solo para Whilo.",
   "connector.whatsapp.orchestratorTitle": "Orquestador de WhatsApp",
   "connector.whatsapp.orchestratorDescription":
-    "Este agente recibe los mensajes para OpenBot de todos tus números vinculados. Responde él mismo a los cortos, asigna el resto del trabajo al agente adecuado y responde en WhatsApp.",
+    "Este agente recibe los mensajes para Whilo de todos tus números vinculados. Responde él mismo a los cortos, asigna el resto del trabajo al agente adecuado y responde en WhatsApp.",
   "connector.whatsapp.orchestratorNone": "Aún no responde ningún agente",
   "connector.whatsapp.orchestratorNoneDescription":
     "Añade el Orquestador de WhatsApp o WhatsApp no recibirá respuesta.",
@@ -402,8 +402,8 @@ export const messages = {
   "connector.whatsapp.kindLabel": "Número",
   "connector.whatsapp.kindPersonal": "Mi número personal",
   "connector.whatsapp.kindPersonalDescription":
-    "OpenBot solo responde a tu chat «Envíate un mensaje» y a las personas que permitas.",
-  "connector.whatsapp.kindDedicated": "Un número solo para OpenBot",
+    "Whilo solo responde a tu chat «Envíate un mensaje» y a las personas que permitas.",
+  "connector.whatsapp.kindDedicated": "Un número solo para Whilo",
   "connector.whatsapp.kindDedicatedDescription":
     "Las personas desconocidas reciben un código para dártelo. Tú las apruebas aquí.",
   "connector.whatsapp.methodLabel": "Cómo vincular",
@@ -431,26 +431,26 @@ export const messages = {
   "connector.whatsapp.failedTimeout": "El código caducó antes de que el teléfono lo usara.",
   "connector.whatsapp.failedRefused": "WhatsApp rechazó la vinculación. Espera unos minutos y vuelve a intentarlo.",
   "connector.whatsapp.failedBusy": "Hay otra vinculación en curso. Espera a que termine y vuelve a intentarlo.",
-  "connector.whatsapp.failedUnavailable": "OpenBot no puede acceder a WhatsApp. Comprueba la conexión a internet.",
+  "connector.whatsapp.failedUnavailable": "Whilo no puede acceder a WhatsApp. Comprueba la conexión a internet.",
   "connector.whatsapp.tryAgain": "Reintentar",
   "connector.whatsapp.agentStepTitle": "Añadir el Orquestador de WhatsApp",
   "connector.whatsapp.agentStepDescription":
-    "Este nuevo agente responde a los mensajes para OpenBot en {number} y en cada número que vincules más adelante.",
+    "Este nuevo agente responde a los mensajes para Whilo en {number} y en cada número que vincules más adelante.",
   "connector.whatsapp.orchestratorName": "Orquestador de WhatsApp",
   "connector.whatsapp.orchestratorRole": "Responde en WhatsApp y consulta al equipo",
-  "connector.whatsapp.orchestratorDoesReceive": "Recibe primero cada mensaje de WhatsApp para OpenBot",
+  "connector.whatsapp.orchestratorDoesReceive": "Recibe primero cada mensaje de WhatsApp para Whilo",
   "connector.whatsapp.orchestratorDoesDelegate": "Asigna cada tarea al agente más adecuado",
   "connector.whatsapp.orchestratorDoesAnswer": "Responde en el chat de WhatsApp",
   "connector.whatsapp.orchestratorModel": "Modelo",
-  "connector.whatsapp.doneTitle": "OpenBot está vinculado a {number}",
+  "connector.whatsapp.doneTitle": "Whilo está vinculado a {number}",
   "connector.whatsapp.done": "Listo",
   "connector.whatsapp.disconnectTitle": "¿Desconectar {number}?",
   "connector.whatsapp.disconnectDescription":
-    "OpenBot cierra la sesión de WhatsApp en {number}. Si OpenBot estaba apagado, quita también el dispositivo en WhatsApp > Dispositivos vinculados.",
+    "Whilo cierra la sesión de WhatsApp en {number}. Si Whilo estaba apagado, quita también el dispositivo en WhatsApp > Dispositivos vinculados.",
   "connector.whatsapp.disconnectEffect": "Nadie podrá contactar con tus agentes a través de {number}.",
-  "connector.whatsapp.removeEffectKept": "Las conversaciones y el Orquestador de WhatsApp permanecen en OpenBot.",
+  "connector.whatsapp.removeEffectKept": "Las conversaciones y el Orquestador de WhatsApp permanecen en Whilo.",
   "connector.whatsapp.removeEffectDeleted":
-    "Es el último número, así que el Orquestador de WhatsApp y sus conversaciones se eliminan de OpenBot.",
+    "Es el último número, así que el Orquestador de WhatsApp y sus conversaciones se eliminan de Whilo.",
   "connector.whatsapp.keep": "Mantener vinculado",
   "connector.whatsapp.close": "Cerrar",
   "connector.whatsapp.sendersTitle": "Quién puede escribir a {number}",
@@ -470,7 +470,7 @@ export const messages = {
   "connector.whatsapp.groupDescription": "Las personas de este grupo pueden asignar trabajo a tus agentes.",
   "connector.whatsapp.groupSearch": "Buscar grupos",
   "connector.whatsapp.groupsLoading": "Leyendo los grupos…",
-  "connector.whatsapp.groupsLoadFailed": "OpenBot no pudo leer los grupos",
+  "connector.whatsapp.groupsLoadFailed": "Whilo no pudo leer los grupos",
   "connector.whatsapp.groupsEmpty": "Este número no está en ningún grupo.",
   "connector.whatsapp.groupsNoMatch": "Ningún grupo tiene este nombre.",
   "connector.whatsapp.groupAdded": "Añadido",
@@ -587,12 +587,12 @@ export const messages = {
   "connector.protonPass.keyPlaceholder": "pst_…",
   "connector.protonPass.setupTitle": "Configurar",
   "connector.protonPass.setupDescription":
-    "Conectar abre el inicio de sesión de Proton en tu navegador. Después, OpenBot crea la bóveda compartida y solo guarda una clave de solo lectura para ella.",
+    "Conectar abre el inicio de sesión de Proton en tu navegador. Después, Whilo crea la bóveda compartida y solo guarda una clave de solo lectura para ella.",
   "connector.protonPass.setupDescriptionHost":
     "Conectar abre el inicio de sesión de Proton en tu navegador. Después, {host} crea la bóveda compartida y solo guarda una clave de solo lectura para ella.",
-  "connector.protonPass.vaultName": "Shared with OpenBot",
+  "connector.protonPass.vaultName": "Shared with Whilo",
   "connector.protonPass.vaultSetup":
-    "OpenBot crea esta bóveda al conectar. Mueve credenciales a ella para compartirlas.",
+    "Whilo crea esta bóveda al conectar. Mueve credenciales a ella para compartirlas.",
   "connector.protonPass.showSteps": "Ver pasos",
   "connector.protonPass.stepsLabel": "Pasos de conexión",
   "connector.protonPass.stepSignIn": "Iniciar sesión",
@@ -600,7 +600,7 @@ export const messages = {
   "connector.protonPass.stepDone": "Listo",
   "connector.protonPass.signInTitle": "Inicia sesión en Proton",
   "connector.protonPass.signInStarting":
-    "OpenBot inicia el inicio de sesión. La página de Proton se abre en tu navegador.",
+    "Whilo inicia el inicio de sesión. La página de Proton se abre en tu navegador.",
   "connector.protonPass.signInDescription":
     "El inicio de sesión está abierto en tu navegador. Proton pide tu contraseña y tu segundo factor.",
   "connector.protonPass.signInDescriptionHost":
@@ -611,7 +611,7 @@ export const messages = {
   "connector.protonPass.continue": "Continuar",
   "connector.protonPass.setupStepTitle": "Creando la bóveda compartida",
   "connector.protonPass.setupStepDescription":
-    "OpenBot crea la bóveda «{vault}» y una clave de solo lectura para ella. Después cierra tu sesión de Proton.",
+    "Whilo crea la bóveda «{vault}» y una clave de solo lectura para ella. Después cierra tu sesión de Proton.",
   "connector.protonPass.doneTitle": "Proton Pass está conectado",
   "connector.protonPass.doneDescription":
     "Mueve credenciales a «{vault}» para que los agentes inicien sesión con ellas.",
@@ -641,9 +641,9 @@ export const messages = {
   "connector.protonPass.keyNoExpiry": "Solo lectura. No caduca.",
   "connector.protonPass.disconnectTitle": "Desconectar Proton Pass",
   "connector.protonPass.disconnectSummary":
-    "OpenBot elimina su clave de acceso en este equipo. La bóveda y sus credenciales se quedan en tu cuenta de Proton.",
+    "Whilo elimina su clave de acceso en este equipo. La bóveda y sus credenciales se quedan en tu cuenta de Proton.",
   "connector.protonPass.disconnectSummaryHost":
-    "OpenBot elimina su clave de acceso en {host}. La bóveda y sus credenciales se quedan en tu cuenta de Proton.",
+    "Whilo elimina su clave de acceso en {host}. La bóveda y sus credenciales se quedan en tu cuenta de Proton.",
   "connector.protonPass.disconnect": "Desconectar",
-  "connector.protonPass.actionFailed": "OpenBot no pudo cambiar la conexión de Proton Pass.",
+  "connector.protonPass.actionFailed": "Whilo no pudo cambiar la conexión de Proton Pass.",
 } as const satisfies PartialTranslation<typeof source>;

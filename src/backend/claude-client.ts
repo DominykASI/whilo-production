@@ -20,11 +20,11 @@ import {
   tool,
 } from "@anthropic-ai/claude-agent-sdk";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { INPUT_LIMITS } from "@openbot/contracts/input-limits";
-import { type AgentContextCategoryUsage, defaultProviderModel } from "@openbot/contracts/ipc";
-import { type DynamicRecord, isDynamicRecord, isNumber, isOneOf, isString } from "@openbot/contracts/runtime-values";
-import { sourceText } from "@openbot/i18n/source";
-import { createOpenBotLogger } from "@openbot/logging";
+import { INPUT_LIMITS } from "@whilo/contracts/input-limits";
+import { type AgentContextCategoryUsage, defaultProviderModel } from "@whilo/contracts/ipc";
+import { type DynamicRecord, isDynamicRecord, isNumber, isOneOf, isString } from "@whilo/contracts/runtime-values";
+import { sourceText } from "@whilo/i18n/source";
+import { createWhiloLogger } from "@whilo/logging";
 import { Deferred, Effect, Exit, Fiber, Option, Scope } from "effect";
 import {
   isTurnContextBlock,
@@ -138,8 +138,8 @@ type ClaudeEffort = (typeof CLAUDE_EFFORTS)[number];
 /**
  * Claude's own scheduling: session crons, the `/loop` wake-ups, and the `schedule` skill, alias
  * `routines`, that makes claude.ai cloud agents. A routine request matched that skill, and the
- * routine ran outside OpenBot, where the user cannot see or stop it. Scheduled work belongs to the
- * OpenBot routine tools. A deny rule takes the tools out of the model's context; the CLI still lists
+ * routine ran outside Whilo, where the user cannot see or stop it. Scheduled work belongs to the
+ * Whilo routine tools. A deny rule takes the tools out of the model's context; the CLI still lists
  * the two skills, but the rule refuses their call.
  */
 const CLAUDE_NATIVE_SCHEDULING = [
@@ -152,12 +152,12 @@ const CLAUDE_NATIVE_SCHEDULING = [
   "Skill(loop)",
 ];
 /**
- * Claude tools that duplicate an OpenBot feature, which OpenBot does not show: `ListAgents` finds the
+ * Claude tools that duplicate an Whilo feature, which Whilo does not show: `ListAgents` finds the
  * user's other Claude sessions for `SendMessage`, past the teammate rules, and `Workflow` runs a
  * background agent fleet. Their schemas cost about 1.9k tokens in each request. The
- * `workflow-authoring` skill documents only that `Workflow` tool. A request for an OpenBot workflow
+ * `workflow-authoring` skill documents only that `Workflow` tool. A request for an Whilo workflow
  * matched it, and its 17 KB reference went into the context before the agent searched for the
- * OpenBot workflow tools.
+ * Whilo workflow tools.
  */
 const CLAUDE_DUPLICATE_TOOLS = ["ListAgents", "Workflow", "Skill(workflow-authoring)"];
 
@@ -167,23 +167,23 @@ const TOOL_DESCRIPTION_LIMIT = 120;
 const LABELLED_TOOLS: ReadonlySet<string> = new Set(["Bash", "Task", "Agent"]);
 
 /**
- * Names OpenBot to Claude. Without `CLAUDE_CODE_ENTRYPOINT` the SDK labels each request `sdk-ts`, and
+ * Names Whilo to Claude. Without `CLAUDE_CODE_ENTRYPOINT` the SDK labels each request `sdk-ts`, and
  * Claude's 5-hour window counts `sdk-*` requests about twice as heavily (anthropics/claude-code#97074).
  * With a label other than `sdk-*`, the CLI turns on the claude.ai Artifact tools for accounts that
- * have Artifacts. They publish pages to the user's claude.ai account, outside OpenBot, and their
+ * have Artifacts. They publish pages to the user's claude.ai account, outside Whilo, and their
  * schemas cost about 13k tokens in each request. `CLAUDE_CODE_ARTIFACT=0` keeps them off.
  */
 const OPENBOT_CLAUDE_CLIENT = {
-  CLAUDE_AGENT_SDK_CLIENT_APP: "openbot/0.1.0",
+  CLAUDE_AGENT_SDK_CLIENT_APP: "whilo/0.1.0",
   CLAUDE_CODE_ARTIFACT: "0",
-  CLAUDE_CODE_ENTRYPOINT: "openbot",
+  CLAUDE_CODE_ENTRYPOINT: "whilo",
 };
 /**
  * The name of a new Claude session. Without one, the CLI sends an extra model request at the first
- * prompt to make a title (about 1.2k input tokens) that OpenBot never shows. Only a new session gets
+ * prompt to make a title (about 1.2k input tokens) that Whilo never shows. Only a new session gets
  * it: the CLI does not name a resumed session, and a title on resume would rename an older session.
  */
-const CLAUDE_SESSION_TITLE = "OpenBot";
+const CLAUDE_SESSION_TITLE = "Whilo";
 
 interface ClientEvents {
   notification: [notification: AppServerNotification];
@@ -253,7 +253,7 @@ interface ActiveTurn {
   usageLimit: { resetsAt: number | null; text: string | null } | null;
   /** Set by an `api_retry` until the next reply frame, which shows that the request got through. */
   retrying: boolean;
-  /** The CLI started this turn itself, with no message from OpenBot, such as after a background task ended. */
+  /** The CLI started this turn itself, with no message from Whilo, such as after a background task ended. */
   unprompted: boolean;
 }
 
@@ -279,7 +279,7 @@ interface ThreadRuntime {
   consume: Fiber.Fiber<void, ProviderClientOperationError> | null;
   idleRelease: ReturnType<typeof setTimeout> | null;
   idleSince: number;
-  /** The plan Claude keeps with its todo and task tools, which OpenBot shows as a task list. */
+  /** The plan Claude keeps with its todo and task tools, which Whilo shows as a task list. */
   plan: ClaudePlanState;
   /** The subagents of the `Agent` tool, which can outlive their turn when they run in the background. */
   subagents: SubagentState;
@@ -364,7 +364,7 @@ type QueryFactory = (params: Parameters<typeof query>[0]) => ClaudeQuery;
 type SessionHistoryReader = (sessionId: string, options?: { dir?: string }) => Promise<SessionMessage[]>;
 type ClaudeEffortCapability = { supported: ClaudeEffort[]; defaultEffort: ClaudeEffort } | null;
 
-const queryLogger = createOpenBotLogger("claude-query");
+const queryLogger = createWhiloLogger("claude-query");
 /**
  * The last status that the CLI printed without the key, by `CLAUDE_CONFIG_DIR`. An activation makes a
  * new client, so a signed-in read with no readable output still keeps the account's email and plan.
@@ -386,7 +386,7 @@ export class ClaudeAgentClient extends EventEmitter<ClientEvents> {
   readonly #mcpEndpoint: McpEndpointSource | undefined;
   /** Where a Workspace only query keeps its skill plugin. Without it, such a query has no workspace skills. */
   readonly #stateDirectory: string | undefined;
-  /** Read at each session start, so a GitHub connection made while OpenBot runs reaches the next session. */
+  /** Read at each session start, so a GitHub connection made while Whilo runs reaches the next session. */
   readonly #agentEnvironment: ((inherited?: NodeJS.ProcessEnv) => Readonly<Record<string, string>>) | undefined;
   /**
    * The saved Anthropic API key, for the provider's own sign-in only. The CLI uses `ANTHROPIC_API_KEY`
@@ -414,7 +414,7 @@ export class ClaudeAgentClient extends EventEmitter<ClientEvents> {
   readonly #modelEffortCapabilities = new Map<string, ClaudeEffortCapability>();
   readonly #modelSdkValues = new Map<string, string>();
   /**
-   * Each thread's essential memories: the latest that OpenBot gave, and the last that a turn sent.
+   * Each thread's essential memories: the latest that Whilo gave, and the last that a turn sent.
    * They go with the turns, not in the system prompt, so a memory change keeps the cached prefix
    * and restarts no query. Kept by thread, not by query: a restarted or reopened query resumes a
    * conversation that already holds the memories it was sent.
@@ -946,7 +946,7 @@ export class ClaudeAgentClient extends EventEmitter<ClientEvents> {
           return yield* this.#requestUserInputEffect(threadId, toolInput, options.toolUseID ?? randomUUID());
         }),
       );
-    // OpenBot's own servers spread last: Claude keys this record by name, so a user configuration
+    // Whilo's own servers spread last: Claude keys this record by name, so a user configuration
     // that reached one of those names would take the agent's own tools away. Profile generation
     // asks one question and must not act, so it gets neither set.
     const handoff = config.profileGeneration
@@ -1036,7 +1036,7 @@ export class ClaudeAgentClient extends EventEmitter<ClientEvents> {
               : ["user", "project", "local"],
           // The MCP panel is the only door. Without this, Claude merges project `.mcp.json`, user
           // settings, plugin and agent-frontmatter servers into the record above, so two computers
-          // with the same OpenBot settings give their agents different tools and "which servers does
+          // with the same Whilo settings give their agents different tools and "which servers does
           // my agent have" has no answer. The flag takes away MCP and nothing else, so permissions and
           // hooks still load from those files. Workspace only loads the user settings alone: see
           // `claude-workspace-sandbox.ts`.
@@ -1062,14 +1062,14 @@ export class ClaudeAgentClient extends EventEmitter<ClientEvents> {
           env: {
             ...claudeEnvironment(this.#cli),
             // The login shell's `PATH`, so the Bash tool and hooks find Homebrew and `~/.local/bin`
-            // tools when Finder starts OpenBot. An `env.PATH` in the Claude settings still wins.
+            // tools when Finder starts Whilo. An `env.PATH` in the Claude settings still wins.
             ...(launchPath ? { PATH: launchPath } : {}),
             ...this.#environment(this.#onApiKey),
             ...OPENBOT_CLAUDE_CLIENT,
             // Without a terminal, the CLI gives the newer models no TodoWrite or task tools, so the
-            // agent has no plan for OpenBot to show as a task list.
+            // agent has no plan for Whilo to show as a task list.
             CLAUDE_CODE_ENABLE_TODO_TOOLS: "1",
-            // OpenBot memory is the agent's memory, shown and edited in the app. Claude's auto memory
+            // Whilo memory is the agent's memory, shown and edited in the app. Claude's auto memory
             // kept a second store under `~/.claude/projects` that the app cannot see, and its rules
             // took about 0.7k tokens in each request. The files stay on disk.
             CLAUDE_CODE_DISABLE_AUTO_MEMORY: "1",
@@ -1305,7 +1305,7 @@ export class ClaudeAgentClient extends EventEmitter<ClientEvents> {
 
   #emitTurnProgress(runtime: ThreadRuntime, turn: ActiveTurn, detail: string): void {
     this.emit("notification", {
-      method: "openbot/turn-progress",
+      method: "whilo/turn-progress",
       params: { threadId: runtime.id, turnId: turn.id, detail },
     });
   }
@@ -1340,7 +1340,7 @@ export class ClaudeAgentClient extends EventEmitter<ClientEvents> {
               : null;
       if (status) runtime.compacting = status === "running";
       if (status)
-        this.emit("notification", { method: "openbot/context-compaction", params: { threadId: runtime.id, status } });
+        this.emit("notification", { method: "whilo/context-compaction", params: { threadId: runtime.id, status } });
       return;
     }
     // Claude Code tries a failed API request again by itself, for minutes on a bad connection. With
@@ -1405,7 +1405,7 @@ export class ClaudeAgentClient extends EventEmitter<ClientEvents> {
       if (teammates) teammates.delivered = undefined;
       // Claude's post_tokens counts messages only, not the full context.
       this.emit("notification", {
-        method: "openbot/context-compaction",
+        method: "whilo/context-compaction",
         params: {
           threadId: runtime.id,
           status: "completed",
@@ -1586,7 +1586,7 @@ export class ClaudeAgentClient extends EventEmitter<ClientEvents> {
       runtime.usageCost = message.total_cost_usd ?? runtime.usageCost;
     if (runtime.activeTurn && message.modelUsage) {
       this.emit("notification", {
-        method: "openbot/usage",
+        method: "whilo/usage",
         params: {
           threadId: runtime.id,
           turnId: runtime.activeTurn.id,
@@ -1703,8 +1703,8 @@ export class ClaudeAgentClient extends EventEmitter<ClientEvents> {
   ): void {
     const turn = runtime.activeTurn;
     if (!turn) return;
-    // A bridged call names the OpenBot tool and holds its own arguments in `arguments`.
-    const bridged = name === "mcp__openbot__tool_call" && isRecord(input) && input.name === "openbot.send_message";
+    // A bridged call names the Whilo tool and holds its own arguments in `arguments`.
+    const bridged = name === "mcp__openbot__tool_call" && isRecord(input) && input.name === "whilo.send_message";
     const message = name === "mcp__openbot__send_message" ? input : bridged ? input.arguments : undefined;
     const recipients =
       isRecord(message) && Array.isArray(message.recipientAgentIds)
@@ -1744,7 +1744,7 @@ export class ClaudeAgentClient extends EventEmitter<ClientEvents> {
             : {}),
           ...(recipients === null
             ? {}
-            : { arguments: bridged ? { name: "openbot.send_message", arguments: recipients } : recipients }),
+            : { arguments: bridged ? { name: "whilo.send_message", arguments: recipients } : recipients }),
         },
       },
     });
@@ -1942,7 +1942,7 @@ export class ClaudeAgentClient extends EventEmitter<ClientEvents> {
     if (runtime.compacting && status !== "completed") {
       runtime.compacting = false;
       this.emit("notification", {
-        method: "openbot/context-compaction",
+        method: "whilo/context-compaction",
         params: { threadId: runtime.id, status: "failed" },
       });
     }
@@ -2114,13 +2114,13 @@ export class ClaudeAgentClient extends EventEmitter<ClientEvents> {
     const call = (namespace: string, name: string, args: unknown) =>
       runCauseEffect(this.#callDynamicTool(threadId, namespace, name, args));
     return {
-      openbot: createSdkMcpServer({
-        name: "openbot",
+      whilo: createSdkMcpServer({
+        name: "whilo",
         version: "0.1.0",
         // Claude uses the SDK's AskUserQuestion permission flow.
         tools: VISIBLE_TOOL_DEFINITIONS.filter((definition) => definition.name !== "ask_user").map((definition) =>
           tool(definition.name, definition.description, definition.shape, (args) =>
-            call("openbot", definition.name, args),
+            call("whilo", definition.name, args),
           ),
         ),
       }),
@@ -2240,7 +2240,7 @@ type ClaudeSdkLaunch = Pick<Options, "pathToClaudeCodeExecutable" | "spawnClaude
  * command line longer than 32,767 characters with `spawn ENAMETOOLONG` (#4853). The file holds the
  * environment and the headers of the servers, so only this user can read it, and it is deleted when
  * the CLI has started, or when the query closes or cannot start. Each query has its own file: a
- * released query can close while the same thread opens again. OpenBot's own servers stay in `mcpServers`: the SDK must hold them to answer their
+ * released query can close while the same thread opens again. Whilo's own servers stay in `mcpServers`: the SDK must hold them to answer their
  * tool calls.
  */
 const writeClaudeMcpConfig = Effect.fn("ClaudeAgentClient.writeMcpConfig")(function* (
@@ -2262,7 +2262,7 @@ function removeClaudeMcpConfig(file: string | null): Effect.Effect<void> {
 
 /**
  * The error of a Workspace only query when the CLI cannot make its sandbox (`failIfUnavailable`).
- * It tells the user to set `sandbox.failIfUnavailable=false`, which OpenBot does not show and which
+ * It tells the user to set `sandbox.failIfUnavailable=false`, which Whilo does not show and which
  * would let commands run with no sandbox. Windows gets it on every turn: the Windows sandbox of
  * Claude Code 2.1.309 is behind a feature gate (#4094).
  */
@@ -2547,7 +2547,7 @@ function messageText(message: unknown): string {
       (block) =>
         block.type === "text" &&
         isString(block.text) &&
-        // OpenBot's memory block is not text that the user wrote.
+        // Whilo's memory block is not text that the user wrote.
         !(message.role === "user" && isTurnContextBlock(block.text)),
     )
     .map((block) => block.text)

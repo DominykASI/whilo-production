@@ -2049,8 +2049,8 @@ export const STORY_AGENT_SUBMISSIONS: AgentSubmission[] = [
 export const STORY_HOSTED_SITES: HostedSiteSummary[] = [
   {
     id: "site-launch-notes",
-    hostname: "launch-notes.openbot.site",
-    url: "https://launch-notes.openbot.site",
+    hostname: "launch-notes.whilo.site",
+    url: "https://launch-notes.whilo.site",
     title: "Launch notes",
     description: "The public changelog for the 0.2 release.",
     framework: "astro",
@@ -2063,8 +2063,8 @@ export const STORY_HOSTED_SITES: HostedSiteSummary[] = [
   },
   {
     id: "site-design-review",
-    hostname: "design-review.openbot.site",
-    url: "https://design-review.openbot.site",
+    hostname: "design-review.whilo.site",
+    url: "https://design-review.whilo.site",
     title: "Design review",
     description: "A one-page mockup shared with the design studio.",
     framework: "vanilla",

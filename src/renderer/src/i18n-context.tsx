@@ -1,3 +1,4 @@
+import type { JSX } from "@solidjs/web";
 import { type AppLanguage, DEFAULT_APP_LANGUAGE } from "@whilo/contracts/app-language";
 import {
   type AppTranslate,
@@ -10,7 +11,6 @@ import {
   translateFor,
 } from "@whilo/i18n";
 import { TextProvider } from "@whilo/ui/text";
-import type { JSX } from "@solidjs/web";
 import {
   createContext,
   createEffect,

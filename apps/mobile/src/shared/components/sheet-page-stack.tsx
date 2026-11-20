@@ -12,7 +12,7 @@ import { sheetHeaderInsetOptions } from "@/shared/lib/sheet-header";
  * later, a page with `SheetScrollView` draws its own header over a blur of its content.
  */
 export function SheetPageStack({ title, opaqueHeader = false }: { title?: string; opaqueHeader?: boolean }) {
-  const background = String(useCSSVariable("--openbot-bg-sheet"));
+  const background = String(useCSSVariable("--whilo-bg-sheet"));
   const transparentHeader = isIOS && !opaqueHeader;
   return (
     <Stack

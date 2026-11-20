@@ -4,12 +4,7 @@ import {
   eventFilterDraftsValid,
   eventFiltersFromDrafts,
 } from "@whilo/contracts/event-filter-value";
-import type {
-  EventFilter,
-  EventRoutine,
-  EventRoutineOwner,
-  RoutineWebhookTrigger,
-} from "@whilo/contracts/ipc-events";
+import type { EventFilter, EventRoutine, EventRoutineOwner, RoutineWebhookTrigger } from "@whilo/contracts/ipc-events";
 import { RoutineWebhookCard, type RoutineWebhookCardState } from "@whilo/ui/features/conversation/RoutineWebhookCard";
 import { useText } from "@whilo/ui/text";
 import { createEffect, createMemo, createStore } from "solid-js";

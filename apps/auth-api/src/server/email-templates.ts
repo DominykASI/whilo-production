@@ -233,7 +233,7 @@ export function renderWelcomeEmail(input: WelcomeEmailInput): RenderedEmail {
     "I just wanted to personally say hello and let you know that if you run into any issues or have any feedback or suggestions - feel free to reach out to me directly by replying to this email.";
   const feedback =
     "Every piece of feedback is incredibly valuable to us. We ship updates almost every day, and your feedback shapes what comes next.";
-  const footer = "You receive this email because you started an OpenBot subscription.";
+  const footer = "You receive this email because you started a Whilo subscription.";
   return {
     subject,
     preheader: thanks,
@@ -303,7 +303,7 @@ function renderLicenseWelcome(input: LicenseWelcomeEmailInput): RenderedEmail {
       : "Your license covers you. Change to the Team license when you invite teammates.";
   const devices = `Each user can use Whilo on up to ${LICENSE_DEVICES_PER_USER} devices.`;
   const reply = "If something does not work, or you have an idea, reply to this email. I read every reply.";
-  const footer = "You receive this email because you bought an Whilo license.";
+  const footer = "You receive this email because you bought a Whilo license.";
   const rows = licenseRows(input.plan, input.users);
   if (input.amount !== null)
     rows.push(["Price", `${formatAmount(input.amount, input.currency)} / ${input.plan.interval}`]);
@@ -364,7 +364,7 @@ function renderLicensePaymentFailed(input: LicensePaymentFailedEmailInput): Rend
   const buttonLabel = input.invoiceUrl ? "Pay the invoice" : "Open Whilo";
   const url = input.invoiceUrl ?? WEB_APP_URL;
   const reply = "If you have a question, reply to this email.";
-  const footer = "You receive this email because you have an Whilo license.";
+  const footer = "You receive this email because you have a Whilo license.";
   const rows = licenseRows(input.plan, input.users);
   rows.push(["Amount due", formatAmount(input.amount, input.currency)]);
   if (input.nextAttemptAt !== null) rows.push(["Next try", formatDate(input.nextAttemptAt)]);
@@ -418,7 +418,7 @@ function renderLicenseEnded(input: LicenseEndedEmailInput): RenderedEmail {
   const data = "Your workspaces, chats, and files stay on your computer.";
   const again = "To use Whilo for work again, buy a new license at any time.";
   const reply = "If this is a mistake, or you have a question, reply to this email.";
-  const footer = "You receive this email because you had an Whilo license.";
+  const footer = "You receive this email because you had a Whilo license.";
   const rows = licenseRows(input.plan, input.users);
   return {
     subject,

@@ -9,6 +9,8 @@ import {
   ListChecks,
   MotionTooltip,
   Pin,
+  BookOpen,
+  Server,
   Settings,
   Store,
   Waypoints,
@@ -175,6 +177,8 @@ export type PageRailPage =
   | "workflows"
   | "tasks"
   | "schedule"
+  | "library"
+  | "cloud"
   | "usage"
   | "marketplace"
   | "settings";
@@ -185,6 +189,8 @@ export const PAGE_RAIL_PINNABLE_PAGES = [
   "workflows",
   "tasks",
   "schedule",
+  "library",
+  "cloud",
   "usage",
 ] as const satisfies readonly PageRailPage[];
 export type PageRailPinnablePage = (typeof PAGE_RAIL_PINNABLE_PAGES)[number];
@@ -205,6 +211,10 @@ export interface PageRailProps {
   onRoutines?: (() => void) | undefined;
   /** Absent when the server has no workflows. */
   onWorkflows?: (() => void) | undefined;
+  /** Opens the library of skills and marketplace assets. */
+  onLibrary?: (() => void) | undefined;
+  /** Opens the cloud computer plans. */
+  onCloud?: (() => void) | undefined;
   /** Absent where the server keeps no tasks. */
   onTasks?: ((button: HTMLElement) => void) | undefined;
   /** Absent where there is no schedule page. */
@@ -347,7 +357,7 @@ export function PageRail(props: PageRailProps) {
   /** The pages that this server has, in rail order. */
   const pages = createMemo((): RailPage[] => {
     const list: RailPage[] = [];
-    const { onRoutines, onWorkflows, onTasks, onSchedule } = props;
+    const { onRoutines, onWorkflows, onTasks, onSchedule, onLibrary, onCloud } = props;
     if (onRoutines) {
       list.push({
         id: "routines",
@@ -374,6 +384,12 @@ export function PageRail(props: PageRailProps) {
         icon: CalendarClock,
         open: onSchedule,
       });
+    }
+    if (onLibrary) {
+      list.push({ id: "library", label: t("app.rail.library"), icon: BookOpen, open: () => onLibrary() });
+    }
+    if (onCloud) {
+      list.push({ id: "cloud", label: t("app.rail.cloud"), icon: Server, open: () => onCloud() });
     }
     list.push({ id: "usage", label: t("app.rail.usage"), icon: ChartArea, open: props.onUsage });
     return list;

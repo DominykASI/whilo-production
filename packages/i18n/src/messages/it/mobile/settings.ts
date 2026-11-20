@@ -8,12 +8,12 @@ export const messages = {
   "mobile.settings.language.system": "Predefinita di sistema",
   "mobile.settings.language.footer":
     "«Predefinita di sistema» segue la prima lingua nelle impostazioni del telefono. Il testo non ancora tradotto resta in inglese.",
-  "mobile.settings.language.restartTitle": "Riavviare OpenBot?",
+  "mobile.settings.language.restartTitle": "Riavviare Whilo?",
   "mobile.settings.language.restartBody":
-    "Questa lingua si legge nell’altra direzione. Le schermate cambiano direzione al prossimo avvio di OpenBot. Se dopo il riavvio le schermate non sono ancora corrette, chiudi OpenBot dal selettore delle app e aprilo di nuovo.",
+    "Questa lingua si legge nell’altra direzione. Le schermate cambiano direzione al prossimo avvio di Whilo. Se dopo il riavvio le schermate non sono ancora corrette, chiudi Whilo dal selettore delle app e aprilo di nuovo.",
   "mobile.settings.language.restartNow": "Riavvia ora",
   "mobile.settings.language.restartFailed":
-    "Impossibile riavviare OpenBot. Le schermate cambiano direzione la prossima volta che apri OpenBot.",
+    "Impossibile riavviare Whilo. Le schermate cambiano direzione la prossima volta che apri Whilo.",
   "mobile.settings.dictation.language": "Lingua di dettatura",
   "mobile.settings.about.development": "Sviluppo",
   "mobile.settings.about.openFailed": "Impossibile aprire il link. Riprova.",
@@ -274,11 +274,11 @@ export const messages = {
   "mobile.settings.voice.pause.title": "Pausa prima dell’invio",
   "mobile.settings.voice.pause.label": "Attendi nuove parole",
   "mobile.settings.voice.pause.footer":
-    "In una conversazione vocale, OpenBot invia le tue parole quando non riconosce nuove parole per questo tempo. Il rumore senza parole non lo tiene in ascolto. Scegli una pausa più lunga se parli lentamente o ti fermi a pensare.",
+    "In una conversazione vocale, Whilo invia le tue parole quando non riconosce nuove parole per questo tempo. Il rumore senza parole non lo tiene in ascolto. Scegli una pausa più lunga se parli lentamente o ti fermi a pensare.",
   "mobile.settings.voice.pause.seconds": "{seconds} s",
   "mobile.settings.voice.speed.title": "Velocità risposte",
   "mobile.settings.voice.speed.footer":
-    "La velocità delle risposte che OpenBot legge ad alta voce, anche in una conversazione vocale.",
+    "La velocità delle risposte che Whilo legge ad alta voce, anche in una conversazione vocale.",
   "mobile.settings.voice.speed.value": "{speed}×",
   "mobile.settings.voice.elevenLabs.recognitionFooter":
     "Whilo invia la tua voce a ElevenLabs con un token monouso, ed ElevenLabs lo addebita sul tuo account. La chiave resta su questo telefono.",

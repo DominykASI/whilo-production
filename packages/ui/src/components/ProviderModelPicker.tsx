@@ -1,4 +1,4 @@
-import { ProviderLogo } from "@openbot/brand";
+import { ProviderLogo } from "@whilo/brand";
 import type {
   AccountUsage,
   AccountUsageWindow,
@@ -14,7 +14,7 @@ import type {
   ForeignProviderId,
   ProviderAccountStatus,
   ProviderRuntimeStatus,
-} from "@openbot/contracts/ipc";
+} from "@whilo/contracts/ipc";
 import {
   agentProviderCliName,
   agentProviderName,
@@ -26,9 +26,9 @@ import {
   isReasoningEffort,
   PICKER_PROVIDERS,
   providerDisplayName,
-} from "@openbot/contracts/ipc";
-import type { AppTextKey, AppTranslate } from "@openbot/i18n";
-import { planLimitWindowKind, spentUsageWindow } from "@openbot/team-client/plan-limits";
+} from "@whilo/contracts/ipc";
+import type { AppTextKey, AppTranslate } from "@whilo/i18n";
+import { planLimitWindowKind, spentUsageWindow } from "@whilo/team-client/plan-limits";
 import {
   Badge,
   Button,
@@ -47,14 +47,15 @@ import {
   Tabs,
   Tooltip,
   Zap,
-} from "@openbot/ui";
-import { ContentExitMotion } from "@openbot/ui/menu-motion";
-import { cx } from "@openbot/ui/utils";
+} from "@whilo/ui";
+import { ContentExitMotion } from "@whilo/ui/menu-motion";
+import { cx } from "@whilo/ui/utils";
 import type { JSX } from "@solidjs/web";
 import { createEffect, createMemo, createSignal, For, onSettled, Show, untrack } from "solid-js";
 import { formatUsageReset, usageWindowLabel } from "../features/account/account-usage-view";
 import { currentText, type TextValue, useText } from "../text";
 import { createScrollFades } from "./createScrollFades";
+import { EffortTrack } from "./EffortTrack";
 import { findModelOption, providerAccountName } from "./provider-accounts";
 import {
   customProviderIds,
@@ -115,7 +116,7 @@ interface ProviderModelPickerProps {
   accountUsage?: AccountUsage | null | undefined;
   /**
    * The agent's provider when this build does not know it. The host still runs the agent, so the
-   * picker shows its model, and it cannot open until OpenBot is updated.
+   * picker shows its model, and it cannot open until Whilo is updated.
    */
   foreignProvider?: ForeignProviderId | undefined;
   /**
@@ -948,7 +949,7 @@ export function ProviderModelPicker(props: ProviderModelPickerProps) {
                   if (ownsSelection()) props.onReasoningEffortChange?.(effort);
                   else setQueuedEffort({ key, effort });
                 }
-                // The provider the tab's status is for: a custom agent has no runtime OpenBot downloads.
+                // The provider the tab's status is for: a custom agent has no runtime Whilo downloads.
                 const runtime = () => {
                   const value = props.runtimeStatuses?.[status().id];
                   if (
@@ -1139,27 +1140,41 @@ export function ProviderModelPicker(props: ProviderModelPickerProps) {
                     </div>
                     <Show when={effortOptions().length > 0}>
                       <div class="provider-model-effort">
-                        <span>{t("provider.picker.effort")}</span>
-                        <Select<{ id: string; name: string }>
-                          class="provider-model-effort-select"
-                          options={effortOptions()}
-                          optionValue="id"
-                          optionTextValue="name"
-                          value={effortOptions().find((option) => option.id === effortValue())}
-                          onChange={(option) => option && chooseEffort(option.id)}
-                          itemComponent={(item) => <SelectItem item={item.item}>{item.item.rawValue.name}</SelectItem>}
+                        <Show
+                          when={effortModel()?.variants.length}
+                          fallback={
+                            <EffortTrack
+                              levels={effortOptions().map((option) => option.id) as AgentReasoningEffort[]}
+                              value={() => effortValue() as AgentReasoningEffort | undefined}
+                              onPick={(level) => chooseEffort(level)}
+                              disabled={props.disabled || effortLocked()}
+                              t={t}
+                              label={t("provider.picker.effort")}
+                            />
+                          }
                         >
-                          <SelectTrigger
-                            size="sm"
-                            aria-label={t("provider.picker.effortLabel")}
-                            disabled={effortLocked()}
+                          <span>{t("provider.picker.effort")}</span>
+                          <Select<{ id: string; name: string }>
+                            class="provider-model-effort-select"
+                            options={effortOptions()}
+                            optionValue="id"
+                            optionTextValue="name"
+                            value={effortOptions().find((option) => option.id === effortValue())}
+                            onChange={(option) => option && chooseEffort(option.id)}
+                            itemComponent={(item) => <SelectItem item={item.item}>{item.item.rawValue.name}</SelectItem>}
                           >
-                            <SelectValue<{ id: string; name: string }>>
-                              {(state) => state.selectedOption()?.name ?? t("provider.picker.selectEffort")}
-                            </SelectValue>
-                          </SelectTrigger>
-                          <SelectContent class="provider-model-effort-content" />
-                        </Select>
+                            <SelectTrigger
+                              size="sm"
+                              aria-label={t("provider.picker.effortLabel")}
+                              disabled={effortLocked()}
+                            >
+                              <SelectValue<{ id: string; name: string }>>
+                                {(state) => state.selectedOption()?.name ?? t("provider.picker.selectEffort")}
+                              </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent class="provider-model-effort-content" />
+                          </Select>
+                        </Show>
                       </div>
                     </Show>
                     <Show when={ownsSelection() && effortOptions().length === 0 && selectedFixed()?.effort}>

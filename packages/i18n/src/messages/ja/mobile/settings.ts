@@ -8,12 +8,12 @@ export const messages = {
   "mobile.settings.language.system": "システムの設定",
   "mobile.settings.language.footer":
     "「システムの設定」は、スマートフォンの設定で最初に表示される言語に従います。まだ翻訳されていないテキストは英語で表示されます。",
-  "mobile.settings.language.restartTitle": "OpenBot を再起動しますか？",
+  "mobile.settings.language.restartTitle": "Whilo を再起動しますか？",
   "mobile.settings.language.restartBody":
-    "この言語は逆方向に読みます。OpenBot を次に起動したときに画面の向きが切り替わります。再起動後も画面がおかしい場合は、App スイッチャーで OpenBot を閉じてから開き直してください。",
+    "この言語は逆方向に読みます。Whilo を次に起動したときに画面の向きが切り替わります。再起動後も画面がおかしい場合は、App スイッチャーで Whilo を閉じてから開き直してください。",
   "mobile.settings.language.restartNow": "今すぐ再起動",
   "mobile.settings.language.restartFailed":
-    "OpenBot を再起動できませんでした。次に OpenBot を開いたときに画面の向きが切り替わります。",
+    "Whilo を再起動できませんでした。次に Whilo を開いたときに画面の向きが切り替わります。",
   "mobile.settings.dictation.language": "音声入力の言語",
   "mobile.settings.about.development": "開発版",
   "mobile.settings.about.openFailed": "リンクを開けませんでした。もう一度お試しください。",
@@ -274,10 +274,10 @@ export const messages = {
   "mobile.settings.voice.pause.title": "送信までの間",
   "mobile.settings.voice.pause.label": "新しい言葉を待つ時間",
   "mobile.settings.voice.pause.footer":
-    "音声会話では、この長さだけ新しい言葉を認識しないと OpenBot が言葉を送信します。言葉のない雑音では聞き取りは続きません。ゆっくり話す場合や考えるために止まる場合は、長めの間を選んでください。",
+    "音声会話では、この長さだけ新しい言葉を認識しないと Whilo が言葉を送信します。言葉のない雑音では聞き取りは続きません。ゆっくり話す場合や考えるために止まる場合は、長めの間を選んでください。",
   "mobile.settings.voice.pause.seconds": "{seconds} 秒",
   "mobile.settings.voice.speed.title": "返信の速度",
-  "mobile.settings.voice.speed.footer": "OpenBot が読み上げる返信の速度です。音声会話にも適用されます。",
+  "mobile.settings.voice.speed.footer": "Whilo が読み上げる返信の速度です。音声会話にも適用されます。",
   "mobile.settings.voice.speed.value": "{speed}×",
   "mobile.settings.voice.elevenLabs.recognitionFooter":
     "Whilo は 1 回限りのトークンで音声を ElevenLabs にストリーミングし、料金は ElevenLabs のアカウントに請求されます。キーはこの端末に保存されます。",

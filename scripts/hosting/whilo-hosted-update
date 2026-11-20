@@ -1,55 +1,55 @@
 #!/bin/bash
-# Keeps a hosted server on the newest OpenBot release. systemd runs it as root:
+# Keeps a hosted server on the newest Whilo release. systemd runs it as root:
 #
-#   openbot-hosted-update stage   openbot-update.timer. Downloads a newer release, checks it against
-#                                 the release manifest, copies it to /opt/OpenBot/staged, and installs
-#                                 the packages that it needs. OpenBot keeps running.
-#   openbot-hosted-update boot    openbot-update-apply.service, at boot before openbot.service. Runs
+#   whilo-hosted-update stage   whilo-update.timer. Downloads a newer release, checks it against
+#                                 the release manifest, copies it to /opt/Whilo/staged, and installs
+#                                 the packages that it needs. Whilo keeps running.
+#   whilo-hosted-update boot    whilo-update-apply.service, at boot before whilo.service. Runs
 #                                 `apply` when the disk of the server is complete. After a boat wake,
-#                                 boat restores the disk for some minutes, and OpenBot does not wait
-#                                 for that: OpenBot installs the staged release with `request` when
+#                                 boat restores the disk for some minutes, and Whilo does not wait
+#                                 for that: Whilo installs the staged release with `request` when
 #                                 no client uses the server.
-#   openbot-hosted-update apply   Copies the staged release into place while OpenBot is stopped. A
-#                                 self-hosted server seldom reboots, so `openbot update` stops
-#                                 OpenBot, runs `stage` and `apply`, and starts it again.
-#   openbot-hosted-update request openbot-update-request.service, when OpenBot asks for an update in
-#                                 Server Settings. Runs `stage`, or stops OpenBot, runs `apply` and
+#   whilo-hosted-update apply   Copies the staged release into place while Whilo is stopped. A
+#                                 self-hosted server seldom reboots, so `whilo update` stops
+#                                 Whilo, runs `stage` and `apply`, and starts it again.
+#   whilo-hosted-update request whilo-update-request.service, when Whilo asks for an update in
+#                                 Server Settings. Runs `stage`, or stops Whilo, runs `apply` and
 #                                 starts it again.
-#   openbot-hosted-update trigger openbot.service, as root before OpenBot starts. Repairs the modes
+#   whilo-hosted-update trigger whilo.service, as root before Whilo starts. Repairs the modes
 #                                 of the release, and installs the units of `request` and the boat
 #                                 pre-stop hook when an older release moved this one into place.
 #
 # The manifest is the one that the Linux desktop updater reads, so a server trusts the same source as
-# a desktop install. A server only moves to a newer version: an older OpenBot cannot open a database
+# a desktop install. A server only moves to a newer version: an older Whilo cannot open a database
 # that a newer one migrated. provision.sh sources this file for the same install steps.
 set -euo pipefail
 export LC_ALL=C DEBIAN_FRONTEND=noninteractive
 umask 022
 
-INSTALL=/opt/OpenBot
-RELEASES=https://github.com/nightly-labs/openbot/releases
-LOCK=/run/openbot-update.lock
+INSTALL=/opt/Whilo
+RELEASES=https://github.com/nightly-labs/whilo/releases
+LOCK=/run/whilo-update.lock
 # Not in a directory that boat saves, so a download that a stop interrupts does not stay.
 SCRATCH=/var/tmp
 # The session of the lazy disk restore that boat runs after a resume.
 RESTORE=/var/lib/ascii-lazy
-HOSTED_FILES=(openbot-hosted-server openbot-hosted-env openbot-hosted-update openbot)
-# OpenBot asks for an update with an empty file in its runtime directory, which the service user
+HOSTED_FILES=(whilo-hosted-server whilo-hosted-env whilo-hosted-update whilo)
+# Whilo asks for an update with an empty file in its runtime directory, which the service user
 # owns. The path unit starts the request service as root when a file is there.
-REQUESTS=/run/openbot
-# What a request or a stage does now, for OpenBot to show. Root writes it, and each user can read it.
+REQUESTS=/run/whilo
+# What a request or a stage does now, for Whilo to show. Root writes it, and each user can read it.
 # It is there only while a request or a download runs.
-STATE=/run/openbot-update.state
+STATE=/run/whilo-update.state
 UNIT_DIRECTORY=/etc/systemd/system
-REQUEST_UNITS=(openbot-update-request.path openbot-update-request.service)
-UNITS=(openbot.service openbot-update.service openbot-update.timer openbot-update-apply.service "${REQUEST_UNITS[@]}")
-# boat runs this file as `user` before it saves the disk at a stop (openbot-boat-pre-stop).
+REQUEST_UNITS=(whilo-update-request.path whilo-update-request.service)
+UNITS=(whilo.service whilo-update.service whilo-update.timer whilo-update-apply.service "${REQUEST_UNITS[@]}")
+# boat runs this file as `user` before it saves the disk at a stop (whilo-boat-pre-stop).
 BOAT_USER=user
 BOAT_PRE_STOP=/home/$BOAT_USER/.boat/pre-stop
 # boat does not save the paths in this file. It must be in the home of `user`.
 BOAT_IGNORE=/home/$BOAT_USER/.boatignore
 # All that `install_hosting` reads from a release.
-RELEASE_FILES=(packages.txt openbot-hosted.apparmor openbot-boat-pre-stop "${HOSTED_FILES[@]}" "${UNITS[@]}")
+RELEASE_FILES=(packages.txt whilo-hosted.apparmor whilo-boat-pre-stop "${HOSTED_FILES[@]}" "${UNITS[@]}")
 
 fail() {
   echo "$*" >&2
@@ -133,7 +133,7 @@ install_packages() {
     elif available_package "${package%t64}"; then
       available+=("${package%t64}")
     else
-      echo "This system has no package $package. OpenBot continues without it." >&2
+      echo "This system has no package $package. Whilo continues without it." >&2
     fi
   done
   [ "${#available[@]}" -eq 0 ] && return 0
@@ -150,7 +150,7 @@ unpack() {
 
 # Root owns the release. The service user must read and run each file, and must not write any of them.
 prepare_release() {
-  [ -x "$1/openbot" ] || fail "The AppImage has no openbot executable."
+  [ -x "$1/whilo" ] || fail "The AppImage has no whilo executable."
   chown -R root:root "$1"
   # The extract keeps the umask of the shell, which can be 077 under sudo.
   chmod -R u+rwX,go=rX "$1"
@@ -165,7 +165,7 @@ prepare_release() {
 # in /opt as a copy of each file, never with `mv`.
 # `cp -a` makes each directory and file with mode 0700 and gives it its mode only when its copy ends.
 # boat can save a path in that time and keep 0700 after a wake, and then the service user cannot run
-# OpenBot. Without the owner, cp makes each path with its mode at once. Root owns the source, and root
+# Whilo. Without the owner, cp makes each path with its mode at once. Root owns the source, and root
 # copies it, so the owner and the SUID helper do not change.
 copy_release() {
   rm -rf "$2"
@@ -201,7 +201,7 @@ stage_release() {
 }
 
 recover() {
-  rm -rf "$SCRATCH"/openbot-update.*
+  rm -rf "$SCRATCH"/whilo-update.*
 }
 
 set_state() {
@@ -234,10 +234,10 @@ install_hosting() {
     install -m 0755 "$source/$file" "$INSTALL/hosted/.$file.new"
     mv -f "$INSTALL/hosted/.$file.new" "$INSTALL/hosted/$file"
   done
-  install -m 0644 "$source/openbot-hosted.apparmor" /etc/apparmor.d/openbot-hosted
+  install -m 0644 "$source/whilo-hosted.apparmor" /etc/apparmor.d/whilo-hosted
   # A container, for example on LXC, can show AppArmor and still not load a profile (#5256).
   if command -v apparmor_parser >/dev/null && [ -d /sys/kernel/security/apparmor ]; then
-    apparmor_parser --replace /etc/apparmor.d/openbot-hosted ||
+    apparmor_parser --replace /etc/apparmor.d/whilo-hosted ||
       echo "The AppArmor profile is not loaded." >&2
   fi
   for unit in "${UNITS[@]}"; do
@@ -249,11 +249,11 @@ install_hosting() {
   done
   rm -f "$INSTALL/hosted/.unit.new"
   if [ "$changed" -eq 1 ]; then systemctl daemon-reload; fi
-  systemctl enable --quiet openbot.service openbot-update-apply.service openbot-update.timer \
-    openbot-update-request.path
+  systemctl enable --quiet whilo.service whilo-update-apply.service whilo-update.timer \
+    whilo-update-request.path
   # The terminal command of a self-hosted server. A hosted server has no person at a terminal.
   if self_hosted; then
-    ln -sfn "$INSTALL/hosted/openbot" /usr/local/bin/openbot
+    ln -sfn "$INSTALL/hosted/whilo" /usr/local/bin/whilo
   fi
   install_pre_stop "$source" || echo "The boat pre-stop hook is not installed." >&2
   install_boat_ignore || echo "The boat ignore file is not installed." >&2
@@ -265,13 +265,13 @@ self_hosted() {
 }
 
 # Installs the boat pre-stop hook of $1 on a hosted server. The user reads and writes it, so root
-# does not open a link or a FIFO in a directory of the user. A hook that OpenBot did not write stays.
+# does not open a link or a FIFO in a directory of the user. A hook that Whilo did not write stays.
 install_pre_stop() {
-  local source=$1/openbot-boat-pre-stop
+  local source=$1/whilo-boat-pre-stop
   if self_hosted || [ ! -f "$source" ] || ! id "$BOAT_USER" >/dev/null 2>&1; then return 0; fi
   if [ -L "$BOAT_PRE_STOP" ] || { [ -e "$BOAT_PRE_STOP" ] && [ ! -f "$BOAT_PRE_STOP" ]; } ||
-    { [ -f "$BOAT_PRE_STOP" ] && ! runuser -u "$BOAT_USER" -- grep -q '^# openbot-boat-pre-stop:' "$BOAT_PRE_STOP"; }; then
-    echo "$BOAT_PRE_STOP is not from OpenBot. It stays, and OpenBot is not stopped before a disk save." >&2
+    { [ -f "$BOAT_PRE_STOP" ] && ! runuser -u "$BOAT_USER" -- grep -q '^# whilo-boat-pre-stop:' "$BOAT_PRE_STOP"; }; then
+    echo "$BOAT_PRE_STOP is not from Whilo. It stays, and Whilo is not stopped before a disk save." >&2
     return 0
   fi
   runuser -u "$BOAT_USER" -- cmp -s "$source" "$BOAT_PRE_STOP" 2>/dev/null && return 0
@@ -280,16 +280,16 @@ install_pre_stop() {
 }
 
 # Writes the boat ignore file of a hosted server. Each saved file is a file that a wake restores
-# before the restore ends; the npm cache is about 200 MB that no start reads. A file that OpenBot did
+# before the restore ends; the npm cache is about 200 MB that no start reads. A file that Whilo did
 # not write stays.
 install_boat_ignore() {
-  local marker='# openbot-boatignore: installed by openbot-hosted-update. Changes to this file are replaced.'
+  local marker='# whilo-boatignore: installed by whilo-hosted-update. Changes to this file are replaced.'
   local content
   if self_hosted || ! id "$BOAT_USER" >/dev/null 2>&1; then return 0; fi
   content=$(printf '%s\n' "$marker" '/.npm/_cacache/')
   if [ -L "$BOAT_IGNORE" ] || { [ -e "$BOAT_IGNORE" ] && [ ! -f "$BOAT_IGNORE" ]; } ||
     { [ -f "$BOAT_IGNORE" ] && ! runuser -u "$BOAT_USER" -- grep -qxF "$marker" "$BOAT_IGNORE"; }; then
-    echo "$BOAT_IGNORE is not from OpenBot. It stays." >&2
+    echo "$BOAT_IGNORE is not from Whilo. It stays." >&2
     return 0
   fi
   [ -f "$BOAT_IGNORE" ] && [ "$(runuser -u "$BOAT_USER" -- cat "$BOAT_IGNORE")" = "$content" ] && return 0
@@ -298,9 +298,9 @@ install_boat_ignore() {
 }
 
 # The boat image has commands for some agent CLIs (Hermes, Cursor, OpenClaw, Vibe) that install the
-# CLI the first time they run. OpenBot runs each provider command when it starts, so each hosted
+# CLI the first time they run. Whilo runs each provider command when it starts, so each hosted
 # server installed Hermes and Cursor, about 3 GB that the user did not ask for, and each wake then
-# restored them before the server was fast again. OpenBot downloads these CLIs itself when the user
+# restored them before the server was fast again. Whilo downloads these CLIs itself when the user
 # turns the provider on. So remove each command that is still such a placeholder; a CLI that is
 # installed stays.
 remove_lazy_harnesses() {
@@ -322,14 +322,14 @@ stage() {
   case $(uname -m) in
     x86_64) architecture=x86_64 manifest=latest-linux.yml ;;
     aarch64) architecture=arm64 manifest=latest-linux-arm64.yml ;;
-    *) fail "OpenBot has no release for this machine." ;;
+    *) fail "Whilo has no release for this machine." ;;
   esac
   # `apply` did not complete its copy. A new stage could remove the only complete copy.
   if [ -e "$INSTALL/.applying" ]; then
     echo "The last update is not complete. It completes at the next start of the server." >&2
     return 0
   fi
-  [ -x "$INSTALL/app/openbot" ] || fail "OpenBot is not installed."
+  [ -x "$INSTALL/app/whilo" ] || fail "Whilo is not installed."
   manifest=$(fetch "$RELEASES/latest/download/$manifest")
   version=$(sed -n 's/^version: *//p' <<<"$manifest" | head -n 1)
   path=$(sed -n 's/^path: *//p' <<<"$manifest" | head -n 1)
@@ -337,7 +337,7 @@ stage() {
   # Only for the percent. A Linux manifest has one file, the AppImage.
   size=$(sed -n 's/^ *size: *//p' <<<"$manifest" | head -n 1)
   [[ $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || fail "The release manifest has no valid version."
-  [ "$path" = "OpenBot-$version-$architecture.AppImage" ] || fail "The release manifest names another file."
+  [ "$path" = "Whilo-$version-$architecture.AppImage" ] || fail "The release manifest names another file."
   [[ $sha512 =~ ^[A-Za-z0-9+/]{86}==$ ]] || fail "The release manifest has no valid SHA-512."
   # A release that is no longer the latest one, for example because it was withdrawn, is removed. A
   # server that starts before this check applies it. This also removes a copy that a stop interrupted.
@@ -347,15 +347,15 @@ stage() {
   [ -n "$current" ] || fail "The installed version is not known."
   newer "$version" "$current" || return 0
   [ -d "$INSTALL/staged" ] && return 0
-  echo "Staging OpenBot $version (installed: ${current:-unknown})."
+  echo "Staging Whilo $version (installed: ${current:-unknown})."
   # Global: the trap runs after this function returns.
-  work=$(mktemp -d "$SCRATCH/openbot-update.XXXXXX")
+  work=$(mktemp -d "$SCRATCH/whilo-update.XXXXXX")
   trap 'rm -rf "$work"; rm -f "$STATE"' EXIT
-  download "$RELEASES/download/v$version/$path" "$work/OpenBot.AppImage" "$size"
+  download "$RELEASES/download/v$version/$path" "$work/Whilo.AppImage" "$size"
   set_state preparing
-  [ "$(openssl dgst -sha512 -binary "$work/OpenBot.AppImage" | openssl base64 -A)" = "$sha512" ] ||
+  [ "$(openssl dgst -sha512 -binary "$work/Whilo.AppImage" | openssl base64 -A)" = "$sha512" ] ||
     fail "The AppImage does not match the release manifest."
-  unpack "$work/OpenBot.AppImage"
+  unpack "$work/Whilo.AppImage"
   [ "$(version_of "$work/squashfs-root")" = "$version" ] || fail "The AppImage has another version."
   # The release names its own packages and units. A release without them cannot update a server.
   local file
@@ -365,7 +365,7 @@ stage() {
   prepare_release "$work/squashfs-root"
   install_packages "$work/squashfs-root/resources/hosting/packages.txt"
   stage_release "$work/squashfs-root"
-  echo "OpenBot $version starts at the next start of the server."
+  echo "Whilo $version starts at the next start of the server."
 }
 
 apply() {
@@ -386,17 +386,17 @@ apply() {
   swap_in
   install_hosting "$INSTALL/app/resources/hosting"
   finish_swap
-  echo "Updated OpenBot from ${current:-unknown} to $staged."
+  echo "Updated Whilo from ${current:-unknown} to $staged."
 }
 
-# openbot.service waits for this. A restore after a wake takes minutes, and a staged release waits
-# for it: OpenBot starts first, and asks for the install when no client uses the server. A copy that
+# whilo.service waits for this. A restore after a wake takes minutes, and a staged release waits
+# for it: Whilo starts first, and asks for the install when no client uses the server. A copy that
 # a stop interrupted completes first, because a partial release cannot start. A staged release that
 # the restore does not show yet stays for the next start. boat starts the unit a second time after a
-# wake, and a failed `boot` is not active then, so `boot` does nothing while OpenBot runs.
+# wake, and a failed `boot` is not active then, so `boot` does nothing while Whilo runs.
 boot() {
   local pid
-  pid=$(systemctl show --property=MainPID --value openbot.service || true)
+  pid=$(systemctl show --property=MainPID --value whilo.service || true)
   if [ "${pid:-0}" != 0 ]; then
     return 0
   elif [ -e "$INSTALL/.applying" ]; then
@@ -409,7 +409,7 @@ boot() {
 }
 
 # A release that an older script moved into place has the units of `request`, but that script
-# installed only the units that it knew. The start of OpenBot does not wait for the update lock.
+# installed only the units that it knew. The start of Whilo does not wait for the update lock.
 trigger() {
   local source=$INSTALL/app/resources/hosting unit changed=0
   repair_release_modes || echo "The modes of the release are not repaired." >&2
@@ -421,15 +421,15 @@ trigger() {
   done
   if [ "$changed" -eq 1 ]; then
     systemctl daemon-reload
-    systemctl enable --quiet openbot-update-request.path
+    systemctl enable --quiet whilo-update-request.path
   fi
   install_pre_stop "$source" || echo "The boat pre-stop hook is not installed." >&2
   install_boat_ignore || echo "The boat ignore file is not installed." >&2
   remove_lazy_harnesses || echo "The install-on-first-run agent commands of boat are not removed." >&2
-  [ -e "$UNIT_DIRECTORY/openbot-update-request.path" ] || return 0
-  # Without --no-block, a start during the start of openbot.service could wait for it.
-  systemctl is-active --quiet openbot-update-request.path ||
-    systemctl start --no-block openbot-update-request.path
+  [ -e "$UNIT_DIRECTORY/whilo-update-request.path" ] || return 0
+  # Without --no-block, a start during the start of whilo.service could wait for it.
+  systemctl is-active --quiet whilo-update-request.path ||
+    systemctl start --no-block whilo-update-request.path
 }
 
 # The service user owns the request directory, so root only tests a request and removes it. It never
@@ -440,23 +440,23 @@ request() {
   if [ -e "$REQUESTS/update-install" ] || [ -L "$REQUESTS/update-install" ]; then install=1; fi
   if [ "$install" -eq 1 ]; then set_state installing; else set_state waiting; fi
   rm -f -- "$REQUESTS/update-stage" "$REQUESTS/update-install"
-  # OpenBot sees that the request runs while the time of $STATE changes. The `stage` of the timer
+  # Whilo sees that the request runs while the time of $STATE changes. The `stage` of the timer
   # removes $STATE when it ends, so the keeper makes it again while this request waits for the lock.
   (while sleep 5; do touch "$STATE"; done) >/dev/null 2>&1 &
   keeper=$!
-  # An install stages first, so OpenBot runs while it waits for a `stage` of the timer. When that
+  # An install stages first, so Whilo runs while it waits for a `stage` of the timer. When that
   # fails, for example with no network, a release that is already staged still applies.
-  "$INSTALL/hosted/openbot-hosted-update" stage || status=$?
+  "$INSTALL/hosted/whilo-hosted-update" stage || status=$?
   if [ "$install" -eq 1 ]; then
     status=0
-    # OpenBot starts again also when `apply` fails, or when systemd stops this service. A copy that
+    # Whilo starts again also when `apply` fails, or when systemd stops this service. A copy that
     # did not complete is done again first, because a partial release cannot start. `set -e` applies
     # in the trap, so a second failure must not stop it before the start.
-    trap '[ ! -e "$INSTALL/.applying" ] || "$INSTALL/hosted/openbot-hosted-update" apply || true
-      systemctl start --no-block openbot.service' EXIT
+    trap '[ ! -e "$INSTALL/.applying" ] || "$INSTALL/hosted/whilo-hosted-update" apply || true
+      systemctl start --no-block whilo.service' EXIT
     trap 'exit 1' TERM
-    if systemctl stop openbot.service; then
-      "$INSTALL/hosted/openbot-hosted-update" apply || status=$?
+    if systemctl stop whilo.service; then
+      "$INSTALL/hosted/whilo-hosted-update" apply || status=$?
     else
       status=1
     fi
@@ -484,7 +484,7 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
     boot
     exit 0
   fi
-  # The openbot-update-apply.service of an older release runs `apply` at boot. With no work, it does
+  # The whilo-update-apply.service of an older release runs `apply` at boot. With no work, it does
   # not wait for the restore.
   if [ "${1:-}" = apply ] && [ ! -e "$INSTALL/staged.ready" ] && [ ! -e "$INSTALL/.applying" ]; then
     recover

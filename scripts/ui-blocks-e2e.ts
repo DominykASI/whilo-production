@@ -27,7 +27,7 @@ import {
   addUiBlockVaultRequests,
   TEAM_UI_BLOCK_VAULT_CAPABILITY,
   withUiBlockVaultRequests,
-} from "@openbot/contracts/team-protocol/ui-block-vault-v1";
+} from "@whilo/contracts/team-protocol/ui-block-vault-v1";
 import {
   decodeTeamProtocolV6CurrentHttpResponse,
   encodeTeamProtocolV6CurrentHttpResponse,

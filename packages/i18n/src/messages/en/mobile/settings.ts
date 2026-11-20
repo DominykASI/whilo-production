@@ -7,12 +7,12 @@ export const messages = defineMessages("mobile.settings", {
   "mobile.settings.language.system": "System default",
   "mobile.settings.language.footer":
     "System default follows the first language in your phone settings. Text that is not translated yet shows in English.",
-  "mobile.settings.language.restartTitle": "Restart OpenBot?",
+  "mobile.settings.language.restartTitle": "Restart Whilo?",
   "mobile.settings.language.restartBody":
-    "This language reads in the other direction. The screens change direction when OpenBot starts again. If the screens still look wrong after the restart, close OpenBot in the app switcher and open it again.",
+    "This language reads in the other direction. The screens change direction when Whilo starts again. If the screens still look wrong after the restart, close Whilo in the app switcher and open it again.",
   "mobile.settings.language.restartNow": "Restart now",
   "mobile.settings.language.restartFailed":
-    "OpenBot could not restart. The screens change direction the next time you open OpenBot.",
+    "Whilo could not restart. The screens change direction the next time you open Whilo.",
   "mobile.settings.dictation.language": "Dictation language",
   "mobile.settings.about.development": "Development",
   "mobile.settings.about.openFailed": "Could not open the link. Try again.",
@@ -275,10 +275,10 @@ export const messages = defineMessages("mobile.settings", {
   "mobile.settings.voice.pause.title": "Pause before sending",
   "mobile.settings.voice.pause.label": "Wait for new words",
   "mobile.settings.voice.pause.footer":
-    "In a voice conversation, OpenBot sends your words when it recognizes no new words for this long. Noise without words does not keep it listening. Choose a longer pause if you speak slowly or stop to think.",
+    "In a voice conversation, Whilo sends your words when it recognizes no new words for this long. Noise without words does not keep it listening. Choose a longer pause if you speak slowly or stop to think.",
   "mobile.settings.voice.pause.seconds": "{seconds} s",
   "mobile.settings.voice.speed.title": "Reply speed",
-  "mobile.settings.voice.speed.footer": "The speed of replies that OpenBot reads aloud, also in a voice conversation.",
+  "mobile.settings.voice.speed.footer": "The speed of replies that Whilo reads aloud, also in a voice conversation.",
   "mobile.settings.voice.speed.value": "{speed}×",
   "mobile.settings.voice.elevenLabs.recognitionFooter":
     "Whilo streams your speech to ElevenLabs with a single-use token, and ElevenLabs bills your account. The key stays on this phone.",

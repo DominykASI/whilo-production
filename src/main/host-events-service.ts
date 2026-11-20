@@ -1,5 +1,5 @@
 import { randomBytes, randomUUID } from "node:crypto";
-import type { WorkflowTriggerInput, WorkflowWebhookSecret } from "@openbot/contracts/ipc";
+import type { WorkflowTriggerInput, WorkflowWebhookSecret } from "@whilo/contracts/ipc";
 import type {
   EventFilter,
   EventJsonValue,
@@ -13,17 +13,17 @@ import type {
   SaveEventRoutineInput,
   SetWebhookSecretInput,
   WebhookTestResult,
-} from "@openbot/contracts/ipc-events";
-import { isEventJsonValue } from "@openbot/contracts/ipc-events";
-import { type DynamicRecord, isDynamicRecord, isString } from "@openbot/contracts/runtime-values";
+} from "@whilo/contracts/ipc-events";
+import { isEventJsonValue } from "@whilo/contracts/ipc-events";
+import { type DynamicRecord, isDynamicRecord, isString } from "@whilo/contracts/runtime-values";
 import {
   WEBHOOK_DELIVERY_BODY_BYTES_LIMIT,
   type WebhookDeliveryStatus,
-} from "@openbot/contracts/signal-protocol/messages";
-import { STANDARD_WEBHOOKS_FORMAT, WEBHOOK_ROUTES_LIMIT } from "@openbot/contracts/signal-protocol/webhook-route";
-import { sourceText } from "@openbot/i18n/source";
-import { createOpenBotLogger, registerSecretValue } from "@openbot/logging";
-import { RoutineInputError } from "@openbot/team-client/routine-schedule";
+} from "@whilo/contracts/signal-protocol/messages";
+import { STANDARD_WEBHOOKS_FORMAT, WEBHOOK_ROUTES_LIMIT } from "@whilo/contracts/signal-protocol/webhook-route";
+import { sourceText } from "@whilo/i18n/source";
+import { createWhiloLogger, registerSecretValue } from "@whilo/logging";
+import { RoutineInputError } from "@whilo/team-client/routine-schedule";
 import { Effect, Semaphore } from "effect";
 import { RoutineOperationFailed } from "../backend/agent/routine-scheduler";
 import type { WebhookRoutineWriter } from "../backend/agent/webhook-routine-tool";
@@ -43,11 +43,11 @@ import type { SecretCipher } from "./provider-credential-store";
 import type { WebhookIngressDelivery } from "./signal-ingress";
 import { signWebhookBody, verifyStandardWebhookSignature, verifyWebhookSignature } from "./webhook-security";
 
-const logger = createOpenBotLogger("host-events");
+const logger = createWhiloLogger("host-events");
 const DEFAULT_ACTIVITY_LIMIT = 50;
 const DEFAULT_RUN_LIMIT = 10;
 /** The type of a test event for a routine that accepts every type. */
-const TEST_EVENT_TYPE = "openbot.test";
+const TEST_EVENT_TYPE = "whilo.test";
 
 export interface HostWebhookRelay {
   connected(): boolean;
@@ -89,7 +89,7 @@ type WebhookIgnoredReason = "event-type" | "filter" | "inactive" | "busy" | "ref
 export interface WebhookDeliveryReport {
   /** Null when no route has the request's route ID. */
   ownerKind: WebhookRouteOwner["kind"] | null;
-  format: "openbot" | "standard";
+  format: "whilo" | "standard";
   result: WebhookDeliveryResult;
   ignoredReason: WebhookIgnoredReason | null;
   status: WebhookDeliveryStatus;
@@ -251,7 +251,7 @@ function decodeWebhookBody(body: Uint8Array): DecodedWebhookBody | null {
 /**
  * A Standard Webhooks body: `type`, an optional `timestamp`, and fields that each sender names, such as
  * Composio's `metadata.trigger_slug`. The whole body is the event data, so filters and the agent read
- * every field. A `timestamp` that is not an ISO 8601 date is ignored: the sender defines it, not OpenBot.
+ * every field. A `timestamp` that is not an ISO 8601 date is ignored: the sender defines it, not Whilo.
  */
 const ISO_DATE_PREFIX = /^\d{4}-\d{2}-\d{2}T/u;
 
@@ -430,7 +430,7 @@ export class HostEventsService implements HostEventsApi {
     );
     const timestamp = String(Math.floor(Date.now() / 1000));
     // A new ID for each test, so the receipt check never takes it for a redelivery.
-    const deliveryId = `openbot-test-${randomUUID()}`;
+    const deliveryId = `whilo-test-${randomUUID()}`;
     const { status, received } = yield* this.#deliver(
       {
         routeId: route.routeId,
@@ -567,7 +567,7 @@ export class HostEventsService implements HostEventsApi {
     const received = processed?.received ?? null;
     this.#options.onDelivery?.({
       ownerKind: processed?.ownerKind ?? null,
-      format: input.format === STANDARD_WEBHOOKS_FORMAT ? "standard" : "openbot",
+      format: input.format === STANDARD_WEBHOOKS_FORMAT ? "standard" : "whilo",
       result: processed ? (processed.refusal ?? (received ? deliveryResult(received) : "failed")) : "failed",
       ignoredReason: received?.kind === "ignored" ? received.reason : null,
       status: processed?.status ?? 503,

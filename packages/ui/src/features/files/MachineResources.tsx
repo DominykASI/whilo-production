@@ -8,8 +8,8 @@ import {
   type MachineMetrics,
   machineAlertLevel,
   type TeamMemberSummary,
-} from "@openbot/contracts/ipc";
-import type { AppTextKey } from "@openbot/i18n";
+} from "@whilo/contracts/ipc";
+import type { AppTextKey } from "@whilo/i18n";
 import {
   Progress,
   Select,
@@ -19,8 +19,8 @@ import {
   SelectValue,
   SliderField,
   TriangleAlert,
-} from "@openbot/ui";
-import { useText } from "@openbot/ui/text";
+} from "@whilo/ui";
+import { useText } from "@whilo/ui/text";
 import { createMemo, createSignal, createUniqueId, For, Show } from "solid-js";
 import {
   MACHINE_METRIC_ICONS,

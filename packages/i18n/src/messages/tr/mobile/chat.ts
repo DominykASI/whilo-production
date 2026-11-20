@@ -268,7 +268,7 @@ export const messages = {
   "mobile.chat.imageGallery.saved": "Fotoğraflar'a kaydedildi",
   "mobile.chat.imageGallery.shareAll": "Tümünü paylaş",
   "mobile.chat.imageGallery.photosPermission":
-    "Bu görselleri kaydetmek için Ayarlar'da OpenBot'un fotoğraf eklemesine izin ver.",
+    "Bu görselleri kaydetmek için Ayarlar'da Whilo'un fotoğraf eklemesine izin ver.",
   "mobile.chat.imageGallery.saveFailed": "Görseller kaydedilemedi",
   "mobile.chat.imageGallery.shareFailed": "Görseller paylaşılamadı",
   "mobile.chat.imageGallery.shareNeedsUpdate": "Birden çok görseli paylaşmak uygulamanın en son sürümünü gerektirir.",

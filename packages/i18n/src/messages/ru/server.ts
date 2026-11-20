@@ -252,7 +252,7 @@ export const messages = {
   "server.settings.storageDescription": "Посмотрите, что Whilo хранит на диске этого сервера, и освободите место.",
   "server.settings.hostedSitesTitle": "Сайты",
   "server.settings.hostedSitesDescription":
-    "Статические сайты, которые агенты этого сервера опубликовали на openbot.site.",
+    "Статические сайты, которые агенты этого сервера опубликовали на whilo.site.",
   "server.settings.importTitle": "Импорт",
   "server.settings.importDescription": "Перенесите своих агентов из Grok Bot или Hermes Agent на этот сервер.",
   "server.settings.transferTitle": "Перенос",
@@ -308,7 +308,7 @@ export const messages = {
   "server.settings.addLogo": "Добавить логотип сервера",
   "server.settings.removeLogo": "Удалить логотип сервера",
   "server.settings.access": "Доступ",
-  "server.companySignIn.desktopOnly": "Настройте единый вход в настольном приложении OpenBot.",
+  "server.companySignIn.desktopOnly": "Настройте единый вход в настольном приложении Whilo.",
   "server.settings.publish": "Опубликовать этот сервер",
   "server.settings.published": "Сервер опубликован",
   "server.settings.setUpDesktopTitle": "Настройка удалённого рабочего стола",
@@ -499,7 +499,7 @@ export const messages = {
   "server.desktop.accessMembers": "Все участники",
   "server.desktop.askLabel": "Спрашивать на этом компьютере",
   "server.desktop.askDescription":
-    "Каждый сеанс ждёт, пока человек за этим компьютером его разрешит. Если ответа нет 30 секунд, OpenBot его отклоняет.",
+    "Каждый сеанс ждёт, пока человек за этим компьютером его разрешит. Если ответа нет 30 секунд, Whilo его отклоняет.",
   "server.desktop.activeTitle": "Активные сеансы удалённого рабочего стола: {active}",
   "server.desktop.activeDescription": "Сразу завершает каждый сеанс. Участники могут запросить снова.",
   "server.desktop.stopAll": "Остановить всё удалённое управление",
@@ -540,7 +540,7 @@ export const messages = {
   "server.update.path.container":
     "На Docker-хосте скачайте новый образ Whilo и пересоздайте контейнер с теми же томами данных. Сначала дождитесь окончания текущей работы. Сохраните существующие тома, чтобы не потерять данные.",
   "server.update.path.manual":
-    "Эта установка не может обновить себя сама. Попросите администратора хоста поставить совместимый релиз с github.com/nightly-labs/openbot/releases. Сохраните существующие данные Whilo.",
+    "Эта установка не может обновить себя сама. Попросите администратора хоста поставить совместимый релиз с github.com/nightly-labs/whilo/releases. Сохраните существующие данные Whilo.",
   "server.update.path.unavailable":
     "Это сборка для разработки. Чтобы проверять обновления, используйте установленный релиз Whilo.",
   "server.update.check": "Проверить обновления",

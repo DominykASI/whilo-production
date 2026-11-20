@@ -10,18 +10,18 @@ const AgentAvatar = lazy(() =>
 );
 
 /*
- * Prototype of the image a shared `openbot.run/marketplace/agents/<id>` link shows: 1200 × 630, the
- * shape X, iMessage and Slack crop to. The background is flat, so the avatar's own colour is the only
- * colour on the card. The shield after the name marks a verified agent; the line under the role names
- * the creator, as the rows and pages do. The apps print the page title and the host beside the image,
- * so the card carries no description and no button: at the size a chat shows it, that text cannot be
- * read.
+ * Prototype of the image a shared marketplace agent link shows: 1200 × 630, the shape X, iMessage
+ * and Slack crop to. The background is flat, so the avatar's own colour is the only colour on the
+ * card. The shield after the name marks a verified agent; the line under the role names the
+ * creator, as the rows and pages do. The apps print the page title and the host beside the image,
+ * so the card carries no description and no button: at the size a chat shows it, that text cannot
+ * be read.
  *
- * The card is drawn in the DOM here and scales with its frame. A real card is a PNG that the Worker
- * serves; how it is drawn is a later step.
+ * The card is drawn in the DOM here and scales with its frame. A real card is a PNG that the
+ * Worker serves; how it is drawn is a later step.
  */
 
-const SHARE_HOST = "openbot.run";
+const SHARE_HOST = "whilo.onerall.com";
 
 function shareTitle(agent: MarketplaceAgentSummary): string {
   return `${agent.name} — Whilo agent`;

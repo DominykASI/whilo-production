@@ -102,7 +102,7 @@ export async function runTurn(
   try {
     const input = [
       { type: "text", text: options.text ?? "hello", text_elements: [] },
-      // An attached image, as OpenBot sends one: a path that the driver reads.
+      // An attached image, as Whilo sends one: a path that the driver reads.
       ...(options.images ?? []).map((path) => ({ type: "localImage", path })),
     ];
     await runCauseEffect(

@@ -203,7 +203,7 @@ export const messages = {
   "workflow.telegram.anyChat": "任意已关联的聊天",
   "workflow.telegram.sameChat": "与触发器相同",
   "workflow.telegram.event": "事件",
-  "workflow.telegram.event.mention": "提及 OpenBot",
+  "workflow.telegram.event.mention": "提及 Whilo",
   "workflow.telegram.text": "文本包含",
   "workflow.telegram.anyText": "任意文本",
   "workflow.telegram.on": "作用于",

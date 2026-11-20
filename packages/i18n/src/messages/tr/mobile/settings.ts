@@ -8,12 +8,12 @@ export const messages = {
   "mobile.settings.language.system": "Sistem varsayılanı",
   "mobile.settings.language.footer":
     "Sistem varsayılanı, telefon ayarlarınızdaki ilk dili takip eder. Henüz çevrilmemiş metinler İngilizce gösterilir.",
-  "mobile.settings.language.restartTitle": "OpenBot yeniden başlatılsın mı?",
+  "mobile.settings.language.restartTitle": "Whilo yeniden başlatılsın mı?",
   "mobile.settings.language.restartBody":
-    "Bu dil ters yönde okunur. Ekranlar, OpenBot yeniden başladığında yön değiştirir. Yeniden başlatmadan sonra ekranlar hâlâ yanlış görünüyorsa OpenBot'u uygulama değiştiricide kapatıp yeniden açın.",
+    "Bu dil ters yönde okunur. Ekranlar, Whilo yeniden başladığında yön değiştirir. Yeniden başlatmadan sonra ekranlar hâlâ yanlış görünüyorsa Whilo'u uygulama değiştiricide kapatıp yeniden açın.",
   "mobile.settings.language.restartNow": "Şimdi yeniden başlat",
   "mobile.settings.language.restartFailed":
-    "OpenBot yeniden başlatılamadı. Ekranlar, OpenBot'u bir sonraki açışınızda yön değiştirir.",
+    "Whilo yeniden başlatılamadı. Ekranlar, Whilo'u bir sonraki açışınızda yön değiştirir.",
   "mobile.settings.dictation.language": "Dikte dili",
   "mobile.settings.about.development": "Geliştirme",
   "mobile.settings.about.openFailed": "Bağlantı açılamadı. Tekrar deneyin.",
@@ -267,10 +267,10 @@ export const messages = {
   "mobile.settings.voice.pause.title": "Göndermeden önce duraklama",
   "mobile.settings.voice.pause.label": "Yeni kelimeleri bekle",
   "mobile.settings.voice.pause.footer":
-    "Sesli konuşmada, bu kadar süre yeni kelime tanımadığında OpenBot sözlerinizi gönderir. Kelimesiz gürültü dinlemeyi uzatmaz. Yavaş konuşuyorsanız veya düşünmek için duruyorsanız daha uzun bir duraklama seçin.",
+    "Sesli konuşmada, bu kadar süre yeni kelime tanımadığında Whilo sözlerinizi gönderir. Kelimesiz gürültü dinlemeyi uzatmaz. Yavaş konuşuyorsanız veya düşünmek için duruyorsanız daha uzun bir duraklama seçin.",
   "mobile.settings.voice.pause.seconds": "{seconds} sn",
   "mobile.settings.voice.speed.title": "Yanıt hızı",
-  "mobile.settings.voice.speed.footer": "OpenBot'un sesli okuduğu yanıtların hızı, sesli konuşmada da.",
+  "mobile.settings.voice.speed.footer": "Whilo'un sesli okuduğu yanıtların hızı, sesli konuşmada da.",
   "mobile.settings.voice.speed.value": "{speed}×",
   "mobile.settings.voice.elevenLabs.recognitionFooter":
     "Whilo sesini tek kullanımlık bir belirteçle ElevenLabs'e aktarır ve ElevenLabs bunu hesabından ücretlendirir. Anahtar bu telefonda kalır.",

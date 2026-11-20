@@ -389,14 +389,14 @@ export const messages = {
   "connector.whatsapp.actionFailed": "WhatsApp değişikliği kabul etmedi",
   "connector.whatsapp.numbersTitle": "Numaralar",
   "connector.whatsapp.linkNumber": "Numara bağla",
-  "connector.whatsapp.ownNumberNote": "“Kendine mesaj gönder” sohbetiniz ve izin verdiğiniz kişiler OpenBot'a ulaşır.",
+  "connector.whatsapp.ownNumberNote": "“Kendine mesaj gönder” sohbetiniz ve izin verdiğiniz kişiler Whilo'a ulaşır.",
   "connector.whatsapp.dedicatedNote":
-    "İzin verdiğiniz kişiler OpenBot'a ulaşır. Diğer kişiler size iletmeleri için bir kod alır.",
+    "İzin verdiğiniz kişiler Whilo'a ulaşır. Diğer kişiler size iletmeleri için bir kod alır.",
   "connector.whatsapp.helpLoggedOut": "WhatsApp bu bilgisayarı bağlı cihazlardan kaldırdı. Numarayı yeniden bağlayın.",
   "connector.whatsapp.helpLoggedOutHost": "WhatsApp bu sunucuyu bağlı cihazlardan kaldırdı. Numarayı yeniden bağlayın.",
   "connector.whatsapp.helpError":
-    "OpenBot bu numarada WhatsApp'a ulaşamıyor. Yeniden bağlanın veya numaranın bağlantısını kesin.",
-  "connector.whatsapp.retryAt": "WhatsApp OpenBot'tan beklemesini istedi. {time} saatinde tekrar deneyecek.",
+    "Whilo bu numarada WhatsApp'a ulaşamıyor. Yeniden bağlanın veya numaranın bağlantısını kesin.",
+  "connector.whatsapp.retryAt": "WhatsApp Whilo'tan beklemesini istedi. {time} saatinde tekrar deneyecek.",
   "connector.whatsapp.pause": "Duraklat",
   "connector.whatsapp.resume": "Sürdür",
   "connector.whatsapp.reconnect": "Yeniden bağlan",
@@ -406,15 +406,15 @@ export const messages = {
   "connector.whatsapp.disconnectAllSummary":
     "Tüm numaraların bağlantısı kesilir. Kimse ajanlarınıza artık WhatsApp üzerinden ulaşamaz.",
   "connector.whatsapp.disconnectAllSummaryOrchestrator":
-    "Tüm numaraların bağlantısı kesilir. WhatsApp Düzenleyicisi ve sohbetleri OpenBot'tan silinir.",
+    "Tüm numaraların bağlantısı kesilir. WhatsApp Düzenleyicisi ve sohbetleri Whilo'tan silinir.",
   // {action} Pause gibi bir düğmedir; {name} WhatsApp numarası veya bir kişinin adıdır.
   "connector.whatsapp.rowAction": "{action}: {name}",
   "connector.whatsapp.ownNumber": "Kişisel numara",
   "connector.whatsapp.ownNumberDescription":
-    "Yalnızca “Kendine mesaj gönder” sohbetiniz ve izin verdiğiniz kişiler yazabilir. Yalnızca OpenBot için olan bir numarada kapatın.",
+    "Yalnızca “Kendine mesaj gönder” sohbetiniz ve izin verdiğiniz kişiler yazabilir. Yalnızca Whilo için olan bir numarada kapatın.",
   "connector.whatsapp.orchestratorTitle": "WhatsApp Düzenleyicisi",
   "connector.whatsapp.orchestratorDescription":
-    "Bu ajan bağlı tüm numaralarınızdan OpenBot'a gelen mesajları alır. Kısa olanları kendisi yanıtlar, diğer işleri doğru ajana iletir ve WhatsApp'ta yanıt verir.",
+    "Bu ajan bağlı tüm numaralarınızdan Whilo'a gelen mesajları alır. Kısa olanları kendisi yanıtlar, diğer işleri doğru ajana iletir ve WhatsApp'ta yanıt verir.",
   "connector.whatsapp.orchestratorNone": "Henüz yanıt veren bir ajan yok",
   "connector.whatsapp.orchestratorNoneDescription":
     "WhatsApp Düzenleyicisini ekleyin, aksi takdirde WhatsApp yanıt alamaz.",
@@ -431,8 +431,8 @@ export const messages = {
   "connector.whatsapp.kindLabel": "Numara",
   "connector.whatsapp.kindPersonal": "Kişisel numaram",
   "connector.whatsapp.kindPersonalDescription":
-    "OpenBot yalnızca “Kendine mesaj gönder” sohbetinizi ve izin verdiğiniz kişileri yanıtlar.",
-  "connector.whatsapp.kindDedicated": "Yalnızca OpenBot için bir numara",
+    "Whilo yalnızca “Kendine mesaj gönder” sohbetinizi ve izin verdiğiniz kişileri yanıtlar.",
+  "connector.whatsapp.kindDedicated": "Yalnızca Whilo için bir numara",
   "connector.whatsapp.kindDedicatedDescription":
     "Tanımadığınız kişiler size iletmeleri için bir kod alır. Onları burada onaylarsınız.",
   "connector.whatsapp.methodLabel": "Bağlama yöntemi",
@@ -460,27 +460,27 @@ export const messages = {
   "connector.whatsapp.failedTimeout": "Telefon kullanmadan önce kodun süresi doldu.",
   "connector.whatsapp.failedRefused": "WhatsApp bağlantıyı reddetti. Birkaç dakika bekleyin, sonra tekrar deneyin.",
   "connector.whatsapp.failedBusy": "Başka bir bağlama işlemi sürüyor. Bitmesini bekleyin, sonra tekrar deneyin.",
-  "connector.whatsapp.failedUnavailable": "OpenBot WhatsApp'a ulaşamıyor. İnternet bağlantısını kontrol edin.",
+  "connector.whatsapp.failedUnavailable": "Whilo WhatsApp'a ulaşamıyor. İnternet bağlantısını kontrol edin.",
   "connector.whatsapp.tryAgain": "Tekrar dene",
   "connector.whatsapp.agentStepTitle": "WhatsApp Düzenleyicisini ekleyin",
   // {number} WhatsApp numarası veya adıdır.
   "connector.whatsapp.agentStepDescription":
-    "Bu yeni ajan, {number} üzerinde ve daha sonra bağladığınız her numarada OpenBot'a gelen mesajları yanıtlar.",
+    "Bu yeni ajan, {number} üzerinde ve daha sonra bağladığınız her numarada Whilo'a gelen mesajları yanıtlar.",
   "connector.whatsapp.orchestratorName": "WhatsApp Düzenleyicisi",
   "connector.whatsapp.orchestratorRole": "WhatsApp'ta yanıt verir ve ekibe sorar",
-  "connector.whatsapp.orchestratorDoesReceive": "OpenBot'a gelen her WhatsApp mesajını ilk olarak alır",
+  "connector.whatsapp.orchestratorDoesReceive": "Whilo'a gelen her WhatsApp mesajını ilk olarak alır",
   "connector.whatsapp.orchestratorDoesDelegate": "Her görevi en uygun ajana iletir",
   "connector.whatsapp.orchestratorDoesAnswer": "Yanıtı WhatsApp sohbetinde paylaşır",
   "connector.whatsapp.orchestratorModel": "Model",
-  "connector.whatsapp.doneTitle": "OpenBot {number} ile bağlandı",
+  "connector.whatsapp.doneTitle": "Whilo {number} ile bağlandı",
   "connector.whatsapp.done": "Bitti",
   "connector.whatsapp.disconnectTitle": "{number} bağlantısı kesilsin mi?",
   "connector.whatsapp.disconnectDescription":
-    "OpenBot {number} üzerinde WhatsApp oturumunu kapatır. OpenBot kapalıysa cihazı WhatsApp > Bağlı cihazlar bölümünden de kaldırın.",
+    "Whilo {number} üzerinde WhatsApp oturumunu kapatır. Whilo kapalıysa cihazı WhatsApp > Bağlı cihazlar bölümünden de kaldırın.",
   "connector.whatsapp.disconnectEffect": "Kişiler artık {number} üzerinden ajanlarınıza ulaşamaz.",
-  "connector.whatsapp.removeEffectKept": "Konuşmalar ve WhatsApp Düzenleyicisi OpenBot'ta kalır.",
+  "connector.whatsapp.removeEffectKept": "Konuşmalar ve WhatsApp Düzenleyicisi Whilo'ta kalır.",
   "connector.whatsapp.removeEffectDeleted":
-    "Bu son numara olduğundan WhatsApp Düzenleyicisi ve konuşmaları OpenBot'tan silinir.",
+    "Bu son numara olduğundan WhatsApp Düzenleyicisi ve konuşmaları Whilo'tan silinir.",
   "connector.whatsapp.keep": "Bağlı tut",
   "connector.whatsapp.close": "Kapat",
   // Bir numara üzerinden iş verebilecek kişiler: telefon numarasıyla kişiler ve gruplar.
@@ -501,11 +501,11 @@ export const messages = {
   "connector.whatsapp.groupDescription": "Bu gruptaki kişiler ajanlarınıza iş verebilir.",
   "connector.whatsapp.groupSearch": "Grup ara",
   "connector.whatsapp.groupsLoading": "Gruplar okunuyor…",
-  "connector.whatsapp.groupsLoadFailed": "OpenBot grupları okuyamadı",
+  "connector.whatsapp.groupsLoadFailed": "Whilo grupları okuyamadı",
   "connector.whatsapp.groupsEmpty": "Bu numara hiçbir grupta değil.",
   "connector.whatsapp.groupsNoMatch": "Bu adda bir grup yok.",
   "connector.whatsapp.groupAdded": "Eklendi",
-  // Yalnızca OpenBot için olan bir numaraya yazan ve sahibine vermek için kod alan kişiler.
+  // Yalnızca Whilo için olan bir numaraya yazan ve sahibine vermek için kod alan kişiler.
   "connector.whatsapp.requestsTitle": "{number} için istekler",
   "connector.whatsapp.requestsDescription":
     "Bu kişiler numaraya yazdı ve bir kod aldı. Bir kişiyi yalnızca size aynı kodu verdiyse onaylayın.",
@@ -620,19 +620,19 @@ export const messages = {
   "connector.protonPass.keyPlaceholder": "pst_…",
   "connector.protonPass.setupTitle": "Kurulum",
   "connector.protonPass.setupDescription":
-    "Bağla, Proton oturum açma sayfasını tarayıcınızda açar. Sonra OpenBot paylaşılan kasayı oluşturur ve yalnızca salt okunur bir anahtar saklar.",
+    "Bağla, Proton oturum açma sayfasını tarayıcınızda açar. Sonra Whilo paylaşılan kasayı oluşturur ve yalnızca salt okunur bir anahtar saklar.",
   "connector.protonPass.setupDescriptionHost":
     "Bağla, Proton oturum açma sayfasını tarayıcınızda açar. Sonra {host} paylaşılan kasayı oluşturur ve yalnızca salt okunur bir anahtar saklar.",
-  "connector.protonPass.vaultName": "Shared with OpenBot",
+  "connector.protonPass.vaultName": "Shared with Whilo",
   "connector.protonPass.vaultSetup":
-    "OpenBot bu kasayı bağlandığınızda oluşturur. Paylaşmak için oturum bilgilerini buraya taşıyın.",
+    "Whilo bu kasayı bağlandığınızda oluşturur. Paylaşmak için oturum bilgilerini buraya taşıyın.",
   "connector.protonPass.showSteps": "Adımları göster",
   "connector.protonPass.stepsLabel": "Bağlantı adımları",
   "connector.protonPass.stepSignIn": "Oturum aç",
   "connector.protonPass.stepVault": "Paylaşılan kasayı oluştur",
   "connector.protonPass.stepDone": "Bitti",
   "connector.protonPass.signInTitle": "Proton’da oturum açın",
-  "connector.protonPass.signInStarting": "OpenBot oturum açmayı başlatıyor. Proton sayfası tarayıcınızda açılır.",
+  "connector.protonPass.signInStarting": "Whilo oturum açmayı başlatıyor. Proton sayfası tarayıcınızda açılır.",
   "connector.protonPass.signInDescription":
     "Oturum açma tarayıcınızda açık. Proton parolanızı ve ikinci faktörünüzü ister.",
   "connector.protonPass.signInDescriptionHost":
@@ -643,7 +643,7 @@ export const messages = {
   "connector.protonPass.continue": "Devam",
   "connector.protonPass.setupStepTitle": "Paylaşılan kasa oluşturuluyor",
   "connector.protonPass.setupStepDescription":
-    "OpenBot “{vault}” kasasını ve onun için salt okunur bir anahtar oluşturur. Sonra Proton oturumunuzu kapatır.",
+    "Whilo “{vault}” kasasını ve onun için salt okunur bir anahtar oluşturur. Sonra Proton oturumunuzu kapatır.",
   "connector.protonPass.doneTitle": "Proton Pass bağlandı",
   "connector.protonPass.doneDescription":
     "Ajanların oturum açabilmesi için oturum bilgilerini “{vault}” kasasına taşıyın.",
@@ -673,9 +673,9 @@ export const messages = {
   "connector.protonPass.keyNoExpiry": "Salt okunur. Süresi dolmaz.",
   "connector.protonPass.disconnectTitle": "Proton Pass bağlantısını kes",
   "connector.protonPass.disconnectSummary":
-    "OpenBot bu bilgisayardaki erişim anahtarını siler. Kasa ve içindeki oturum bilgileri Proton hesabınızda kalır.",
+    "Whilo bu bilgisayardaki erişim anahtarını siler. Kasa ve içindeki oturum bilgileri Proton hesabınızda kalır.",
   "connector.protonPass.disconnectSummaryHost":
-    "OpenBot {host} üzerindeki erişim anahtarını siler. Kasa ve içindeki oturum bilgileri Proton hesabınızda kalır.",
+    "Whilo {host} üzerindeki erişim anahtarını siler. Kasa ve içindeki oturum bilgileri Proton hesabınızda kalır.",
   "connector.protonPass.disconnect": "Bağlantıyı kes",
-  "connector.protonPass.actionFailed": "OpenBot, Proton Pass bağlantısını değiştiremedi.",
+  "connector.protonPass.actionFailed": "Whilo, Proton Pass bağlantısını değiştiremedi.",
 } as const satisfies PartialTranslation<typeof source>;

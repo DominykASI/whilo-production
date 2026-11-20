@@ -1,8 +1,8 @@
-import { serializeAttachmentReference } from "@openbot/contracts/attachment-references";
-import { serializeChatTagReference } from "@openbot/contracts/chat-tag-references";
-import type { DraftAttachment, InstalledSkill } from "@openbot/contracts/ipc";
-import type { ComposerBrowserTab, ComposerThread } from "@openbot/ui/data";
-import { ComposerEditor } from "@openbot/ui/features/conversation/ComposerEditor";
+import { serializeAttachmentReference } from "@whilo/contracts/attachment-references";
+import { serializeChatTagReference } from "@whilo/contracts/chat-tag-references";
+import type { DraftAttachment, InstalledSkill } from "@whilo/contracts/ipc";
+import type { ComposerBrowserTab, ComposerThread } from "@whilo/ui/data";
+import { ComposerEditor } from "@whilo/ui/features/conversation/ComposerEditor";
 import { createSignal } from "solid-js";
 import { fn } from "storybook/test";
 import type { Meta, StoryObj } from "storybook-solidjs-vite";
@@ -74,7 +74,7 @@ const installedSkills: InstalledSkill[] = [
   },
   {
     skillId: "skill-site-hosting",
-    slug: "openbot-site-hosting",
+    slug: "whilo-site-hosting",
     name: "Site Hosting",
     installedVersion: 1,
     availableVersion: 1,
@@ -107,12 +107,12 @@ const longDescriptionSkill: InstalledSkill = {
 
 /** The agent's open browser tabs. One title is long, so the row cuts it off. */
 const browserTabs: ComposerBrowserTab[] = [
-  { id: "browser-tab-docs", title: "OpenBot documentation", url: "https://openbot.run/docs" },
+  { id: "browser-tab-docs", title: "Whilo documentation", url: "https://openbot.run/docs" },
   { id: "browser-tab-linear", title: "Plans and pricing – Linear", url: "https://linear.app/pricing" },
   {
     id: "browser-tab-github",
-    title: "Let a channel lead cancel its own runs at a person's request · Pull Request #4981 · openbot/openbot",
-    url: "https://github.com/openbot/openbot/pull/4981",
+    title: "Let a channel lead cancel its own runs at a person's request · Pull Request #4981 · whilo/whilo",
+    url: "https://github.com/whilo/whilo/pull/4981",
   },
 ];
 

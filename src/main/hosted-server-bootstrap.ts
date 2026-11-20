@@ -12,8 +12,8 @@
  */
 
 import { existsSync } from "node:fs";
-import { parseHostedServerList } from "@openbot/contracts/hosted-servers";
-import type { CentralAuthState, CentralAuthUser } from "@openbot/contracts/ipc";
+import { parseHostedServerList } from "@whilo/contracts/hosted-servers";
+import type { CentralAuthState, CentralAuthUser } from "@whilo/contracts/ipc";
 import { Effect } from "effect";
 import type { CentralAuthManager } from "./central-auth-manager";
 import { RemoteWorkflowError, toRemoteWorkflowError } from "./remote-service-effects";
@@ -44,7 +44,7 @@ export function takeHostedServerEnvironment(
   return { hostId, claim };
 }
 
-/** The markers of the host's snapshot restore. `openbot-hosted-update` reads the same two. */
+/** The markers of the host's snapshot restore. `whilo-hosted-update` reads the same two. */
 const RESTORE_ACTIVE = "/var/lib/ascii-lazy/active";
 const RESTORE_DONE = "/var/lib/ascii-lazy/hydration-done";
 

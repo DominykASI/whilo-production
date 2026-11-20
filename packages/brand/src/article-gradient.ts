@@ -9,7 +9,7 @@
 // document exists to resolve one. The same test pins them to tokens.css.
 
 /** `--whilo-logo-production` */
-const LOGO_PRODUCTION = "#d6adf2";
+const LOGO_PRODUCTION = "#007cf7";
 /** `--whilo-warning` */
 const LOGO_DEV = "#ff9412";
 /** `--whilo-success` */

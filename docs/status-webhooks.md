@@ -30,7 +30,7 @@ The subscriptions are in the `STATUS_WEBHOOKS` repository secret, as one JSON li
 | `paused` | No | `true` stops the deliveries. The waiting deliveries are removed. |
 
 To change the list, replace the whole secret:
-`gh secret set STATUS_WEBHOOKS -R nightly-labs/openbot < webhooks.json`. Then delete `webhooks.json`.
+`gh secret set STATUS_WEBHOOKS -R nightly-labs/whilo < webhooks.json`. Then delete `webhooks.json`.
 The secret is not in the log: the job masks each URL and secret before it does anything else. An
 error in the list names only the entry number, the field or the `id`. A list that is not valid stops
 the job, and the job sends nothing.
@@ -79,7 +79,7 @@ The meaning of a field does not change.
   "page": "https://status.openbot.run",
   "incident": {
     "id": 201,
-    "url": "https://github.com/nightly-labs/openbot/issues/201",
+    "url": "https://github.com/nightly-labs/whilo/issues/201",
     "title": "Invitation links fail",
     "kind": "incident",
     "impact": "partial",

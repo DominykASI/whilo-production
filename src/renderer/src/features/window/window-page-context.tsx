@@ -1,4 +1,4 @@
-import type { SettingsPageBack, SettingsPagePlacement } from "@openbot/ui/features/settings/SettingsDialogShell";
+import type { SettingsPageBack, SettingsPagePlacement } from "@whilo/ui/features/settings/SettingsDialogShell";
 import { createEffect, createMemo, createSignal, untrack } from "solid-js";
 import { createSimpleContext } from "../../simple-context";
 import { useServerSettings } from "../servers/server-settings";
@@ -12,6 +12,7 @@ export type WindowPage =
   | "tasks"
   | "schedule"
   | "workflows"
+  | "library"
   | "usage"
   | "marketplace"
   | "settings"

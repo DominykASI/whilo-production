@@ -1,6 +1,6 @@
-import { ConfirmDialog, RadioGroup, TriangleAlert } from "@openbot/ui";
-import { createScrollFades } from "@openbot/ui/components/createScrollFades";
-import { useText } from "@openbot/ui/text";
+import { ConfirmDialog, RadioGroup, TriangleAlert } from "@whilo/ui";
+import { createScrollFades } from "@whilo/ui/components/createScrollFades";
+import { useText } from "@whilo/ui/text";
 import { createStore, For, onCleanup, Show } from "solid-js";
 
 /** A skill of the update whose copy on the agent has local changes. */

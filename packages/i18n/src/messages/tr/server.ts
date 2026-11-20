@@ -254,7 +254,7 @@ export const messages = {
   "server.settings.storageTitle": "Depolama",
   "server.settings.storageDescription": "Whilo'un bu sunucunun diskinde ne sakladığını ve boş alanı görün.",
   "server.settings.hostedSitesTitle": "Siteler",
-  "server.settings.hostedSitesDescription": "Bu sunucudaki ajanların openbot.site üzerinde yayımladığı statik siteler.",
+  "server.settings.hostedSitesDescription": "Bu sunucudaki ajanların whilo.site üzerinde yayımladığı statik siteler.",
   "server.settings.importTitle": "İçe aktar",
   "server.settings.importDescription": "Ajanlarınızı Grok Bot'tan veya Hermes Agent'tan bu sunucuya taşıyın.",
   "server.settings.transferTitle": "Aktarım",
@@ -309,7 +309,7 @@ export const messages = {
   "server.settings.addLogo": "Sunucu logosu ekle",
   "server.settings.removeLogo": "Sunucu logosunu kaldır",
   "server.settings.access": "Erişim",
-  "server.companySignIn.desktopOnly": "Çoklu oturum açmayı OpenBot masaüstü uygulamasında ayarlayın.",
+  "server.companySignIn.desktopOnly": "Çoklu oturum açmayı Whilo masaüstü uygulamasında ayarlayın.",
   "server.settings.publish": "Bu sunucuyu yayımla",
   "server.settings.published": "Sunucu yayımlandı",
   "server.settings.setUpDesktopTitle": "Uzak masaüstünü ayarlayın",
@@ -484,7 +484,7 @@ export const messages = {
   "server.desktop.accessMembers": "Tüm üyeler",
   "server.desktop.askLabel": "Bu bilgisayarda sor",
   "server.desktop.askDescription":
-    "Her oturum, bu bilgisayarın başındaki bir kişi izin verene kadar bekler. 30 saniye içinde yanıt gelmezse OpenBot oturumu reddeder.",
+    "Her oturum, bu bilgisayarın başındaki bir kişi izin verene kadar bekler. 30 saniye içinde yanıt gelmezse Whilo oturumu reddeder.",
   "server.desktop.activeTitle": "Etkin uzak masaüstü oturumları: {active}",
   "server.desktop.activeDescription": "Her oturumu hemen sonlandırır. Üyeler yeniden isteyebilir.",
   "server.desktop.stopAll": "Tüm uzaktan kontrolü durdur",
@@ -527,7 +527,7 @@ export const messages = {
   "server.update.path.container":
     "Docker ana makinesinde yeni Whilo görüntüsünü çekin ve kapsayıcıyı aynı veri birimleriyle yeniden oluşturun. Önce etkin çalışmanın bitmesini bekleyin. Verilerinizi korumak için mevcut birimleri saklayın.",
   "server.update.path.manual":
-    "Bu kurulum kendini değiştiremez. Ana makine yöneticisinden uyumlu sürümü github.com/nightly-labs/openbot/releases adresinden yüklemesini isteyin. Mevcut Whilo verilerini saklayın.",
+    "Bu kurulum kendini değiştiremez. Ana makine yöneticisinden uyumlu sürümü github.com/nightly-labs/whilo/releases adresinden yüklemesini isteyin. Mevcut Whilo verilerini saklayın.",
   "server.update.path.unavailable":
     "Bu bir geliştirme derlemesidir. Güncellemeleri denetlemek için yüklü bir Whilo sürümü kullanın.",
   "server.update.check": "Güncellemeleri denetle",

@@ -76,12 +76,12 @@ export const messages = {
   "remoteDesktop.setup.finishTest": "Finalizar prueba",
   "remoteDesktop.host.questionTitle": "{name} quiere controlar este equipo",
   "remoteDesktop.host.questionDetail":
-    "{name} verá tu pantalla y podrá usar el cursor y el teclado. Si no respondes en 30 segundos, OpenBot rechazará la solicitud.",
+    "{name} verá tu pantalla y podrá usar el cursor y el teclado. Si no respondes en 30 segundos, Whilo rechazará la solicitud.",
   "remoteDesktop.host.allow": "Permitir",
   "remoteDesktop.host.deny": "Denegar",
   "remoteDesktop.host.startedTitle": "Control remoto iniciado",
   "remoteDesktop.host.startedBody": "{name} controla este equipo ahora.",
-  "remoteDesktop.host.trayTooltip": "OpenBot: control remoto activo",
+  "remoteDesktop.host.trayTooltip": "Whilo: control remoto activo",
   "remoteDesktop.host.trayControlledBy": "{name} controla este equipo",
   "remoteDesktop.host.stopAll": "Detener todo el control remoto",
 } as const satisfies PartialTranslation<typeof source>;
