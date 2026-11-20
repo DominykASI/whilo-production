@@ -58,6 +58,7 @@ import { VAULT_V2_CAPABILITY } from "@whilo/contracts/team-protocol/vault-v2";
 import { WEBHOOK_SENDER_SECRET_CAPABILITY } from "@whilo/contracts/team-protocol/webhook-sender-secret-v1";
 import { WEBHOOK_TESTS_CAPABILITY } from "@whilo/contracts/team-protocol/webhook-tests-v1";
 import { WHATSAPP_CONNECTOR_CAPABILITY } from "@whilo/contracts/team-protocol/whatsapp-connector-v1";
+import { viewAllowedInMode } from "@whilo/contracts/whilo-mode";
 import { runTeamEffect } from "@whilo/team-client";
 import { channelForThread } from "@whilo/team-client/channel-notifications";
 import {
@@ -165,6 +166,7 @@ import {
   SharedAgentInstallOverlay,
 } from "../../WorkspaceOverlayViews";
 import { SkillsMarketplace } from "../../WorkspaceOverlays";
+import { whiloMode } from "../../whilo-mode";
 import { createUsageRefreshPoll } from "../account/usage-refresh-poll";
 import { conversationThreads } from "../agent-threads/conversation-threads";
 import { type NewAgentDraft, newAgentInput } from "../agents/agent-create-input";
@@ -234,6 +236,7 @@ import { ServerSettingsPageTitle, SettingsPageFrame } from "../window/SettingsPa
 import type { SettingsKind, WindowPage } from "../window/window-page-context";
 import { WebAgentSettings } from "./WebAgentSettings";
 import { WebConnectComputer } from "./WebConnectComputer";
+import { WebCloudUsage } from "./WebCloudUsage";
 import { WebMobileNavigation, type WebMobilePane } from "./WebMobileNavigation";
 import { WebServerOtherTab } from "./WebServerOtherTab";
 import { createWebAccountCalls } from "./web-account";
@@ -646,6 +649,7 @@ function WebWorkspaceFrame(props: WebWorkspaceProps) {
   }
   /** Only the connected host answers, so another host is connected first, as for its settings. */
   async function openHostPage(serverId: string, view: HostPageView, trigger: HTMLElement | null) {
+    if (!viewAllowedInMode(view, whiloMode())) return;
     if (server()?.id !== serverId) {
       const host = workspace.state.hosts.find((item) => item.hostId === serverId);
       if (!host) return;
@@ -2031,16 +2035,20 @@ function WebWorkspaceFrame(props: WebWorkspaceProps) {
               onPinChange={layout.setRailPinned}
               usageRows={usageRows()}
               onAgents={() => showSidebarView("agents")}
-              onRoutines={() => {
-                if (routinesSupported()) showSidebarView("routines");
-                else setJoinOpen(true);
-              }}
-              onWorkflows={() => openHostPageOrConnect("workflows", null)}
-              onTasks={(button) => openHostPageOrConnect("tasks", button)}
-              onSchedule={(button) => openHostPageOrConnect("schedule", button)}
+              onRoutines={
+                whiloMode() === "dots"
+                  ? () => {
+                      if (routinesSupported()) showSidebarView("routines");
+                      else setJoinOpen(true);
+                    }
+                  : undefined
+              }
+              onWorkflows={whiloMode() === "dots" ? () => openHostPageOrConnect("workflows", null) : undefined}
+              onTasks={whiloMode() === "dots" ? (button) => openHostPageOrConnect("tasks", button) : undefined}
+              onSchedule={whiloMode() === "dots" ? (button) => openHostPageOrConnect("schedule", button) : undefined}
               onLibrary={() => openHostPageOrConnect("library", null)}
-              onCloud={() => hostedServers.openAddServer("server_rail")}
-              onUsage={(button) => openHostPageOrConnect("usage", button)}
+              onCloud={whiloMode() === "dots" ? () => hostedServers.openAddServer("server_rail") : undefined}
+              onUsage={whiloMode() === "dots" ? (button) => openHostPageOrConnect("usage", button) : undefined}
               onMarketplace={workspace.state.status === "online" ? openMarketplace : undefined}
               onSettings={openAccountSettings}
               help={
@@ -2168,6 +2176,16 @@ function WebWorkspaceFrame(props: WebWorkspaceProps) {
                         </Loading>
                       }
                     >
+                      <Match when={page() === "usage"}>
+                        <WebCloudUsage
+                          rows={usageRows}
+                          loading={() => !usageReading.usageReady()}
+                          onRefresh={() => {
+                            void providerAdmin.hostAccounts.refreshUsage().catch(() => undefined);
+                            void usageReading.refreshUsage().catch(() => undefined);
+                          }}
+                        />
+                      </Match>
                       <Match when={page() === "schedule"}>
                         <Loading>
                           <ScheduleView

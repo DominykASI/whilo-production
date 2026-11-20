@@ -25,7 +25,7 @@ import type { PromptInstructionsFile } from "./workspace-instructions";
 import { existingAgentFolders, workspaceExcludedFolders } from "./workspace-sandbox";
 
 const ROUTINE_SIGN_IN_RULE =
-  "In a routine run, first check saved logins with whilo_browser.list_logins. Use a matching login's username and submit_secret with its loginId for a password or authenticator code. With several logins, use only the account that the task names. When no login fits, the account is unclear, a fill fails, or the page needs a person (email or SMS code, CAPTCHA, passkey, or payment confirmation), report the sign-in requirement; do not call request_takeover or submit_secret without loginId.";
+  "In a routine run, first check saved logins with openbot_browser.list_logins. Use a matching login's username and submit_secret with its loginId for a password or authenticator code. With several logins, use only the account that the task names. When no login fits, the account is unclear, a fill fails, or the page needs a person (email or SMS code, CAPTCHA, passkey, or payment confirmation), report the sign-in requirement; do not call request_takeover or submit_secret without loginId.";
 
 export interface VaultContents {
   available: boolean;
@@ -105,14 +105,14 @@ function vaultInstruction(vault: VaultContents): string {
   const noCard =
     vault.cards || vault.link
       ? ""
-      : "No card is saved. When the user wants you to pay, call whilo_browser.request_vault_item kind=card, or use request_takeover for the card fields.";
+      : "No card is saved. When the user wants you to pay, call openbot_browser.request_vault_item kind=card, or use request_takeover for the card fields.";
   return [
     "The Whilo Vault keeps logins, cards, and contact info for all agents of this server.",
     saved ? `The user saved ${saved}.` : "",
     "At a checkout or address form, call openbot_browser.list_vault_items, use the item that fits the request, ask when more than one fits, and follow the browser guidance.",
     "Save contact info that the user asks you to keep with openbot_browser.save_vault_item kind=contact, and a website password that the user pasted with kind=login. When a task needs a login, a card or contact info that the Vault does not have, call openbot_browser.request_vault_item, with the fields that you know filled in.",
     vault.link
-      ? "The user connected Link: to pay, you can call whilo_browser.request_link_payment, and the user approves the payment in Link."
+      ? "The user connected Link: to pay, you can call openbot_browser.request_link_payment, and the user approves the payment in Link."
       : "",
     noCard,
   ]

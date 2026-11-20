@@ -3,6 +3,7 @@ import { AGENT_TASKS_CAPABILITY } from "@whilo/contracts/team-protocol/agent-tas
 import type { SidebarView } from "@whilo/ui/features/sidebar/sidebar-types";
 import { PageRail, type PageRailPage } from "@whilo/ui/features/window/PageRail";
 import { useText } from "@whilo/ui/text";
+import { whiloMode } from "../../whilo-mode";
 import { appPort } from "../../app-port";
 import { useLayout } from "../../layout";
 import { usePlatform } from "../../platform";
@@ -72,12 +73,12 @@ export function WorkspacePageRail(props: { hidden: boolean }) {
       usageRows={usageRows()}
       customAgentUsage={localAgentUsage()}
       onAgents={() => showSidebarView("agents")}
-      onRoutines={() => showSidebarView("routines")}
+      onRoutines={whiloMode() === "dots" ? () => showSidebarView("routines") : undefined}
       // A joined server without workflows shows its notice on the page.
-      onWorkflows={() => windowPage.openWorkflows(null)}
-      onSchedule={windowPage.openSchedule}
-      onTasks={tasksAvailable() ? windowPage.openTasks : undefined}
-      onUsage={windowPage.openUsage}
+      onWorkflows={whiloMode() === "dots" ? () => windowPage.openWorkflows(null) : undefined}
+      onSchedule={whiloMode() === "dots" ? windowPage.openSchedule : undefined}
+      onTasks={whiloMode() === "dots" && tasksAvailable() ? windowPage.openTasks : undefined}
+      onUsage={whiloMode() === "dots" ? windowPage.openUsage : undefined}
       onMarketplace={() => setSkillsMarketplaceOpen(true)}
       onSettings={(button) => (updateNotice() ? openAppSettings(button, "updates") : windowPage.openSettings(button))}
       settingsNotice={updateNotice()}

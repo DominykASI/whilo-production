@@ -219,7 +219,8 @@ export interface PageRailProps {
   onTasks?: ((button: HTMLElement) => void) | undefined;
   /** Absent where there is no schedule page. */
   onSchedule?: ((button: HTMLElement) => void) | undefined;
-  onUsage: (button: HTMLElement) => void;
+  /** Absent in the focused Pets surface, which hides the usage page. */
+  onUsage?: ((button: HTMLElement) => void) | undefined;
   /** Absent while Marketplace cannot open. */
   onMarketplace?: (() => void) | undefined;
   onSettings: (button: HTMLElement) => void;
@@ -357,7 +358,7 @@ export function PageRail(props: PageRailProps) {
   /** The pages that this server has, in rail order. */
   const pages = createMemo((): RailPage[] => {
     const list: RailPage[] = [];
-    const { onRoutines, onWorkflows, onTasks, onSchedule, onLibrary, onCloud } = props;
+    const { onRoutines, onWorkflows, onTasks, onSchedule, onLibrary, onCloud, onUsage } = props;
     if (onRoutines) {
       list.push({
         id: "routines",
@@ -391,7 +392,9 @@ export function PageRail(props: PageRailProps) {
     if (onCloud) {
       list.push({ id: "cloud", label: t("app.rail.cloud"), icon: Server, open: () => onCloud() });
     }
-    list.push({ id: "usage", label: t("app.rail.usage"), icon: ChartArea, open: props.onUsage });
+    if (onUsage) {
+      list.push({ id: "usage", label: t("app.rail.usage"), icon: ChartArea, open: onUsage });
+    }
     return list;
   });
   return (

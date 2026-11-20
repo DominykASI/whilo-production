@@ -53,9 +53,10 @@ import { cx } from "@whilo/ui/utils";
 import type { JSX } from "@solidjs/web";
 import { createEffect, createMemo, createSignal, For, onSettled, Show, untrack } from "solid-js";
 import { formatUsageReset, usageWindowLabel } from "../features/account/account-usage-view";
-import { currentText, type TextValue, useText } from "../text";
+import { type TextValue, useText } from "../text";
 import { createScrollFades } from "./createScrollFades";
 import { EffortTrack } from "./EffortTrack";
+import { REASONING_LABEL, reasoningLabel } from "./model-effort";
 import { findModelOption, providerAccountName } from "./provider-accounts";
 import {
   customProviderIds,
@@ -171,17 +172,6 @@ const RUNTIME_ACTION_LABEL = {
   Retry: "common.retry",
   Download: "common.download",
 } as const satisfies Record<string, AppTextKey>;
-
-export const REASONING_LABEL = {
-  none: "provider.effort.none",
-  minimal: "provider.effort.minimal",
-  low: "provider.effort.low",
-  medium: "provider.effort.medium",
-  high: "provider.effort.high",
-  xhigh: "provider.effort.xhigh",
-  max: "provider.effort.max",
-  ultra: "provider.effort.ultra",
-} as const satisfies Record<AgentReasoningEffort, AppTextKey>;
 
 /**
  * The trigger text changes mostly by a blur: a short slide, so the old and new text cross in place,
@@ -1305,10 +1295,6 @@ function fixedModelSettingsText(settings: FixedModelSettings | null, t: AppTrans
   ]
     .filter(Boolean)
     .join(" · ");
-}
-
-export function reasoningLabel(effort: AgentReasoningEffort, t: AppTranslate = currentText().t): string {
-  return t(REASONING_LABEL[effort]);
 }
 
 /** A custom endpoint has no brand mark and must not borrow one, so the rail draws sliders instead. */

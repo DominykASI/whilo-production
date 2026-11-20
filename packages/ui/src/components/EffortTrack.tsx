@@ -1,7 +1,7 @@
 import { For, Show, createMemo, createSignal, type Accessor } from "solid-js";
 import type { AgentReasoningEffort } from "@whilo/contracts/ipc";
 import type { AppTranslate } from "@whilo/i18n";
-import { reasoningLabel } from "./ProviderModelPicker";
+import { reasoningLabel } from "./model-effort";
 
 /**
  * A draggable effort track for the model picker: a glowing fill grows with the level, a thumb
