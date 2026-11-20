@@ -22,9 +22,37 @@ export const messages = {
   "marketplace.kinds": "Types de contenu de la Marketplace",
   "marketplace.tab.agents": "Agents",
   "marketplace.tab.skills": "Compétences",
+  "marketplace.tab.plugins": "Plugins",
   "marketplace.description.apps": "Connectez les outils et les services avec lesquels vos agents travaillent.",
   "marketplace.description.agents": "Des agents prêts à l’emploi, avec leurs propres instructions et compétences.",
   "marketplace.description.skills": "Des instructions qui apprennent une tâche ou un outil à un agent.",
+  "marketplace.description.plugins": "Des lots prêts à l’emploi de compétences et d’extras, comme Computer Use.",
+  "marketplace.loading.plugins": "Chargement des plugins",
+  "marketplace.noMatch.plugins": "Aucun plugin ne correspond à cette recherche.",
+  "marketplace.empty.plugins": "Aucun plugin dans le Marketplace pour le moment.",
+  "marketplace.noMatch.showPlugins": {
+    one: "Afficher {count} plugin",
+    other: "Afficher {count} plugins",
+  },
+  "marketplace.plugins.group.computerUse": "Computer Use",
+  "marketplace.plugins.group.worldLegalDesk": "World Legal Desk",
+  "marketplace.plugins.group.tools": "Outils",
+  "marketplace.plugins.skillsIncluded": {
+    one: "{count} compétence incluse",
+    other: "{count} compétences incluses",
+  },
+  "marketplace.plugins.suggestions": "Invites suggérées",
+  "marketplace.plugins.links": "Liens",
+  "marketplace.plugins.about": "À propos",
+  "marketplace.notice.pluginInstalled": {
+    one: "{name} installé sur {count} agent.",
+    other: "{name} installé sur {count} agents.",
+  },
+  "marketplace.notice.pluginRemoved": {
+    one: "{name} retiré de {count} agent.",
+    other: "{name} retiré de {count} agents.",
+  },
+  "marketplace.error.pluginsLocalOnly": "Ces plugins s’installent uniquement sur cet ordinateur, qui conserve les espaces de travail des agents. Passez aux agents de cet ordinateur.",
 
   "marketplace.plugins.missing": "Ce plugin n’est pas dans le catalogue Whilo.",
 

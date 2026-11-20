@@ -86,6 +86,10 @@ export const messages = {
     "더 큰 서버, {count}명이 넘는 멤버 등 필요한 것은 무엇이든 제공해요. 엔터프라이즈 지원도 포함돼요.",
   "sitePage.pricing.enterprise.contact": "영업팀에 문의",
   "sitePage.pricing.unavailable": "결제는 아직 사용할 수 없습니다. 결제가 가능해지면 이 페이지에 가격이 다시 표시됩니다.",
+  "sitePage.billing.pendingTitle": "결제 진행 중",
+  "sitePage.billing.pendingBody": "결제를 확인하고 있습니다. 잠시 걸릴 수 있습니다. Whilo로 돌아가 서버를 확인하거나, 기다렸다가 다시 시도하세요.",
+  "sitePage.billing.unavailableTitle": "결제를 사용할 수 없습니다",
+  "sitePage.billing.unavailableBody": "결제 서비스가 아직 설정되지 않아 확인할 수 없습니다. 청구된 금액은 없습니다. Whilo로 돌아가세요.",
   "sitePage.marketplace.agents.title": "에이전트 — Whilo 마켓플레이스",
   "sitePage.marketplace.agents.description":
     "다른 사람이 Whilo에서 만든 에이전트예요. 스킬과 루틴과 함께 Whilo에 추가할 수 있어요.",
@@ -142,8 +146,4 @@ export const messages = {
   "sitePage.marketplace.missing.title": "마켓플레이스에 없어요",
   "sitePage.marketplace.missing.body": "만든 사람이 삭제했거나, Whilo이 승인하지 않았거나, 링크가 잘못되었어요.",
   "sitePage.marketplace.missing.open": "마켓플레이스 열기",
-  "sitePage.billing.unavailableTitle": "결제를 사용할 수 없습니다",
-  "sitePage.billing.unavailableBody": "결제 서비스가 아직 설정되지 않아 확인할 수 없습니다. 청구된 금액은 없습니다. Whilo로 돌아가세요.",
-  "sitePage.billing.pendingTitle": "결제 진행 중",
-  "sitePage.billing.pendingBody": "결제를 확인하고 있습니다. 잠시 걸릴 수 있습니다. Whilo로 돌아가 서버를 확인하거나, 기다렸다가 다시 시도하세요.",
 } as const satisfies PartialTranslation<typeof source>;

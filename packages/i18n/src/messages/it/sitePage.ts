@@ -89,6 +89,10 @@ export const messages = {
     "Server più grandi, più di {count} membri o qualsiasi altra cosa ti serva. Con supporto enterprise.",
   "sitePage.pricing.enterprise.contact": "Contatta le vendite",
   "sitePage.pricing.unavailable": "I pagamenti non sono ancora disponibili. Questa pagina mostrerà di nuovo i prezzi quando lo saranno.",
+  "sitePage.billing.pendingTitle": "Pagamento in corso",
+  "sitePage.billing.pendingBody": "Stiamo confermando il tuo pagamento. Può richiedere un momento. Torna a Whilo per vedere il tuo server, oppure attendi e riprova.",
+  "sitePage.billing.unavailableTitle": "I pagamenti non sono disponibili",
+  "sitePage.billing.unavailableBody": "Il servizio di pagamento non è ancora configurato, quindi non possiamo confermare nulla. Non è stato addebitato nulla. Torna a Whilo.",
   "sitePage.marketplace.agents.title": "Agenti — Whilo Marketplace",
   "sitePage.marketplace.agents.description":
     "Agenti creati da altre persone in Whilo. Aggiungine uno a Whilo con le sue skill e routine.",
@@ -147,8 +151,4 @@ export const messages = {
   "sitePage.marketplace.missing.body":
     "Chi l’ha creato lo ha rimosso, Whilo non l’ha approvato, oppure il link è sbagliato.",
   "sitePage.marketplace.missing.open": "Apri il Marketplace",
-  "sitePage.billing.unavailableTitle": "I pagamenti non sono disponibili",
-  "sitePage.billing.unavailableBody": "Il servizio di pagamento non è ancora configurato, quindi non possiamo confermare nulla. Non è stato addebitato nulla. Torna a Whilo.",
-  "sitePage.billing.pendingTitle": "Pagamento in corso",
-  "sitePage.billing.pendingBody": "Stiamo confermando il tuo pagamento. Può richiedere un momento. Torna a Whilo per vedere il tuo server, oppure attendi e riprova.",
 } as const satisfies PartialTranslation<typeof source>;

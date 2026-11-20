@@ -521,7 +521,7 @@ export const messages = {
   "server.update.path.container":
     "En el host de Docker, descarga la nueva imagen de Whilo y vuelve a crear el contenedor con los mismos volúmenes de datos. Espera primero a que termine el trabajo activo. Conserva los volúmenes existentes para preservar tus datos.",
   "server.update.path.manual":
-    "Esta instalación no puede reemplazarse a sí misma. Pide al administrador del host que instale la versión compatible de github.com/nightly-labs/whilo/releases. Conserva los datos existentes de Whilo.",
+    "Esta instalación no puede reemplazarse a sí misma. Pide al administrador del host que instale la versión compatible de github.com/nightly-labs/openbot/releases. Conserva los datos existentes de Whilo.",
   "server.update.path.unavailable":
     "Esta es una versión de desarrollo. Usa una versión instalada de Whilo para buscar actualizaciones.",
   "server.update.check": "Buscar actualizaciones",

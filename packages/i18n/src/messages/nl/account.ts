@@ -75,6 +75,7 @@ export const messages = {
   "account.login.checkDelivery": "Bezorging controleren",
   "account.login.checkAgainIn": "Opnieuw controleren over {time}",
   "account.login.sendCode": "Inlogcode sturen",
+  "account.login.remember": "Aangemeld blijven",
   "account.login.tryAgainIn": "Probeer het over {time} opnieuw",
   "account.login.checkingDelivery": "Bezorging controleren…",
   "account.login.sendingCode": "Code versturen…",

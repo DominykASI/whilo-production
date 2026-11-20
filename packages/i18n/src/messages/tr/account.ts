@@ -75,6 +75,7 @@ export const messages = {
   "account.login.checkDelivery": "Teslimatı kontrol et",
   "account.login.checkAgainIn": "{time} sonra tekrar kontrol edin",
   "account.login.sendCode": "Giriş kodunu gönder",
+  "account.login.remember": "Oturumumu açık tut",
   "account.login.tryAgainIn": "{time} sonra tekrar deneyin",
   "account.login.checkingDelivery": "Teslimat kontrol ediliyor…",
   "account.login.sendingCode": "Kod gönderiliyor…",

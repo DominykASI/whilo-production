@@ -24,9 +24,37 @@ export const messages = {
   "marketplace.kinds": "Pazaryeri içerik türleri",
   "marketplace.tab.agents": "Ajanlar",
   "marketplace.tab.skills": "Beceriler",
+  "marketplace.tab.plugins": "Eklentiler",
   "marketplace.description.apps": "Ajanlarınızın çalıştığı araçları ve hizmetleri bağlayın.",
   "marketplace.description.agents": "Kendi talimatları ve becerileri olan hazır ajanlar.",
   "marketplace.description.skills": "Bir ajana bir görevi veya aracı öğreten talimatlar.",
+  "marketplace.description.plugins": "Computer Use gibi hazır beceri ve ek paketleri.",
+  "marketplace.loading.plugins": "Eklentiler yükleniyor",
+  "marketplace.noMatch.plugins": "Bu aramayla eşleşen eklenti yok.",
+  "marketplace.empty.plugins": "Marketplace’te henüz eklenti yok.",
+  "marketplace.noMatch.showPlugins": {
+    one: "{count} eklentiyi göster",
+    other: "{count} eklentiyi göster",
+  },
+  "marketplace.plugins.group.computerUse": "Computer Use",
+  "marketplace.plugins.group.worldLegalDesk": "World Legal Desk",
+  "marketplace.plugins.group.tools": "Araçlar",
+  "marketplace.plugins.skillsIncluded": {
+    one: "{count} beceri dahil",
+    other: "{count} beceri dahil",
+  },
+  "marketplace.plugins.suggestions": "Önerilen istemler",
+  "marketplace.plugins.links": "Bağlantılar",
+  "marketplace.plugins.about": "Hakkında",
+  "marketplace.notice.pluginInstalled": {
+    one: "{name}, {count} ajana kuruldu.",
+    other: "{name}, {count} ajana kuruldu.",
+  },
+  "marketplace.notice.pluginRemoved": {
+    one: "{name}, {count} ajandan kaldırıldı.",
+    other: "{name}, {count} ajandan kaldırıldı.",
+  },
+  "marketplace.error.pluginsLocalOnly": "Bu eklentiler yalnızca ajan çalışma alanlarını tutan bu bilgisayara kurulur. Bu bilgisayarın ajanlarına geçin.",
 
   // A plugin link.
   "marketplace.plugins.missing": "Bu eklenti Whilo kataloğunda yok.",

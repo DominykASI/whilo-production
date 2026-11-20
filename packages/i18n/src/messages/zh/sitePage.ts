@@ -85,6 +85,10 @@ export const messages = {
   "sitePage.pricing.enterprise.body": "更大的服务器、超过 {count} 名成员，或你需要的其他任何内容，并提供企业级支持。",
   "sitePage.pricing.enterprise.contact": "联系销售",
   "sitePage.pricing.unavailable": "支付尚不可用。当支付可用时，此页面将再次显示价格。",
+  "sitePage.billing.pendingTitle": "支付处理中",
+  "sitePage.billing.pendingBody": "我们正在确认您的付款。这可能需要一点时间。返回 Whilo 查看您的服务器，或稍候再试。",
+  "sitePage.billing.unavailableTitle": "支付不可用",
+  "sitePage.billing.unavailableBody": "支付服务尚未设置，因此我们无法确认任何内容。未收取任何费用。返回 Whilo。",
   "sitePage.marketplace.agents.title": "助手 — Whilo 市场",
   "sitePage.marketplace.agents.description":
     "其他人在 Whilo 中创建的助手。将助手连同技能和自动化任务一起添加到 Whilo。",
@@ -140,8 +144,4 @@ export const messages = {
   "sitePage.marketplace.missing.title": "不在市场中",
   "sitePage.marketplace.missing.body": "创建者已将其移除、Whilo 未批准，或链接有误。",
   "sitePage.marketplace.missing.open": "打开市场",
-  "sitePage.billing.unavailableTitle": "支付不可用",
-  "sitePage.billing.unavailableBody": "支付服务尚未设置，因此我们无法确认任何内容。未收取任何费用。返回 Whilo。",
-  "sitePage.billing.pendingTitle": "支付处理中",
-  "sitePage.billing.pendingBody": "我们正在确认您的付款。这可能需要一点时间。返回 Whilo 查看您的服务器，或稍候再试。",
 } as const satisfies PartialTranslation<typeof source>;

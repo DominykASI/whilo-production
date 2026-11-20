@@ -24,9 +24,37 @@ export const messages = {
   "marketplace.kinds": "市场内容类型",
   "marketplace.tab.agents": "助手",
   "marketplace.tab.skills": "技能",
+  "marketplace.tab.plugins": "插件",
   "marketplace.description.apps": "连接你的助手使用的工具和服务。",
   "marketplace.description.agents": "带有自身指令和技能的现成助手。",
   "marketplace.description.skills": "教助手完成某项任务或使用某个工具的指令。",
+  "marketplace.description.plugins": "现成的技能与附加功能包，例如 Computer Use。",
+  "marketplace.loading.plugins": "正在加载插件",
+  "marketplace.noMatch.plugins": "没有插件匹配此搜索。",
+  "marketplace.empty.plugins": "Marketplace 中还没有插件。",
+  "marketplace.noMatch.showPlugins": {
+    one: "显示 {count} 个插件",
+    other: "显示 {count} 个插件",
+  },
+  "marketplace.plugins.group.computerUse": "Computer Use",
+  "marketplace.plugins.group.worldLegalDesk": "World Legal Desk",
+  "marketplace.plugins.group.tools": "工具",
+  "marketplace.plugins.skillsIncluded": {
+    one: "包含 {count} 项技能",
+    other: "包含 {count} 项技能",
+  },
+  "marketplace.plugins.suggestions": "建议的提示",
+  "marketplace.plugins.links": "链接",
+  "marketplace.plugins.about": "关于",
+  "marketplace.notice.pluginInstalled": {
+    one: "{name} 已安装到 {count} 个智能体。",
+    other: "{name} 已安装到 {count} 个智能体。",
+  },
+  "marketplace.notice.pluginRemoved": {
+    one: "{name} 已从 {count} 个智能体移除。",
+    other: "{name} 已从 {count} 个智能体移除。",
+  },
+  "marketplace.error.pluginsLocalOnly": "这些插件只安装在这台保留智能体工作区的电脑上。请切换到这台电脑的智能体。",
 
   // A plugin link.
   "marketplace.plugins.missing": "Whilo 目录中没有该插件。",

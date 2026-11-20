@@ -77,6 +77,11 @@ export const messages = {
   "sitePage.report.sentTitle": "Melding verstuurd",
   "sitePage.report.sentBody": "Bedankt. We hebben je melding ontvangen.",
   "sitePage.report.home": "Naar de startpagina",
+  "sitePage.pricing.unavailable": "Betalingen zijn nog niet beschikbaar. Deze pagina toont de prijzen weer zodra dat kan.",
+  "sitePage.billing.pendingTitle": "Betaling wordt verwerkt",
+  "sitePage.billing.pendingBody": "We bevestigen je betaling. Dit kan even duren. Ga terug naar Whilo om je server te zien, of wacht en probeer het opnieuw.",
+  "sitePage.billing.unavailableTitle": "Betalingen zijn niet beschikbaar",
+  "sitePage.billing.unavailableBody": "De betaaldienst is nog niet ingesteld, dus we kunnen niets bevestigen. Er is niets in rekening gebracht. Ga terug naar Whilo.",
   "sitePage.marketplace.agents.title": "Agents — Whilo Marktplaats",
   "sitePage.marketplace.agents.description":
     "Agents die anderen in Whilo hebben gemaakt. Voeg er een toe aan Whilo, met zijn vaardigheden en routines.",
@@ -137,9 +142,4 @@ export const messages = {
   "sitePage.marketplace.missing.body":
     "De maker heeft het verwijderd, Whilo heeft het niet goedgekeurd, of de link klopt niet.",
   "sitePage.marketplace.missing.open": "Marktplaats openen",
-  "sitePage.pricing.unavailable": "Betalingen zijn nog niet beschikbaar. Deze pagina toont de prijzen weer zodra dat kan.",
-  "sitePage.billing.unavailableTitle": "Betalingen zijn niet beschikbaar",
-  "sitePage.billing.unavailableBody": "De betaaldienst is nog niet ingesteld, dus we kunnen niets bevestigen. Er is niets in rekening gebracht. Ga terug naar Whilo.",
-  "sitePage.billing.pendingTitle": "Betaling wordt verwerkt",
-  "sitePage.billing.pendingBody": "We bevestigen je betaling. Dit kan even duren. Ga terug naar Whilo om je server te zien, of wacht en probeer het opnieuw.",
 } as const satisfies PartialTranslation<typeof source>;

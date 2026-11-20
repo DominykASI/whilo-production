@@ -22,9 +22,37 @@ export const messages = {
   "marketplace.kinds": "マーケットプレイスのコンテンツの種類",
   "marketplace.tab.agents": "エージェント",
   "marketplace.tab.skills": "スキル",
+  "marketplace.tab.plugins": "プラグイン",
   "marketplace.description.apps": "エージェントが使うツールやサービスに接続します。",
   "marketplace.description.agents": "独自の指示とスキルを持つ、すぐに使えるエージェント。",
   "marketplace.description.skills": "エージェントにタスクやツールの使い方を教える指示。",
+  "marketplace.description.plugins": "Computer Use などのスキルと拡張をまとめた既製パッケージ。",
+  "marketplace.loading.plugins": "プラグインを読み込み中",
+  "marketplace.noMatch.plugins": "この検索に一致するプラグインはありません。",
+  "marketplace.empty.plugins": "Marketplace にはまだプラグインがありません。",
+  "marketplace.noMatch.showPlugins": {
+    one: "{count} 件のプラグインを表示",
+    other: "{count} 件のプラグインを表示",
+  },
+  "marketplace.plugins.group.computerUse": "Computer Use",
+  "marketplace.plugins.group.worldLegalDesk": "World Legal Desk",
+  "marketplace.plugins.group.tools": "ツール",
+  "marketplace.plugins.skillsIncluded": {
+    one: "スキル {count} 件を含む",
+    other: "スキル {count} 件を含む",
+  },
+  "marketplace.plugins.suggestions": "おすすめのプロンプト",
+  "marketplace.plugins.links": "リンク",
+  "marketplace.plugins.about": "概要",
+  "marketplace.notice.pluginInstalled": {
+    one: "{name} を {count} 体のエージェントにインストールしました。",
+    other: "{name} を {count} 体のエージェントにインストールしました。",
+  },
+  "marketplace.notice.pluginRemoved": {
+    one: "{name} を {count} 体のエージェントから削除しました。",
+    other: "{name} を {count} 体のエージェントから削除しました。",
+  },
+  "marketplace.error.pluginsLocalOnly": "これらのプラグインは、エージェントのワークスペースを保持するこのコンピューターにのみインストールされます。このコンピューターのエージェントに切り替えてください。",
 
   "marketplace.plugins.missing": "このプラグインは Whilo のカタログにありません。",
 

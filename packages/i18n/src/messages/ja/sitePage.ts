@@ -87,6 +87,10 @@ export const messages = {
     "より大きなサーバー、{count} 人を超えるメンバー、そのほかのご要望にも対応します。エンタープライズサポート付きです。",
   "sitePage.pricing.enterprise.contact": "営業に問い合わせる",
   "sitePage.pricing.unavailable": "お支払いはまだご利用いただけません。ご利用可能になり次第、このページに価格が再表示されます。",
+  "sitePage.billing.pendingTitle": "お支払いを処理中です",
+  "sitePage.billing.pendingBody": "お支払いを確認しています。少し時間がかかる場合があります。Whilo に戻ってサーバーを確認するか、しばらく待ってからもう一度お試しください。",
+  "sitePage.billing.unavailableTitle": "お支払いはご利用いただけません",
+  "sitePage.billing.unavailableBody": "決済サービスがまだ設定されていないため、確認できません。請求は発生していません。Whilo に戻ってください。",
   "sitePage.marketplace.agents.title": "エージェント — Whilo マーケットプレイス",
   "sitePage.marketplace.agents.description":
     "Whilo でほかの人が作ったエージェントです。スキルやルーティンと一緒に Whilo に追加できます。",
@@ -145,8 +149,4 @@ export const messages = {
   "sitePage.marketplace.missing.title": "マーケットプレイスにありません",
   "sitePage.marketplace.missing.body": "作成者が削除したか、Whilo が承認しなかったか、リンクが間違っています。",
   "sitePage.marketplace.missing.open": "マーケットプレイスを開く",
-  "sitePage.billing.unavailableTitle": "お支払いはご利用いただけません",
-  "sitePage.billing.unavailableBody": "決済サービスがまだ設定されていないため、確認できません。請求は発生していません。Whilo に戻ってください。",
-  "sitePage.billing.pendingTitle": "お支払いを処理中です",
-  "sitePage.billing.pendingBody": "お支払いを確認しています。少し時間がかかる場合があります。Whilo に戻ってサーバーを確認するか、しばらく待ってからもう一度お試しください。",
 } as const satisfies PartialTranslation<typeof source>;

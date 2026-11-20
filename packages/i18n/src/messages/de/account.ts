@@ -78,6 +78,7 @@ export const messages = {
   "account.login.checkDelivery": "Zustellung prüfen",
   "account.login.checkAgainIn": "In {time} erneut prüfen",
   "account.login.sendCode": "Anmeldecode senden",
+  "account.login.remember": "Angemeldet bleiben",
   "account.login.tryAgainIn": "In {time} erneut versuchen",
   "account.login.checkingDelivery": "Zustellung wird geprüft…",
   "account.login.sendingCode": "Code wird gesendet…",

@@ -1286,7 +1286,7 @@ export const messages = {
   "mobile.server.update.path.container":
     "Na hoście Docker pobierz nowy obraz Whilo i utwórz kontener ponownie z tymi samymi woluminami danych. Najpierw poczekaj na zakończenie aktywnej pracy. Zachowaj istniejące woluminy, aby nie stracić danych.",
   "mobile.server.update.path.manual":
-    "Ta instalacja nie może sama się zastąpić. Poproś administratora hosta o zainstalowanie zgodnego wydania z github.com/nightly-labs/whilo/releases. Zachowaj istniejące dane Whilo.",
+    "Ta instalacja nie może sama się zastąpić. Poproś administratora hosta o zainstalowanie zgodnego wydania z github.com/nightly-labs/openbot/releases. Zachowaj istniejące dane Whilo.",
   "mobile.server.update.path.unavailable":
     "To jest kompilacja deweloperska. Użyj zainstalowanego wydania Whilo, aby sprawdzać aktualizacje.",
   "mobile.server.update.check": "Sprawdź aktualizacje",

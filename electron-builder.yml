@@ -6,6 +6,11 @@ protocols:
     schemes:
       - whilo
 asar: true
+# Every published installer and every differential-update file: `Whilo-<version>-<arch>.<ext>`. The
+# name comes from `productName` above, so it stays `Whilo-…` for as long as that reads `Whilo`. The
+# release that `apps/auth-api` resolves for each download button must be published with this name:
+# that is a build step (`bun run dist:*`), and until such a release exists the published manifests
+# still advertise the old `OpenBot-…` names.
 artifactName: ${productName}-${version}-${arch}.${ext}
 electronUpdaterCompatibility: ">=2.16"
 electronFuses:
@@ -21,11 +26,14 @@ electronFuses:
 publish:
   provider: github
   # electron-builder writes these values into `app-update.yml`, and electron-updater reads the
-  # release feed from them. They must name the repository that holds the releases: the git remote,
-  # `GITHUB_REPOSITORY`, the README download links and every published release use `whilo`.
-  # Change this pair together with the repository rename if the repository moves to `whilo`.
+  # release feed from them. They must name the repository that really holds the releases, because
+  # `app-update.yml` ships inside the app and a wrong name fails every auto-update with a 404.
+  # The repository on GitHub is still `nightly-labs/openbot`: `nightly-labs/whilo` does not exist, so
+  # this pair stays `openbot`. Move the pair with the GitHub rename, in one step with the feed URL in
+  # `src/main/host-release-service.ts`, the repository URLs in `apps/auth-api/src/lib/landing-links.ts`
+  # and the download links in README.md.
   owner: nightly-labs
-  repo: whilo
+  repo: openbot
 files:
   - out/**/*
   - package.json

@@ -27,7 +27,7 @@ const logger = createWhiloLogger("update");
 // The time that the user has to read the download dialog after a stalled install, before the app exits.
 const STALLED_INSTALL_DIALOG_MS = 10 * 60_000;
 const GUIDE_URL =
-  "https://github.com/nightly-labs/whilo/blob/main/docs/TROUBLESHOOTING.md#whilo-says-a-newer-version-saved-your-data";
+  "https://github.com/nightly-labs/openbot/blob/main/docs/TROUBLESHOOTING.md#whilo-says-a-newer-version-saved-your-data";
 
 interface NewerDatabaseRecoveryOptions {
   window: BrowserWindow | null;

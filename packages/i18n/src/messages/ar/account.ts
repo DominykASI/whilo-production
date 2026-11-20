@@ -81,6 +81,7 @@ export const messages = {
   "account.login.checkDelivery": "التحقق من التسليم",
   "account.login.checkAgainIn": "تحقّق مرة أخرى بعد {time}",
   "account.login.sendCode": "إرسال رمز تسجيل الدخول",
+  "account.login.remember": "أبقني مسجَّل الدخول",
   "account.login.tryAgainIn": "حاول مرة أخرى بعد {time}",
   "account.login.checkingDelivery": "جارٍ التحقق من التسليم…",
   "account.login.sendingCode": "جارٍ إرسال الرمز…",

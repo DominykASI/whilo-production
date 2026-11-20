@@ -62,6 +62,12 @@ export const messages = {
   "app.rail.settingsNotice": "Configurações. {notice}",
   "app.rail.more": "Mais",
   "app.rail.pinPage": "Fixar {name} na barra",
+  "app.mode.label": "Whilo: {mode}",
+  "app.mode.title": "Experiência do Whilo",
+  "app.mode.pets": "Pets",
+  "app.mode.dots": "Pontos",
+  "app.mode.petsHint": "Foque no essencial: o chat e seus pets",
+  "app.mode.dotsHint": "Todas as ferramentas e a barra lateral completa",
   "app.page.serverFallback": "Servidor",
   "app.help.label": "Ajuda",
   "app.help.whatsNew": "Novidades",
@@ -108,10 +114,4 @@ export const messages = {
     "{name} passa para Acesso completo. Executará comandos e ferramentas, alterará arquivos, publicará sites e ampliará seu próprio acesso ao sistema de arquivos e à rede no computador em que é executado, sem perguntar novamente. Você pode mudar isso nas configurações de Permissões do agente.",
   "app.standingApproval.descriptionUnnamed":
     "Este agente passa para Acesso completo. Executará comandos e ferramentas, alterará arquivos, publicará sites e ampliará seu próprio acesso ao sistema de arquivos e à rede no computador em que é executado, sem perguntar novamente. Você pode mudar isso nas configurações de Permissões do agente.",
-  "app.mode.label": "Whilo: {mode}",
-  "app.mode.title": "Experiência do Whilo",
-  "app.mode.pets": "Pets",
-  "app.mode.dots": "Pontos",
-  "app.mode.petsHint": "Foque no essencial: o chat e seus pets",
-  "app.mode.dotsHint": "Todas as ferramentas e a barra lateral completa",
 } as const satisfies PartialTranslation<typeof source>;

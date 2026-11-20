@@ -81,7 +81,7 @@ function draftPost(translate: AppTranslate): string {
  * `mailto:` address, which `openUrl` refuses; the web client opens the same constant.
  */
 const EXTERNAL_DESTINATIONS: Record<ExternalDestination, string | ((translate: AppTranslate) => string)> = {
-  "agent-setup": "https://github.com/nightly-labs/whilo/blob/main/docs/TROUBLESHOOTING.md",
+  "agent-setup": "https://github.com/nightly-labs/openbot/blob/main/docs/TROUBLESHOOTING.md",
   "opencode-install": "https://opencode.ai/docs/",
   "opencode-auth": "https://opencode.ai/auth",
   "claude-install": "https://code.claude.com/docs",
@@ -92,7 +92,7 @@ const EXTERNAL_DESTINATIONS: Record<ExternalDestination, string | ((translate: A
   guides: "https://openbot.run/guides",
   // A Redirect Rule in the openbot.run Cloudflare zone sends this to the current Discord invite.
   discord: "https://discord.openbot.run",
-  github: "https://github.com/nightly-labs/whilo",
+  github: "https://github.com/nightly-labs/openbot",
   x: "https://x.com/OpenBot_",
   threads: "https://www.threads.com/@whilo.run",
   instagram: "https://www.instagram.com/whilo.run/",

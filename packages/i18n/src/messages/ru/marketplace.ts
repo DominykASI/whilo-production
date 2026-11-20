@@ -22,9 +22,37 @@ export const messages = {
   "marketplace.kinds": "Типы содержимого каталога",
   "marketplace.tab.agents": "Агенты",
   "marketplace.tab.skills": "Навыки",
+  "marketplace.tab.plugins": "Плагины",
   "marketplace.description.apps": "Подключите инструменты и сервисы, с которыми работают ваши агенты.",
   "marketplace.description.agents": "Готовые агенты со своими инструкциями и навыками.",
   "marketplace.description.skills": "Инструкции, которые учат агента задаче или инструменту.",
+  "marketplace.description.plugins": "Готовые наборы навыков и дополнений, например Computer Use.",
+  "marketplace.loading.plugins": "Загрузка плагинов",
+  "marketplace.noMatch.plugins": "Ни один плагин не соответствует этому поиску.",
+  "marketplace.empty.plugins": "В Marketplace пока нет плагинов.",
+  "marketplace.noMatch.showPlugins": {
+    one: "Показать {count} плагин",
+    other: "Показать {count} плагинов",
+  },
+  "marketplace.plugins.group.computerUse": "Computer Use",
+  "marketplace.plugins.group.worldLegalDesk": "World Legal Desk",
+  "marketplace.plugins.group.tools": "Инструменты",
+  "marketplace.plugins.skillsIncluded": {
+    one: "Включён {count} навык",
+    other: "Включено {count} навыков",
+  },
+  "marketplace.plugins.suggestions": "Предлагаемые запросы",
+  "marketplace.plugins.links": "Ссылки",
+  "marketplace.plugins.about": "О плагине",
+  "marketplace.notice.pluginInstalled": {
+    one: "{name} установлен у {count} агента.",
+    other: "{name} установлен у {count} агентов.",
+  },
+  "marketplace.notice.pluginRemoved": {
+    one: "{name} удалён у {count} агента.",
+    other: "{name} удалён у {count} агентов.",
+  },
+  "marketplace.error.pluginsLocalOnly": "Эти плагины устанавливаются только на этот компьютер, где хранятся рабочие пространства агентов. Переключитесь на агентов этого компьютера.",
 
   "marketplace.plugins.missing": "Этого плагина нет в каталоге Whilo.",
 

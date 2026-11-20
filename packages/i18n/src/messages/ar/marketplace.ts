@@ -22,9 +22,37 @@ export const messages = {
   "marketplace.kinds": "أنواع محتوى المتجر",
   "marketplace.tab.agents": "الوكلاء",
   "marketplace.tab.skills": "المهارات",
+  "marketplace.tab.plugins": "الإضافات",
   "marketplace.description.apps": "اربط الأدوات والخدمات التي يعمل بها وكلاؤك.",
   "marketplace.description.agents": "وكلاء جاهزون بتعليماتهم ومهاراتهم الخاصة.",
   "marketplace.description.skills": "تعليمات تعلّم الوكيل مهمة أو أداة.",
+  "marketplace.description.plugins": "حزم جاهزة من المهارات والإضافات، مثل Computer Use.",
+  "marketplace.loading.plugins": "جارٍ تحميل الإضافات",
+  "marketplace.noMatch.plugins": "لا توجد إضافة تطابق هذا البحث.",
+  "marketplace.empty.plugins": "لا توجد إضافات في Marketplace بعد.",
+  "marketplace.noMatch.showPlugins": {
+    one: "عرض {count} إضافة",
+    other: "عرض {count} إضافات",
+  },
+  "marketplace.plugins.group.computerUse": "Computer Use",
+  "marketplace.plugins.group.worldLegalDesk": "World Legal Desk",
+  "marketplace.plugins.group.tools": "الأدوات",
+  "marketplace.plugins.skillsIncluded": {
+    one: "تتضمن {count} مهارة",
+    other: "تتضمن {count} مهارات",
+  },
+  "marketplace.plugins.suggestions": "مطالبات مقترحة",
+  "marketplace.plugins.links": "روابط",
+  "marketplace.plugins.about": "حول",
+  "marketplace.notice.pluginInstalled": {
+    one: "تم تثبيت {name} على {count} وكيل.",
+    other: "تم تثبيت {name} على {count} وكلاء.",
+  },
+  "marketplace.notice.pluginRemoved": {
+    one: "تمت إزالة {name} من {count} وكيل.",
+    other: "تمت إزالة {name} من {count} وكلاء.",
+  },
+  "marketplace.error.pluginsLocalOnly": "تُثبَّت هذه الإضافات على هذا الكمبيوتر فقط، وهو الذي يحتفظ بمساحات عمل الوكلاء. انتقل إلى وكلاء هذا الكمبيوتر.",
 
   "marketplace.plugins.missing": "هذه الإضافة ليست في كتالوج Whilo.",
 

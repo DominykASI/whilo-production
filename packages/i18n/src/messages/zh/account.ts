@@ -74,6 +74,7 @@ export const messages = {
   "account.login.checkDelivery": "检查送达情况",
   "account.login.checkAgainIn": "{time} 后可再次检查",
   "account.login.sendCode": "发送登录验证码",
+  "account.login.remember": "保持登录",
   "account.login.tryAgainIn": "{time} 后可重试",
   "account.login.checkingDelivery": "正在检查送达情况…",
   "account.login.sendingCode": "正在发送验证码…",

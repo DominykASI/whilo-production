@@ -74,6 +74,7 @@ export const messages = {
   "account.login.checkDelivery": "전송 확인",
   "account.login.checkAgainIn": "{time} 후 다시 확인",
   "account.login.sendCode": "로그인 코드 보내기",
+  "account.login.remember": "로그인 상태 유지",
   "account.login.tryAgainIn": "{time} 후 다시 시도",
   "account.login.checkingDelivery": "전송 확인 중…",
   "account.login.sendingCode": "코드를 보내는 중…",

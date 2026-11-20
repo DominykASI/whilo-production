@@ -22,9 +22,37 @@ export const messages = {
   "marketplace.kinds": "Tipi di contenuto del Marketplace",
   "marketplace.tab.agents": "Agenti",
   "marketplace.tab.skills": "Skill",
+  "marketplace.tab.plugins": "Plugin",
   "marketplace.description.apps": "Collega gli strumenti e i servizi con cui lavorano i tuoi agenti.",
   "marketplace.description.agents": "Agenti pronti all’uso, con istruzioni e skill proprie.",
   "marketplace.description.skills": "Istruzioni che insegnano a un agente un compito o uno strumento.",
+  "marketplace.description.plugins": "Pacchetti pronti di competenze ed extra, come Computer Use.",
+  "marketplace.loading.plugins": "Caricamento dei plugin",
+  "marketplace.noMatch.plugins": "Nessun plugin corrisponde a questa ricerca.",
+  "marketplace.empty.plugins": "Nessun plugin nel Marketplace per ora.",
+  "marketplace.noMatch.showPlugins": {
+    one: "Mostra {count} plugin",
+    other: "Mostra {count} plugin",
+  },
+  "marketplace.plugins.group.computerUse": "Computer Use",
+  "marketplace.plugins.group.worldLegalDesk": "World Legal Desk",
+  "marketplace.plugins.group.tools": "Strumenti",
+  "marketplace.plugins.skillsIncluded": {
+    one: "{count} competenza inclusa",
+    other: "{count} competenze incluse",
+  },
+  "marketplace.plugins.suggestions": "Prompt suggeriti",
+  "marketplace.plugins.links": "Link",
+  "marketplace.plugins.about": "Informazioni",
+  "marketplace.notice.pluginInstalled": {
+    one: "{name} installato su {count} agente.",
+    other: "{name} installato su {count} agenti.",
+  },
+  "marketplace.notice.pluginRemoved": {
+    one: "{name} rimosso da {count} agente.",
+    other: "{name} rimosso da {count} agenti.",
+  },
+  "marketplace.error.pluginsLocalOnly": "Questi plugin si installano solo su questo computer, che conserva gli spazi di lavoro degli agenti. Passa agli agenti di questo computer.",
 
   "marketplace.plugins.missing": "Questo plugin non è nel catalogo di Whilo.",
 

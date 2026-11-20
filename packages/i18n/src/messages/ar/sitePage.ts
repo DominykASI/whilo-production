@@ -81,6 +81,10 @@ export const messages = {
   "sitePage.pricing.enterprise.body": "خوادم أكبر، أو أكثر من {count} عضو، أو أي شيء آخر تحتاجه. مع دعم المؤسسات.",
   "sitePage.pricing.enterprise.contact": "التواصل مع المبيعات",
   "sitePage.pricing.unavailable": "المدفوعات غير متاحة بعد. ستعرض هذه الصفحة الأسعار مجددًا عندما تتوفر.",
+  "sitePage.billing.pendingTitle": "الدفع قيد التنفيذ",
+  "sitePage.billing.pendingBody": "نؤكد دفعتك الآن. قد يستغرق ذلك لحظة. ارجع إلى Whilo لرؤية خادمك، أو انتظر وحاول مجددًا.",
+  "sitePage.billing.unavailableTitle": "المدفوعات غير متاحة",
+  "sitePage.billing.unavailableBody": "لم يتم إعداد خدمة الدفع بعد، لذا لا يمكننا تأكيد أي شيء. لم يتم خصم أي مبلغ. ارجع إلى Whilo.",
   "sitePage.marketplace.agents.title": "الوكلاء — متجر Whilo",
   "sitePage.marketplace.agents.description":
     "وكلاء أنشأهم أشخاص في Whilo. أضف واحدًا إلى Whilo مع مهاراته ومهامه الدورية.",
@@ -136,8 +140,4 @@ export const messages = {
   "sitePage.marketplace.missing.title": "غير موجود في المتجر",
   "sitePage.marketplace.missing.body": "أزاله المنشئ، أو لم يوافق عليه Whilo، أو الرابط غير صحيح.",
   "sitePage.marketplace.missing.open": "فتح المتجر",
-  "sitePage.billing.unavailableTitle": "المدفوعات غير متاحة",
-  "sitePage.billing.unavailableBody": "لم يتم إعداد خدمة الدفع بعد، لذا لا يمكننا تأكيد أي شيء. لم يتم خصم أي مبلغ. ارجع إلى Whilo.",
-  "sitePage.billing.pendingTitle": "الدفع قيد التنفيذ",
-  "sitePage.billing.pendingBody": "نؤكد دفعتك الآن. قد يستغرق ذلك لحظة. ارجع إلى Whilo لرؤية خادمك، أو انتظر وحاول مجددًا.",
 } as const satisfies PartialTranslation<typeof source>;

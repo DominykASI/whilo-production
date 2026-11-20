@@ -75,6 +75,7 @@ export const messages = {
   "account.login.checkDelivery": "配信を確認",
   "account.login.checkAgainIn": "{time} 後に再確認",
   "account.login.sendCode": "サインインコードを送信",
+  "account.login.remember": "ログイン状態を保持",
   "account.login.tryAgainIn": "{time} 後に再試行",
   "account.login.checkingDelivery": "配信を確認中…",
   "account.login.sendingCode": "コードを送信中…",
