@@ -22,11 +22,11 @@ export const messages = {
   "webClient.notice.connecting": "Conectando ao seu servidor",
   "webClient.notice.findingHosts": "Buscando seus servidores",
   "webClient.notice.hostsFailed": "Não foi possível carregar seus servidores",
-  "webClient.notice.connectComputer": "Compre um Cloud Computer ou conecte seu servidor",
+  "webClient.notice.connectComputer": "Conecte seu computador",
   "webClient.connect.description":
     "Execute o Whilo no seu computador para conversar com seus agentes neste navegador. Você também pode entrar em um servidor com um convite.",
   "webClient.connect.descriptionHosted":
-    "Compre um Cloud Computer em segundos — sem instalar, sem configurar. Seus agentes ficam online na hora. Você também pode rodar o Whilo no seu computador ou entrar em um servidor com convite.",
+    "Rode o Whilo no seu próprio computador e seus agentes respondem aqui no navegador. O Cloud Computer é opcional: compre só se quiser seus agentes online sem o seu computador ligado.",
   "webClient.connect.stepInstall": "Instale e abra o Whilo no seu computador.",
   "webClient.connect.stepSignIn": "Entre com seu e-mail.",
   "webClient.connect.stepRemote": "Ative o acesso remoto.",
@@ -88,4 +88,6 @@ export const messages = {
   "webClient.error.removeEndpointOffline": "Conecte-se ao seu servidor para remover um endpoint.",
   "webClient.error.hostNotConnected": "O servidor não está conectado.",
   "webClient.error.memberNotFound": "O membro não existe.",
+  "webClient.connect.hostedOptional":
+    "Sem Cloud Computer todos os planos e recursos continuam disponíveis. Nada fica bloqueado.",
 } as const satisfies PartialTranslation<typeof source>;

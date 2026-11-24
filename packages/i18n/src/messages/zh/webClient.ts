@@ -22,11 +22,11 @@ export const messages = {
   "webClient.notice.connecting": "正在连接你的服务器",
   "webClient.notice.findingHosts": "正在查找你的服务器",
   "webClient.notice.hostsFailed": "无法加载你的服务器",
-  "webClient.notice.connectComputer": "连接服务器",
+  "webClient.notice.connectComputer": "连接你的电脑",
   "webClient.connect.description":
     "在你的电脑上运行 Whilo，即可在这个浏览器里与助手对话。你也可以通过邀请加入一台服务器。",
   "webClient.connect.descriptionHosted":
-    "创建云服务器，即可在这个浏览器中与你的助手对话。你也可以在自己的电脑上运行 Whilo，或通过邀请加入服务器。",
+    "在自己的电脑上运行 Whilo，你的智能体就会在此浏览器中响应。云电脑是可选的：只有当你希望智能体在没有你的电脑时也保持在线，才需要购买。",
   "webClient.connect.stepInstall": "在你的电脑上安装并打开 Whilo。",
   "webClient.connect.stepSignIn": "用邮箱登录。",
   "webClient.connect.stepRemote": "开启远程访问。",
@@ -81,4 +81,5 @@ export const messages = {
   "webClient.error.removeEndpointOffline": "请连接服务器以移除端点。",
   "webClient.error.hostNotConnected": "服务器未连接。",
   "webClient.error.memberNotFound": "该成员不存在。",
+  "webClient.connect.hostedOptional": "没有云电脑，所有套餐和功能依然可用。不会有任何功能被锁定。",
 } as const satisfies PartialTranslation<typeof source>;

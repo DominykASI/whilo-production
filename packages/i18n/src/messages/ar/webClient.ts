@@ -22,11 +22,11 @@ export const messages = {
   "webClient.notice.connecting": "جارٍ الاتصال بخادمك",
   "webClient.notice.findingHosts": "جارٍ البحث عن خوادمك",
   "webClient.notice.hostsFailed": "تعذّر تحميل خوادمك",
-  "webClient.notice.connectComputer": "ربط خادم",
+  "webClient.notice.connectComputer": "وصّل حاسوبك",
   "webClient.connect.description":
     "شغّل Whilo على حاسوبك للدردشة مع وكلائك من هذا المتصفح. يمكنك أيضًا الانضمام إلى خادم بدعوة.",
   "webClient.connect.descriptionHosted":
-    "أنشئ خادمًا مستضافًا للدردشة مع وكلائك من هذا المتصفح. يمكنك أيضًا تشغيل Whilo على حاسوبك، أو الانضمام إلى خادم بدعوة.",
+    "شغّل Whilo على حاسوبك وسيرد وكلاؤك هنا في المتصفح. الحاسوب السحابي اختياري: اشتره فقط إذا أردت أن يبقى وكلاؤك متصلين دون حاسوبك.",
   "webClient.connect.stepInstall": "ثبّت Whilo وافتحه على حاسوبك.",
   "webClient.connect.stepSignIn": "سجّل الدخول ببريدك الإلكتروني.",
   "webClient.connect.stepRemote": "فعّل الوصول عن بُعد.",
@@ -82,4 +82,5 @@ export const messages = {
   "webClient.error.removeEndpointOffline": "اتصل بخادمك لإزالة نقطة نهاية.",
   "webClient.error.hostNotConnected": "الخادم غير متصل.",
   "webClient.error.memberNotFound": "العضو غير موجود.",
+  "webClient.connect.hostedOptional": "بدون حاسوب سحابي تبقى كل الخطط والميزات متاحة. لا شيء يُقفل.",
 } as const satisfies PartialTranslation<typeof source>;

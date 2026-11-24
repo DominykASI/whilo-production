@@ -397,8 +397,18 @@
   }
 }
 
+/* Both choices share the row; the hosted server is offered beside the download, not over it. */
 .web-connect-hosted.ui-button {
-  width: 100%;
+  color: var(--whilo-text-primary);
+}
+
+/* The account keeps every plan and feature without a cloud computer; the line says so. */
+.web-connect-note {
+  margin: 0;
+  color: var(--whilo-text-muted);
+  font-size: var(--whilo-text-sm);
+  line-height: var(--whilo-leading-sm);
+  text-align: center;
 }
 
 .web-connect-refresh.ui-button {

@@ -12,7 +12,8 @@ export function WebConnectComputer(props: {
   onJoin: () => void;
   /**
    * Opens the hosted server plans. Leave it out when the account cannot create a hosted server. With
-   * it, the hosted server is the first action, because it needs no install.
+   * it, the hosted server is a second choice beside the download: the local computer stays the first
+   * action, and the note below says that the account keeps every plan without buying one.
    */
   onCreateServer?: (() => void) | undefined;
   onRefresh: () => void;
@@ -31,15 +32,6 @@ export function WebConnectComputer(props: {
           </Text>
           <ErrorReference reference={props.failed ? props.reference : null} />
         </header>
-
-        <Show when={props.onCreateServer}>
-          {(createServer) => (
-            <Button class="web-connect-hosted" onClick={() => createServer()()}>
-              <Server aria-hidden="true" />
-              {t("webClient.notice.createServer")}
-            </Button>
-          )}
-        </Show>
 
         <ol class="web-connect-steps">
           <li>
@@ -65,7 +57,7 @@ export function WebConnectComputer(props: {
         <footer class="web-connect-actions">
           <div class="web-connect-primary-actions">
             <a
-              class={`web-connect-download ${buttonVariants({ variant: props.onCreateServer ? "outline" : "default" })}`}
+              class={`web-connect-download ${buttonVariants({ variant: "default" })}`}
               href="/download"
               target="_blank"
               rel="noreferrer"
@@ -73,11 +65,20 @@ export function WebConnectComputer(props: {
               <Download aria-hidden="true" />
               {t("webClient.notice.download")}
             </a>
-            <Button variant="outline" onClick={() => props.onJoin()}>
-              <Link2 aria-hidden="true" />
-              {t("webClient.notice.join")}
-            </Button>
+            <Show when={props.onCreateServer}>
+              {(createServer) => (
+                <Button class="web-connect-hosted" variant="outline" onClick={() => createServer()()}>
+                  <Server aria-hidden="true" />
+                  {t("webClient.notice.createServer")}
+                </Button>
+              )}
+            </Show>
           </div>
+          <p class="web-connect-note">{t("webClient.connect.hostedOptional")}</p>
+          <Button variant="ghost" onClick={() => props.onJoin()}>
+            <Link2 aria-hidden="true" />
+            {t("webClient.notice.join")}
+          </Button>
           <Button
             class="web-connect-refresh"
             variant="ghost"

@@ -22,11 +22,11 @@ export const messages = {
   "webClient.notice.connecting": "Łączenie z twoim serwerem",
   "webClient.notice.findingHosts": "Szukanie twoich serwerów",
   "webClient.notice.hostsFailed": "Nie udało się wczytać twoich serwerów",
-  "webClient.notice.connectComputer": "Połącz serwer",
+  "webClient.notice.connectComputer": "Połącz swój komputer",
   "webClient.connect.description":
     "Uruchom Whilo na komputerze, aby rozmawiać z agentami w tej przeglądarce. Możesz też dołączyć do serwera przez zaproszenie.",
   "webClient.connect.descriptionHosted":
-    "Utwórz hostowany serwer, aby rozmawiać z agentami w tej przeglądarce. Możesz też uruchomić Whilo na komputerze albo dołączyć do serwera przez zaproszenie.",
+    "Uruchom Whilo na własnym komputerze, a agenci odpowiedzą tutaj w przeglądarce. Komputer w chmurze jest opcjonalny: kup go tylko, jeśli chcesz mieć agentów online bez swojego komputera.",
   "webClient.connect.stepInstall": "Zainstaluj i otwórz Whilo na komputerze.",
   "webClient.connect.stepSignIn": "Zaloguj się adresem e-mail.",
   "webClient.connect.stepRemote": "Włącz dostęp zdalny.",
@@ -89,4 +89,6 @@ export const messages = {
   "webClient.error.removeEndpointOffline": "Połącz się z serwerem, aby usunąć endpoint.",
   "webClient.error.hostNotConnected": "Serwer nie jest połączony.",
   "webClient.error.memberNotFound": "Ten członek nie istnieje.",
+  "webClient.connect.hostedOptional":
+    "Bez komputera w chmurze wszystkie plany i funkcje pozostają dostępne. Nic nie jest blokowane.",
 } as const satisfies PartialTranslation<typeof source>;

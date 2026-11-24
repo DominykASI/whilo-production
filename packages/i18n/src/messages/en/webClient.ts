@@ -21,11 +21,11 @@ export const messages = defineMessages("webClient", {
   "webClient.notice.connecting": "Connecting to your server",
   "webClient.notice.findingHosts": "Finding your servers",
   "webClient.notice.hostsFailed": "Could not load your servers",
-  "webClient.notice.connectComputer": "Buy a Cloud Computer or connect your server",
+  "webClient.notice.connectComputer": "Connect your computer",
   "webClient.connect.description":
     "Run Whilo on your computer to chat with your agents from this browser. You can also join a server with an invitation.",
   "webClient.connect.descriptionHosted":
-    "Buy a cloud computer in seconds — no install, no setup. Your agents are online immediately. You can also run Whilo on your computer, or join a server with an invitation.",
+    "Run Whilo on your own computer and your agents answer here in the browser. A cloud computer is optional: buy one only if you want your agents online without your computer.",
   "webClient.connect.stepInstall": "Install and open Whilo on your computer.",
   "webClient.connect.stepSignIn": "Sign in with your email.",
   "webClient.connect.stepRemote": "Turn on remote access.",
@@ -85,4 +85,6 @@ export const messages = defineMessages("webClient", {
   "webClient.error.removeEndpointOffline": "Connect to your server to remove an endpoint.",
   "webClient.error.hostNotConnected": "The server is not connected.",
   "webClient.error.memberNotFound": "The member does not exist.",
+  "webClient.connect.hostedOptional":
+    "Without a cloud computer every plan and feature stays available. Nothing is locked.",
 });

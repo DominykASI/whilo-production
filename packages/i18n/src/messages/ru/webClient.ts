@@ -22,11 +22,11 @@ export const messages = {
   "webClient.notice.connecting": "Подключение к вашему серверу",
   "webClient.notice.findingHosts": "Поиск ваших серверов",
   "webClient.notice.hostsFailed": "Не удалось загрузить ваши серверы",
-  "webClient.notice.connectComputer": "Подключите сервер",
+  "webClient.notice.connectComputer": "Подключите компьютер",
   "webClient.connect.description":
     "Запустите Whilo на своём компьютере, чтобы общаться с агентами из этого браузера. Также можно присоединиться к серверу по приглашению.",
   "webClient.connect.descriptionHosted":
-    "Создайте размещённый сервер, чтобы общаться с агентами из этого браузера. Также можно запустить Whilo на своём компьютере или присоединиться к серверу по приглашению.",
+    "Запустите Whilo на своём компьютере, и агенты будут отвечать здесь в браузере. Облачный компьютер необязателен: покупайте его, только если хотите, чтобы агенты работали без вашего компьютера.",
   "webClient.connect.stepInstall": "Установите и откройте Whilo на своём компьютере.",
   "webClient.connect.stepSignIn": "Войдите с помощью адреса электронной почты.",
   "webClient.connect.stepRemote": "Включите удалённый доступ.",
@@ -88,4 +88,6 @@ export const messages = {
   "webClient.error.removeEndpointOffline": "Подключитесь к серверу, чтобы удалить эндпоинт.",
   "webClient.error.hostNotConnected": "Сервер не подключён.",
   "webClient.error.memberNotFound": "Участника не существует.",
+  "webClient.connect.hostedOptional":
+    "Без облачного компьютера все тарифы и функции остаются доступны. Ничего не блокируется.",
 } as const satisfies PartialTranslation<typeof source>;

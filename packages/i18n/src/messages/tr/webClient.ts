@@ -22,11 +22,11 @@ export const messages = {
   "webClient.notice.connecting": "Sunucunuza bağlanılıyor",
   "webClient.notice.findingHosts": "Sunucularınız aranıyor",
   "webClient.notice.hostsFailed": "Sunucularınız yüklenemedi",
-  "webClient.notice.connectComputer": "Bir sunucu bağlayın",
+  "webClient.notice.connectComputer": "Bilgisayarını bağla",
   "webClient.connect.description":
     "Bu tarayıcıdan ajanlarınızla sohbet etmek için bilgisayarınızda Whilo'u çalıştırın. Ayrıca bir davetle bir sunucuya da katılabilirsiniz.",
   "webClient.connect.descriptionHosted":
-    "Bu tarayıcıdan ajanlarınızla sohbet etmek için barındırılan bir sunucu oluşturun. Whilo'u bilgisayarınızda da çalıştırabilir veya bir davetle bir sunucuya katılabilirsiniz.",
+    "Whilo’yu kendi bilgisayarında çalıştır, ajanların burada tarayıcıda yanıt versin. Bulut bilgisayar isteğe bağlıdır: yalnızca ajanlarının bilgisayarın olmadan çevrimiçi olmasını istiyorsan satın al.",
   "webClient.connect.stepInstall": "Bilgisayarınıza Whilo'u yükleyin ve açın.",
   "webClient.connect.stepSignIn": "E-posta adresinizle oturum açın.",
   "webClient.connect.stepRemote": "Uzaktan erişimi açın.",
@@ -85,4 +85,6 @@ export const messages = {
   "webClient.error.removeEndpointOffline": "Bir uç noktayı kaldırmak için sunucunuza bağlanın.",
   "webClient.error.hostNotConnected": "Sunucu bağlı değil.",
   "webClient.error.memberNotFound": "Üye mevcut değil.",
+  "webClient.connect.hostedOptional":
+    "Bulut bilgisayar olmadan tüm planlar ve özellikler kullanılabilir kalır. Hiçbir şey kilitlenmez.",
 } as const satisfies PartialTranslation<typeof source>;

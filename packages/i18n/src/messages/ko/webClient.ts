@@ -22,11 +22,11 @@ export const messages = {
   "webClient.notice.connecting": "서버에 연결하는 중",
   "webClient.notice.findingHosts": "서버를 찾는 중",
   "webClient.notice.hostsFailed": "서버를 불러올 수 없어요",
-  "webClient.notice.connectComputer": "서버 연결",
+  "webClient.notice.connectComputer": "컴퓨터 연결",
   "webClient.connect.description":
     "컴퓨터에서 Whilo을 실행하면 이 브라우저에서 에이전트와 채팅할 수 있어요. 초대를 받아 서버에 참여할 수도 있어요.",
   "webClient.connect.descriptionHosted":
-    "호스팅 서버를 만들면 이 브라우저에서 에이전트와 채팅할 수 있어요. 컴퓨터에서 Whilo을 실행하거나 초대를 받아 서버에 참여할 수도 있어요.",
+    "Whilo를 내 컴퓨터에서 실행하면 에이전트가 이 브라우저에서 응답합니다. 클라우드 컴퓨터는 선택 사항입니다. 컴퓨터 없이 에이전트를 온라인으로 두고 싶을 때만 구매하세요.",
   "webClient.connect.stepInstall": "컴퓨터에 Whilo을 설치하고 여세요.",
   "webClient.connect.stepSignIn": "이메일로 로그인하세요.",
   "webClient.connect.stepRemote": "원격 접근을 켜세요.",
@@ -85,4 +85,6 @@ export const messages = {
   "webClient.error.removeEndpointOffline": "엔드포인트를 제거하려면 서버에 연결해 주세요.",
   "webClient.error.hostNotConnected": "서버가 연결되어 있지 않아요.",
   "webClient.error.memberNotFound": "멤버가 없어요.",
+  "webClient.connect.hostedOptional":
+    "클라우드 컴퓨터가 없어도 모든 플랜과 기능을 사용할 수 있습니다. 잠기는 것은 없습니다.",
 } as const satisfies PartialTranslation<typeof source>;

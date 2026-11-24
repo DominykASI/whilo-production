@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AppPreviewRouteImport } from './routes/app-preview'
+import { Route as AppsRouteImport } from './routes/apps'
 import { Route as BrandingRouteImport } from './routes/branding'
 import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as ClaRouteImport } from './routes/cla'
@@ -224,6 +225,11 @@ const AppPreviewRoute = AppPreviewRouteImport.update({
   path: '/app-preview',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/app-preview.lazy').then((d) => d.Route))
+const AppsRoute = AppsRouteImport.update({
+  id: '/apps',
+  path: '/apps',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BrandingRoute = BrandingRouteImport.update({
   id: '/branding',
   path: '/branding',
@@ -1277,6 +1283,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRoute
   '/app-preview': typeof AppPreviewRoute
+  '/apps': typeof AppsRoute
   '/branding': typeof BrandingRoute
   '/changelog': typeof ChangelogRoute
   '/cla': typeof ClaRoute
@@ -1478,6 +1485,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app': typeof AppRoute
   '/app-preview': typeof AppPreviewRoute
+  '/apps': typeof AppsRoute
   '/branding': typeof BrandingRoute
   '/changelog': typeof ChangelogRoute
   '/cla': typeof ClaRoute
@@ -1680,6 +1688,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRoute
   '/app-preview': typeof AppPreviewRoute
+  '/apps': typeof AppsRoute
   '/branding': typeof BrandingRoute
   '/changelog': typeof ChangelogRoute
   '/cla': typeof ClaRoute
@@ -1883,6 +1892,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/app-preview'
+    | '/apps'
     | '/branding'
     | '/changelog'
     | '/cla'
@@ -2084,6 +2094,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/app-preview'
+    | '/apps'
     | '/branding'
     | '/changelog'
     | '/cla'
@@ -2285,6 +2296,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/app-preview'
+    | '/apps'
     | '/branding'
     | '/changelog'
     | '/cla'
@@ -2487,6 +2499,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRoute
   AppPreviewRoute: typeof AppPreviewRoute
+  AppsRoute: typeof AppsRoute
   BrandingRoute: typeof BrandingRoute
   ChangelogRoute: typeof ChangelogRoute
   ClaRoute: typeof ClaRoute
@@ -2680,6 +2693,13 @@ declare module '@tanstack/solid-router' {
       path: '/app-preview'
       fullPath: '/app-preview'
       preLoaderRoute: typeof AppPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/apps': {
+      id: '/apps'
+      path: '/apps'
+      fullPath: '/apps'
+      preLoaderRoute: typeof AppsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/branding': {
@@ -4208,6 +4228,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRoute,
   AppPreviewRoute: AppPreviewRoute,
+  AppsRoute: AppsRoute,
   BrandingRoute: BrandingRoute,
   ChangelogRoute: ChangelogRoute,
   ClaRoute: ClaRoute,

@@ -22,11 +22,11 @@ export const messages = {
   "webClient.notice.connecting": "Verbinden met je server",
   "webClient.notice.findingHosts": "Je servers zoeken",
   "webClient.notice.hostsFailed": "Kan je servers niet laden",
-  "webClient.notice.connectComputer": "Verbind een server",
+  "webClient.notice.connectComputer": "Verbind je computer",
   "webClient.connect.description":
     "Draai Whilo op je computer om vanuit deze browser met je agents te chatten. Je kunt ook lid worden van een server met een uitnodiging.",
   "webClient.connect.descriptionHosted":
-    "Maak een gehoste server om vanuit deze browser met je agents te chatten. Je kunt Whilo ook op je computer draaien, of lid worden van een server met een uitnodiging.",
+    "Voer Whilo uit op je eigen computer en je agenten antwoorden hier in de browser. Een cloudcomputer is optioneel: koop er een alleen als je agenten online wilt zonder je computer.",
   "webClient.connect.stepInstall": "Installeer en open Whilo op je computer.",
   "webClient.connect.stepSignIn": "Log in met je e-mailadres.",
   "webClient.connect.stepRemote": "Zet toegang op afstand aan.",
@@ -91,4 +91,6 @@ export const messages = {
   "webClient.error.removeEndpointOffline": "Maak verbinding met je server om een endpoint te verwijderen.",
   "webClient.error.hostNotConnected": "De server is niet verbonden.",
   "webClient.error.memberNotFound": "Het lid bestaat niet.",
+  "webClient.connect.hostedOptional":
+    "Zonder cloudcomputer blijven alle abonnementen en functies beschikbaar. Niets wordt vergrendeld.",
 } as const satisfies PartialTranslation<typeof source>;

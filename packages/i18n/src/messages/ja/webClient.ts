@@ -22,11 +22,11 @@ export const messages = {
   "webClient.notice.connecting": "サーバーに接続しています",
   "webClient.notice.findingHosts": "サーバーを探しています",
   "webClient.notice.hostsFailed": "サーバーを読み込めませんでした",
-  "webClient.notice.connectComputer": "サーバーを接続してください",
+  "webClient.notice.connectComputer": "コンピューターを接続",
   "webClient.connect.description":
     "コンピューターで Whilo を実行すると、このブラウザーからエージェントとチャットできます。招待でサーバーに参加することもできます。",
   "webClient.connect.descriptionHosted":
-    "ホスト型サーバーを作成すると、このブラウザーからエージェントとチャットできます。コンピューターで Whilo を実行するか、招待でサーバーに参加することもできます。",
+    "Whilo を自分のコンピューターで実行すると、エージェントはこのブラウザーで応答します。クラウドコンピューターは任意です。コンピューターなしでエージェントをオンラインにしたい場合だけ購入してください。",
   "webClient.connect.stepInstall": "コンピューターに Whilo をインストールして開きます。",
   "webClient.connect.stepSignIn": "メールアドレスでサインインします。",
   "webClient.connect.stepRemote": "リモートアクセスをオンにします。",
@@ -88,4 +88,6 @@ export const messages = {
   "webClient.error.removeEndpointOffline": "エンドポイントを削除するには、サーバーに接続してください。",
   "webClient.error.hostNotConnected": "サーバーが接続されていません。",
   "webClient.error.memberNotFound": "このメンバーは存在しません。",
+  "webClient.connect.hostedOptional":
+    "クラウドコンピューターがなくても、すべてのプランと機能を利用できます。ロックされるものはありません。",
 } as const satisfies PartialTranslation<typeof source>;

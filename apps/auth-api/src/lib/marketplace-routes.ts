@@ -8,9 +8,12 @@ import { isDynamicRecord } from "@whilo/contracts/runtime-values";
  *   /marketplace?category=coding    one category (also on Skills)
  *   /marketplace?q=release          a search (also on Skills and Apps)
  *   /marketplace/skills             Skills
- *   /marketplace/apps               Apps, the plugins that /plugins showed
+ *   /apps                           Apps, the plugins that /plugins showed
  *   /marketplace/agents/<id>        one agent
  *   /marketplace/skills/<slug>      one skill
+ *
+ * Apps sits at the site root, so it is a marketing page of its own. `/marketplace/apps` keeps the old
+ * address as a redirect to it.
  *
  * The listing addresses are the ones `@whilo/contracts/marketplace-links` builds, so the link the app
  * copies and the page that opens are the same address.
@@ -18,7 +21,7 @@ import { isDynamicRecord } from "@whilo/contracts/runtime-values";
 
 export const MARKETPLACE_ROUTE = "/marketplace";
 export const MARKETPLACE_SKILLS_ROUTE = "/marketplace/skills";
-export const MARKETPLACE_APPS_ROUTE = "/marketplace/apps";
+export const MARKETPLACE_APPS_ROUTE = "/apps";
 
 export type MarketplaceTab = "agents" | "skills" | "apps";
 
