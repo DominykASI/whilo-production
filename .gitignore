@@ -40,3 +40,9 @@ deploy/podman/.env
 deploy/podman/.env.*
 !deploy/podman/.env.example
 /.env
+
+# Screenshot/GIF documentation media (heavy, not product source)
+docs/screenshots/
+docs/keep-chatting/
+docs/pr-screenshots/
+docs/verification/

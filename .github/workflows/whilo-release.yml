@@ -1,0 +1,123 @@
+# Whilo release: build the Linux desktop app (AppImage + deb) on a GitHub
+# runner (~5 min, no local machine needed) and publish it to Releases so
+# auto-update and public downloads work.
+#
+# Self-contained on purpose: the only credential it needs is the automatic
+# GITHUB_TOKEN. There is no dependency on any third-party account, secret or
+# service, so a fork of this repository can run it as-is.
+#
+# Run it from the Actions tab ("Whilo Release" -> Run workflow). Set
+# publish=true to make the tag's release live; leave it false to only attach
+# the artifacts to a draft you can review first.
+name: Whilo Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Commit/tag/branch to build (defaults to the branch this runs from)"
+        required: false
+        type: string
+      publish:
+        description: "Publish the release publicly (otherwise leave a draft to review)"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  linux:
+    name: Ubuntu x64 (AppImage + deb)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install packaging and smoke tools
+        run: >-
+          sudo apt-get update && sudo apt-get install -y
+          at-spi2-core dbus-x11 desktop-file-utils libxi6 libxkbcommon0
+          squashfs-tools x11-utils xdotool xvfb
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Clean generated output
+        run: pnpm clean
+
+      - name: Build the app
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+        run: pnpm package:linux
+
+      - name: Gate: the packaged updater feed points at this repository
+        run: |
+          update=release/linux-unpacked/resources/app-update.yml
+          test -f "$update" || { echo "::error::missing $update"; exit 1; }
+          grep -Eq '^owner: DominykASI$' "$update" || { echo "::error::wrong update owner in $update"; cat "$update"; exit 1; }
+          grep -Eq '^repo: whilo-production$' "$update" || { echo "::error::wrong update repo in $update"; cat "$update"; exit 1; }
+
+      - name: Verify package contents and metadata
+        run: node scripts/verify-linux-package.mjs
+
+      - name: Stage release assets
+        id: assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(node -p "require('./package.json').version")"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          appimage=(release/*.AppImage)
+          deb=(release/*.deb)
+          test -f "${appimage[0]}" || { echo "::error::no AppImage produced"; exit 1; }
+          test -f "${deb[0]}" || { echo "::error::no deb produced"; exit 1; }
+          cp "${appimage[0]}" release/Whilo.AppImage
+          cp "${deb[0]}" release/Whilo-amd64.deb
+          chmod 0755 release/Whilo.AppImage
+          (cd release && sha256sum "$(basename "${appimage[0]}")" "$(basename "${deb[0]}")" Whilo.AppImage Whilo-amd64.deb > SHA256SUMS-ubuntu-x64.txt)
+          ls -lh release/*.AppImage release/*.deb
+
+      - name: Publish to GitHub Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${{ steps.assets.outputs.version }}"
+          tag="v$version"
+          draft_flag="--draft"
+          [ "${{ inputs.publish }}" = "true" ] && draft_flag=""
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "release $tag already exists; uploading assets into it"
+          else
+            gh release create "$tag" --repo "$GITHUB_REPOSITORY" $draft_flag \
+              --title "Whilo $version" --target "${{ inputs.ref || github.sha }}" --generate-notes
+          fi
+          gh release upload "$tag" \
+            release/*.AppImage release/*.deb release/SHA256SUMS-ubuntu-x64.txt \
+            --repo "$GITHUB_REPOSITORY" --clobber
+          echo "published $tag:"
+          gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name'
+
+      - name: Keep the build logs as an artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: whilo-linux-${{ steps.assets.outputs.version || 'build' }}
+          path: |
+            release/*.AppImage
+            release/*.deb
+            release/SHA256SUMS-ubuntu-x64.txt
+          if-no-files-found: warn
+          retention-days: 14
