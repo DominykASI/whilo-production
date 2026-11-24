@@ -61,7 +61,7 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=4096
         run: pnpm package:linux
 
-      - name: Gate: the packaged updater feed points at this repository
+      - name: "Gate: the packaged updater feed points at this repository"
         run: |
           update=release/linux-unpacked/resources/app-update.yml
           test -f "$update" || { echo "::error::missing $update"; exit 1; }
