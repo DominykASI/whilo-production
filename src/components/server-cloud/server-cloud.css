@@ -1,0 +1,54 @@
+/* Computer Server Cloud: the motion this screen owns. Every rule is guarded by
+   prefers-reduced-motion and no rule paints a fractional font size. */
+
+.sc-pulse {
+  animation: sc-pulse 1.8s steps(2, jump-none) infinite;
+}
+/* A meter's own sheen, only while a server is running. Transform-only, so it
+   stays on the compositor. */
+.sc-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.3), transparent);
+  transform: translateX(-100%);
+  animation: sc-sheen 2.6s cubic-bezier(0.33, 1, 0.68, 1) infinite;
+}
+.sc-spin {
+  animation: sc-spin 0.9s linear infinite;
+}
+.sc-rise {
+  animation: sc-rise 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.sc-ping {
+  animation: sc-ping 1.9s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes sc-pulse {
+  0%, 100% { opacity: 0.35; }
+  30% { opacity: 1; }
+  60% { opacity: 0.35; }
+}
+@keyframes sc-sheen {
+  0% { transform: translateX(-100%); }
+  60%, 100% { transform: translateX(100%); }
+}
+@keyframes sc-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes sc-rise {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes sc-ping {
+  0% { transform: scale(0.9); opacity: 0.5; }
+  70%, 100% { transform: scale(2.1); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-pulse { animation: none; opacity: 0.7; }
+  .sc-sheen::after { display: none; }
+  .sc-spin { animation: none; }
+  .sc-rise { animation: none; }
+  .sc-ping { animation: none; display: none; }
+}

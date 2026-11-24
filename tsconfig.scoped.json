@@ -1,0 +1,65 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "types": [
+      "vite/client",
+      "node"
+    ],
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    },
+    "incremental": true
+  },
+  "include": [
+    "src/components/whilo-workflow",
+    "src/components/whilo-routines",
+    "src/components/server-cloud",
+    "src/components/tasks",
+    "src/components/usage",
+    "src/components/library",
+    "src/components/settings-tabs",
+    "src/components/BotDesignPicker.tsx",
+    "src/lib/bot-designs.ts",
+    "shared/mascot-bodies-extra.ts",
+    "src/App.tsx",
+    "src/components/lazy-screens.tsx",
+    "src/components/Sidebar.tsx",
+    "src/components/SidebarFooterNav.tsx",
+    "src/components/WindowFrameBar.tsx",
+    "src/state/store.tsx",
+    "src/components/SettingsModal.tsx",
+    "src/lib/desktop-connection.ts",
+    "src/novnc.d.ts",
+    "src/components/MobileNavBar.tsx",
+    "src/lib/mobile-nav-preferences.ts",
+    "src/components/plans",
+    "src/lib/plans.ts",
+    "src/lib/monetization.ts",
+    "src/components/whilo-board",
+    "src/components/whilo-board/*",
+    "src/components/plans/PricingSite.tsx",
+    "src/pricing.tsx",
+    "server/static-files.ts",
+    "src/lib/plans.test.ts"
+  ]
+}
