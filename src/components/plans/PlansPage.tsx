@@ -13,8 +13,6 @@ import {
   PERSONAL_PLANS,
   TEAM_PLANS,
   PLAN_CURRENCY,
-  BLACK_FRIDAY_PROMO,
-  isBlackFridayActive,
   promoMonthlyPrice,
   isNamedPlanValue,
   planValueKey,

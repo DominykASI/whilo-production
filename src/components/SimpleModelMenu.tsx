@@ -11,7 +11,6 @@ import { BotAvatar } from "./Avatar";
 import { EffortSlider } from "./EffortSlider";
 import { InstanceProviderMark } from "./ProviderIcons";
 import { MENU_GUTTER, MENU_ICON, MENU_LABEL, MENU_LINE, MENU_NOTE, MENU_ROW, MENU_SEPARATOR, MENU_STROKE, MENU_TRAILING, SIMPLE_MENU_META, SIMPLE_MENU_ROW } from "./menu-recipe";
-import { effortLabel } from "./ModelPicker";
 
 export type SimpleThinking =
   | { levels: readonly EffortLevel[]; current?: EffortLevel; onPick: (level: EffortLevel) => void; onReset: () => void }
@@ -156,7 +155,7 @@ function GroupBody({ group, props }: { group: MenuGroup; props: SimpleModelMenuP
   }
 }
 
-function Thinking({ thinking, labelId }: { thinking: SimpleThinking; labelId: string }) {
+function Thinking({ thinking }: { thinking: SimpleThinking }) {
   if ("variants" in thinking) return <div data-simple-thinking>{thinking.variants}</div>;
   const levels = thinking;
   return (
@@ -271,7 +270,7 @@ export function SimpleModelMenu(props: SimpleModelMenuProps) {
         <div data-simple-effort-band className="flex shrink-0 flex-col gap-0.5 border-t-[0.5px] border-ink/10 p-1.5">
           {props.thinking && (
             <>
-              <Thinking thinking={props.thinking} labelId={`${idPrefix}-thinking`} />
+              <Thinking thinking={props.thinking} />
               {(props.onResetVariant || props.onManage) && <div role="separator" className={MENU_SEPARATOR} />}
             </>
           )}

@@ -3,7 +3,7 @@ import { ArrowRight, Boxes, Check, Cpu, Gauge, Server, ShieldCheck, Sparkles, Te
 
 import { cn } from "@/lib/cn";
 import { DOMYNIK_MODELS, RENTAL_TIERS, estimateApiCost, formatContext, formatUsd } from "@/lib/monetization";
-import { PERSONAL_PLANS, TEAM_PLANS, PLAN_CURRENCY, BLACK_FRIDAY_PROMO, isBlackFridayActive, promoMonthlyPrice, isNamedPlanValue, planValueKey, type Plan } from "@/lib/plans";
+import { PERSONAL_PLANS, TEAM_PLANS, PLAN_CURRENCY, promoMonthlyPrice, isNamedPlanValue, planValueKey, type Plan } from "@/lib/plans";
 import { whiloText } from "@/lib/whilo-workflow-text";
 
 type Billing = "monthly" | "annual";

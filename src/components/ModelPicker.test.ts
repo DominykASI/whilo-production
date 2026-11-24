@@ -4,7 +4,6 @@ import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { AppState, Bot, InstanceInfo } from "@/state/store";
 import type { EffortLevel } from "../../shared/wire";
-import { Select } from "./Select";
 
 // The store module touches window and localStorage at import time, so it is stubbed to render under the node
 // environment.
