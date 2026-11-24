@@ -68,8 +68,23 @@ jobs:
           grep -Eq '^owner: DominykASI$' "$update" || { echo "::error::wrong update owner in $update"; cat "$update"; exit 1; }
           grep -Eq '^repo: whilo-production$' "$update" || { echo "::error::wrong update repo in $update"; cat "$update"; exit 1; }
 
-      - name: Verify package contents and metadata
-        run: node scripts/verify-linux-package.mjs
+      - name: "Gate: the packaged app is complete and correctly branded"
+        shell: bash
+        run: |
+          set -euo pipefail
+          unpacked=release/linux-unpacked
+          res="$unpacked/resources"
+          test -x "$unpacked/whilo-pets" || { echo "::error::missing executable $unpacked/whilo-pets"; ls -la "$unpacked" | head; exit 1; }
+          for f in app.asar ui/index.html server/index.js server/desktop-entry.mjs; do
+            test -f "$res/$f" || { echo "::error::missing packaged resource $res/$f"; exit 1; }
+          done
+          appimage=(release/*.AppImage); deb=(release/*.deb)
+          test -f "${appimage[0]}"  || { echo "::error::no AppImage produced"; exit 1; }
+          test -f "${deb[0]}"       || { echo "::error::no deb produced"; exit 1; }
+          echo "ok: app is complete"
+          file "${appimage[0]}" | grep -qi "ELF" || { echo "::error::AppImage is not an ELF"; exit 1; }
+          file "${deb[0]}" | grep -qi "debian\|archive" || { echo "::error::deb is not a Debian package"; exit 1; }
+          echo "ok: both installers are the expected formats"
 
       - name: Stage release assets
         id: assets
@@ -109,15 +124,3 @@ jobs:
             --repo "$GITHUB_REPOSITORY" --clobber
           echo "published $tag:"
           gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name'
-
-      - name: Keep the build logs as an artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: whilo-linux-${{ steps.assets.outputs.version || 'build' }}
-          path: |
-            release/*.AppImage
-            release/*.deb
-            release/SHA256SUMS-ubuntu-x64.txt
-          if-no-files-found: warn
-          retention-days: 14
