@@ -101,7 +101,8 @@ jobs:
           cp "${deb[0]}" release/Whilo-amd64.deb
           chmod 0755 release/Whilo.AppImage
           (cd release && sha256sum "$(basename "${appimage[0]}")" "$(basename "${deb[0]}")" Whilo.AppImage Whilo-amd64.deb > SHA256SUMS-ubuntu-x64.txt)
-          ls -lh release/*.AppImage release/*.deb
+          test -f release/latest-linux.yml || { echo "::error::electron-builder produced no latest-linux.yml — auto-update would be dead"; exit 1; }
+          ls -lh release/*.AppImage release/*.deb release/latest-linux.yml
 
       - name: Publish to GitHub Releases
         env:
@@ -120,7 +121,8 @@ jobs:
               --title "Whilo $version" --target "${{ inputs.ref || github.sha }}" --generate-notes
           fi
           gh release upload "$tag" \
-            release/*.AppImage release/*.deb release/SHA256SUMS-ubuntu-x64.txt \
+            release/*.AppImage release/*.deb release/SHA256SUMS-ubuntu-x64.txt release/latest-linux.yml \
             --repo "$GITHUB_REPOSITORY" --clobber
           echo "published $tag:"
           gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name'
+          echo "auto-update feed: https://github.com/$GITHUB_REPOSITORY/releases/latest/download/latest-linux.yml"
