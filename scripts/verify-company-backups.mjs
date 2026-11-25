@@ -15,6 +15,7 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 const flag = "--whilo-company-backup-fixture";
 const PASSWORD = "isolated-cloud-backup-password";
 const MARKER = "whilo-pending-workspace-restore";
+const MAGIC = Buffer.from("WHILO-WORKSPACE-1\n");
 const pause = ms => new Promise(done => setTimeout(done, ms));
 
 if (process.versions.electron && process.argv.includes(flag)) {
@@ -53,7 +54,7 @@ if (process.versions.electron && process.argv.includes(flag)) {
         const entry = entries.get(object[1]); assert.ok(entry);
         if (req.method === "PUT") {
           const data = await body(req); assert.equal(data.length, entry.sizeBytes);
-          assert.equal(data.subarray(0, 16).toString(), "WHILO-WORKSPACE-1\n");
+          assert.equal(data.subarray(0, MAGIC.length).toString(), MAGIC.toString());
           assert.equal(createHash("sha256").update(data).digest("hex"), entry.sha256);
           const etag = `"${createHash("md5").update(data).digest("hex")}"`;
           uploadedParts.set(entry.id, { data, etag });

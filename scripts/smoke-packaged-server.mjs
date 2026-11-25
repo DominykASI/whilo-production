@@ -12,6 +12,7 @@ import { parseArgs, promisify } from "node:util";
 import { browserBundlePaths, browserBundleSpec } from "../server/browser-bundle-release.ts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const WORKSPACE_BACKUP_MAGIC = Buffer.from("WHILO-WORKSPACE-1\n");
 const { values } = parseArgs({ options: { "browser-bundle": { type: "string" } } });
 const browserBundle = values["browser-bundle"];
 let browserSpec;
@@ -276,7 +277,7 @@ if (listening) {
     assert.equal(download.status, 200);
     const bytes = Buffer.from(await download.arrayBuffer());
     assert.equal(bytes.length, archive.bytes);
-    assert.equal(bytes.subarray(0, 16).toString(), "WHILO-WORKSPACE-1\n");
+    assert.equal(bytes.subarray(0, WORKSPACE_BACKUP_MAGIC.length).toString(), WORKSPACE_BACKUP_MAGIC.toString());
     backupReport = { ok: true, bytes: bytes.length };
   } catch (error) { backupReport = { error: String(error) }; }
 }
