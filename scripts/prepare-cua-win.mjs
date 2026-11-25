@@ -32,14 +32,19 @@ if (expectedVersion !== release.version) {
   );
 }
 
-async function binaryVersion(candidate) {
+async function binaryVersion(candidate, attempts = 3) {
   if (!candidate || !existsSync(candidate)) return null;
-  try {
-    const { stdout } = await run(candidate, ["--version"], { timeout: 5000, windowsHide: true });
-    return stdout.match(/cua-driver\s+([\d.]+)/)?.[1] ?? null;
-  } catch {
-    return null;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      const { stdout } = await run(candidate, ["--version"], { timeout: 20_000, windowsHide: true });
+      const version = stdout.match(/cua-driver\s+([\d.]+)/)?.[1] ?? null;
+      if (version) return version;
+    } catch {
+      // A freshly written executable can be held by a scan on its first start; retry briefly.
+    }
+    if (attempt < attempts) await new Promise((resolve) => setTimeout(resolve, 2_000));
   }
+  return null;
 }
 
 async function officialBinary() {
@@ -63,12 +68,18 @@ async function officialBinary() {
   }
   const archive = join(cache, release.file);
   await writeFile(archive, bytes);
-  await run("powershell.exe", ["-NoProfile", "-NonInteractive", "-Command",
-    "Expand-Archive -LiteralPath $env:WHILO_CUA_ARCHIVE -DestinationPath $env:WHILO_CUA_EXTRACT"], {
-    env: { ...process.env, WHILO_CUA_ARCHIVE: archive, WHILO_CUA_EXTRACT: cache },
-    timeout: 60_000,
-    windowsHide: true,
-  });
+  // Windows' own bsdtar reads zip archives and says so when it cannot. PowerShell's
+  // Expand-Archive, run from here, has exited 0 on a runner image while extracting
+  // nothing; the Git tar first on a runner's PATH cannot read zip, hence the full path.
+  const tar = join(process.env.SystemRoot ?? "C:\\Windows", "System32", "tar.exe");
+  try {
+    await run(tar, ["-xf", archive, "-C", cache], { timeout: 120_000, windowsHide: true });
+  } catch (error) {
+    throw new Error(`extracting ${release.file} with ${tar} failed: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  if (!existsSync(cachedBinary)) {
+    throw new Error(`extracting ${release.file} with ${tar} exited 0 but left no cua-driver.exe in ${cache}`);
+  }
   if ((await binaryVersion(cachedBinary)) !== expectedVersion) {
     throw new Error(`downloaded CUA Driver does not report version ${expectedVersion}`);
   }
