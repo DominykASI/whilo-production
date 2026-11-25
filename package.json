@@ -1,7 +1,7 @@
 {
   "name": "whilo-pets",
   "private": true,
-  "version": "0.1.145",
+  "version": "0.1.146",
   "description": "Whilo — unified desktop app for AI pets and agents (Pets and Dots in one app).",
   "homepage": "https://whilo.onerall.com",
   "repository": {
