@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=ghcr.io/milind-soni/whilo:latest
+ARG BASE_IMAGE=ghcr.io/dominykasi/whilo-production:latest
 FROM ${BASE_IMAGE}
 USER root
 ARG ENGINES="@anthropic-ai/claude-code @openai/codex"
