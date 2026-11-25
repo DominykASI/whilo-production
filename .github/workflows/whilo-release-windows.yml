@@ -1,0 +1,130 @@
+# Whilo release (Windows): build the NSIS installer on a real Windows runner
+# and attach it to the release of the version in package.json.
+#
+# Self-contained on purpose: the only credential it needs is the automatic
+# GITHUB_TOKEN, so it runs on a fork as-is. Run it from the Actions tab
+# ("Whilo Release Windows") against the same commit the Linux release used.
+#
+# Deliberately artifact-only into an existing release: the tag lives already,
+# this only adds the Windows assets to it.
+name: Whilo Release Windows
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Commit/tag/branch to build (defaults to the branch this runs from)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    name: Windows x64 (NSIS installer)
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Clean generated output
+        shell: bash
+        run: rm -rf dist dist-server release
+
+      - name: Build the installer
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+        run: pnpm package:win
+
+      - name: "Gate: the bundled browser works with an empty home"
+        run: node scripts/smoke-browser-bundle.mjs --resources "${{ github.workspace }}/release/win-unpacked/resources"
+
+      - name: "Gate: the packaged server discovers its browser"
+        env:
+          WHILO_SMOKE_DIST: ${{ github.workspace }}/release/win-unpacked/resources/server
+        run: node scripts/smoke-packaged-server.mjs --browser-bundle "${{ github.workspace }}/release/win-unpacked/resources/browser-engine"
+
+      - name: "Gate: the packaged tree is complete and points at this repository"
+        shell: bash
+        run: |
+          set -euo pipefail
+          res=release/win-unpacked/resources
+          for f in server/index.js server/desktop-entry.mjs ui/index.html app-update.yml; do
+            test -f "$res/$f" || { echo "::error::missing packaged resource $res/$f"; exit 1; }
+          done
+          grep -Eq '^owner: DominykASI$' "$res/app-update.yml" || {
+            echo "::error::wrong update owner in $res/app-update.yml"; cat "$res/app-update.yml"; exit 1; }
+          grep -Eq '^repo: whilo-production$' "$res/app-update.yml" || {
+            echo "::error::wrong update repo in $res/app-update.yml"; cat "$res/app-update.yml"; exit 1; }
+          if grep -q "publisherName" "$res/app-update.yml"; then
+            echo "::error::app-update.yml carries publisherName on an unsigned build"; exit 1
+          fi
+          exe=(release/*.exe)
+          test -f "${exe[0]}" || { echo "::error::no installer produced"; exit 1; }
+          test -f release/latest.yml || { echo "::error::electron-builder produced no latest.yml — auto-update would be dead"; exit 1; }
+          echo "ok: installer and updater feed present"
+
+      - name: "Gate: the packaged server actually starts"
+        shell: bash
+        run: |
+          set -euo pipefail
+          res=release/win-unpacked/resources
+          HOME="$RUNNER_TEMP/whilo-smoke" USERPROFILE="$RUNNER_TEMP/whilo-smoke" \
+            WHILO_PORT=21987 node "$res/server/index.js" > "$RUNNER_TEMP/server.log" 2>&1 &
+          pid=$!
+          for _ in $(seq 1 90); do
+            if curl -fsS --max-time 2 http://127.0.0.1:21987/api/health >/dev/null 2>&1; then
+              echo "packaged server answered /api/health"
+              kill $pid 2>/dev/null || true
+              exit 0
+            fi
+            kill -0 $pid 2>/dev/null || break
+            sleep 1
+          done
+          echo "::error::the packaged server never served /api/health"
+          cat "$RUNNER_TEMP/server.log" || true
+          kill $pid 2>/dev/null || true
+          exit 1
+
+      - name: Stage release assets
+        id: assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(node -p "require('./package.json').version")"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          exe=(release/*.exe)
+          cp "${exe[0]}" release/WhiloPets-setup.exe
+          (cd release && sha256sum "$(basename "${exe[0]}")" WhiloPets-setup.exe > SHA256SUMS-windows-x64.txt)
+          ls -lh release/*.exe release/latest.yml
+
+      - name: Attach to the release of this version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${{ steps.assets.outputs.version }}"
+          tag="v$version"
+          if ! gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$tag" --repo "$GITHUB_REPOSITORY" --draft \
+              --title "Whilo $version" --target "${{ inputs.ref || github.sha }}" --generate-notes
+          fi
+          assets=(release/*.exe release/latest.yml release/SHA256SUMS-windows-x64.txt)
+          for f in release/*.exe.blockmap; do [ -f "$f" ] && assets+=("$f"); done
+          gh release upload "$tag" "${assets[@]}" --repo "$GITHUB_REPOSITORY" --clobber
+          echo "attached windows assets to $tag:"
+          gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name'
