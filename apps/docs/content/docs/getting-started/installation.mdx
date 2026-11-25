@@ -10,10 +10,10 @@ Choose your computer below. Each link always downloads the latest published buil
 
 | Platform | Recommended package | Notes |
 |---|---|---|
-| macOS Apple silicon | [Download `.dmg`](https://github.com/milind-soni/Whilo/releases/latest/download/Whilo.dmg) | Signed and notarized. Drag to Applications. |
-| macOS Intel | [Download `.dmg`](https://github.com/milind-soni/Whilo/releases/latest/download/Whilo-intel.dmg) | Signed and notarized. |
-| Windows x64 | [Download installer](https://github.com/milind-soni/Whilo/releases/latest/download/Whilo-setup.exe) | Per-user installer; Windows signing is not yet available. |
-| Ubuntu 24.04 x64 | [Download `.deb`](https://github.com/milind-soni/Whilo/releases/latest/download/Whilo-amd64.deb) · [AppImage](https://github.com/milind-soni/Whilo/releases/latest/download/Whilo.AppImage) | The `.deb` is recommended; the AppImage is portable. |
+| macOS Apple silicon | Not published yet | Code-signed macOS builds require the project's Developer ID; not available for this release. |
+| macOS Intel | Not published yet | Code-signed macOS builds require the project's Developer ID; not available for this release. |
+| Windows x64 | [Download installer](https://github.com/DominykASI/whilo-production/releases/latest/download/WhiloPets-setup.exe) | Per-user installer; Windows signing is not yet available. |
+| Ubuntu 24.04 x64 | [Download `.deb`](https://github.com/DominykASI/whilo-production/releases/latest/download/Whilo-amd64.deb) · [AppImage](https://github.com/DominykASI/whilo-production/releases/latest/download/Whilo.AppImage) | The `.deb` is recommended; the AppImage is portable. |
 
 <Callout type="warn" title="Windows SmartScreen">
   The Windows installer is not code-signed yet. Windows may show “Unknown publisher.” Verify that you downloaded it from the official Whilo releases repository before choosing **More info → Run anyway**.
@@ -39,8 +39,8 @@ If your company uses OpenMaus Admin, you can sign in with your organization to u
 Requirements: Node.js 24 or newer, pnpm 10.33.0, and at least one authenticated agent CLI.
 
 ```bash
-git clone https://github.com/milind-soni/Whilo.git
-cd Whilo
+git clone https://github.com/DominykASI/whilo-production.git
+cd whilo-production
 corepack enable
 pnpm install --frozen-lockfile
 ```

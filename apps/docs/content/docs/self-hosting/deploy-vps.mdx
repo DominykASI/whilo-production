@@ -106,7 +106,7 @@ One container for the server plus Caddy for HTTPS at `https://maus.example.com`.
 3. **Get the deploy files and set the name:**
 
    ```sh
-   git clone https://github.com/milind-soni/Whilo && cd Whilo/deploy
+   git clone https://github.com/DominykASI/whilo-production && cd whilo-production/deploy
    cp .env.example .env
    nano .env                # DOMAIN=maus.example.com ; ENGINES=@anthropic-ai/claude-code @openai/codex
    ```
@@ -284,7 +284,7 @@ same release without an npm install prompt or an implicit upgrade.
   Check that installation succeeded before starting. A service restart by itself
   does not update the installed package. For foreground `npx` usage, specify the
   desired release as `npx --yes whilo@X.Y.Z serve --tunnel`.
-- **Path B:** `cd Whilo/deploy && docker compose pull whilo && docker compose up -d`.
+- **Path B:** `cd whilo-production/deploy && docker compose pull whilo && docker compose up -d`.
 
 Routines and queued work survive a restart; a turn running at that moment does not, so update between runs.
 

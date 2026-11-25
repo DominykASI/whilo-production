@@ -2,13 +2,12 @@ import type { Components } from 'react-markdown';
 import ReactMarkdown from 'react-markdown';
 
 const RELEASE_REPOSITORIES = [
-  'milind-soni/Whilo',
-  'milind-soni/whilo-releases',
+  'DominykASI/whilo-production',
 ] as const;
 const RELEASES_PER_PAGE = 100;
 const MAX_RELEASE_PAGES = 10;
 const LEGACY_DRAFT_NOTES =
-  /^Draft assembled by the release workflow from milind-soni\/Whilo@([0-9a-f]{40})\. Edit these notes, then publish\.\s*$/i;
+  /^Draft assembled by the release workflow from DominykASI\/whilo-production@([0-9a-f]{40})\. Edit these notes, then publish\.\s*$/i;
 
 interface GitHubRelease {
   body: string | null;
@@ -64,7 +63,7 @@ function releaseNotes(release: GitHubRelease) {
   if (!legacyDraft) return body;
 
   const commit = legacyDraft[1];
-  return `This build predates curated release notes. [View its source commit (${commit.slice(0, 7)})](https://github.com/milind-soni/Whilo/commit/${commit}).`;
+  return `This build predates curated release notes. [View its source commit (${commit.slice(0, 7)})](https://github.com/DominykASI/whilo-production/commit/${commit}).`;
 }
 
 async function fetchPublishedReleases(repository: string): Promise<GitHubRelease[]> {
@@ -99,12 +98,12 @@ async function fetchPublishedReleases(repository: string): Promise<GitHubRelease
 }
 
 async function publishedReleases(): Promise<GitHubRelease[]> {
-  const [canonical, legacy] = await Promise.all(
+  const lists = await Promise.all(
     RELEASE_REPOSITORIES.map((repository) => fetchPublishedReleases(repository)),
   );
   const byTag = new Map<string, GitHubRelease>();
 
-  for (const release of [...canonical, ...legacy]) {
+  for (const release of lists.flat()) {
     const tag = release.tag_name.trim().toLowerCase();
     if (!byTag.has(tag)) byTag.set(tag, release);
   }
@@ -129,7 +128,7 @@ export async function ReleaseChangelog() {
     return (
       <p>
         The live release history is temporarily unavailable.{' '}
-        <a href="https://github.com/milind-soni/Whilo/releases">Browse releases on GitHub</a>.
+        <a href="https://github.com/DominykASI/whilo-production/releases">Browse releases on GitHub</a>.
       </p>
     );
   }

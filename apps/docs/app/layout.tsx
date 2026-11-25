@@ -6,7 +6,7 @@ import './global.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://docs.openmausbot.com'),
+  metadataBase: new URL('https://whilo-docs.pages.dev'),
   title: {
     default: 'Whilo Docs',
     template: '%s · Whilo Docs',
