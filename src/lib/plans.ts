@@ -1,14 +1,7 @@
-export type PlanAudience = "personal" | "team" | "enterprise";
+export type PlanAudience = "personal" | "enterprise";
 
-export type PlanId =
-  | "starter"
-  | "agent-pro-plus"
-  | "max-20x"
-  | "ultra"
-  | "teams-premium"
-  | "teams-max-20x"
-  | "teams-ultra"
-  | "enterprise";
+
+export type PlanId = "premium" | "agent-pro-plus" | "enterprise";
 
 export interface PlanLimit {
   key: string;
@@ -17,6 +10,15 @@ export interface PlanLimit {
 
 export interface PlanBenefit {
   key: string;
+}
+
+/** A credit step the buyer picks from inside a plan — like Manus, the price follows the chosen amount. */
+export interface PlanCreditTier {
+  id: string;
+  nameKey: string;
+  credits: string;
+  priceMonthly: number;
+  priceAnnualMonthly: number;
 }
 
 export interface Plan {
@@ -33,42 +35,38 @@ export interface Plan {
   ctaKey: string;
   limitKeys: PlanLimit[];
   benefitKeys: PlanBenefit[];
+  /** Present when the plan lets the buyer choose how much credit they want; priceMonthly is the first tier's. */
+  creditTiers?: PlanCreditTier[];
 }
 
 export const PLAN_CURRENCY = "USD" as const;
 
-export const PLAN_IDS: readonly PlanId[] = [
-  "starter",
-  "agent-pro-plus",
-  "max-20x",
-  "ultra",
-  "teams-premium",
-  "teams-max-20x",
-  "teams-ultra",
-  "enterprise",
-];
+export const PLAN_IDS: readonly PlanId[] = ["premium", "agent-pro-plus", "enterprise"];
 
+// The three cards, in the order they are sold: Premium, the Agent Pro+ ladder
+// (Max / Ultra, credit amount chosen by the buyer), and Enterprise with custom pricing.
 export const PLANS: readonly Plan[] = [
   {
-    id: "starter",
+    id: "premium",
     audience: "personal",
-    nameKey: "plans.starter.name",
-    taglineKey: "plans.starter.tagline",
-    priceMonthly: 0,
-    priceAnnualMonthly: 0,
+    nameKey: "plans.premium.name",
+    taglineKey: "plans.premium.tagline",
+    priceMonthly: 29,
+    priceAnnualMonthly: 23,
     currency: PLAN_CURRENCY,
     seats: 1,
     highlight: false,
-    ctaKey: "plans.starter.cta",
+    ctaKey: "plans.cta.startTrial",
     limitKeys: [
-      { key: "plans.limit.agents", value: "1" },
-      { key: "plans.limit.routines", value: "3" },
-      { key: "plans.limit.concurrent", value: "1" },
-      { key: "plans.limit.credits", value: "5" },
+      { key: "plans.limit.agents", value: "5" },
+      { key: "plans.limit.routines", value: "unlimited" },
+      { key: "plans.limit.concurrent", value: "3" },
+      { key: "plans.limit.credits", value: "2,000" },
     ],
     benefitKeys: [
-      { key: "plans.benefit.localTools" },
-      { key: "plans.benefit.selfHosted" },
+      { key: "plans.benefit.everyModel" },
+      { key: "plans.benefit.hostedServer" },
+      { key: "plans.benefit.voice" },
       { key: "plans.benefit.workflows" },
     ],
   },
@@ -77,43 +75,18 @@ export const PLANS: readonly Plan[] = [
     audience: "personal",
     nameKey: "plans.proPlus.name",
     taglineKey: "plans.proPlus.tagline",
-    priceMonthly: 10,
-    priceAnnualMonthly: 8,
+    priceMonthly: 99,
+    priceAnnualMonthly: 79,
     currency: PLAN_CURRENCY,
     seats: 1,
     highlight: true,
     badgeKey: "plans.badge.mostPopular",
     ctaKey: "plans.cta.startTrial",
     limitKeys: [
-      { key: "plans.limit.agents", value: "10" },
-      { key: "plans.limit.routines", value: "100" },
-      { key: "plans.limit.concurrent", value: "5" },
-      { key: "plans.limit.credits", value: "500" },
-    ],
-    benefitKeys: [
-      { key: "plans.benefit.everyModel" },
-      { key: "plans.benefit.hostedServer" },
-      { key: "plans.benefit.voice" },
-      { key: "plans.benefit.dynamicIsland" },
-    ],
-  },
-  {
-    id: "max-20x",
-    audience: "personal",
-    nameKey: "plans.max20.name",
-    taglineKey: "plans.max20.tagline",
-    priceMonthly: 99,
-    priceAnnualMonthly: 79,
-    currency: PLAN_CURRENCY,
-    seats: 1,
-    highlight: false,
-    badgeKey: "plans.badge.bestValue",
-    ctaKey: "plans.cta.startTrial",
-    limitKeys: [
       { key: "plans.limit.agents", value: "40" },
       { key: "plans.limit.routines", value: "unlimited" },
       { key: "plans.limit.concurrent", value: "20" },
-      { key: "plans.limit.credits", value: "2,000" },
+      { key: "plans.limit.credits", value: "20,000" },
     ],
     benefitKeys: [
       { key: "plans.benefit.everyModel" },
@@ -121,102 +94,9 @@ export const PLANS: readonly Plan[] = [
       { key: "plans.benefit.computerUse" },
       { key: "plans.benefit.priority" },
     ],
-  },
-  {
-    id: "ultra",
-    audience: "personal",
-    nameKey: "plans.ultra.name",
-    taglineKey: "plans.ultra.tagline",
-    priceMonthly: 249,
-    priceAnnualMonthly: 199,
-    currency: PLAN_CURRENCY,
-    seats: 1,
-    highlight: false,
-    ctaKey: "plans.cta.startTrial",
-    limitKeys: [
-      { key: "plans.limit.agents", value: "unlimited" },
-      { key: "plans.limit.routines", value: "unlimited" },
-      { key: "plans.limit.concurrent", value: "unlimited" },
-      { key: "plans.limit.credits", value: "8,000" },
-    ],
-    benefitKeys: [
-      { key: "plans.benefit.everythingMax" },
-      { key: "plans.benefit.dedicatedBox" },
-      { key: "plans.benefit.earlyAccess" },
-      { key: "plans.benefit.whiteGlove" },
-    ],
-  },
-  {
-    id: "teams-premium",
-    audience: "team",
-    nameKey: "plans.teamsPremium.name",
-    taglineKey: "plans.teamsPremium.tagline",
-    priceMonthly: 19,
-    priceAnnualMonthly: 15,
-    currency: PLAN_CURRENCY,
-    seats: 5,
-    highlight: false,
-    ctaKey: "plans.cta.startTrial",
-    limitKeys: [
-      { key: "plans.limit.seats", value: "5" },
-      { key: "plans.limit.agentsPerSeat", value: "10" },
-      { key: "plans.limit.concurrent", value: "5" },
-      { key: "plans.limit.creditsPerSeat", value: "500" },
-    ],
-    benefitKeys: [
-      { key: "plans.benefit.sharedLibrary" },
-      { key: "plans.benefit.botAccess" },
-      { key: "plans.benefit.activityLog" },
-      { key: "plans.benefit.sso" },
-    ],
-  },
-  {
-    id: "teams-max-20x",
-    audience: "team",
-    nameKey: "plans.teamsMax20.name",
-    taglineKey: "plans.teamsMax20.tagline",
-    priceMonthly: 69,
-    priceAnnualMonthly: 55,
-    currency: PLAN_CURRENCY,
-    seats: 5,
-    highlight: true,
-    badgeKey: "plans.badge.mostPopular",
-    ctaKey: "plans.cta.startTrial",
-    limitKeys: [
-      { key: "plans.limit.seats", value: "5" },
-      { key: "plans.limit.agentsPerSeat", value: "40" },
-      { key: "plans.limit.concurrent", value: "20" },
-      { key: "plans.limit.creditsPerSeat", value: "2,000" },
-    ],
-    benefitKeys: [
-      { key: "plans.benefit.sharedLibrary" },
-      { key: "plans.benefit.hostedServers" },
-      { key: "plans.benefit.rolePermissions" },
-      { key: "plans.benefit.priority" },
-    ],
-  },
-  {
-    id: "teams-ultra",
-    audience: "team",
-    nameKey: "plans.teamsUltra.name",
-    taglineKey: "plans.teamsUltra.tagline",
-    priceMonthly: 169,
-    priceAnnualMonthly: 139,
-    currency: PLAN_CURRENCY,
-    seats: 5,
-    highlight: false,
-    ctaKey: "plans.cta.startTrial",
-    limitKeys: [
-      { key: "plans.limit.seats", value: "5" },
-      { key: "plans.limit.agentsPerSeat", value: "unlimited" },
-      { key: "plans.limit.concurrent", value: "unlimited" },
-      { key: "plans.limit.creditsPerSeat", value: "8,000" },
-    ],
-    benefitKeys: [
-      { key: "plans.benefit.sharedLibrary" },
-      { key: "plans.benefit.dedicatedBox" },
-      { key: "plans.benefit.auditExport" },
-      { key: "plans.benefit.whiteGlove" },
+    creditTiers: [
+      { id: "max", nameKey: "plans.credit.max.name", credits: "20,000", priceMonthly: 99, priceAnnualMonthly: 79 },
+      { id: "ultra", nameKey: "plans.credit.ultra.name", credits: "40,000", priceMonthly: 249, priceAnnualMonthly: 199 },
     ],
   },
   {
@@ -246,10 +126,10 @@ export const PLANS: readonly Plan[] = [
 ];
 
 export const PERSONAL_PLANS: readonly Plan[] = PLANS.filter((plan) => plan.audience === "personal");
-export const TEAM_PLANS: readonly Plan[] = PLANS.filter((plan) => plan.audience === "team" || plan.audience === "enterprise");
+export const TEAM_PLANS: readonly Plan[] = PLANS.filter((plan) => plan.audience === "enterprise");
 
 
-/** Black Friday: Agent Pro+ 50% off ($10 -> $5/mo) until end of November 2026. */
+/** Black Friday: Agent Pro+ 50% off until end of November 2026. */
 export const BLACK_FRIDAY_PROMO = {
   planId: "agent-pro-plus" as const,
   discountPercent: 50,
@@ -266,6 +146,18 @@ export function promoMonthlyPrice(plan: Plan, now = new Date()): number | null {
   if (!isBlackFridayActive(now)) return null;
   if (plan.priceMonthly === null) return null;
   return Math.round(plan.priceMonthly * (1 - BLACK_FRIDAY_PROMO.discountPercent / 100) * 100) / 100;
+}
+
+/** The plan as it stands for the credit tier the buyer picked: price and credit limit follow the choice. */
+export function planWithCreditTier(plan: Plan, tierId: string | null): Plan {
+  const tier = plan.creditTiers?.find((entry) => entry.id === tierId);
+  if (!tier) return plan;
+  return {
+    ...plan,
+    priceMonthly: tier.priceMonthly,
+    priceAnnualMonthly: tier.priceAnnualMonthly,
+    limitKeys: plan.limitKeys.map((limit) => (limit.key === "plans.limit.credits" ? { ...limit, value: tier.credits } : limit)),
+  };
 }
 
 export function plan(id: PlanId): Plan {

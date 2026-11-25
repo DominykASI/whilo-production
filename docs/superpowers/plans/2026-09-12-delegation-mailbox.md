@@ -267,13 +267,13 @@ with:
 In the `list_bots` tool definition, change the description's opening sentence from:
 
 ```
-"List the other bots (agents) in your OpenMausBot section, with their model and whether they're busy.
+"List the other bots (agents) in your Whilo section, with their model and whether they're busy.
 ```
 
 to:
 
 ```
-"List the other bots (agents) in your OpenMausBot section, with their model and what each is doing right now (available, working, waiting on the user, not responding, or unavailable).
+"List the other bots (agents) in your Whilo section, with their model and what each is doing right now (available, working, waiting on the user, not responding, or unavailable).
 ```
 
 Leave the rest of that description string unchanged.
@@ -1027,7 +1027,7 @@ Expected: spec + plan + 5 feature commits. Only these files changed:
 
 - [ ] **Step 4: Stop for Omkar's manual check**
 
-Do not push. Report the branch state, and hand over this checklist for an OMB2 side-by-side build (the `test-locally` skill):
+Do not push. Report the branch state, and hand over this checklist for an Whilo2 side-by-side build (the `test-locally` skill):
 
 1. Bot A delegates to Bot B while B is mid-task → one "waiting — they're busy" chip in A's chat. It's delivered when B finishes.
 2. Open an approval card on B, then have A delegate → A's chip says B is waiting on you, and A's `list_bots` shows "waiting on the user".

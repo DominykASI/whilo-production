@@ -59,7 +59,7 @@ function relay(body: unknown, overrides: Record<string, unknown> = {}) {
 }
 
 function snapshot(): string {
-  const copy = mkdtempSync(join(tmpdir(), "omb-org-library-crash-"));
+  const copy = mkdtempSync(join(tmpdir(), "whilo-org-library-crash-"));
   homes.push(copy);
   cpSync(home, copy, { recursive: true });
   return copy;
@@ -70,13 +70,13 @@ async function installation(from?: string) {
     (await import("./message-db.ts")).closeMessageDb();
     home = from;
   } else {
-    home = mkdtempSync(join(tmpdir(), "omb-org-library-"));
+    home = mkdtempSync(join(tmpdir(), "whilo-org-library-"));
     homes.push(home);
   }
   vi.resetModules();
   vi.stubEnv("HOME", home);
   vi.stubEnv("USERPROFILE", home);
-  vi.stubEnv("OMB_DATA_DIR", join(home, ".openmausbot"));
+  vi.stubEnv("WHILO_DATA_DIR", join(home, ".whilo"));
   const { Store } = await import("./store.ts");
   const { RoutineManager } = await import("./routines.ts");
   const skills = await import("./skills.ts");
@@ -179,7 +179,7 @@ describe("the catalog", () => {
     await library.settled();
     const readBlob = vi.spyOn(library, "readBlob");
     expect(library.list().packages[0]).toMatchObject({ blob: "unsupported", installed: null });
-    expect(library.add(TEAM_ID, app.importDeps)).toMatchObject({ ok: false, status: 409, code: "newer_app_required", error: "Update OpenMausBot to add this package." });
+    expect(library.add(TEAM_ID, app.importDeps)).toMatchObject({ ok: false, status: 409, code: "newer_app_required", error: "Update Whilo to add this package." });
     expect(readBlob).not.toHaveBeenCalled();
     expect(app.store.bots).toHaveLength(0);
   });
@@ -267,7 +267,7 @@ describe("the relay", () => {
     expect(existsSync(app.statePath)).toBe(false);
     await library.settled();
     expect(Date.now() - started).toBeLessThan(15_000);
-    expect(app.posted).toEqual([{ type: "openmausbot:managed-library-state", digest: sha(JSON.stringify(body)), packages: [] }]);
+    expect(app.posted).toEqual([{ type: "whilo:managed-library-state", digest: sha(JSON.stringify(body)), packages: [] }]);
     expect(app.readState()).toMatchObject({ version: 1, source: { adminOrigin: ADMIN, organizationId: ORG }, appliedDigest: sha(JSON.stringify(body)), installs: {} });
   });
 });
@@ -287,7 +287,7 @@ describe("adding from the shelf", () => {
     if (!outcome.ok || outcome.value.alreadyAdded) throw new Error(JSON.stringify(outcome));
     expect(outcome.status).toBe(201);
     const result = outcome.value.result;
-    const installId = createHash("sha256").update(`omb-install:v1\n${ADMIN}\n${ORG}\n${TEAM_ID}`).digest("hex").slice(0, 32);
+    const installId = createHash("sha256").update(`whilo-install:v1\n${ADMIN}\n${ORG}\n${TEAM_ID}`).digest("hex").slice(0, 32);
     expect(result.installId).toBe(installId);
     const byKey = new Map(result.bots.map((bot) => [bot.installedPackage!.agentKey, app.store.bot(bot.id)!]));
     const scout = byKey.get("scout")!;

@@ -1,9 +1,9 @@
 import { useSyncExternalStore } from "react";
 
-export const NOTIFICATION_SOUNDS_KEY = "omb-notification-sounds";
-export const NOTIFICATION_FEED_KEY = "omb-notification-feed";
-export const FINISHED_NOTIFICATIONS_KEY = "omb-finished-notifications";
-export const NOTIFICATION_TRAY_PINNED_KEY = "omb-notification-tray-pinned";
+export const NOTIFICATION_SOUNDS_KEY = "whilo-notification-sounds";
+export const NOTIFICATION_FEED_KEY = "whilo-notification-feed";
+export const FINISHED_NOTIFICATIONS_KEY = "whilo-finished-notifications";
+export const NOTIFICATION_TRAY_PINNED_KEY = "whilo-notification-tray-pinned";
 
 let sessionChoice: boolean | undefined;
 let feedSessionChoice: boolean | undefined;

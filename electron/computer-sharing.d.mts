@@ -88,7 +88,7 @@ export function createComputerSharing(options: {
   file: string;
   fetch: (url: string, init: RequestInit) => Promise<Response>;
   environments: () => Workspace[];
-  /** This computer's own OpenMausBot installs, by environment id: what an MCP server kept for it on a Cloud names. */
+  /** This computer's own Whilo installs, by environment id: what an MCP server kept for it on a Cloud names. */
   localEnvironments?: () => string[];
   enabled?: () => Promise<boolean>;
   protectedPaths?: string[];
@@ -104,7 +104,7 @@ export function createComputerSharing(options: {
   home?: string;
   activityFile?: string;
   /** The verified Cloud sign-in: { status, accountId, origin }; status "restoring" while a saved sign-in is read. */
-  /** The MausBot Cloud sign-in as `env`'s lending checks it (its own address for another Cloud of the person's own), else My Cloud's. */
+  /** The Whilo Cloud sign-in as `env`'s lending checks it (its own address for another Cloud of the person's own), else My Cloud's. */
   cloud?: (env?: Workspace | null) => { status: string; accountId: string | null; origin: string | null } | null;
   /** Signs this app back in to the person's own Cloud after its session there ended; true when it did. */
   reconnect?: ((origin: string) => Promise<boolean> | boolean) | null;

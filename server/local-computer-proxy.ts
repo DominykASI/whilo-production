@@ -5,12 +5,12 @@ import { localComputerCallQuery, localComputerRelay, localComputerResultLine } f
 import { journalUrl } from "./saved-steps/journal-tap.ts";
 
 const {
-  OMB_CUA_COMMAND: command,
-  OMB_CUA_ARGS: encodedArgs,
-  OMB_CUA_PLATFORM: platform,
-  OMB_CONTROL_URL: url,
-  OMB_CONTROL_TOKEN: token,
-  OMB_COMPUTER_JOURNAL: journal,
+  WHILO_CUA_COMMAND: command,
+  WHILO_CUA_ARGS: encodedArgs,
+  WHILO_CUA_PLATFORM: platform,
+  WHILO_CONTROL_URL: url,
+  WHILO_CONTROL_TOKEN: token,
+  WHILO_COMPUTER_JOURNAL: journal,
   ...childEnv
 } = process.env;
 

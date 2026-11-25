@@ -1,6 +1,6 @@
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
-  "name": "openmausbot-control-plane",
+  "name": "whilo-control-plane",
   "main": "src/index.ts",
   "account_id": "0c92969a82eb9e173b013a7e7a02333d",
   "compatibility_date": "2026-08-25",
@@ -26,7 +26,7 @@
     // accountId, zoneId or companionHostSuffix once it holds endpoints (add a
     // new entry instead). The same JSON may be a secret to keep the IDs out of
     // this file. Each entry's token is the secret named by apiTokenSecret
-    // (wrangler secret put CLOUDFLARE_API_TOKEN_MAUSBOT_SI), never a var, and
+    // (wrangler secret put CLOUDFLARE_API_TOKEN_WHILO_SI), never a var, and
     // is listed in secrets.required below (as is this JSON when it is a
     // secret) so every deploy keeps it. To stop new endpoints going to an
     // account and keep its own, set its "newEndpoints": false.
@@ -39,7 +39,7 @@
         "accountId": "bbb5305f06e28a6f2abaac299f3b09dc",
         "zoneId": "4ded3da43e7b2c3a5f27b0fb33e5bd7a",
         "companionHostSuffix": "mausbot.si",
-        "apiTokenSecret": "CLOUDFLARE_API_TOKEN_MAUSBOT_SI",
+        "apiTokenSecret": "CLOUDFLARE_API_TOKEN_WHILO_SI",
         "tunnelLimit": 1000,
         "dnsRecordLimit": 3500,
         "minAppVersion": "0.1.104"
@@ -52,17 +52,17 @@
     // them equal to Cloudflare's real quotas. They never refuse an
     // allocation on their own. The openmausbot.com zone is on Pro: 3,500
     // DNS records.
-    "OMB_TUNNEL_LIMIT": "1000",
-    "OMB_DNS_RECORD_LIMIT": "3500",
+    "WHILO_TUNNEL_LIMIT": "1000",
+    "WHILO_DNS_RECORD_LIMIT": "3500",
     // "on" marks idle tunnels for cleanup; "observe" only logs candidates.
-    "OMB_TUNNEL_RECLAIM": "on",
+    "WHILO_TUNNEL_RECLAIM": "on",
     // Days a tunnel must have been offline (and its installation quiet)
     // before reclaim (minimum 3). Never-connected tunnels use a fixed two days.
     // A reclaimed installation gets its same hostname back when it returns.
-    "OMB_TUNNEL_OFFLINE_RECLAIM_DAYS": "3",
+    "WHILO_TUNNEL_OFFLINE_RECLAIM_DAYS": "3",
     // Cleanup rows per five-minute cron run. 20 needs Workers Paid; use 4 on
     // Workers Free (50 subrequests per invocation).
-    "OMB_CLEANUP_SWEEP_LIMIT": "20",
+    "WHILO_CLEANUP_SWEEP_LIMIT": "20",
     // HighLevel OAuth relay (README "HighLevel OAuth relay"). The client id
     // is public (it is in the authorization URL); the secret is
     // HIGHLEVEL_CLIENT_SECRET, set with `wrangler secret put` and deliberately
@@ -72,7 +72,7 @@
     "HIGHLEVEL_CLIENT_ID": "6ad0c3b87999ff4de949c785-mv9n5v73",
     "HIGHLEVEL_REDIRECT_URL": "https://accounts.openmausbot.com/v1/highlevel/callback",
     "HIGHLEVEL_SCOPES": "contacts.readonly contacts.write opportunities.readonly opportunities.write conversations.readonly locations.readonly calendars.readonly calendars/events.readonly users.readonly",
-    // MausBot Relay (README "MausBot Relay"). Host tokens are signed with RELAY_TOKEN_SIGNING_KEY (b64u of a 32-byte
+    // Whilo Relay (README "Whilo Relay"). Host tokens are signed with RELAY_TOKEN_SIGNING_KEY (b64u of a 32-byte
     // Ed25519 seed, `wrangler secret put`). It is in secrets.required so a deploy can't drop it: set it before the
     // first deploy that lists it. The relay holds only the matching public key. RELAY_NODES lists only nodes that
     // exist; add relay2 when its box and DNS are up.
@@ -89,12 +89,12 @@
     "RELAY_CAPABLE_MIN_VERSION": ""
   },
   "secrets": {
-    "required": ["BETTER_AUTH_SECRET", "CLOUDFLARE_API_TOKEN", "CLOUDFLARE_API_TOKEN_MAUSBOT_SI", "RELAY_TOKEN_SIGNING_KEY"]
+    "required": ["BETTER_AUTH_SECRET", "CLOUDFLARE_API_TOKEN", "CLOUDFLARE_API_TOKEN_WHILO_SI", "RELAY_TOKEN_SIGNING_KEY"]
   },
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "openmausbot-control-plane",
+      "database_name": "whilo-control-plane",
       "database_id": "8a7c34ed-5428-4ae2-8722-fef2fe9bf160",
       "migrations_dir": "migrations"
     }

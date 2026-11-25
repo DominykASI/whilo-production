@@ -7,44 +7,44 @@ export const CREDENTIAL_ENV_NAMES = [
   "XAI_API_KEY",
   "MISTRAL_API_KEY",
   "CEREBRAS_API_KEY",
-  "OMB_GROQ_API_KEY",
-  "OMB_GREENFERENCE_API_KEY",
-  "OMB_META_API_KEY",
-  "OMB_DEEPSEEK_API_KEY",
-  "OMB_ANTHROPIC_API_KEY",
-  "OMB_ANTHROPIC_API_URL",
-  "OMB_HOSTED_MODEL_TOKEN",
-  "OMB_HOSTED_MODELS",
+  "WHILO_GROQ_API_KEY",
+  "WHILO_GREENFERENCE_API_KEY",
+  "WHILO_META_API_KEY",
+  "WHILO_DEEPSEEK_API_KEY",
+  "WHILO_ANTHROPIC_API_KEY",
+  "WHILO_ANTHROPIC_API_URL",
+  "WHILO_HOSTED_MODEL_TOKEN",
+  "WHILO_HOSTED_MODELS",
   "OPENAI_COMPAT_API_KEY",
   "OPENAI_COMPAT_URL",
-  "OMB_OPENAI_API_KEY",
-  "OMB_OPENROUTER_API_KEY",
+  "WHILO_OPENAI_API_KEY",
+  "WHILO_OPENROUTER_API_KEY",
   "BOX_TOKEN",
   "OPENCODE_API_KEY",
-  "OMB_TTS_KEY",
-  "OMB_FISH_AUDIO_API_KEY",
-  "OMB_GEMINI_API_KEY",
-  "OMB_JEV_API_KEY",
-  "OMB_OPENROUTER_DECIDER_KEY",
-  "OMB_WORKERS_AI_TOKEN",
-  "OMB_OPENAI_IMAGE_KEY",
-  "OMB_CUSTOM_IMAGE_KEY",
-  "OMB_GEMINI_IMAGE_KEY",
-  "OMB_OPENAI_LIVE_KEY",
-  "OMB_TREG_KEY",
-  "OMB_POSTIZ_API_KEY",
+  "WHILO_TTS_KEY",
+  "WHILO_FISH_AUDIO_API_KEY",
+  "WHILO_GEMINI_API_KEY",
+  "WHILO_JEV_API_KEY",
+  "WHILO_OPENROUTER_DECIDER_KEY",
+  "WHILO_WORKERS_AI_TOKEN",
+  "WHILO_OPENAI_IMAGE_KEY",
+  "WHILO_CUSTOM_IMAGE_KEY",
+  "WHILO_GEMINI_IMAGE_KEY",
+  "WHILO_OPENAI_LIVE_KEY",
+  "WHILO_TREG_KEY",
+  "WHILO_POSTIZ_API_KEY",
   "COMPOSIO_API_KEY",
-  "OMB_COMPOSIO_BROKER_TOKEN",
-  "OMB_CLOUD_BOAT_TOKEN",
-  "OMB_CLOUD_VOICE_TOKEN",
-  "OMB_CLOUD_DECIDER_TOKEN",
-  "OMB_CLOUD_AI_TOKEN",
-  "OMB_CLOUD_X_TOKEN",
-  "OMB_CLOUD_CONNECTED_APPS_GRANT",
+  "WHILO_COMPOSIO_BROKER_TOKEN",
+  "WHILO_CLOUD_BOAT_TOKEN",
+  "WHILO_CLOUD_VOICE_TOKEN",
+  "WHILO_CLOUD_DECIDER_TOKEN",
+  "WHILO_CLOUD_AI_TOKEN",
+  "WHILO_CLOUD_X_TOKEN",
+  "WHILO_CLOUD_CONNECTED_APPS_GRANT",
   // Private even though they are not traditional API credentials.
-  "OMB_BROWSER_CONNECTION",
-  "OMB_USER_DATA",
-  "OMB_BOAT_API",
+  "WHILO_BROWSER_CONNECTION",
+  "WHILO_USER_DATA",
+  "WHILO_BOAT_API",
 ];
 
 // Kept in parity with server/redact.ts: unmistakable token formats are masked wherever they appear, keyed or not.
@@ -277,7 +277,7 @@ export function buildDiagnosticsReport({
   now = new Date().toISOString(),
 } = {}) {
   const lines = [];
-  lines.push("OpenMausBot diagnostics");
+  lines.push("Whilo diagnostics");
   lines.push(`Generated: ${now}`);
   lines.push("");
   lines.push("## App");
@@ -324,7 +324,7 @@ export function buildDiagnosticsReport({
 export function diagnosticsFileName(date = new Date()) {
   const pad = (n) => String(n).padStart(2, "0");
   return (
-    `openmausbot-diagnostics-${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}` +
+    `whilo-diagnostics-${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}` +
     `-${pad(date.getHours())}${pad(date.getMinutes())}${pad(date.getSeconds())}.txt`
   );
 }

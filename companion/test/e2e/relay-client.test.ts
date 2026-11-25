@@ -149,7 +149,7 @@ describe("the relay client", () => {
     });
     instance.start();
     await waitFor(() => relay.admitted(hid).size === 1);
-    const phone = new WebSocket(`${relay.url}/v1/phone`, ["omb-relay.v1"]);
+    const phone = new WebSocket(`${relay.url}/v1/phone`, ["whilo-relay.v1"]);
     await new Promise((resolve) => phone.once("open", resolve));
     phone.send(JSON.stringify({ t: "phone", v: 1, hid, adm: b64u(adm) }));
     const ready = await new Promise<string>((resolve) => phone.once("message", (data) => resolve(String(data))));

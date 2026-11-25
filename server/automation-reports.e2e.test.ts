@@ -5,7 +5,7 @@ import { connect, type Socket } from "node:net";
 import { join } from "node:path";
 import { afterEach, expect, it } from "vitest";
 
-import { launchVerificationServer, runControlOmb, type VerificationServer } from "../scripts/control-omb.ts";
+import { launchVerificationServer, runControlOmb, type VerificationServer } from "../scripts/control-whilo.ts";
 import { AUTOMATION_REPLY_PROMPT } from "./system-prompt.ts";
 import { launchRestartableServer } from "./testing/restartable-server.ts";
 import { openSse, type SseRecorder } from "./testing/sse.ts";
@@ -80,7 +80,7 @@ async function server(env: NodeJS.ProcessEnv = {}) {
 async function brokerOf(s: Awaited<ReturnType<typeof server>>, threadId: string): Promise<any[]> {
   const dump = join(s.dataDir, "fake-claude-dump.json");
   await expect.poll(() => {
-    try { return JSON.parse(readFileSync(dump, "utf8")).mcpConfig?.mcpServers?.agents?.env?.OMB_THREAD_ID === threadId; } catch { return false; }
+    try { return JSON.parse(readFileSync(dump, "utf8")).mcpConfig?.mcpServers?.agents?.env?.WHILO_THREAD_ID === threadId; } catch { return false; }
   }, { timeout: 20_000 }).toBe(true);
   const socketPath = JSON.parse(readFileSync(dump, "utf8")).mcpConfig.mcpServers.ogb.args.at(-1);
   const socket = broker = connect(socketPath);

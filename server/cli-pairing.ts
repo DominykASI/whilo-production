@@ -1,8 +1,8 @@
-// What `openmausbot serve` and `openmausbot pair` print for a pairing code. A browser on this computer is no longer the
+// What `whilo serve` and `whilo pair` print for a pairing code. A browser on this computer is no longer the
 // owner just by being here, so it signs in once with the link printed for it.
 import qrcode from "qrcode-terminal";
 
-/** `url` opens the web app (browsers, the iOS app); `inviteUrl` (openmausbot://) is the only thing the Android app scans;
+/** `url` opens the web app (browsers, the iOS app); `inviteUrl` (whilo://) is the only thing the Android app scans;
  * `localUrl` signs in a browser on this computer. */
 export function pairingBlock(input: {
   code: string;
@@ -31,15 +31,15 @@ export function pairingBlock(input: {
     lines.push(qrToString(target));
     lines.push("");
     if (scanInvite) {
-      lines.push(`Scan that in the OpenMausBot app. For a browser instead, open the web`);
+      lines.push(`Scan that in the Whilo app. For a browser instead, open the web`);
       lines.push(`address above and type the code.`);
     } else if (input.phone === "android") {
       lines.push(`That QR opens the web app. The Android app needs the phone-app link,`);
       lines.push(`which this server cannot build without a public address: set`);
-      lines.push(`OMB_PUBLIC_URL, or open the web address above and type the code.`);
+      lines.push(`WHILO_PUBLIC_URL, or open the web address above and type the code.`);
     } else if (input.inviteUrl) {
       lines.push(`Scan that with Camera for the browser, or paste the phone-app link`);
-      lines.push(`above into the OpenMausBot app.`);
+      lines.push(`above into the Whilo app.`);
     }
   }
   return lines.join("\n");
@@ -50,7 +50,7 @@ export function browserSignInLines(localUrl: string, code: string, expiresAt: nu
   return [
     "Sign in from a browser on this computer with this link (single use, until",
     `${new Date(expiresAt).toLocaleTimeString()}): ${localUrl}`,
-    `or type the code ${code} on the sign-in page. Later: openmausbot pair`,
+    `or type the code ${code} on the sign-in page. Later: whilo pair`,
   ].join("\n");
 }
 
@@ -71,5 +71,5 @@ export function formatSessions(sessions: Array<{ id: string; label: string; scop
   const head = ["id", "device", "scope", "last seen", "expires"];
   const widths = head.map((h, i) => Math.max(h.length, ...rows.map((r) => r[i].length)));
   const line = (r: string[]) => r.map((c, i) => c.padEnd(widths[i])).join("  ");
-  return [line(head), ...rows.map(line), "", "revoke one with: openmausbot sessions revoke <id>"].join("\n");
+  return [line(head), ...rows.map(line), "", "revoke one with: whilo sessions revoke <id>"].join("\n");
 }

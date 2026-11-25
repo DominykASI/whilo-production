@@ -116,7 +116,7 @@ describe("fill_login in the bot's own browser", () => {
 describe("fill_login and a login kept to some bots on a shared browser", () => {
   const onePassword = { fresh: async () => {}, sitesFor: () => [], candidates: () => [], markUsed: () => {} } as unknown as OnePasswordLogins;
   const logins = (bots: ReadonlyArray<{ id: string; browserProfile?: string }>) => {
-    const store = new LoginStore({ dataDir: mkdtempSync(join(tmpdir(), "omb-fill-shared-")) });
+    const store = new LoginStore({ dataDir: mkdtempSync(join(tmpdir(), "whilo-fill-shared-")) });
     store.create({ ...BANK, password: "never-shown", source: "settings", bots: ["b1"] });
     return new BotLogins(store, onePassword, () => bots);
   };

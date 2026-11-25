@@ -2574,7 +2574,7 @@ describe("live config frames", () => {
     expect(configStatusFromFrame(baseFrame)).not.toHaveProperty("team");
   });
 
-  it("keeps an OMB Cloud home's flag through live config refreshes, and adds none elsewhere", () => {
+  it("keeps an Whilo Cloud home's flag through live config refreshes, and adds none elsewhere", () => {
     expect(configStatusFromFrame({ ...baseFrame, cloudHome: true }).cloudHome).toBe(true);
     expect(configStatusFromFrame(baseFrame)).not.toHaveProperty("cloudHome");
   });

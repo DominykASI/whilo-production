@@ -31,7 +31,7 @@ const NO_HOURS = "This month's cloud desktop hours are used up. See your plan on
 type EventBody = RuntimeEvent extends infer E ? E extends RuntimeEvent ? Omit<E, "eventId" | "provider" | "threadId" | "createdAt"> : never : never;
 
 function harness(extra: Partial<RoutineManagerOptions> = {}) {
-  const dir = mkdtempSync(join(tmpdir(), "omb-routine-recovery-"));
+  const dir = mkdtempSync(join(tmpdir(), "whilo-routine-recovery-"));
   dirs.push(dir);
   let now = START;
   let tasks = 0;
@@ -310,7 +310,7 @@ describe("an unattended run whose bot is busy when it starts", () => {
     h.refuse(null);
     await h.advance(2 * SECOND);
     expect(h.started.map((turn) => turn.threadId)).toEqual(["thread-1"]);
-    expect(h.started[0]!.prompt).not.toContain("OpenMausBot: this run's first start");
+    expect(h.started[0]!.prompt).not.toContain("Whilo: this run's first start");
     h.complete("thread-1");
     expect(h.run(run.id)).toMatchObject({ status: "completed", attention: undefined });
     expect(h.run(run.id).retried).toBeUndefined();
@@ -484,7 +484,7 @@ describe("an unattended run only its owner can fix", () => {
   });
 });
 
-describe("a run that OpenMausBot's shutdown cuts off", () => {
+describe("a run that Whilo's shutdown cuts off", () => {
   it("stays running through the shutdown, and the next start picks it up once in its own thread", async () => {
     const h = harness();
     const run = await h.start(h.routine().id);
@@ -497,7 +497,7 @@ describe("a run that OpenMausBot's shutdown cuts off", () => {
     expect(h.failed).toEqual([]);
 
     h.restart();
-    expect(h.run(run.id)).toMatchObject({ status: "queued", retried: "restarted", threadId: "thread-1", attention: "Starting again shortly after OpenMausBot restarted while it ran" });
+    expect(h.run(run.id)).toMatchObject({ status: "queued", retried: "restarted", threadId: "thread-1", attention: "Starting again shortly after Whilo restarted while it ran" });
     expect(h.cut.map((cut) => cut.id)).toEqual([run.id]);
     h.restart();
     expect(h.cut).toHaveLength(1);

@@ -7,7 +7,7 @@ import { DatabaseSync } from "node:sqlite";
 import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
 
-import { launchVerificationServer, runControlOmb, verificationServerArgs, verificationServerEnvironment } from "../scripts/control-omb.ts";
+import { launchVerificationServer, runControlOmb, verificationServerArgs, verificationServerEnvironment } from "../scripts/control-whilo.ts";
 import { CONTROL_WAITED } from "./control-client.ts";
 import { CONSENT_RULE } from "./peer-provenance.ts";
 import { waitForExit } from "./testing/cleanup.ts";
@@ -26,7 +26,7 @@ type ModelRequest = { lastUser: string; toolsSinceUser: number };
 
 async function chiefJob(test: (f: any) => Promise<void>) {
   // The approval deadline and the stall window elapse only on marker files, never on their own.
-  const parentEnv = { ...process.env, OMB_TEST_APPROVAL_CLOCK: "1", OMB_TEST_STALL_CLOCK: "1" };
+  const parentEnv = { ...process.env, WHILO_TEST_APPROVAL_CLOCK: "1", WHILO_TEST_STALL_CLOCK: "1" };
   const requests: ModelRequest[] = [];
   let answer: (request: ModelRequest) => ModelAnswer = () => ({ say: "OK" });
   let callSerial = 0;
@@ -298,7 +298,7 @@ it("tells the Chief what happened to each approval: allowed, denied, or never an
   expect(settled).toEqual(["@Mira got your approval", "@Mira's request was denied", "Nobody answered @Mira's approval in time — that step did not run"]);
   expect(f.child(job, f.mira.id, "CHECK-HISTORY").result).toBe("HISTORY-RESULT: checked the history.");
   expect(f.child(job, f.mira.id, "PUSH-BRANCH").result).toBe("PUSH-RESULT: not pushed; the push was denied.");
-  const unanswered = "[OpenMausBot: nobody answered the approval for “Bash: pnpm test” in time, so it did not run. Do not report it as done; it needs the person's approval.]";
+  const unanswered = "[Whilo: nobody answered the approval for “Bash: pnpm test” in time, so it did not run. Do not report it as done; it needs the person's approval.]";
   expect(f.child(job, f.mira.id, "RUN-TESTS")).toMatchObject({ status: "completed", result: `${unanswered}\n\nTESTS-RESULT: I could not run the tests.` });
   expect(f.prompt(f.turn("B3"))).toContain(JSON.stringify(unanswered.replace(/^\[/, "(")).slice(1, -1));
   expect(f.prompt(f.turn("B3"))).toContain("[From @Mira (bot) · report on assignment ");
@@ -516,7 +516,7 @@ it("tells a teammate the person's job is its task, and a routine's handoff is no
   writeFileSync(join(userData, "cua-connection.json"), JSON.stringify({ mode: "embedded", status: "ready", socketPath: join(f.dataDir, "cua.sock"),
     mcpCommand: "/fixture/cua-driver", mcpArgs: ["mcp"], mcpEnv: {} }), { mode: 0o600 });
   // A call acts only if it got the computer within a second (production: 5).
-  await f.restart("SIGTERM", { OMB_TEST_DESKTOP_CUA_CONNECTION: join(userData, "cua-connection.json"), OMB_COMPUTER_CALL_ACT_WITHIN_MS: "1000" });
+  await f.restart("SIGTERM", { WHILO_TEST_DESKTOP_CUA_CONNECTION: join(userData, "cua-connection.json"), WHILO_COMPUTER_CALL_ACT_WITHIN_MS: "1000" });
   const kai = await f.bot("Kai", "Engineering");
   f.script(f.clive.id,
     { key: "S0", match: ["PHASE-SCREEN-MARCH"], steps: [{ arguments: { bot_ids: [f.mira.id], message: "EXPORT-MARCH: export March from the invoice app on screen." } }], reply: "S0: Mira is exporting March." },

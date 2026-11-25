@@ -284,7 +284,7 @@ export function serializeWhiloBoard(doc: WhiloBoardDoc): string {
 
 /** Every board on this computer is stored under one key, keyed by environment, like the team canvas. */
 export function whiloBoardStorageKey(environmentId: string): string {
-  return `omb-whilo-boards:${environmentId}`;
+  return `whilo-whilo-boards:${environmentId}`;
 }
 
 export interface WhiloBoardIndexEntry {

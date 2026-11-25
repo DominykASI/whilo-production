@@ -7,7 +7,7 @@ import { tmpdir } from "node:os";
 import { join, relative } from "node:path";
 import { afterAll, beforeAll, expect, it } from "vitest";
 
-import { launchVerificationServer, runControlOmb, type VerificationServer } from "../scripts/control-omb.ts";
+import { launchVerificationServer, runControlOmb, type VerificationServer } from "../scripts/control-whilo.ts";
 import { FAKE_POSTIZ_KEY, startFakePostiz, type FakePostiz } from "./testing/fake-postiz.ts";
 
 type Dump = { prompt?: string; systemPrompt: string | null; mcpConfig: { mcpServers: Record<string, { url?: string; alwaysLoad?: boolean }> } };
@@ -67,9 +67,9 @@ const draft = { socialPost: [{ integrationId: "int_linkedin", date: "2026-11-02T
 beforeAll(async () => {
   cloud = await startFakePostiz();
   own = await startFakePostiz();
-  scratch = mkdtempSync(join(tmpdir(), "omb-postiz-e2e-"));
+  scratch = mkdtempSync(join(tmpdir(), "whilo-postiz-e2e-"));
   writeFileSync(join(scratch, "tool-calls.json"), "[]");
-  fixture = await launchVerificationServer({ ...process.env, OMB_POSTIZ_CLOUD_URL: cloud.url, FAKE_CLAUDE_TOOL_CALLS_FILE: join(scratch, "tool-calls.json") });
+  fixture = await launchVerificationServer({ ...process.env, WHILO_POSTIZ_CLOUD_URL: cloud.url, FAKE_CLAUDE_TOOL_CALLS_FILE: join(scratch, "tool-calls.json") });
 }, 60_000);
 
 afterAll(async () => {

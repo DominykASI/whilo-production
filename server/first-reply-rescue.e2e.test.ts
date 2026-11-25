@@ -3,15 +3,15 @@ import { mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, it, vi } from "vitest";
-import { launchVerificationServer, runControlOmb } from "../scripts/control-omb.ts";
+import { launchVerificationServer, runControlOmb } from "../scripts/control-whilo.ts";
 import { removeTempDir } from "./testing/cleanup.ts";
 import { openSse } from "./testing/sse.ts";
 
 it("posts one rescue notice into a silent first reply, readable as plain text, and settles it when the reply starts", async () => {
-  const scratch = mkdtempSync(join(tmpdir(), "omb-first-reply-"));
+  const scratch = mkdtempSync(join(tmpdir(), "whilo-first-reply-"));
   const release = join(scratch, "release");
   const fixture = await launchVerificationServer({
-    ...process.env, FAKE_CLAUDE_MODE: "hang", FAKE_CLAUDE_RELEASE: release, OMB_FIRST_REPLY_NOTICE_MS: "1500",
+    ...process.env, FAKE_CLAUDE_MODE: "hang", FAKE_CLAUDE_RELEASE: release, WHILO_FIRST_REPLY_NOTICE_MS: "1500",
   });
   const { url } = fixture.info;
   const control = (args: string[]) => runControlOmb([...args, "--url", url]) as Promise<any>;

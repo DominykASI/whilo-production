@@ -18,7 +18,7 @@
 - A tool is shown and served only when a token is saved **and** `bot.xResearch === true`. An absent field means off.
 - The route re-checks token and switch on every call. Never trust the catalog alone.
 - The token never reaches an engine environment, a prompt, the renderer or a response body.
-- Config section `treg`, field `token`, env `OMB_TREG_TOKEN`, Electron credential name `tregToken`.
+- Config section `treg`, field `token`, env `WHILO_TREG_TOKEN`, Electron credential name `tregToken`.
 - Base URL `https://treg.to`, auth header `X-Treg-Token`, `X-Treg-Route-Max-Cost: 0.05` on every `/call/`, 30 s timeout, `redirect: "error"`, 2 MiB body cap.
 - Endpoints exactly as `TREG_X_ENDPOINTS` in Task 1. Only an `unavailable` failure earns the routed fallback; a bad token, an empty balance or a malformed request never does.
 - `limit` is 1–50 and defaults to 20. Post `text` is cut at 1,500 code points and `quoted.text` at 300, each with `…`.
@@ -252,11 +252,11 @@ describe("toPost", () => {
 describe("search", () => {
   it("calls anyapi's search with the token, a cost ceiling and Latest, and returns compact posts", async () => {
     const { fetcher, calls } = fakeFetch({ body: anyapi({ items: [searchRow("12"), searchRow("11")], nextCursor: "" }) });
-    const result = await clientWith(fetcher).search({ query: "mausbot", sort: "latest", limit: 20 });
+    const result = await clientWith(fetcher).search({ query: "whilo", sort: "latest", limit: 20 });
     expect(calls).toHaveLength(1);
     expect(calls[0]!.method).toBe("POST");
     expect(calls[0]!.url.href).toBe("https://treg.to/call/anyapi.x.search.posts");
-    expect(calls[0]!.body).toEqual({ query: "mausbot", queryType: "Latest", limit: 20 });
+    expect(calls[0]!.body).toEqual({ query: "whilo", queryType: "Latest", limit: 20 });
     expect(calls[0]!.headers.get("x-treg-token")).toBe("test-token");
     expect(calls[0]!.headers.get("x-treg-route-max-cost")).toBe("0.05");
     expect(result.posts.map((post) => post.id)).toEqual(["12", "11"]);
@@ -940,7 +940,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   - `AppConfig`, near `:621`
   - env override, near `:1046-1049`
   - `syncCredentialEnv`, near `:1131`
-  - `WORKSPACE_CREDENTIAL_ENV`, after `"OMB_OPENAI_LIVE_KEY"` near `:1193`
+  - `WORKSPACE_CREDENTIAL_ENV`, after `"WHILO_OPENAI_LIVE_KEY"` near `:1193`
   - `saveConfig` section list, `:1366`
 - Modify: `electron/workspace-credentials.mjs:10-20`, `electron/diagnostics.mjs:14-36`
 - Modify: `server/index.ts` `configStatus()` near `:15433`
@@ -949,7 +949,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 **Interfaces:**
 - Consumes: nothing.
-- Produces: `cfg.treg?.token: string | undefined`, env `OMB_TREG_TOKEN`, `ConfigStatus.treg?: { configured: boolean }`. Tasks 4, 5 and 7 read these.
+- Produces: `cfg.treg?.token: string | undefined`, env `WHILO_TREG_TOKEN`, `ConfigStatus.treg?: { configured: boolean }`. Tasks 4, 5 and 7 read these.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -958,19 +958,19 @@ Append to `server/config.test.ts`, in its top-level `describe` or a new one. Add
 ```ts
 describe("treg token", () => {
   it("is a workspace credential that never reaches an engine", () => {
-    expect(WORKSPACE_CREDENTIAL_ENV).toContain("OMB_TREG_TOKEN");
+    expect(WORKSPACE_CREDENTIAL_ENV).toContain("WHILO_TREG_TOKEN");
   });
 
   it("follows a save into the running process and leaves on a clear", () => {
-    const before = process.env.OMB_TREG_TOKEN;
+    const before = process.env.WHILO_TREG_TOKEN;
     try {
       syncCredentialEnv({ treg: { token: "new-token" } });
-      expect(process.env.OMB_TREG_TOKEN).toBe("new-token");
+      expect(process.env.WHILO_TREG_TOKEN).toBe("new-token");
       syncCredentialEnv({ treg: { token: "" } });
-      expect(process.env.OMB_TREG_TOKEN).toBeUndefined();
+      expect(process.env.WHILO_TREG_TOKEN).toBeUndefined();
     } finally {
-      if (before === undefined) delete process.env.OMB_TREG_TOKEN;
-      else process.env.OMB_TREG_TOKEN = before;
+      if (before === undefined) delete process.env.WHILO_TREG_TOKEN;
+      else process.env.WHILO_TREG_TOKEN = before;
     }
   });
 });
@@ -999,27 +999,27 @@ In `server/config.ts`:
 ```ts
 // loadConfig env override, after the cerebras lines
   cfg.treg = { ...cfg.treg };
-  if (process.env.OMB_TREG_TOKEN !== undefined) cfg.treg.token = process.env.OMB_TREG_TOKEN;
+  if (process.env.WHILO_TREG_TOKEN !== undefined) cfg.treg.token = process.env.WHILO_TREG_TOKEN;
 ```
 
 ```ts
-// syncCredentialEnv `secrets`, after [patch.live?.key, "OMB_OPENAI_LIVE_KEY"],
-    [patch.treg?.token, "OMB_TREG_TOKEN"],
+// syncCredentialEnv `secrets`, after [patch.live?.key, "WHILO_OPENAI_LIVE_KEY"],
+    [patch.treg?.token, "WHILO_TREG_TOKEN"],
 ```
 
 ```ts
-// WORKSPACE_CREDENTIAL_ENV, directly after "OMB_OPENAI_LIVE_KEY",
-  "OMB_TREG_TOKEN",
+// WORKSPACE_CREDENTIAL_ENV, directly after "WHILO_OPENAI_LIVE_KEY",
+  "WHILO_TREG_TOKEN",
 ```
 
 In the `saveConfig` section list at `:1366`, add `"treg"` right after `"cerebras"`.
 
-In `electron/diagnostics.mjs` `CREDENTIAL_ENV_NAMES`, add `"OMB_TREG_TOKEN",` directly after `"OMB_OPENAI_LIVE_KEY",`. It must be the same position as in `WORKSPACE_CREDENTIAL_ENV`, because the parity test compares order.
+In `electron/diagnostics.mjs` `CREDENTIAL_ENV_NAMES`, add `"WHILO_TREG_TOKEN",` directly after `"WHILO_OPENAI_LIVE_KEY",`. It must be the same position as in `WORKSPACE_CREDENTIAL_ENV`, because the parity test compares order.
 
 In `electron/workspace-credentials.mjs`, add a row after the `live` row:
 
 ```js
-  { section: "treg", field: "token", name: "tregToken", env: "OMB_TREG_TOKEN" },
+  { section: "treg", field: "token", name: "tregToken", env: "WHILO_TREG_TOKEN" },
 ```
 
 In `server/index.ts` `configStatus()`, after the `cerebras` line:
@@ -1371,7 +1371,7 @@ function parse<T>(schema: z.ZodType<T>, body: unknown): T {
 
 function handleFrom(raw: string): string {
   const handle = normalizeHandle(raw);
-  if (!handle) throw new XResearchError("bad_input", "handle must be an X handle such as @openmausbot, or an x.com profile link.");
+  if (!handle) throw new XResearchError("bad_input", "handle must be an X handle such as @whilo, or an x.com profile link.");
   return handle;
 }
 
@@ -1509,7 +1509,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Regenerate: `server/drivers/agents-catalog-goldens/*.json`
 
 **Interfaces:**
-- Consumes: env `OMB_X_RESEARCH`, set from `cfg.treg?.token` (Task 2) and `bot.xResearch` (Task 3).
+- Consumes: env `WHILO_X_RESEARCH`, set from `cfg.treg?.token` (Task 2) and `bot.xResearch` (Task 3).
 - Produces: tool names `x_search`, `x_user_posts`, `x_post`, `x_profile` with the argument names `query`, `sort`, `limit`, `sinceId`, `handle`, `includeReplies`, `post`, `replies`. Task 6's handlers pass these through unchanged.
 
 - [ ] **Step 1: Write the failing test**
@@ -1522,11 +1522,11 @@ In `server/drivers/agents-catalog-wire.test.ts`:
   // X research is one more switch, on only for a bot its person turned on.
   // The fullest profiles carry it, so every other profile stays a subset.
   for (const name of ["direct+skills+shared+voice", "room+own-thread+skills+shared+voice"]) {
-    all[`${name}+x`] = { family: all[name]!.family, env: { ...all[name]!.env, OMB_X_RESEARCH: "1" } };
+    all[`${name}+x`] = { family: all[name]!.family, env: { ...all[name]!.env, WHILO_X_RESEARCH: "1" } };
   }
 ```
 
-(b) In `all["external+everything"].env`, add `OMB_X_RESEARCH: "1",`.
+(b) In `all["external+everything"].env`, add `WHILO_X_RESEARCH: "1",`.
 
 (c) Change `FULL` to:
 
@@ -1541,7 +1541,7 @@ const FULL = { direct: "direct+skills+shared+voice+x", room: "room+own-thread+sk
     const X = ["x_search", "x_user_posts", "x_post", "x_profile"];
     for (const [name, profile] of Object.entries(PROFILES)) {
       const names = toolsOf(wires[name]!).map((tool) => tool.name);
-      const on = profile.env.OMB_X_RESEARCH === "1" && profile.family !== "external";
+      const on = profile.env.WHILO_X_RESEARCH === "1" && profile.family !== "external";
       for (const tool of X) expect(names.includes(tool), `${name}: ${tool}`).toBe(on);
     }
     const switchedOn = Object.keys(PROFILES).filter((name) => name.endsWith("+x"));
@@ -1573,7 +1573,7 @@ In `server/drivers/agents-catalog.ts`:
 `catalogProfileFromEnv`, after `voiceNotes: …,`:
 
 ```ts
-    xResearch: env.OMB_X_RESEARCH === "1",
+    xResearch: env.WHILO_X_RESEARCH === "1",
 ```
 
 Tool definitions: insert directly after the `send_voice_note` entry:
@@ -1668,13 +1668,13 @@ with:
     : X_READY_TOOLS.filter((tool) => !CHIEF_ONLY_TOOL_NAMES.has(tool.name)).map((tool) => {
 ```
 
-In `server/index.ts` `agentsIntegration()`, after the `OMB_VOICE_NOTES` entry:
+In `server/index.ts` `agentsIntegration()`, after the `WHILO_VOICE_NOTES` entry:
 
 ```ts
       // X research spends the person's own treg balance, so the tools
       // are shown only to a bot they switched on, and only with a key saved;
       // the routes (server/routes/x-research.ts) re-check both on every call.
-      OMB_X_RESEARCH: cfg.treg?.token && store.bot(botId)?.xResearch === true ? "1" : "0",
+      WHILO_X_RESEARCH: cfg.treg?.token && store.bot(botId)?.xResearch === true ? "1" : "0",
 ```
 
 - [ ] **Step 4: Regenerate the goldens, then set the two new budgets by hand**
@@ -2071,16 +2071,16 @@ Expected: all green. Fix any failure where it comes from. Never update a golden 
 
 - [ ] **Step 2: Real-key checks**
 
-These need Omkar's treg token, entered by him in the app, never in a shell or a file. With the OMB2 build from Step 3:
+These need Omkar's treg token, entered by him in the app, never in a shell or a file. With the Whilo2 build from Step 3:
   - Press Test in Settings → API keys. It should show "Works. $X left on treg." Confirm the figure matches `treg balance`. If `/auth/me` or the balance route refuses the `X-Treg-Token` header, fix `accountInfo`.
-  - Ask a switched-on bot: "Search X for posts mentioning MausBot this week." Confirm the posts and links are real.
+  - Ask a switched-on bot: "Search X for posts mentioning Whilo this week." Confirm the posts and links are real.
   - Ask it to run the same search with the `newestId` it got as `sinceId`. Confirm it returns no repeats. If `since_id:` breaks the query, the client-side filter alone must still return no repeats.
   - Temporarily paste a wrong token, then call `x_search`. The bot should say "treg rejected the token…". Look up an account that does not exist with `x_profile` and record how treg answers a full miss; adjust the not-found path if it is not `username: null`.
 
 - [ ] **Step 3: End-to-end check with a fake engine**
 
-Use the repo's `verify-omb` skill (isolated fake-engine instance) to confirm, before any real token: a bot with `xResearch` off is not shown the `x_*` tools; switching it on with a token saved shows them on the next turn; and an `x_search` call on a bot switched off mid-turn is refused with the bot-off sentence.
+Use the repo's `verify-whilo` skill (isolated fake-engine instance) to confirm, before any real token: a bot with `xResearch` off is not shown the `x_*` tools; switching it on with a token saved shows them on the next turn; and an `x_search` call on a bot switched off mid-turn is refused with the bot-off sentence.
 
 - [ ] **Step 4: Hand off for a local test**
 
-Use the `test-locally` skill to build OMB2 from `feat/x-research-tools`. Do not touch `/Applications/OpenMausBot.app`. Report the branch, the commits, and what Omkar should try. Do not push or open a PR.
+Use the `test-locally` skill to build Whilo2 from `feat/x-research-tools`. Do not touch `/Applications/Whilo.app`. Report the branch, the commits, and what Omkar should try. Do not push or open a PR.

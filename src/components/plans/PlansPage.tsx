@@ -16,6 +16,7 @@ import {
   promoMonthlyPrice,
   isNamedPlanValue,
   planValueKey,
+  planWithCreditTier,
   type Plan,
 } from "@/lib/plans";
 import { whiloText } from "@/lib/whilo-workflow-text";
@@ -37,8 +38,10 @@ function price(plan: Plan, billing: Billing): string {
 }
 
 function PlanCard({ plan, billing, onChoose }: { plan: Plan; billing: Billing; onChoose: (id: string) => void }) {
-  const badge = plan.badgeKey ? whiloText(plan.badgeKey) : null;
-  const monthly = billing === "annual" ? plan.priceAnnualMonthly : plan.priceMonthly;
+  const [creditTier, setCreditTier] = useState<string | null>(plan.creditTiers?.[0]?.id ?? null);
+  const shown = planWithCreditTier(plan, creditTier);
+  const badge = shown.badgeKey ? whiloText(shown.badgeKey) : null;
+  const monthly = billing === "annual" ? shown.priceAnnualMonthly : shown.priceMonthly;
   return (
     <article
       data-plan={plan.id}
@@ -63,26 +66,43 @@ function PlanCard({ plan, billing, onChoose }: { plan: Plan; billing: Billing; o
         <h3 className="text-lg font-bold tracking-tight text-ink">{whiloText(plan.nameKey)}</h3>
         <p className="min-h-[2.5rem] text-[13px] leading-5 text-ink-secondary">{whiloText(plan.taglineKey)}</p>
       </header>
+      {plan.creditTiers && (
+        <label className="flex flex-col gap-1.5 text-[12px] text-ink-secondary">
+          {whiloText("plans.credit.label")}
+          <select
+            value={creditTier ?? ""}
+            onChange={(event) => setCreditTier(event.target.value)}
+            aria-label={whiloText("plans.credit.label")}
+            className="h-11 cursor-pointer rounded-xl border border-hairline bg-inset px-3 text-[13px] font-medium text-ink focus:border-focus focus:outline-none"
+          >
+            {plan.creditTiers.map((tier) => (
+              <option key={tier.id} value={tier.id}>
+                {whiloText(tier.nameKey)} · {tier.credits} credits
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
       <div className="flex flex-col gap-1">
         {(() => {
-          const promo = billing === "monthly" ? promoMonthlyPrice(plan) : null;
-          if (promo !== null && plan.priceMonthly !== null) {
+          const promo = billing === "monthly" ? promoMonthlyPrice(shown) : null;
+          if (promo !== null && shown.priceMonthly !== null) {
             return (
               <>
                 <span className="inline-flex w-fit items-center rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-500">Black Friday 50% OFF · até 30/11</span>
                 <div className="flex items-end gap-2">
                   <span className="text-4xl font-extrabold tracking-tight text-ink">{formatUsd(promo)}</span>
                   <span className="pb-1.5 text-[12px] text-ink-secondary">{whiloText("plans.perMonth")}</span>
-                  <span className="pb-1.5 text-base font-medium text-ink-tertiary line-through">{formatUsd(plan.priceMonthly)}</span>
+                  <span className="pb-1.5 text-base font-medium text-ink-tertiary line-through">{formatUsd(shown.priceMonthly)}</span>
                 </div>
-                <p className="text-[11px] text-emerald-500">De {formatUsd(plan.priceMonthly)} por {formatUsd(promo)}/mês até 30/11</p>
+                <p className="text-[11px] text-emerald-500">De {formatUsd(shown.priceMonthly)} por {formatUsd(promo)}/mês até 30/11</p>
               </>
             );
           }
           return (
             <>
               <div className="flex items-end gap-1.5">
-                <span className="text-4xl font-extrabold tracking-tight text-ink">{price(plan, billing)}</span>
+                <span className="text-4xl font-extrabold tracking-tight text-ink">{price(shown, billing)}</span>
                 {monthly !== null && monthly > 0 && (
                   <span className="pb-1.5 text-[12px] text-ink-secondary">
                     {whiloText("plans.perMonth")}
@@ -90,15 +110,15 @@ function PlanCard({ plan, billing, onChoose }: { plan: Plan; billing: Billing; o
                   </span>
                 )}
               </div>
-              {billing === "annual" && monthly !== null && monthly > 0 && plan.priceMonthly !== null && (
-                <p className="text-[11px] text-accent">Save ~20% vs monthly ({formatUsd(plan.priceMonthly)}/mo)</p>
+              {billing === "annual" && monthly !== null && monthly > 0 && shown.priceMonthly !== null && (
+                <p className="text-[11px] text-accent">Save ~20% vs monthly ({formatUsd(shown.priceMonthly)}/mo)</p>
               )}
             </>
           );
         })()}
       </div>
       <ul className="flex flex-col gap-2.5 border-t border-hairline pt-5">
-        {plan.limitKeys.map((limit) => (
+        {shown.limitKeys.map((limit) => (
           <li key={limit.key} className="flex items-center justify-between gap-3 text-[13px]">
             <span className="text-ink-secondary">{whiloText(limit.key)}</span>
             <span className="font-semibold text-ink">{isNamedPlanValue(limit.value) ? whiloText(planValueKey(limit.value)) : limit.value}</span>
@@ -445,7 +465,7 @@ export function PlansPage({ onChoose, onOpenServerCloud }: {
             <>
               <PlanGrid
                 title={whiloText("plans.personal.title")}
-                subtitle={`${whiloText("plans.personal.subtitle")} Includes Agent Pro+ and Max 20x.`}
+                subtitle={`${whiloText("plans.personal.subtitle")} Includes Agent Pro+ (Max / Ultra).`}
                 plans={PERSONAL_PLANS}
                 billing={billing}
                 onChoose={choose}

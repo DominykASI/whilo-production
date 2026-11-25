@@ -820,7 +820,7 @@
 }
 
 /* ── Meadow ───────────────────────────────────────────────────────────────
-   The MausBot brand look: a white page, a sidebar washed in the faintest
+   The Whilo brand look: a white page, a sidebar washed in the faintest
    green, mint for the selected row and a calm green accent. The brand
    green #1f8a52 carries white at only 4.3:1, so the filled accent is one
    step deeper; the brand green stays as the accent border.
@@ -1096,12 +1096,12 @@
    the machine has one. Geist and the UI stack do not carry those glyphs,
    and a generic family listed later would otherwise win. */
 @font-face {
-  font-family: "omb-chat";
+  font-family: "whilo-chat";
   src: local("Noto Naskh Arabic"), local("Noto Sans Arabic"), local("Geeza Pro"), local("SF Arabic");
   unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
 }
 @font-face {
-  font-family: "omb-chat";
+  font-family: "whilo-chat";
   src: local("Noto Sans Hebrew"), local("Arial Hebrew"), local("SF Hebrew");
   unicode-range: U+0590-05FF, U+FB1D-FB4F;
 }
@@ -1117,7 +1117,7 @@
 .chat-text,
 .chat-md {
   line-height: 1.75;
-  font-family: "omb-chat", var(--font-sans);
+  font-family: "whilo-chat", var(--font-sans);
 }
 .chat-md :is(strong, b) {
   font-weight: 600;
@@ -2847,7 +2847,7 @@ button:disabled.bg-danger {
   }
 }
 
-::highlight(omb-citation-source) {
+::highlight(whilo-citation-source) {
   background-color: color-mix(in srgb, var(--color-accent) 35%, transparent);
 }
 
@@ -3085,7 +3085,7 @@ button:disabled.bg-danger {
   color: var(--bubble-selection-ink, #ffffff);
 }
 
-/* MausBot Cloud's night: a deep night sky in the dark skins and an indigo dusk in the light ones. light-dark() picks by
+/* Whilo Cloud's night: a deep night sky in the dark skins and an indigo dusk in the light ones. light-dark() picks by
    the color-scheme of the element that paints it. One star twinkles, the z's drift and now and then a star shoots, each
    slowly; the z's need transform-box to grow around their own centre. */
 :root {

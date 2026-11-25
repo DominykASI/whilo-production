@@ -2,7 +2,7 @@
 // (testing/one-workspace-fixture.ts with `profiles`), My Cloud a real Cloud-mode server, this computer its real, frozen server
 // until the rail's This Mac starts a fresh profile at the same address, and this computer really lent to My Cloud all along.
 // Each picture is the window as the person sees it: the rail's own page beside the page the window shows. Pictures go to
-// OMB_ONE_WORKSPACE_SHOTS, else the fixture's folder.
+// WHILO_ONE_WORKSPACE_SHOTS, else the fixture's folder.
 import { randomBytes } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -12,12 +12,12 @@ import { resolveAgentBrowserBinary } from "../../server/browser-engine.ts";
 import { hostTimeout } from "../../server/testing/host-timeout.ts";
 import { freePortBlock } from "../../server/testing/ports.ts";
 import { launchCloudSendFixture, type CloudSendFixture } from "./cloud-send-fixture.ts";
-import { ensureUiBrowser, UI_TOOLS_DIR } from "./control-omb-ui.ts";
+import { ensureUiBrowser, UI_TOOLS_DIR } from "./control-whilo-ui.ts";
 import { launchHomeWorld, shotsDir, welcomed, type HomeWorld } from "./one-workspace-fixture.ts";
 import { decodePng, encodePng } from "./png.ts";
 
-const enabled = process.env.OMB_UI_E2E === "1" || Boolean(resolveAgentBrowserBinary({ dataDir: UI_TOOLS_DIR, env: process.env }));
-if (!enabled) console.info("skipping the This Mac rail UI e2e: set OMB_UI_E2E=1 to install the pinned browser");
+const enabled = process.env.WHILO_UI_E2E === "1" || Boolean(resolveAgentBrowserBinary({ dataDir: UI_TOOLS_DIR, env: process.env }));
+if (!enabled) console.info("skipping the This Mac rail UI e2e: set WHILO_UI_E2E=1 to install the pinned browser");
 
 const MAC = '[data-rail-place="profile:default"]';
 const WIDTH = 1280, HEIGHT = 800, SCALE = 2;

@@ -36,7 +36,7 @@ const cleanup: Array<() => Promise<void> | void> = [];
 afterEach(async () => { for (const step of cleanup.splice(0).reverse()) await step(); });
 
 function setup(options: { servers?: Record<string, Record<string, unknown>>; scope?: BotRecord["toolScope"]; approval?: "ask" | "full"; needsSignIn?: string[]; probe?: typeof probeMcpServer; oauth?: ChatAppsMcpOAuth; startupProbes?: boolean } = {}) {
-  const dataDir = mkdtempSync(join(tmpdir(), "omb-chat-apps-mcp-"));
+  const dataDir = mkdtempSync(join(tmpdir(), "whilo-chat-apps-mcp-"));
   cleanup.push(() => removeTempDir(dataDir));
   const threads = new Map<string, Message[]>();
   const rows = (threadId: string) => threads.get(threadId) ?? threads.set(threadId, []).get(threadId)!;
@@ -381,7 +381,7 @@ describe("a server that lists tools before anyone signs in", () => {
   async function startupProbe(servers: Record<string, Record<string, unknown>>) {
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
     cleanup.push(() => { vi.useRealTimers(); });
-    const dataDir = mkdtempSync(join(tmpdir(), "omb-mcp-oauth-"));
+    const dataDir = mkdtempSync(join(tmpdir(), "whilo-mcp-oauth-"));
     cleanup.push(() => removeTempDir(dataDir));
     const oauth = new McpOAuthManager({ file: join(dataDir, "mcp-oauth.json") });
     cleanup.push(() => oauth.dispose());
@@ -409,7 +409,7 @@ describe("a server that lists tools before anyone signs in", () => {
     const issuer = await startFakeOAuth();
     const fake = await startFakeHttpMcp({ guard: "every-request", acceptBearer: () => false, wwwAuthenticate: issuer.challenge, tools: [buy] });
     cleanup.push(() => fake.close(), () => issuer.close());
-    const dataDir = mkdtempSync(join(tmpdir(), "omb-mcp-oauth-"));
+    const dataDir = mkdtempSync(join(tmpdir(), "whilo-mcp-oauth-"));
     cleanup.push(() => removeTempDir(dataDir));
     const oauth = new McpOAuthManager({ file: join(dataDir, "mcp-oauth.json") });
     cleanup.push(() => oauth.dispose());

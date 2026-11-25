@@ -27,7 +27,7 @@ describe("base64url", () => {
 
 describe("the stored token hash", () => {
   it("is the hex the desktop already keeps, and nothing else parses", () => {
-    const hash = credentialHash("omb_example");
+    const hash = credentialHash("whilo_example");
     expect(credentialHashFromHex(hash.toString("hex"))).toEqual(hash);
     expect(credentialHashFromHex(hash.toString("hex").toUpperCase())).toBeNull();
     expect(credentialHashFromHex("abc")).toBeNull();

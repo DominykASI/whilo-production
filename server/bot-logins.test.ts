@@ -58,7 +58,7 @@ describe("a login kept to some bots, and bots that share a browser", () => {
   ];
   const onePassword = { fresh: async () => {}, sitesFor: () => [], candidates: () => [], markUsed: () => {} } as unknown as OnePasswordLogins;
   const world = () => {
-    const store = new LoginStore({ dataDir: mkdtempSync(join(tmpdir(), "omb-bot-logins-")) });
+    const store = new LoginStore({ dataDir: mkdtempSync(join(tmpdir(), "whilo-bot-logins-")) });
     const logins = new BotLogins(store, onePassword, () => bots);
     const place = { site: "capacity.example", hosts: ["capacity.example"], exactHost: false };
     return { store, logins, place };

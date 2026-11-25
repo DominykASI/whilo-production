@@ -8,7 +8,7 @@ import { isIP } from "node:net";
 import path from "node:path";
 
 export const DESKTOP_COMPANION_FIELD = "desktopCompanionRemote";
-const DEVICE_TOKEN = /^omb_[A-Za-z0-9_-]{43}$/;
+const DEVICE_TOKEN = /^whilo_[A-Za-z0-9_-]{43}$/;
 const DEVICE_ID = /^[0-9a-f-]{36}$/i;
 const PAIRING_CODE = /^\d{6}$/;
 const MAX_ERROR_BYTES = 64 * 1024;
@@ -16,8 +16,8 @@ const MAX_ERROR_BYTES = 64 * 1024;
 /** Losing either argument makes the renderer unsafe or makes a live relay look local. */
 export function desktopCompanionRendererArguments(localOrigin, remoteAccess) {
   return [
-    `--omb-local-origin=${localOrigin}`,
-    ...(remoteAccess ? ["--openmausbot-remote-client"] : []),
+    `--whilo-local-origin=${localOrigin}`,
+    ...(remoteAccess ? ["--whilo-remote-client"] : []),
   ];
 }
 
@@ -135,7 +135,7 @@ export async function pairDesktopCompanion({
 }) {
   const endpoint = normalizeDesktopCompanionEndpoint(rawEndpoint);
   if (!endpoint) {
-    throw new Error("Enter the OpenMausBot HTTPS companion address or full Tailscale name ending in .ts.net");
+    throw new Error("Enter the Whilo HTTPS companion address or full Tailscale name ending in .ts.net");
   }
   const code = String(rawCode ?? "").trim();
   if (!PAIRING_CODE.test(code)) throw new Error("Enter the six-digit code shown on the other computer");

@@ -248,7 +248,7 @@ describe("optional Company cloud backup settings", () => {
   it("shows restart instructions and no backup actions when a restore is already staged", async () => {
     vi.mocked(bridge.state).mockResolvedValueOnce({ busy: false, pendingRestore: true });
     await ready();
-    expect(render().html).toContain("Fully quit MausBot");
+    expect(render().html).toContain("Fully quit Whilo");
     for (const label of ["Back up this installation", "Restore this backup", "Delete cloud backup", "Refresh cloud backups"]) {
       expect(button(label)).toBeUndefined();
     }
@@ -265,10 +265,10 @@ describe("optional Company cloud backup settings", () => {
     await ready();
     if (lateState) {
       expect(render().html).toContain("Cloud backups could not be loaded");
-      expect(render().html).not.toContain("Fully quit MausBot");
+      expect(render().html).not.toContain("Fully quit Whilo");
       resolveState({ busy: false, pendingRestore: true }); await flush();
     }
-    expect(render().html).toContain("Fully quit MausBot");
+    expect(render().html).toContain("Fully quit Whilo");
     for (const label of ["Back up this installation", "Restore this backup", "Delete cloud backup", "Refresh cloud backups"]) {
       expect(button(label)).toBeUndefined();
     }
@@ -319,8 +319,8 @@ describe("optional Company cloud backup settings", () => {
 
   it("requires an explicit backup dialog without passwords, then exports only allowlisted local preferences", async () => {
     await ready();
-    storage.set("omb-drafts", "private fixture draft"); storage.set("omb-skin", "fixture-theme");
-    storage.set("auth-token", "fixture auth secret"); storage.set("omb-webhook-credentials", "fixture connection secret");
+    storage.set("whilo-drafts", "private fixture draft"); storage.set("whilo-skin", "fixture-theme");
+    storage.set("auth-token", "fixture auth secret"); storage.set("whilo-webhook-credentials", "fixture connection secret");
     button("Back up this installation").props.onClick!();
     expect(bridge.create).not.toHaveBeenCalled(); expect(passwords()).toHaveLength(0);
     expect(render().nodes.some(node => node.type === "dialog")).toBe(true);
@@ -330,7 +330,7 @@ describe("optional Company cloud backup settings", () => {
     const submitButton = () => render().nodes.find(node => node.type === "button" && node.props.type === "submit")!;
     expect(submitButton().props.disabled).toBe(false);
     const createForm = form(); submit(createForm); submit(createForm); await flush();
-    expect(bridge.create).toHaveBeenCalledExactlyOnceWith({ clientState: { "omb-drafts": "private fixture draft", "omb-skin": "fixture-theme" } });
+    expect(bridge.create).toHaveBeenCalledExactlyOnceWith({ clientState: { "whilo-drafts": "private fixture draft", "whilo-skin": "fixture-theme" } });
     expect([...storage.values()]).not.toContain(PASSWORD);
     expect(render().html).not.toContain(PASSWORD);
     expect(fetch).not.toHaveBeenCalled();
@@ -469,7 +469,7 @@ describe("optional Company cloud backup settings", () => {
     const replace = button("Replace installation"); replace.props.onClick!(); replace.props.onClick!(); await flush();
     expect(bridge.restore).toHaveBeenCalledOnce();
     expect(storage.get(WORKSPACE_RESTORE_MARKER)).toBe(STAGE_ID);
-    expect(render().html).toContain("Fully quit MausBot");
+    expect(render().html).toContain("Fully quit Whilo");
     expect(window.location.reload).not.toHaveBeenCalled();
     expect([...storage.values()]).not.toContain(PASSWORD);
   });

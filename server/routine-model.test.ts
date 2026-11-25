@@ -17,7 +17,7 @@ const START = new Date(2026, 7, 17, 8, 0, 0).getTime();
 const HAIKU = { instanceId: "claude", model: "claude-haiku-4-5" };
 
 function manager() {
-  const dir = mkdtempSync(join(tmpdir(), "omb-routine-model-"));
+  const dir = mkdtempSync(join(tmpdir(), "whilo-routine-model-"));
   dirs.push(dir);
   const options: RoutineManagerOptions = {
     file: join(dir, "routines.json"),

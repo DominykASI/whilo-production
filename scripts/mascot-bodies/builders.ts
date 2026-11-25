@@ -296,7 +296,7 @@ export const BODY_DEFS: BodyDef[] = [
   // A face-fit constraint, not taste: at the classic 0.42 the notches pinch the
   // star to a 50-unit inscribed circle, and the smallest face clamps every body.
   { id: "star", name: "Star", d: buildStar(196, 196, 5, 0.55), viewBox: [0, 0, 200, 200] },
-  // The four shapes OpenMausBot's catalog carries and this one did not, so a bot
+  // The four shapes Whilo's catalog carries and this one did not, so a bot
   // imported from it keeps the body it was made with. Same stage and rounding as
   // the shapes above, so all four hold the shared face at full size.
   { id: "triangle", name: "Triangle", d: buildPolygon(196, 196, 3, 0.14), viewBox: [0, 0, 200, 200] },

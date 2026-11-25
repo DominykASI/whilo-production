@@ -26,7 +26,7 @@ const SAVE_DELAY_MS = 500;
 let environmentIdPromise: Promise<string> | null = null;
 
 export function whiloEnvironmentId(): Promise<string> {
-  environmentIdPromise ??= api<{ environmentId?: string }>("/.well-known/openmausbot/environment", {
+  environmentIdPromise ??= api<{ environmentId?: string }>("/.well-known/whilo/environment", {
     signal: AbortSignal.timeout(5_000),
   })
     .then((environment) => (typeof environment.environmentId === "string" ? environment.environmentId : "local"))

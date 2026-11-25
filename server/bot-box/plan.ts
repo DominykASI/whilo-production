@@ -10,7 +10,7 @@
 //     sign-ins bound into it, so no other audience's transcripts are there;
 //   - put back inside that empty folder: this turn's working folder, the bot's own folder (workspaces/<bot>) and what the
 //     caller names (the turn's permission socket, a read-only file the command line points at); and, read-only, the
-//     bot's own SOUL.md (bots/<bot>/SOUL.md, which it may read but never write) and the engines OpenMausBot installed
+//     bot's own SOUL.md (bots/<bot>/SOUL.md, which it may read but never write) and the engines Whilo installed
 //     there, whole, since npm's bin links point into the prefix by relative paths;
 //   - a private /proc (its own PID namespace: other turns' processes do not exist for it), /dev, /tmp and /run;
 //   - of /sys, only the machine's CPU list, read-only;
@@ -37,7 +37,7 @@ export interface BoxSetup {
   home: string;
   /** Folders of code the box may read: the server's own files, the bots' browser. */
   codeRoots: readonly string[];
-  /** Folders of engine code OpenMausBot installed in the data folder, read-only at their own paths; absent ones are skipped. */
+  /** Folders of engine code Whilo installed in the data folder, read-only at their own paths; absent ones are skipped. */
   engineRoots: readonly string[];
   /** Host unix sockets bridged to loopback ports inside the box, when the box has its own network. */
   bridges: readonly BoxBridge[];
@@ -58,7 +58,7 @@ export interface BoxRequest {
   /** The environment the caller built for the process; the plan keeps only the allowed names (env.ts). */
   env: Record<string, string | undefined>;
   /** Names of `env` this process keeps although the allow-list or the workspace-credential deny would drop them: the keys
-   * the person saved for this engine. Never a never-list or `OMB_` name. */
+   * the person saved for this engine. Never a never-list or `WHILO_` name. */
   allowEnv?: readonly string[];
   /** More read-write paths: a permission socket, a browser profile. */
   rw?: readonly string[];
@@ -87,9 +87,9 @@ export interface BoxPlan {
   botId: string | null;
 }
 
-export const IN_BOX_SOCKET_DIR = "/run/omb";
+export const IN_BOX_SOCKET_DIR = "/run/whilo";
 export const RELAY_SOCKET_NAME = "relay";
-export const BOX_HOSTNAME = "omb-box";
+export const BOX_HOSTNAME = "whilo-box";
 const ID = /^[A-Za-z0-9_-]{1,128}$/;
 
 /** `child` is `parent` or below it. */

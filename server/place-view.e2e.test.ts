@@ -78,12 +78,12 @@ describe("a cloud computer that can't start, against the real server", () => {
     const proc = spawn(process.execPath, [join(ROOT, "server/index.ts")], {
       cwd: ROOT, env: {
         PATH: dirname(process.execPath), ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
-        HOME: home, USERPROFILE: home, OMB_DATA_DIR: data,
+        HOME: home, USERPROFILE: home, WHILO_DATA_DIR: data,
         APPDATA: join(home, "appdata"), LOCALAPPDATA: join(home, "localappdata"),
-        TEMP: home, TMP: home, TMPDIR: home, OMB_TEST_SEALED_PATH: "1",
-        OMB_PORT: String(port), OMB_WEBHOOK_PORT: String(port + 1), OMB_STATIC_DIR: ui,
-        OMB_BOAT_API: boatApi, OMB_USER_DATA: join(home, "user-data"),
-        ...(included ? { OMB_CLOUD_BOAT_URL: boatApi, OMB_CLOUD_BOAT_TOKEN: "relay_place_view_fixture" } : {}),
+        TEMP: home, TMP: home, TMPDIR: home, WHILO_TEST_SEALED_PATH: "1",
+        WHILO_PORT: String(port), WHILO_WEBHOOK_PORT: String(port + 1), WHILO_STATIC_DIR: ui,
+        WHILO_BOAT_API: boatApi, WHILO_USER_DATA: join(home, "user-data"),
+        ...(included ? { WHILO_CLOUD_BOAT_URL: boatApi, WHILO_CLOUD_BOAT_TOKEN: "relay_place_view_fixture" } : {}),
       }, stdio: ["ignore", "pipe", "pipe"],
     });
     child = proc;
@@ -102,7 +102,7 @@ describe("a cloud computer that can't start, against the real server", () => {
   }
 
   beforeAll(async () => {
-    home = mkdtempSync(join(tmpdir(), "omb-place-view-"));
+    home = mkdtempSync(join(tmpdir(), "whilo-place-view-"));
     data = join(home, "data");
     ui = join(home, "static");
     mkdirSync(data);
@@ -207,7 +207,7 @@ describe("a cloud computer that can't start, against the real server", () => {
     createAnswer = refusal(402, "subscription_inactive", "Cloud computers are included with an active Cloud subscription.");
     await send(bot.id, bot.threadId, "Open the desktop.");
     const row = await failedRow(bot.threadId);
-    expect(row.tool.name).toBe("error: Your MausBot Cloud plan has ended, so cloud desktops are off. See your plan on the Plan page.");
+    expect(row.tool.name).toBe("error: Your Whilo Cloud plan has ended, so cloud desktops are off. See your plan on the Plan page.");
     expect(row.tool.place).toEqual({ state: "cc-ended", params: { bot: "Ended Bot" }, source: "works-on" });
   }, 90_000);
 

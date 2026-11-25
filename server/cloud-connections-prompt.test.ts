@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { createConnectionPrompt, type ConnectionPromptSources } from "./cloud-connections-prompt.ts";
 import type { McpAuthState } from "./mcp-oauth.ts";
 
-const ORIGIN = "https://omb-u-1.fly.dev";
+const ORIGIN = "https://whilo-u-1.fly.dev";
 const SERVERS = {
   dodo: { command: "npx", args: ["-y", "dodopayments-mcp"], env: {}, enabled: true },
   linear: { type: "http", url: "https://mcp.linear.app/sse", headers: {}, enabled: true },
@@ -27,7 +27,7 @@ describe("what a bot on My Cloud is told about connections that need the person"
   it("a server to sign in to, with its link, and one that runs on the person's computer, only of those the bot uses", () => {
     const prompt = createConnectionPrompt(sources({ linear: "needs-sign-in", jira: "none", off: "needs-sign-in" }), ORIGIN);
     expect(prompt({})).toBe(
-      " Not connected on My Cloud yet: linear (sign in here: https://omb-u-1.fly.dev/?connect=mcp%3Alinear); jira (sign in here: https://omb-u-1.fly.dev/?connect=mcp%3Ajira)."
+      " Not connected on My Cloud yet: linear (sign in here: https://whilo-u-1.fly.dev/?connect=mcp%3Alinear); jira (sign in here: https://whilo-u-1.fly.dev/?connect=mcp%3Ajira)."
       + " When a task needs one, say in plain words that it needs the person once on My Cloud and give its link; do not try another way."
       + " Runs only on the person's computer Milind's MacBook, not on My Cloud: notes (it uses files or an address only Milind's MacBook has). It worked there before the bots moved here. If a task needs one, tell the person in plain words that it stayed on Milind's MacBook and why, not that it was never set up, and do not write your own replacement.");
     expect(prompt({ mcpServers: ["dodo", "notes"] })).toBe(" Runs only on the person's computer Milind's MacBook, not on My Cloud: notes (it uses files or an address only Milind's MacBook has). It worked there before the bots moved here. If a task needs one, tell the person in plain words that it stayed on Milind's MacBook and why, not that it was never set up, and do not write your own replacement.");
@@ -37,7 +37,7 @@ describe("what a bot on My Cloud is told about connections that need the person"
   it("in a turn, a server on the person's computer is named only when it can't be reached now, with the reason lending gives", () => {
     const prompt = createConnectionPrompt(sources(), ORIGIN);
     expect(prompt({ mcpServers: ["notes"] }, new Map()), "reached through the lent computer: nothing to say").toBe("");
-    const offline = "notes runs on your Mac (Milind's MacBook), which is offline right now: OpenMausBot on it is closed, or the Mac is asleep or off.";
+    const offline = "notes runs on your Mac (Milind's MacBook), which is offline right now: Whilo on it is closed, or the Mac is asleep or off.";
     expect(prompt({ mcpServers: ["notes"] }, new Map([["notes", offline]]))).toBe(
       ` Runs on the person's own computer and can't be reached now: ${offline} If a task needs one, tell the person that in plain words, and do not write your own replacement.`);
   });
@@ -51,7 +51,7 @@ describe("what a bot on My Cloud is told about connections that need the person"
     const source = sources({}, { gmail: false, slack: true });
     const prompt = createConnectionPrompt(source, ORIGIN);
     const bot = { mcpServers: [], connectorTools: { gmail: { tools: "*" as const }, slack: { tools: "*" as const }, highlevel: { tools: "*" as const } } };
-    expect(prompt(bot)).toBe(" Not connected on My Cloud yet: HighLevel (connect it here: https://omb-u-1.fly.dev/?connect=highlevel)."
+    expect(prompt(bot)).toBe(" Not connected on My Cloud yet: HighLevel (connect it here: https://whilo-u-1.fly.dev/?connect=highlevel)."
       + " When a task needs one, say in plain words that it needs the person once on My Cloud and give its link; do not try another way.");
     await vi.waitFor(() => expect(source.reads).toEqual([["gmail", "slack"]]));
     await new Promise((resolve) => setTimeout(resolve, 0));

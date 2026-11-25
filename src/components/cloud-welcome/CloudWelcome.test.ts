@@ -37,7 +37,7 @@ import { CloudWelcome, sentHere } from "./CloudWelcome";
 import { CLOUD_SETUP_MOVE_SKIPPED, CLOUD_WELCOME_DONE, CLOUD_WELCOME_SHOWN as SHOWN, welcomeStepHint } from "@/lib/cloud-setup";
 import { resetCloudWelcome, useCloudWelcome } from "@/lib/cloud-welcome";
 
-const CLOUD = { name: "Studio Cloud", origin: "https://omb-u-1a2b3c4d5e6f.fly.dev" };
+const CLOUD = { name: "Studio Cloud", origin: "https://whilo-u-1a2b3c4d5e6f.fly.dev" };
 const quiet: CloudSendNotice = { ready: true, bots: [], updatedBots: [], skills: 0, logins: 0, onePassword: false, settings: 0, signature: "", dismissed: false, running: false, last: null, whole: null };
 const claude = { instanceId: "claude", driverKind: "claudeAgent", displayName: "Claude", access: "subscription", authentication: { method: "paste-code" }, snapshot: { state: "available", authenticated: false }, models: { default: "", options: [] } };
 const codex = { ...claude, instanceId: "codex", driverKind: "codex", displayName: "Codex" };
@@ -104,7 +104,7 @@ describe("CloudWelcome", () => {
     render();
     await vi.waitFor(() => expect(text()).toContain("What should Studio Cloud start with?"));
     expect(text()).toContain("Welcome to Studio Cloud");
-    expect(text()).toContain("Bots on your computer come here by themselves from the MausBot app.");
+    expect(text()).toContain("Bots on your computer come here by themselves from the Whilo app.");
     expect(host.querySelector('[data-bring-choice="fresh"]')).not.toBeNull();
     expect(host.querySelector("[data-bring-desktop]"), "this is the desktop app already").toBeNull();
     expect(host.querySelector("[data-bring-update]")).toBeNull();
@@ -121,7 +121,7 @@ describe("CloudWelcome", () => {
     fixture.state.bots = [fixture.state.bots[0]];
     window.ogb = { ...window.ogb!, cloudMove: {} } as unknown as typeof window.ogb;
     render();
-    await vi.waitFor(() => expect(host.querySelector("[data-bring-update]")?.textContent).toBe("Update MausBot to bring your bots here by itself."));
+    await vi.waitFor(() => expect(host.querySelector("[data-bring-update]")?.textContent).toBe("Update Whilo to bring your bots here by itself."));
     expect([...host.querySelectorAll("button")].some((node) => node.textContent?.startsWith("Copy"))).toBe(false);
   });
 
@@ -284,7 +284,7 @@ describe("CloudWelcome", () => {
     render();
     await vi.waitFor(() => expect(text()).toContain("Welcome to Studio Cloud"));
     const folders = host.querySelector('[data-welcome-files="folders"]')!;
-    expect(folders.textContent).toContain("Bots on Studio Cloud use the files on this computer by themselves while it's awake and MausBot is open. There's nothing to set up.");
+    expect(folders.textContent).toContain("Bots on Studio Cloud use the files on this computer by themselves while it's awake and Whilo is open. There's nothing to set up.");
     expect(folders.querySelector("button")).toBeNull();
   });
 

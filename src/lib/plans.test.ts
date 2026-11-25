@@ -1,24 +1,25 @@
 import { describe, expect, it } from "vitest";
 
 import { DOMYNIK_MODELS, RENTAL_TIERS, annualMonthly, estimateApiCost, formatContext, formatUsd, monthlyFromHours } from "@/lib/monetization";
-import { PERSONAL_PLANS, PLAN_IDS, PLANS, TEAM_PLANS, isNamedPlanValue, plan, planForTier, planTier, planValueKey } from "@/lib/plans";
+import { PERSONAL_PLANS, PLAN_IDS, PLANS, TEAM_PLANS, isNamedPlanValue, plan, planForTier, planTier, planValueKey, planWithCreditTier } from "@/lib/plans";
 
 describe("plans", () => {
   it("has a unique id per plan, covering the requested ladder", () => {
     const ids = PLANS.map((entry) => entry.id);
     expect(new Set(ids).size).toBe(ids.length);
     expect(ids).toEqual([...PLAN_IDS]);
+    expect(ids).toEqual(["premium", "agent-pro-plus", "enterprise"]);
   });
 
-  it("splits personal from team plans without losing the enterprise tier", () => {
-    expect(PERSONAL_PLANS.map((entry) => entry.id)).toEqual(["starter", "agent-pro-plus", "max-20x", "ultra"]);
-    expect(TEAM_PLANS.map((entry) => entry.id)).toEqual(["teams-premium", "teams-max-20x", "teams-ultra", "enterprise"]);
+  it("splits personal from enterprise without losing the enterprise tier", () => {
+    expect(PERSONAL_PLANS.map((entry) => entry.id)).toEqual(["premium", "agent-pro-plus"]);
+    expect(TEAM_PLANS.map((entry) => entry.id)).toEqual(["enterprise"]);
     expect(PERSONAL_PLANS.length + TEAM_PLANS.length).toBe(PLANS.length);
   });
 
-  it("keeps Starter free and the paid tiers priced above it", () => {
-    expect(plan("starter").priceMonthly).toBe(0);
-    for (const entry of PLANS.filter((candidate) => candidate.id !== "starter" && candidate.priceMonthly !== null)) {
+  it("keeps Premium priced above zero and the paid tiers priced above it", () => {
+    expect(plan("premium").priceMonthly).toBeGreaterThan(0);
+    for (const entry of PLANS.filter((candidate) => candidate.priceMonthly !== null)) {
       expect(entry.priceMonthly).toBeGreaterThan(0);
     }
   });
@@ -32,12 +33,12 @@ describe("plans", () => {
 
   it("highlights exactly one plan per audience", () => {
     expect(PERSONAL_PLANS.filter((entry) => entry.highlight)).toHaveLength(1);
-    expect(TEAM_PLANS.filter((entry) => entry.highlight)).toHaveLength(1);
+    expect(TEAM_PLANS.filter((entry) => entry.highlight)).toHaveLength(0);
   });
 
   it("maps the Agent Pro+ plan to the server's stored pro tier", () => {
     expect(planTier("agent-pro-plus")).toBe("pro");
-    expect(planTier("max-20x")).toBe("max-20x");
+    expect(planTier("premium")).toBe("premium");
     expect(planForTier("pro")?.id).toBe("agent-pro-plus");
     expect(planForTier(undefined)).toBeUndefined();
     expect(planForTier("nope")).toBeUndefined();
@@ -53,6 +54,24 @@ describe("plans", () => {
     expect(isNamedPlanValue("custom")).toBe(true);
     expect(isNamedPlanValue("500")).toBe(false);
     expect(planValueKey("unlimited")).toBe("plans.value.unlimited");
+  });
+
+  it("lets Agent Pro+ pick Max or Ultra, with the price and credit following the choice", () => {
+    const proPlus = plan("agent-pro-plus");
+    expect(proPlus.creditTiers?.map((tier) => tier.id)).toEqual(["max", "ultra"]);
+    const max = planWithCreditTier(proPlus, "max");
+    const ultra = planWithCreditTier(proPlus, "ultra");
+    expect(max.priceMonthly).toBe(99);
+    expect(ultra.priceMonthly).toBe(249);
+    expect(ultra.priceMonthly!).toBeGreaterThan(max.priceMonthly!);
+    const credits = (entry: typeof proPlus) => entry.limitKeys.find((limit) => limit.key === "plans.limit.credits")?.value;
+    expect(credits(max)).toBe("20,000");
+    expect(credits(ultra)).toBe("40,000");
+  });
+
+  it("returns the plan untouched when no credit tier matches", () => {
+    expect(planWithCreditTier(plan("premium"), "whatever")).toEqual(plan("premium"));
+    expect(planWithCreditTier(plan("agent-pro-plus"), null).priceMonthly).toBe(99);
   });
 });
 

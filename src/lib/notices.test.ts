@@ -88,8 +88,8 @@ it("a launch keeps the notice it showed first for the window's session; storage 
   expect(launchNotice()).toBeNull();
   markLaunchNotice(WHATS_NEW_NOTICE); markLaunchNotice(BOAT_OFFER_NOTICE);
   expect(launchNotice()).toBe(WHATS_NEW_NOTICE);
-  expect(session.get("omb.launch.notice")).toBe(WHATS_NEW_NOTICE);
-  session.set("omb.launch.notice", "something-else");
+  expect(session.get("whilo.launch.notice")).toBe(WHATS_NEW_NOTICE);
+  session.set("whilo.launch.notice", "something-else");
   expect(launchNotice(), "only a notice of the list").toBeNull();
   vi.stubGlobal("sessionStorage", { getItem: () => { throw new Error("blocked"); }, setItem: () => { throw new Error("blocked"); } });
   markLaunchNotice(STAR_NOTICE);

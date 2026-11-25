@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { createInterface } from "node:readline";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { launchVerificationServer, verificationServerEnvironment, type VerificationServer } from "../scripts/control-omb.ts";
+import { launchVerificationServer, verificationServerEnvironment, type VerificationServer } from "../scripts/control-whilo.ts";
 import { ENVELOPE_MARK } from "./runtime/envelope.ts";
 import { waitForExit } from "./testing/cleanup.ts";
 import { readHandoffs } from "./testing/handoff-rows.ts";
@@ -80,8 +80,8 @@ async function delayedBody(path: string, body: unknown) {
 function bridge(botId: string, threadId: string) {
   const child = spawn(process.execPath, [fileURLToPath(new URL("./drivers/agents-proxy.ts", import.meta.url))], {
     env: { ...verificationServerEnvironment({}, data, Number(new URL(base).port)),
-      OMB_HARNESS_URL: base, OMB_BOT_ID: botId, OMB_THREAD_ID: threadId,
-      OMB_COMMS_TOKEN: TOKEN, OMB_EXTERNAL_RUNTIME: "1" },
+      WHILO_HARNESS_URL: base, WHILO_BOT_ID: botId, WHILO_THREAD_ID: threadId,
+      WHILO_COMMS_TOKEN: TOKEN, WHILO_EXTERNAL_RUNTIME: "1" },
     stdio: ["pipe", "pipe", "pipe"],
   });
   child.stderr.resume();

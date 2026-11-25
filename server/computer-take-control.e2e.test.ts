@@ -13,7 +13,7 @@ import { freePortBlock } from "./testing/ports.ts";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const FAKE_CLAUDE = join(ROOT, "server/testing/fake-claude-cli.ts");
-const INCLUDED = `box_omb_${randomUUID()}`;
+const INCLUDED = `box_whilo_${randomUUID()}`;
 const FRAME = Buffer.from("/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AKp//2Q==", "base64");
 
 type Row = { id: string; name?: string; state: string };
@@ -110,7 +110,7 @@ describe("taking control never waits for the screen preview", () => {
     await new Promise<void>(resolve => relay.listen(0, "127.0.0.1", resolve));
     const relayBase = `http://127.0.0.1:${(relay.address() as { port: number }).port}`;
 
-    home = mkdtempSync(join(tmpdir(), "omb-take-control-"));
+    home = mkdtempSync(join(tmpdir(), "whilo-take-control-"));
     const data = join(home, "data");
     mkdirSync(data, { recursive: true });
     writeFileSync(join(data, "config.json"), JSON.stringify({ instances: { engine: { driver: "claudeAgent", config: { cli: FAKE_CLAUDE } } } }));
@@ -120,11 +120,11 @@ describe("taking control never waits for the screen preview", () => {
       cwd: ROOT,
       env: {
         PATH: process.env.PATH, ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
-        HOME: home, USERPROFILE: home, OMB_DATA_DIR: data, TEMP: home, TMP: home, TMPDIR: home,
-        OMB_PORT: String(port), OMB_WEBHOOK_PORT: String(port + 1),
-        OMB_BOAT_API: `${relayBase}/own-key-must-not-be-used`,
-        OMB_CLOUD_BOAT_URL: `${relayBase}/relay/api/box/v1`,
-        OMB_CLOUD_BOAT_TOKEN: INCLUDED,
+        HOME: home, USERPROFILE: home, WHILO_DATA_DIR: data, TEMP: home, TMP: home, TMPDIR: home,
+        WHILO_PORT: String(port), WHILO_WEBHOOK_PORT: String(port + 1),
+        WHILO_BOAT_API: `${relayBase}/own-key-must-not-be-used`,
+        WHILO_CLOUD_BOAT_URL: `${relayBase}/relay/api/box/v1`,
+        WHILO_CLOUD_BOAT_TOKEN: INCLUDED,
       },
       stdio: ["ignore", "pipe", "pipe"],
     });

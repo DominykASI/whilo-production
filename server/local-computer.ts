@@ -37,14 +37,14 @@ export function gatedLocalComputer(
     args: ["--experimental-strip-types", SPAWNED_PROXIES.localComputer],
     env: {
       ...connection.env,
-      // Packaged, execPath is Electron: without this the MCP client relaunches OMB instead of the headless gate.
+      // Packaged, execPath is Electron: without this the MCP client relaunches Whilo instead of the headless gate.
       ELECTRON_RUN_AS_NODE: "1",
-      OMB_CUA_COMMAND: connection.command,
-      OMB_CUA_ARGS: JSON.stringify(connection.args),
-      OMB_CUA_PLATFORM: connection.platform,
-      OMB_CONTROL_URL: control.url,
-      OMB_CONTROL_TOKEN: control.token,
-      OMB_COMPUTER_JOURNAL: journal ? "1" : "0",
+      WHILO_CUA_COMMAND: connection.command,
+      WHILO_CUA_ARGS: JSON.stringify(connection.args),
+      WHILO_CUA_PLATFORM: connection.platform,
+      WHILO_CONTROL_URL: control.url,
+      WHILO_CONTROL_TOKEN: control.token,
+      WHILO_COMPUTER_JOURNAL: journal ? "1" : "0",
     },
   };
 }
@@ -224,7 +224,7 @@ export function decodeLinuxDescriptor(value: LinuxConnectionDescriptor): LocalCo
       ...(wayland ? ["CUA_DRIVER_RS_ENABLE_WAYLAND"] : []),
     ]) ||
     (mcp.env as Record<string, unknown>).CUA_DRIVER_EMBEDDED !== "1" ||
-    (mcp.env as Record<string, unknown>).CUA_DRIVER_HOST_BUNDLE_ID !== "com.openmausbot.app" ||
+    (mcp.env as Record<string, unknown>).CUA_DRIVER_HOST_BUNDLE_ID !== "com.whilo.app" ||
     (mcp.env as Record<string, unknown>).CUA_DRIVER_RS_UPDATE_CHECK !== "false" ||
     (mcp.env as Record<string, unknown>).CUA_DRIVER_RS_TELEMETRY_ENABLED !== "false" ||
     (wayland && (mcp.env as Record<string, unknown>).CUA_DRIVER_RS_ENABLE_WAYLAND !== "1")

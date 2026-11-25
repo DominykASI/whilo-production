@@ -1,6 +1,6 @@
 import { MASCOT_BODIES, type MascotBody } from "./mascot-bodies.ts";
 
-/** The bodies OpenMausBot ships that this catalog did not carry, in the order the picker adds them. */
+/** The bodies Whilo ships that this catalog did not carry, in the order the picker adds them. */
 export const MASCOT_BODY_IDS_EXTRA = ["triangle", "square", "pentagon", "cloud"] as const;
 
 export type MascotBodyIdExtra = (typeof MASCOT_BODY_IDS_EXTRA)[number];

@@ -26,7 +26,7 @@ describe("sign-in codes through the server's own mail server", () => {
     const box = mailbox();
     const mail = createSignInMail({ url: URL_, transport: box.transport });
     expect(await mail.send("her@example.test")).toBe("sent");
-    expect(box.sent[0]).toMatchObject({ from: "signin@example.test", to: "her@example.test", subject: "Your OpenMausBot sign-in code" });
+    expect(box.sent[0]).toMatchObject({ from: "signin@example.test", to: "her@example.test", subject: "Your Whilo sign-in code" });
     const code = box.code();
     expect(code).toMatch(/^\d{8}$/);
     expect(mail.check("other@example.test", code)).toBe("wrong");
@@ -63,14 +63,14 @@ describe("sign-in codes through the server's own mail server", () => {
     refuse = false;
     expect(await mail.send("her@example.test")).toBe("sent");
     await expect(createSignInMail({ url: "smtp://localhost:25", transport: { sendMail: async () => undefined } }).send("her@example.test"))
-      .rejects.toThrow("OMB_SIGNIN_SMTP_FROM");
+      .rejects.toThrow("WHILO_SIGNIN_SMTP_FROM");
   });
 
-  it("is what email sign-in uses when OMB_SIGNIN_SMTP_URL is set: no account service, the allow-list as before", async () => {
+  it("is what email sign-in uses when WHILO_SIGNIN_SMTP_URL is set: no account service, the allow-list as before", async () => {
     const box = mailbox();
     const signIn = createEmailSignIn({
       allow: { admins: ["her@example.test"], members: ["@team.test"] },
-      env: { OMB_SIGNIN_SMTP_URL: URL_, OMB_CONTROL_PLANE_URL: "https://control-plane.invalid" },
+      env: { WHILO_SIGNIN_SMTP_URL: URL_, WHILO_CONTROL_PLANE_URL: "https://control-plane.invalid" },
       fetchImpl: async () => { throw new Error("the account service must not be asked"); },
       mailTransport: box.transport,
     });
@@ -86,10 +86,10 @@ describe("sign-in codes through the server's own mail server", () => {
   });
 
   it("says why when the mail server cannot be used", async () => {
-    const signIn = createEmailSignIn({ allow: { admins: ["her@example.test"], members: [] }, env: { OMB_SIGNIN_SMTP_URL: "smtp://localhost:25" } });
+    const signIn = createEmailSignIn({ allow: { admins: ["her@example.test"], members: [] }, env: { WHILO_SIGNIN_SMTP_URL: "smtp://localhost:25" } });
     const refused = await signIn.start("her@example.test");
     expect(refused).toMatchObject({ ok: false, status: 502 });
-    expect(refused.ok ? "" : refused.error).toContain("OMB_SIGNIN_SMTP_FROM");
+    expect(refused.ok ? "" : refused.error).toContain("WHILO_SIGNIN_SMTP_FROM");
   });
 });
 

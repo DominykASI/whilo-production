@@ -22,7 +22,7 @@ describe("license keys", () => {
   it("round-trips claims through a signed key", () => {
     const { x, privateJwk } = keypair();
     const key = issueLicenseKey(claims, privateJwk);
-    expect(key.startsWith("omb1.")).toBe(true);
+    expect(key.startsWith("whilo1.")).toBe(true);
     expect(verifyLicenseKey(key, { publicKeys: [x], now: new Date("2026-12-01") })).toEqual(claims);
   });
 
@@ -30,7 +30,7 @@ describe("license keys", () => {
     const old = keypair();
     const fresh = keypair();
     const key = issueLicenseKey(claims, old.privateJwk);
-    expect(() => verifyLicenseKey(key, { publicKeys: [fresh.x], now: new Date("2026-12-01") })).toThrow(/does not match any OpenMausBot signing key/);
+    expect(() => verifyLicenseKey(key, { publicKeys: [fresh.x], now: new Date("2026-12-01") })).toThrow(/does not match any Whilo signing key/);
     expect(verifyLicenseKey(key, { publicKeys: [fresh.x, old.x], now: new Date("2026-12-01") }).customer).toBe(claims.customer);
   });
 
@@ -44,8 +44,8 @@ describe("license keys", () => {
 
   it("explains malformed keys and expiry in operator terms", () => {
     const { x, privateJwk } = keypair();
-    expect(() => verifyLicenseKey("not-a-key", { publicKeys: [x] })).toThrow(/expected "omb1\.<claims>\.<signature>"/);
-    expect(() => verifyLicenseKey("omb1..", { publicKeys: [x] })).toThrow(/expected "omb1/);
+    expect(() => verifyLicenseKey("not-a-key", { publicKeys: [x] })).toThrow(/expected "whilo1\.<claims>\.<signature>"/);
+    expect(() => verifyLicenseKey("whilo1..", { publicKeys: [x] })).toThrow(/expected "whilo1/);
     const key = issueLicenseKey(claims, privateJwk);
     expect(() => verifyLicenseKey(key, { publicKeys: [x], now: new Date("2027-09-02") })).toThrow(/expired on 2027-09-02; renew it/);
     const perpetual = issueLicenseKey({ ...claims, expires: null }, privateJwk);
@@ -69,6 +69,6 @@ describe("license keys", () => {
 
   it("register() turns a key into the layer contract and passes verification errors through", () => {
     expect(register({ licenseKey: undefined })).toBeNull();
-    expect(() => register({ licenseKey: "omb1.bad.key" })).toThrow(/OMB_LICENSE_KEY/);
+    expect(() => register({ licenseKey: "whilo1.bad.key" })).toThrow(/WHILO_LICENSE_KEY/);
   });
 });

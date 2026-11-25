@@ -16,8 +16,8 @@ import {
   type AccountSnapshot,
 } from "../src/endpoint-accounts";
 
-const TOKEN_SECRET = "CLOUDFLARE_API_TOKEN_MAUSBOT_SI";
-const TOKEN = "test-only-mausbot-si-api-token-with-no-real-access";
+const TOKEN_SECRET = "CLOUDFLARE_API_TOKEN_WHILO_SI";
+const TOKEN = "test-only-whilo-si-api-token-with-no-real-access";
 const SECOND_ENTRY = {
   accountId: "2B".repeat(16),
   zoneId: "3c".repeat(16),
@@ -131,7 +131,7 @@ describe("endpoint account configuration", () => {
       { value: [{ ...SECOND_ENTRY, apiTokenSecret: "BETTER_AUTH_SECRET" }], accounts: 1, issues: ["entry_1_shape"] },
       { value: [SECOND_ENTRY], secrets: {}, accounts: 1, issues: ["entry_1_token"] },
       { value: [SECOND_ENTRY], secrets: { [TOKEN_SECRET]: "short" }, accounts: 1, issues: ["entry_1_token"] },
-      { value: [{ ...SECOND_ENTRY, companionHostSuffix: "Mausbot.si" }], accounts: 1, issues: ["entry_1_suffix"] },
+      { value: [{ ...SECOND_ENTRY, companionHostSuffix: "mausbot.si" }], accounts: 1, issues: ["entry_1_suffix"] },
       { value: [{ ...SECOND_ENTRY, companionHostSuffix: "si" }], accounts: 1, issues: ["entry_1_suffix"] },
       { value: [{ ...SECOND_ENTRY, accountId: "not-an-account" }], accounts: 1, issues: ["entry_1_shape"] },
       { value: [{ ...SECOND_ENTRY, minAppVersion: "0.1" }], accounts: 1, issues: ["entry_1_shape"] },

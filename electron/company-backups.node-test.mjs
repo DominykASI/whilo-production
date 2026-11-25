@@ -9,7 +9,7 @@ import { createCompanyBackups } from "./company-backups.mjs";
 
 const PART_BYTES = 64 * 1024 * 1024;
 const MAX_BYTES = 10 * 1024 * 1024 * 1024;
-const MAGIC = Buffer.from("OMB-WORKSPACE-1\n");
+const MAGIC = Buffer.from("WHILO-WORKSPACE-1\n");
 const BACKUP_ID = "11111111-1111-4111-8111-111111111111";
 const EXPORT_ID = "22222222-2222-4222-8222-222222222222";
 const UPLOAD_ID = "33333333-3333-4333-8333-333333333333";
@@ -70,7 +70,7 @@ function jsonBody(options) {
 }
 
 async function fixture(t, overrides = {}) {
-  const root = await fs.mkdtemp(path.join(os.tmpdir(), "omb-company-backups-test-"));
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "whilo-company-backups-test-"));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   await fs.chmod(root, 0o700);
   await fs.writeFile(path.join(root, "keep.txt"), "unrelated temporary content");

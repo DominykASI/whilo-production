@@ -10,9 +10,9 @@ export type InstallKind = "desktop" | "managed" | "docker" | "podman" | "npm" | 
 
 /** As docs/self-hosting.md and deploy/podman/README.md give them. */
 export const UPDATE_COMMANDS: Partial<Record<InstallKind, { command: string; restart: boolean }>> = {
-  docker: { command: "docker compose pull omb && docker compose up -d", restart: false },
+  docker: { command: "docker compose pull whilo && docker compose up -d", restart: false },
   podman: { command: "git pull && cd deploy/podman && PODMAN_COMPOSE_PROVIDER=podman-compose podman compose --env-file .env -f compose.yaml up -d --build", restart: false },
-  npm: { command: "npm install -g openmausbot@latest", restart: true },
+  npm: { command: "npm install -g whilo@latest", restart: true },
   git: { command: "git pull && pnpm install", restart: true },
 };
 
@@ -93,7 +93,7 @@ export function createUpdateChecker(options: {
     inflight ??= (async () => {
       try {
         const response = await fetchRelease(LATEST_RELEASE_URL, {
-          headers: { accept: "application/vnd.github+json", "user-agent": "openmausbot-update-check" },
+          headers: { accept: "application/vnd.github+json", "user-agent": "whilo-update-check" },
           signal: AbortSignal.timeout(8_000),
         });
         if (!response.ok) throw new Error(`GitHub answered ${response.status}`);

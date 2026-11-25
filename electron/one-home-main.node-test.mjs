@@ -62,7 +62,7 @@ test("the switch that keeps this computer's bots here: only on this app's pages,
   const ask = (channel, page, ...args) => handlers.get(channel)({ page }, ...args);
   const hidden = { shown: false, on: false, moved: false, coming: false };
   const account = { id: "acct-1", email: "person@example.test" };
-  const machine = { status: "ready", origin: "https://omb-t-1.fly.dev", moves: true };
+  const machine = { status: "ready", origin: "https://whilo-t-1.fly.dev", moves: true };
   try {
     for (const channel of ["one-home:keep", "one-home:keep-set"]) assert.throws(() => ask(channel, null, true), /only available/u, channel);
     assert.deepEqual(ask("one-home:keep", "local"), hidden, "signed out");
@@ -115,7 +115,7 @@ test("while a server of the person's own is chosen as home, no move to My Cloud 
       ipcMain: { handle: (channel, handler) => handlers.set(channel, handler) }, cloudPage: () => "local", server: () => null, home: () => null, cookieFetch: async () => json({}, 401),
       reconnect: async () => false, power: { asleep: () => false }, file: () => "/nonexistent/cloud-send.json", window: () => null, localOrigin: () => "http://127.0.0.1:4100",
       fetch: async () => json({}, 404), localRequest: async (route) => (route === "/api/move/freeze" ? json({ frozen: false }) : json({}, 404)),
-      account: () => ({ state: () => ({ status: "connected", account: { id: "acct-1" }, machine: { status: "ready", origin: "https://omb-u-1.fly.dev", moves: true } }),
+      account: () => ({ state: () => ({ status: "connected", account: { id: "acct-1" }, machine: { status: "ready", origin: "https://whilo-u-1.fly.dev", moves: true } }),
         pairHome: async () => { throw new Error("no code in this test"); } }),
       journalFile: () => "/nonexistent/one-home.json", tempRoot: () => "/nonexistent", journal: { read: () => kept, write: (value) => { kept = value; } }, other,
     });
@@ -131,7 +131,7 @@ test("while a server of the person's own is chosen as home, no move to My Cloud 
   const none = install(() => null);
   try {
     await none.main.kick();
-    assert.equal(none.journal()?.cloud.origin, "https://omb-u-1.fly.dev", "without one, My Cloud's move starts as before");
+    assert.equal(none.journal()?.cloud.origin, "https://whilo-u-1.fly.dev", "without one, My Cloud's move starts as before");
   } finally { none.main.close(); }
 });
 

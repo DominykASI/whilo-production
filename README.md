@@ -1,6 +1,6 @@
 # Whilo Production
 
-**Whilo Production** — consolidated production workspace for the Whilo Pets desktop app (Electron + local harness), based on the latest Whilo branding/customizations from `OpenMausBot-main`.
+**Whilo Production** — consolidated production workspace for the Whilo Pets desktop app (Electron + local harness), based on the latest Whilo branding/customizations from `Whilo-main`.
 
 This production bundle keeps the current **Pets desktop flow** intact (core app: `electron/`, `src/`, `server/`, `shared/`, `public/`, `build/`) and includes a preserved reference copy of `whilo-swas-main` for **Architecture A** integration (one Electron shell loading Pets or a unified Dots/Pets surface).
 
@@ -131,4 +131,4 @@ pnpm package:linux:offline
 ## Notes / Observações
 - Inspect `package.json` for the full script catalog (docs, evals, smoke tests, broker/control-plane tasks, etc.).
 - For environment-specific variables, review `.env.example` (if applicable to your workflow) and project docs under `docs/`.
-- Source baseline for this production folder: `OpenMausBot-main` (Whilo branding/customizations in progress) + unified surface reference from `whilo-swas-main`.
+- Source baseline for this production folder: `Whilo-main` (Whilo branding/customizations in progress) + unified surface reference from `whilo-swas-main`.

@@ -17,7 +17,7 @@ function fakeFetch(...responses: Reply[]) {
 }
 
 const OWN = { token: "treg_own_key", api: "https://treg.example.test", included: false };
-const PLAN = { token: "omb_xd_plan", api: "https://cloud.example.test/api/cloud/services/x", included: true };
+const PLAN = { token: "whilo_xd_plan", api: "https://cloud.example.test/api/cloud/services/x", included: true };
 const PEOPLE = { id: "apollo.people.search", name: "Find people", method: "GET", platform: "people", cost: { usd: 0.002, type: "per_call" }, input: { type: "object" }, test_request: { q: "maus" } };
 const COMPANIES = { id: "dataforseo.domains.bulk", name: "Domains", method: "POST", platform: "seo", input: { queryArrayEncoding: "comma" } };
 
@@ -97,7 +97,7 @@ describe("research through the plan's relay", () => {
     const { fetcher, calls } = fakeFetch(
       { body: { query: "people", results: [], budget: { leftUsd: 14 } } },
       { body: { endpoint: { id: "apollo.people.search" } } },
-      { body: { people: [] }, headers: { "x-omb-research-charged-usd": "0.0045", "x-omb-research-pending": "true" } },
+      { body: { people: [] }, headers: { "x-whilo-research-charged-usd": "0.0045", "x-whilo-research-pending": "true" } },
     );
     const client = createResearchClient(PLAN, { fetcher });
     expect(await client.search({ job: "people", limit: 3 })).toEqual({ query: "people", results: [], budget: { leftUsd: 14 } });
@@ -109,7 +109,7 @@ describe("research through the plan's relay", () => {
       ["POST", `${PLAN.api}/research/call/apollo.people.search`],
     ]);
     for (const call of calls) {
-      expect(call.headers.get("authorization")).toBe("Bearer omb_xd_plan");
+      expect(call.headers.get("authorization")).toBe("Bearer whilo_xd_plan");
       expect(call.headers.get("x-treg-token")).toBeNull();
     }
     expect(calls[2]!.body).toEqual({ params: { q: "maus" }, query: { page: 2 } });
@@ -130,7 +130,7 @@ describe("whether research works", () => {
   it("asks the plan's relay with a search that names no job, which spends nothing, and reads its answer", async () => {
     const asked = fakeFetch({ status: 400, body: { error: "invalid_request", message: "Say what the research is for in q." } });
     expect(await researchOffered(PLAN, asked)).toBe(true);
-    expect(asked.calls.map((call) => [call.method, call.url, call.headers.get("authorization")])).toEqual([["GET", `${PLAN.api}/research/search`, "Bearer omb_xd_plan"]]);
+    expect(asked.calls.map((call) => [call.method, call.url, call.headers.get("authorization")])).toEqual([["GET", `${PLAN.api}/research/search`, "Bearer whilo_xd_plan"]]);
     for (const [status, body] of [[503, { error: "service_unavailable", message: "Research isn't available right now." }], [402, { error: "subscription_inactive" }], [404, { error: "not_found" }], [401, { error: "invalid_api_key" }]] as const) {
       expect(await researchOffered(PLAN, fakeFetch({ status, body })), String(status)).toBe(false);
     }

@@ -14,7 +14,7 @@ const dirs: string[] = [], clients: TeamPolicyClient[] = [];
 afterEach(() => { for (const client of clients.splice(0)) client.stop(); for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
 
 function world(fetchImpl: (body: { loaded: { fingerprint: string } | null; problem: string | null }, init: RequestInit, url: string) => Response | Promise<Response>, options: { dataDir?: string; now?: () => number } = {}) {
-  const dataDir = options.dataDir ?? mkdtempSync(join(tmpdir(), "omb-team-policy-"));
+  const dataDir = options.dataDir ?? mkdtempSync(join(tmpdir(), "whilo-team-policy-"));
   if (!options.dataDir) dirs.push(dataDir);
   const applied: (ManagedPolicy | null)[] = [], logs: string[] = [], timers: { run: () => void; ms: number }[] = [], reports: { loaded: { fingerprint: string } | null; problem: string | null }[] = [];
   const client = startTeamPolicyClient({
@@ -79,7 +79,7 @@ describe("the fetch", () => {
       expect(url).toBe(`https://cloud.example.test${TEAM_POLICY_ADMIN_PATH}`);
       expect(init.redirect).toBe("error");
       const headers = init.headers as Record<string, string>;
-      expect(headers["x-omb-cloud-signature"]).toBe(`v1=${teamPolicySignature("s".repeat(43), "cm-test-home", headers["x-omb-cloud-timestamp"]!, headers["x-omb-cloud-nonce"]!, String(init.body))}`);
+      expect(headers["x-whilo-cloud-signature"]).toBe(`v1=${teamPolicySignature("s".repeat(43), "cm-test-home", headers["x-whilo-cloud-timestamp"]!, headers["x-whilo-cloud-nonce"]!, String(init.body))}`);
       return answer(document);
     });
     await client.settled();

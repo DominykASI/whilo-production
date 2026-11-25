@@ -7,7 +7,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { runControlOmb } from "../scripts/control-omb.ts";
+import { runControlOmb } from "../scripts/control-whilo.ts";
 import { SNAPSHOT_REUSE_MS } from "./harness/registry.ts";
 import { freePortBlock } from "./testing/ports.ts";
 import { removeTempDir, waitForExit } from "./testing/cleanup.ts";
@@ -82,12 +82,12 @@ function install(home: string, boatPort: () => number) {
     const proc = spawn(process.execPath, [join(ROOT, "server/index.ts")], {
       cwd: ROOT, env: {
         PATH: dirname(process.execPath), ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
-        HOME: home, USERPROFILE: home, OMB_DATA_DIR: data,
+        HOME: home, USERPROFILE: home, WHILO_DATA_DIR: data,
         APPDATA: join(home, "appdata"), LOCALAPPDATA: join(home, "localappdata"),
         TEMP: home, TMP: home, TMPDIR: home,
-        OMB_PORT: String(port), OMB_WEBHOOK_PORT: String(port + 1), OMB_STATIC_DIR: join(home, "static"),
-        OMB_BOAT_API: `http://127.0.0.1:${boatPort()}`,
-        OMB_USER_DATA: join(home, "user-data"),
+        WHILO_PORT: String(port), WHILO_WEBHOOK_PORT: String(port + 1), WHILO_STATIC_DIR: join(home, "static"),
+        WHILO_BOAT_API: `http://127.0.0.1:${boatPort()}`,
+        WHILO_USER_DATA: join(home, "user-data"),
       }, stdio: ["ignore", "pipe", "pipe"],
     });
     child = proc;
@@ -128,7 +128,7 @@ describe("removing the Computer engine", () => {
   const agentCalls: string[] = [];
   const boatPort = () => (boatServer.address() as { port: number }).port;
   const fresh = () => {
-    const home = mkdtempSync(join(tmpdir(), "omb-computer-engine-"));
+    const home = mkdtempSync(join(tmpdir(), "whilo-computer-engine-"));
     homes.push(home);
     const server = install(home, boatPort);
     running.push(server);

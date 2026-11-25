@@ -1196,7 +1196,7 @@
       "mcp_server"
     ]
   },
-  "default+mausbot": {
+  "default+whilo": {
     "bytes": 60129,
     "sha256": "fa21ad7f1c83770f05156d9b3e0a03e8dc9831efe57b23e6febe26db30251c6b",
     "tools": [
@@ -1249,7 +1249,7 @@
       "mark_notifications_read"
     ]
   },
-  "skills+shared+voice+mausbot": {
+  "skills+shared+voice+whilo": {
     "bytes": 66102,
     "sha256": "6afc5e9977b9591bf339d1c9ca393cfb0a24db3fdc38a48fa887a8fd765faf49",
     "tools": [

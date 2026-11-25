@@ -1,12 +1,12 @@
-// MausBot on a real server in an isolated fixture: a new install's first bot, never deleted or archived, taken off the
+// Whilo on a real server in an isolated fixture: a new install's first bot, never deleted or archived, taken off the
 // sidebar by its switch, and still holding a Chief's tools once another bot is the Chief. The fake engine holds its turn
 // open so this test can start the agents server that turn was handed and call create_bot the way the engine would.
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync, rmSync } from "node:fs";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlOmb } from "../scripts/control-omb.ts";
+import { launchVerificationServer, runControlOmb } from "../scripts/control-whilo.ts";
 import { waitForExit } from "./testing/cleanup.ts";
-import { childEnv } from "./testing/omb-env.ts";
+import { childEnv } from "./testing/whilo-env.ts";
 
 type McpServer = { command: string; args: string[]; env: Record<string, string> };
 type Answer = { id: number; result?: { content?: Array<{ text: string }>; isError?: boolean }; error?: { code: number; message: string } };
@@ -30,7 +30,7 @@ async function callTool(server: McpServer, name: string, args: unknown): Promise
   }
 }
 
-it("makes MausBot a new install's first bot, never deleted, hidden by its switch, with a Chief's tools after the Chief moves on", async () => {
+it("makes Whilo a new install's first bot, never deleted, hidden by its switch, with a Chief's tools after the Chief moves on", async () => {
   const fixture = await launchVerificationServer({ ...process.env, FAKE_CLAUDE_MODE: "hang" });
   const api = async (method: string, path: string, body?: unknown) => {
     const response = await fetch(`${fixture.info.url}${path}`, { method, headers: { "content-type": "application/json" },
@@ -41,7 +41,7 @@ it("makes MausBot a new install's first bot, never deleted, hidden by its switch
   const bots = async () => (await api("GET", "/api/bots")).body.bots as any[];
   try {
     const [maus] = await bots();
-    // The fixture renames its starter; it is still the new install's MausBot.
+    // The fixture renames its starter; it is still the new install's Whilo.
     expect(maus).toMatchObject({ color: "chrome", chiefOfStaff: true, defaultBot: {} });
     expect(maus.messages.map((message: any) => [message.kind, message.helperIntro])).toEqual([["options", true]]);
 
@@ -64,8 +64,8 @@ it("makes MausBot a new install's first bot, never deleted, hidden by its switch
     const launched = JSON.parse(readFileSync(fixture.fixtureDumpPath, "utf8")) as { systemPrompt: string; mcpConfig: { mcpServers: Record<string, McpServer> } };
     rmSync(fixture.fixtureDumpPath, { force: true });
     const agents = launched.mcpConfig.mcpServers.agents!;
-    expect(agents.env.OMB_CHIEF_OF_STAFF).toBe("1");
-    expect(launched.systemPrompt).toContain("You are also this person's MausBot");
+    expect(agents.env.WHILO_CHIEF_OF_STAFF).toBe("1");
+    expect(launched.systemPrompt).toContain("You are also this person's Whilo");
     expect(launched.systemPrompt).toContain("but you are not the Chief");
     const created = await callTool(agents, "create_bot", { name: "Scout", role: "Researcher", instructions: "Find what the person asks for." });
     expect(created.error).toBeUndefined();
@@ -80,7 +80,7 @@ it("makes MausBot a new install's first bot, never deleted, hidden by its switch
   }
 }, 120_000);
 
-it("lets MausBot read the unread notifications and mark finished work read, not once sign-in members share the workspace, and gives no other bot the tools", async () => {
+it("lets Whilo read the unread notifications and mark finished work read, not once sign-in members share the workspace, and gives no other bot the tools", async () => {
   const fixture = await launchVerificationServer({ ...process.env, FAKE_CLAUDE_MODE: "hang" });
   const api = async (path: string) => (await (await fetch(`${fixture.info.url}${path}`, { signal: AbortSignal.timeout(10_000) })).json()) as any;
   const control = (args: string[]) => runControlOmb([...args, "--url", fixture.info.url]) as Promise<any>;
@@ -95,7 +95,7 @@ it("lets MausBot read the unread notifications and mark finished work read, not 
   try {
     const [maus] = (await api("/api/bots")).bots as any[];
     const agents = await launch(maus.id);
-    expect(agents.env.OMB_MAUSBOT).toBe("1");
+    expect(agents.env.WHILO_WHILO).toBe("1");
 
     const unread = await callTool(agents, "list_unread_notifications", {});
     expect(unread.result?.isError, text(unread)).toBeFalsy();
@@ -117,7 +117,7 @@ it("lets MausBot read the unread notifications and mark finished work read, not 
 
     const { bot: clive } = await control(["new-bot", "--name", "Clive"]);
     const other = await launch(clive.id);
-    expect(other.env.OMB_MAUSBOT).toBe("0");
+    expect(other.env.WHILO_WHILO).toBe("0");
     expect((await callTool(other, "list_unread_notifications", {})).result?.isError ?? true).toBe(true);
     expect((await callTool(other, "mark_notifications_read", { ids: ["no-such-notification"] })).result?.isError ?? true).toBe(true);
     await control(["interrupt", "--bot", maus.id]);

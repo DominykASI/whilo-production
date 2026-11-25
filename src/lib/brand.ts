@@ -14,7 +14,7 @@ export interface BrandStatus {
   notice?: string;
 }
 
-export const DEFAULT_BRAND: Brand = { name: "OpenMausBot" };
+export const DEFAULT_BRAND: Brand = { name: "Whilo" };
 /** The product's name wherever a person reads it. Only the open-source project and its repository name the original
  * upstream project. */
 export const PRODUCT_NAME = "Whilo";

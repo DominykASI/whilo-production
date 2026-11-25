@@ -167,8 +167,8 @@ function rememberLiveSpawn(child: ChildProcess, line: readonly string[]): void {
 }
 
 /** `bot`: an engine running bots' turns, whose own servers that bot's browser may open on a server host.
- * `openmausbot`: everything else (logins, probes, the browser engine itself). */
-export type CliOwner = "bot" | "openmausbot";
+ * `whilo`: everything else (logins, probes, the browser engine itself). */
+export type CliOwner = "bot" | "whilo";
 
 /** The bot box (server/bot-box): a `bot` spawn runs in it where it is on; `box` asks for one for another owner, with more
  * paths or the host's network, and `false` keeps a spawn out of it. */
@@ -194,7 +194,7 @@ export function spawnCli(
   cli: string,
   args: string[],
   opts: CliSpawnOptions,
-  owner: CliOwner = "openmausbot",
+  owner: CliOwner = "whilo",
 ): ChildProcessByStdio<Writable, Readable, Readable> {
   const resolved = resolveCli(cli, args);
   assertSafeCliArgv(resolved);
@@ -449,6 +449,6 @@ export async function waitForExit(child: ChildProcess, ms: number): Promise<bool
 export function brokerSocketPath(dataDir: string, tag: string): string {
   return process.platform === "win32"
     // Named pipes share a global namespace that DATA_DIR cannot isolate.
-    ? `\\\\.\\pipe\\openmausbot-perm-${process.pid}-${tag}`
+    ? `\\\\.\\pipe\\whilo-perm-${process.pid}-${tag}`
     : join(dataDir, `perm-${tag}.sock`);
 }

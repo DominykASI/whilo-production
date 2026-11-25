@@ -42,7 +42,7 @@ describe("brand", () => {
   it("names the product Whilo Pets, or a white-label brand file by its own name", () => {
     applyBrand({ brand: DEFAULT_BRAND, source: "default", file: "" });
     expect(productName()).toBe("Whilo Pets");
-    expect(brand().name).toBe("OpenMausBot");
+    expect(brand().name).toBe("Whilo");
     applyBrand({ brand: { name: "Acme Bots" }, source: "file", file: "/data/brand.json" });
     expect(productName()).toBe("Acme Bots");
     applyBrand({ brand: DEFAULT_BRAND, source: "default", file: "" });

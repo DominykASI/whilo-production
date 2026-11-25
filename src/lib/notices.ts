@@ -12,7 +12,7 @@ export const STAR_NOTICE = "github-star-dismissed";
 /** Bots on this computer and on another place of the person's (two-places.ts): dismissed per place, by main. */
 export const TWO_PLACES_NOTICE = "two-places";
 export const PRODUCT_HUNT_NOTICE = "product-hunt-launch-2026-10";
-export const PRODUCT_HUNT_URL = "https://www.producthunt.com/products/mausbot";
+export const PRODUCT_HUNT_URL = "https://www.producthunt.com/products/whilo";
 export const PRODUCT_HUNT_UNTIL = Date.UTC(2026, 10, 1);
 export const BOAT_OFFER_NOTICE = "boat-credit-2026-11";
 /** The Move from Grok Bot popup: each person sees it once, first of all, after their welcome. */
@@ -51,7 +51,7 @@ export function nextNotice(facts: NoticeFacts, seen: (id: NoticeId) => boolean, 
   return null;
 }
 
-const LAUNCH_KEY = "omb.launch.notice";
+const LAUNCH_KEY = "whilo.launch.notice";
 // Where browser storage is blocked, this page's memory stands in for it, so a claim still holds for the page.
 let launchMemory: NoticeId | null = null;
 const isNotice = (id: unknown): id is NoticeId => (NOTICES as readonly unknown[]).includes(id);

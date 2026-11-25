@@ -17,7 +17,7 @@ import { PageBoundary } from "./components/PageBoundary";
 import { endedBeforeReload, forgetEndedSession } from "./lib/session-ended";
 import "./styles.css";
 
-// Before first paint; settleAdvancedModeDefault must run before applySkin writes omb-skin.
+// Before first paint; settleAdvancedModeDefault must run before applySkin writes whilo-skin.
 settleAdvancedModeDefault();
 applySkinChoice(readSkinChoice());
 applyFont(readFont());

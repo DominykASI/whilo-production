@@ -70,7 +70,7 @@ export class HighLevelSignIn {
   }
 
   close(): void {
-    this.cancelActive("OpenMausBot stopped.");
+    this.cancelActive("Whilo stopped.");
   }
 
   private cancelActive(message: string): void {

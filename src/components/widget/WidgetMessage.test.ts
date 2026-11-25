@@ -114,7 +114,7 @@ describe("drawing a widget", () => {
     mount(row(sample("pullRequests")));
     const card = find('[data-widget="w1"]')!;
     expect(card.getAttribute("aria-label")).toBe("Pull requests");
-    expect(card.textContent).toContain("mausbot-mobile");
+    expect(card.textContent).toContain("whilo-mobile");
     expect(card.textContent).toContain("3 open");
     const rows = all('[role="listitem"] > button');
     expect(rows.map((item) => item.textContent)).toEqual([
@@ -191,8 +191,8 @@ describe("drawing a widget", () => {
     expect(find("img")).toBeNull();
     act(() => find<HTMLButtonElement>(`button[title="${t("attach.externalHidden")}"]`)!.click());
     const image = find<HTMLImageElement>("img")!;
-    expect(image.getAttribute("src")).toBe("https://mausbot.com/og.png");
-    expect(image.getAttribute("alt")).toBe("MausBot");
+    expect(image.getAttribute("src")).toBe("https://whilo.com/og.png");
+    expect(image.getAttribute("alt")).toBe("Whilo");
     expect(image.getAttribute("loading")).toBe("lazy");
     expect(image.getAttribute("referrerpolicy")).toBe("no-referrer");
     expect(Number.parseFloat(image.style.aspectRatio)).toBeCloseTo(16 / 9);
@@ -227,7 +227,7 @@ describe("drawing a widget", () => {
   it("lets a clipped button label be read in full, with a link's address under it", () => {
     mount(row(sample("kitchenSink")));
     expect(button("Send feedback")!.title).toBe("Send feedback");
-    expect(button("Open the docs")!.title).toBe("Open the docs\nhttps://mausbot.com/docs");
+    expect(button("Open the docs")!.title).toBe("Open the docs\nhttps://whilo.com/docs");
     mount(row(sample("pullRequests")));
     expect(button("Merge the two ready")!.title).toBe("Merge the two ready");
     expect(button("Fix #719 first")!.title).toBe("Fix #719 first");
@@ -524,7 +524,7 @@ describe("pressing", () => {
     for (const control of all<HTMLInputElement | HTMLButtonElement>("[data-widget-field]")) expect(control.matches(":disabled, [aria-disabled=true]"), control.outerHTML.slice(0, 80)).toBe(true);
     mount(row(sample("kitchenSink")), true);
     await press(button("Open the docs")!);
-    expect(openExternal).toHaveBeenLastCalledWith("https://mausbot.com/docs");
+    expect(openExternal).toHaveBeenLastCalledWith("https://whilo.com/docs");
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
@@ -540,7 +540,7 @@ describe("pressing", () => {
 
     mount(row(sample("kitchenSink")));
     await press(button("Open the docs")!);
-    expect(openExternal).toHaveBeenLastCalledWith("https://mausbot.com/docs");
+    expect(openExternal).toHaveBeenLastCalledWith("https://whilo.com/docs");
     expect(fetchMock).not.toHaveBeenCalled();
   });
 

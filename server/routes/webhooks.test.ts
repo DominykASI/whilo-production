@@ -19,7 +19,7 @@ afterEach(async () => {
 });
 
 function folder(): string {
-  const made = mkdtempSync(join(tmpdir(), "omb-webhook-routes-"));
+  const made = mkdtempSync(join(tmpdir(), "whilo-webhook-routes-"));
   folders.push(made);
   return made;
 }

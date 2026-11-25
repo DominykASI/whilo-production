@@ -1,4 +1,4 @@
-// The OMB_* switches the harness gives the agents proxy, read into the profile agents-catalog.ts lists tools for.
+// The WHILO_* switches the harness gives the agents proxy, read into the profile agents-catalog.ts lists tools for.
 
 /** Which tools a conversation is shown, the same on every one of its turns. Presentation only: the server still
  * authenticates and scopes every call. */
@@ -22,8 +22,8 @@ export interface CatalogProfile {
   escalations?: boolean;
   /** A Team Cloud: message_person is mounted. */
   team?: boolean;
-  /** The person's MausBot with a Chief's powers: its notification tools are mounted. */
-  mausbot?: boolean;
+  /** The person's Whilo with a Chief's powers: its notification tools are mounted. */
+  whilo?: boolean;
   /** A direct chat whose bot may pick where it works (Works on is not Off and no team computer is its own): select_computer
    * is mounted, and the harness refuses a pick on any turn but a person's own message. */
   computerSelection?: boolean;
@@ -35,20 +35,20 @@ export interface CatalogProfile {
 /** Everything is off unless the harness says "1". */
 export function catalogProfileFromEnv(env: NodeJS.ProcessEnv): CatalogProfile {
   return {
-    skillAuthoring: env.OMB_SKILL_AUTHORING_ENABLED === "1",
-    sharedComputers: env.OMB_SHARED_COMPUTERS_ENABLED === "1",
-    voiceNotes: env.OMB_VOICE_NOTES === "1",
-    xResearch: env.OMB_X_RESEARCH === "1",
-    research: env.OMB_RESEARCH === "1",
-    cloudHome: env.OMB_CLOUD_HOME === "1",
-    memoryEnabled: env.OMB_MEMORY_ENABLED !== "0",
-    chief: env.OMB_CHIEF_OF_STAFF === "1",
-    botId: env.OMB_BOT_ID ?? "",
-    escalations: env.OMB_ESCALATIONS === "1",
-    team: env.OMB_TEAM_PEOPLE === "1",
-    mausbot: env.OMB_MAUSBOT === "1",
-    computerSelection: env.OMB_COMPUTER_SELECTION === "1",
-    room: env.OMB_ROOM === "1",
-    imageGeneration: env.OMB_IMAGE_GENERATION === "1",
+    skillAuthoring: env.WHILO_SKILL_AUTHORING_ENABLED === "1",
+    sharedComputers: env.WHILO_SHARED_COMPUTERS_ENABLED === "1",
+    voiceNotes: env.WHILO_VOICE_NOTES === "1",
+    xResearch: env.WHILO_X_RESEARCH === "1",
+    research: env.WHILO_RESEARCH === "1",
+    cloudHome: env.WHILO_CLOUD_HOME === "1",
+    memoryEnabled: env.WHILO_MEMORY_ENABLED !== "0",
+    chief: env.WHILO_CHIEF_OF_STAFF === "1",
+    botId: env.WHILO_BOT_ID ?? "",
+    escalations: env.WHILO_ESCALATIONS === "1",
+    team: env.WHILO_TEAM_PEOPLE === "1",
+    whilo: env.WHILO_WHILO === "1",
+    computerSelection: env.WHILO_COMPUTER_SELECTION === "1",
+    room: env.WHILO_ROOM === "1",
+    imageGeneration: env.WHILO_IMAGE_GENERATION === "1",
   };
 }

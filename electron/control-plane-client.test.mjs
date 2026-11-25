@@ -10,7 +10,7 @@ import {
 } from "./control-plane-client.mjs";
 
 const ACCOUNT = `signed.${"a".repeat(40)}`;
-const INSTALL = `omb_install_${"a".repeat(22)}.${"b".repeat(43)}`;
+const INSTALL = `whilo_install_${"a".repeat(22)}.${"b".repeat(43)}`;
 const INSTALL_ID = "11111111-1111-4111-8111-111111111111";
 const jsonResponse = (body, init = {}) =>
   new Response(JSON.stringify(body), {
@@ -79,7 +79,7 @@ describe("control-plane desktop client", () => {
     const timeoutSignal = vi.fn(() => new AbortController().signal);
     const fetchImpl = vi
       .fn()
-      .mockResolvedValueOnce(jsonResponse({ ok: true, service: "openmausbot-control-plane" }))
+      .mockResolvedValueOnce(jsonResponse({ ok: true, service: "whilo-control-plane" }))
       .mockResolvedValueOnce(jsonResponse({ ok: true, service: "some-other-service" }));
     const client = createControlPlaneClient({
       baseURL: "https://accounts.openmausbot.com",
@@ -172,7 +172,7 @@ describe("control-plane desktop client", () => {
   });
 
   it("recovers a lost installation credential by rotating the matching identity", async () => {
-    const rotated = `omb_install_${"c".repeat(22)}.${"d".repeat(43)}`;
+    const rotated = `whilo_install_${"c".repeat(22)}.${"d".repeat(43)}`;
     const fetchImpl = vi.fn(async (url, init) => {
       if (url.endsWith("/v1/installations")) {
         return jsonResponse({

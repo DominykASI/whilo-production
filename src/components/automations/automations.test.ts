@@ -165,7 +165,7 @@ describe("Copy address", () => {
     flushSync(() => button(container, "Copy address").click());
     await vi.waitFor(() => expect(copied.texts).toEqual([kept.url]));
     expect(fixture.api.mock.calls.map(([path]) => path)).not.toContain("/api/webhooks/hook-1/rotate");
-    expect(credentials.items.get("omb-webhook-credentials")).toContain(kept.url);
+    expect(credentials.items.get("whilo-webhook-credentials")).toContain(kept.url);
   });
 
   it("makes a new one only for an address from before addresses were kept that nothing here holds", async () => {
@@ -272,10 +272,10 @@ describe("on a Cloud", () => {
   it("never asks the person to keep the app open for another app's automation", () => {
     const [automation] = automationsFrom({ routines: [], webhooks: [webhook] as never, runs: [] });
     const props = { automation: automation!, sentence: "s", onClose: vi.fn(), onEdit: vi.fn(), onDeleted: vi.fn() };
-    expect(mount(createElement(AutomationPanel, props)).textContent).toContain("Keep MausBot open so it can receive.");
+    expect(mount(createElement(AutomationPanel, props)).textContent).toContain("Keep Whilo open so it can receive.");
     root!.unmount();
     fixture.state.config = { cloudHome: true };
-    expect(mount(createElement(AutomationPanel, props)).textContent).not.toContain("Keep MausBot open");
+    expect(mount(createElement(AutomationPanel, props)).textContent).not.toContain("Keep Whilo open");
   });
 });
 

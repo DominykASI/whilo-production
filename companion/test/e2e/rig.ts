@@ -112,25 +112,25 @@ export async function startRig(relayUrl: (signingPublicKey: Buffer) => Promise<s
   const hid = b64u(hostId);
   const controlToken = randomBytes(32).toString("base64url");
   const [companionPort, controlPort, webhookPort] = await freePorts(3);
-  const dir = mkdtempSync(join(tmpdir(), "omb-e2e-sidecar-"));
+  const dir = mkdtempSync(join(tmpdir(), "whilo-e2e-sidecar-"));
   const sidecar: ChildProcess = spawn(process.execPath, [ENTRY], {
     env: {
       PATH: process.env.PATH,
       HOME: dir,
-      OMB_PORT: String(harness.port),
-      OMB_WEBHOOK_PORT: String(webhookPort),
-      OMB_COMPANION_PORT: String(companionPort),
-      OMB_CONTROL_PORT: String(controlPort),
-      OMB_CONTROL_TOKEN: controlToken,
-      OMB_COMPANION_DIR: dir,
-      OMB_COMPANION_NAME: "Test Mac",
-      OMB_COMPANION_E2E: "1",
-      OMB_COMPANION_BONJOUR: "0",
-      OMB_COMPANION_RELAY_URL: url,
+      WHILO_PORT: String(harness.port),
+      WHILO_WEBHOOK_PORT: String(webhookPort),
+      WHILO_COMPANION_PORT: String(companionPort),
+      WHILO_CONTROL_PORT: String(controlPort),
+      WHILO_CONTROL_TOKEN: controlToken,
+      WHILO_COMPANION_DIR: dir,
+      WHILO_COMPANION_NAME: "Test Mac",
+      WHILO_COMPANION_E2E: "1",
+      WHILO_COMPANION_BONJOUR: "0",
+      WHILO_COMPANION_RELAY_URL: url,
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
-  if (process.env.OMB_E2E_DEBUG) for (const stream of [sidecar.stdout!, sidecar.stderr!]) stream.on("data", (chunk: Buffer) => process.stderr.write(`[sidecar] ${chunk}`));
+  if (process.env.WHILO_E2E_DEBUG) for (const stream of [sidecar.stdout!, sidecar.stderr!]) stream.on("data", (chunk: Buffer) => process.stderr.write(`[sidecar] ${chunk}`));
   await new Promise<void>((resolve, reject) => {
     let out = "";
     sidecar.stdout!.on("data", (chunk: Buffer) => {
@@ -147,7 +147,7 @@ export async function startRig(relayUrl: (signingPublicKey: Buffer) => Promise<s
   const control = async (method: string, path: string, body?: unknown): Promise<State> => {
     const res = await fetch(`http://127.0.0.1:${controlPort}${path}`, {
       method,
-      headers: { "x-openmausbot-control-token": controlToken, ...(body ? { "content-type": "application/json" } : {}) },
+      headers: { "x-whilo-control-token": controlToken, ...(body ? { "content-type": "application/json" } : {}) },
       body: body ? JSON.stringify(body) : undefined,
     });
     if (!res.ok) throw new Error(`${method} ${path}: ${res.status} ${await res.text()}`);

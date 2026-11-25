@@ -9,7 +9,7 @@ import { SharedComputers, sharedComputerRegistration } from "./shared-computers.
 
 const dirs: string[] = [];
 afterEach(() => { vi.useRealTimers(); for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
-const file = () => { const dir = mkdtempSync(join(tmpdir(), "omb-lent-")); dirs.push(dir); return join(dir, "lent-computers.json"); };
+const file = () => { const dir = mkdtempSync(join(tmpdir(), "whilo-lent-")); dirs.push(dir); return join(dir, "lent-computers.json"); };
 const secret = "a".repeat(64);
 const lend = (extra: Record<string, unknown> = {}) => ({ id: randomUUID(), name: "ASH-PC", environmentId: randomUUID(),
   folders: [{ id: randomUUID(), name: "Plans", write: false }], terminal: false, computer: true, ...extra });
@@ -46,13 +46,13 @@ describe("what a server remembers about computers lent to it", () => {
     const record = { id: randomUUID(), person: "cloud-home", name: "ASH-PC", platform: "win32" as const, folders: 1, terminal: false, screen: true, lastSeenAt: at, lastUsedAt: null, stoppedAt: null };
     expect(awayNotice([record], new Set())).toEqual({
       offline: [{ name: "ASH-PC", device: "PC", lastOnline: "2026-10-07 14:02 UTC", lent: true }],
-      say: "Their PC ASH-PC is shared with the Cloud but offline (last online 2026-10-07 14:02 UTC): OpenMausBot on it is closed, or the PC is asleep or off. Ask them to open OpenMausBot on that PC; it reconnects by itself.",
+      say: "Their PC ASH-PC is shared with the Cloud but offline (last online 2026-10-07 14:02 UTC): Whilo on it is closed, or the PC is asleep or off. Ask them to open Whilo on that PC; it reconnects by itself.",
     });
-    expect(awayNotice([{ ...record, stoppedAt: at }], new Set()).say).toBe("Their PC ASH-PC no longer shares itself with the Cloud: OpenMausBot on it is paused, or signed out of MausBot Cloud. Ask them to choose Resume from OpenMausBot's icon in the taskbar on that PC, or sign in there again.");
-    expect(awayNotice([{ ...record, platform: "darwin", stoppedAt: at }], new Set()).say).toContain("choose Resume from OpenMausBot's icon in the menu bar on that Mac");
+    expect(awayNotice([{ ...record, stoppedAt: at }], new Set()).say).toBe("Their PC ASH-PC no longer shares itself with the Cloud: Whilo on it is paused, or signed out of Whilo Cloud. Ask them to choose Resume from Whilo's icon in the taskbar on that PC, or sign in there again.");
+    expect(awayNotice([{ ...record, platform: "darwin", stoppedAt: at }], new Set()).say).toContain("choose Resume from Whilo's icon in the menu bar on that Mac");
     expect(awayNotice([{ ...record, platform: "darwin" }], new Set()).say).toMatch(/^Their Mac ASH-PC is shared with the Cloud/u);
     expect(awayNotice([record], new Set([record.id]))).toEqual({});
-    for (const sentence of [awayNotice([record], new Set()).say!, awayNotice([{ ...record, stoppedAt: at }], new Set()).say!]) expect(sentence).not.toMatch(/this Mac|OMB Cloud|OpenMausBot Cloud/u);
+    for (const sentence of [awayNotice([record], new Set()).say!, awayNotice([{ ...record, stoppedAt: at }], new Set()).say!]) expect(sentence).not.toMatch(/this Mac|OMB Cloud|MausBot Cloud|OpenMausBot Cloud/u);
   });
 });
 
@@ -81,7 +81,7 @@ describe("the shared-computer registry with that memory", () => {
     live = false;
     expect(broker.away("cloud-home").say).toMatch(/^Their PC ASH-PC is shared with the Cloud but offline \(last online \d{4}-\d\d-\d\d \d\d:\d\d UTC\)/u);
     const offline = expect(broker.request({ computer_id: pc.id, action: "computer_tools" }, "cloud-home", () => true))
-      .rejects.toThrow("ASH-PC is offline: OpenMausBot on that PC is closed, or the PC is asleep or off. Ask them to open it; it reconnects by itself.");
+      .rejects.toThrow("ASH-PC is offline: Whilo on that PC is closed, or the PC is asleep or off. Ask them to open it; it reconnects by itself.");
     await vi.advanceTimersByTimeAsync(15_250);
     await offline;
     // A restarted server has no registrations, and still knows.

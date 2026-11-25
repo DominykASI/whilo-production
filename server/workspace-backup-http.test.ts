@@ -39,7 +39,7 @@ function fakeArchive() {
 
 beforeEach(async () => {
   vi.resetAllMocks();
-  dataDir = mkdtempSync(join(tmpdir(), "omb-backup-http-"));
+  dataDir = mkdtempSync(join(tmpdir(), "whilo-backup-http-"));
   maintenance = new WorkspaceBackupMaintenance();
   sessions = new SessionRegistry({ file: join(dataDir, "sessions.json") });
   admin = sessions.issue({ label: "Fixture admin", scopes: ["admin", "client"] });
@@ -160,11 +160,11 @@ it("keeps a validated stage after rejecting a malformed or oversized upload", as
 });
 
 it("accepts drafts between 1 and 2 MiB and enforces the preference cap in UTF-8 bytes", async () => {
-  const clientState = { "omb-drafts": "a".repeat(1536 * 1024) };
+  const clientState = { "whilo-drafts": "a".repeat(1536 * 1024) };
   expect((await post("/api/workspace-backup/export", { password: PASSWORD, clientState })).status).toBe(200);
   expect(archive.create.mock.calls[0][1].clientState).toEqual(clientState);
   // Fits the request framing allowance but exceeds the preference byte cap; string.length alone would accept it.
-  const tooLarge = { "omb-drafts": "é".repeat(1024 ** 2) };
+  const tooLarge = { "whilo-drafts": "é".repeat(1024 ** 2) };
   const rejected = await post("/api/workspace-backup/export", { password: PASSWORD, clientState: tooLarge });
   expect(rejected.status).toBe(413);
   expect((await rejected.json() as { error: string }).error).toContain("2 MB backup preference limit");

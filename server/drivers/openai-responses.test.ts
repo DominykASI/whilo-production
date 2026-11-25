@@ -97,7 +97,7 @@ afterEach(async () => {
 
 async function fixture(script: Script, apiUrl = OPENAI) {
   vi.spyOn(console, "warn").mockImplementation(() => {});
-  const directory = mkdtempSync(join(tmpdir(), "omb-responses-"));
+  const directory = mkdtempSync(join(tmpdir(), "whilo-responses-"));
   const calls: Call[] = [];
   const server = createServer(async (request, response) => {
     if (request.url === "/v1/models") {

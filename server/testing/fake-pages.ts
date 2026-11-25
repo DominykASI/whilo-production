@@ -1,11 +1,11 @@
-// A stand-in for MausBot's pages: the Admin's token route and the pages Worker, as one fetch. Pages, quotas and tokens
+// A stand-in for Whilo's pages: the Admin's token route and the pages Worker, as one fetch. Pages, quotas and tokens
 // are kept in memory; nothing reaches the network.
 import { pagesHomeSignature } from "../pages/access.ts";
 
 export const FAKE_ADMIN = "https://cloud.example.test";
 export const FAKE_TOKEN_URL = `${FAKE_ADMIN}/api/cloud/pages/token`;
 export const FAKE_UPLOAD = "https://upload.pages.test";
-export const FAKE_DESKTOP_TOKEN = `omb_pd_${"d".repeat(43)}`;
+export const FAKE_DESKTOP_TOKEN = `whilo_pd_${"d".repeat(43)}`;
 export const FAKE_HOME = { adminOrigin: FAKE_ADMIN, machineId: "cm-fake-home", bootstrapSecret: "b".repeat(43) };
 
 /** `admin` and `upload`: the token route's and the Worker's origins (one loopback server can be both). */
@@ -21,9 +21,9 @@ export function fakePagesService(options: { quota?: number; plan?: string; admin
 
   const caller = (request: Request, body: string): "desktop" | "home" | null => {
     if (request.headers.get("authorization") === `Bearer ${FAKE_DESKTOP_TOKEN}`) return "desktop";
-    const machine = request.headers.get("x-omb-cloud-machine"), timestamp = request.headers.get("x-omb-cloud-timestamp") ?? "", nonce = request.headers.get("x-omb-cloud-nonce") ?? "";
+    const machine = request.headers.get("x-whilo-cloud-machine"), timestamp = request.headers.get("x-whilo-cloud-timestamp") ?? "", nonce = request.headers.get("x-whilo-cloud-nonce") ?? "";
     const expected = `v1=${pagesHomeSignature(FAKE_HOME.bootstrapSecret, FAKE_HOME.machineId, timestamp, nonce, body)}`;
-    return machine === FAKE_HOME.machineId && request.headers.get("x-omb-cloud-signature") === expected ? "home" : null;
+    return machine === FAKE_HOME.machineId && request.headers.get("x-whilo-cloud-signature") === expected ? "home" : null;
   };
 
   const fetch: typeof globalThis.fetch = async (input, init) => {
@@ -32,11 +32,11 @@ export function fakePagesService(options: { quota?: number; plan?: string; admin
     if (state.down) throw new TypeError("fetch failed");
     if (url.href === tokenUrl) {
       const body = await request.text(), who = caller(request, body);
-      if (!who) return Response.json({ error: "invalid_token", message: "Sign in to MausBot again to publish pages." }, { status: 401 });
+      if (!who) return Response.json({ error: "invalid_token", message: "Sign in to Whilo again to publish pages." }, { status: 401 });
       const { action, pageId } = JSON.parse(body) as { action: string; pageId?: string };
       minted.push({ action, ...(pageId ? { pageId } : {}), caller: who });
       if (action === "create" && pages.size >= state.quota) {
-        return Response.json({ error: "page_limit", message: `You’ve used your ${state.quota} free pages. MausBot Cloud gives you more, and pages without the badge.`,
+        return Response.json({ error: "page_limit", message: `You’ve used your ${state.quota} free pages. Whilo Cloud gives you more, and pages without the badge.`,
           usage: usage(), plan: state.plan, upgrade: true }, { status: 402 });
       }
       const id = action === "create" ? newId() : pageId!, token = `fake-token-${minted.length}`;

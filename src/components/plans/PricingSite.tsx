@@ -3,7 +3,7 @@ import { ArrowRight, Boxes, Check, Cpu, Gauge, Server, ShieldCheck, Sparkles, Te
 
 import { cn } from "@/lib/cn";
 import { DOMYNIK_MODELS, RENTAL_TIERS, estimateApiCost, formatContext, formatUsd } from "@/lib/monetization";
-import { PERSONAL_PLANS, TEAM_PLANS, PLAN_CURRENCY, promoMonthlyPrice, isNamedPlanValue, planValueKey, type Plan } from "@/lib/plans";
+import { PERSONAL_PLANS, TEAM_PLANS, PLAN_CURRENCY, promoMonthlyPrice, isNamedPlanValue, planValueKey, planWithCreditTier, type Plan } from "@/lib/plans";
 import { whiloText } from "@/lib/whilo-workflow-text";
 
 type Billing = "monthly" | "annual";
@@ -11,11 +11,15 @@ type Billing = "monthly" | "annual";
 const FAQ = [
   {
     q: "Can I start without paying?",
-    a: "Yes. Starter is free forever: one agent, three routines and every local tool on your machine or in your own environment. Upgrade only when you need more throughput, hosted capacity or team controls.",
+    a: "Yes. Start with a free trial on any paid plan — every local tool, workflow and routine on your machine, no card charged until the trial ends. Move up only when you need more throughput, hosted capacity or team controls.",
   },
   {
-    q: "What do Agent Pro+ and Max 20x include?",
-    a: "Agent Pro+ is the sweet spot for operators shipping daily: 10 agents, 100 routines, 5 concurrent runs, 500 monthly credits and a hosted server — Black Friday: $5/mês (50% OFF de $10) até 30/11. Max 20x raises the ceiling to 40 agents, unlimited routines, 20 concurrent runs, 2,000 credits and three hosted servers.",
+    q: "What is Premium?",
+    a: "Premium is the everyday plan for a solo operator: 5 agents, unlimited routines, 3 concurrent runs and a hosted server included, across every supported model. It is the simplest way to run agents all day.",
+  },
+  {
+    q: "What do Agent Pro+ Max and Ultra include?",
+    a: "Agent Pro+ is the ladder for operators shipping daily. Choose Max or Ultra and pick how much credit you want each month — the price follows your choice — with 40 agents, unlimited routines, 20 concurrent runs and three hosted servers. Black Friday: 50% OFF até 30/11.",
   },
   {
     q: "What is a credit?",
@@ -42,7 +46,7 @@ const HIGHLIGHTS = [
 ];
 
 const TRUST_POINTS = [
-  "8 plans: 4 personal + 4 team/enterprise",
+  "3 plans: Premium · Agent Pro+ (Max / Ultra) · Enterprise",
   "2 extra monetization channels: Servers + Domynik API",
   "Midnight public pricing experience",
   "Whilo branding end-to-end",
@@ -53,8 +57,8 @@ function WhiloMark({ className }: { className?: string }) {
     <svg viewBox="0 0 32 32" aria-hidden="true" className={className}>
       <defs>
         <linearGradient id="whilo-mark" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#818cf8" />
-          <stop offset="1" stopColor="#22d3ee" />
+          <stop stopColor="#1f6bf7" />
+          <stop offset="1" stopColor="#37a0ff" />
         </linearGradient>
       </defs>
       <rect x="2" y="2" width="28" height="28" rx="9" fill="url(#whilo-mark)" />
@@ -74,7 +78,9 @@ function priceLabel(plan: Plan, billing: Billing): string {
 }
 
 function PlanColumn({ plan, billing }: { plan: Plan; billing: Billing }) {
-  const monthly = billing === "annual" ? plan.priceAnnualMonthly : plan.priceMonthly;
+  const [creditTier, setCreditTier] = useState<string | null>(plan.creditTiers?.[0]?.id ?? null);
+  const shown = planWithCreditTier(plan, creditTier);
+  const monthly = billing === "annual" ? shown.priceAnnualMonthly : shown.priceMonthly;
   return (
     <article
       data-plan={plan.id}
@@ -93,18 +99,35 @@ function PlanColumn({ plan, billing }: { plan: Plan; billing: Billing }) {
       <header className="flex flex-col gap-2">
         <div className="flex items-center justify-between gap-3">
           <h3 className="text-lg font-bold tracking-tight text-ink">{whiloText(plan.nameKey)}</h3>
-          {plan.badgeKey && (
+          {shown.badgeKey && (
             <span className="rounded-full border border-accent/40 bg-accent/15 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-accent">
-              {whiloText(plan.badgeKey)}
+              {whiloText(shown.badgeKey)}
             </span>
           )}
         </div>
         <p className="text-[13px] leading-5 text-ink-secondary">{whiloText(plan.taglineKey)}</p>
       </header>
+      {plan.creditTiers && (
+        <label className="flex flex-col gap-1.5 text-[12px] text-ink-secondary">
+          {whiloText("plans.credit.label")}
+          <select
+            value={creditTier ?? ""}
+            onChange={(event) => setCreditTier(event.target.value)}
+            aria-label={whiloText("plans.credit.label")}
+            className="h-11 cursor-pointer rounded-xl border border-white/10 bg-black/40 px-3 text-[13px] font-medium text-ink focus:border-accent/60 focus:outline-none"
+          >
+            {plan.creditTiers.map((tier) => (
+              <option key={tier.id} value={tier.id}>
+                {whiloText(tier.nameKey)} · {tier.credits} credits
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
       <div className="flex flex-col gap-1.5">
         {(() => {
-          const promo = billing === "monthly" ? promoMonthlyPrice(plan) : null;
-          if (promo !== null && plan.priceMonthly !== null) {
+          const promo = billing === "monthly" ? promoMonthlyPrice(shown) : null;
+          if (promo !== null && shown.priceMonthly !== null) {
             return (
               <>
                 <div className="flex flex-wrap items-center gap-2">
@@ -115,25 +138,25 @@ function PlanColumn({ plan, billing }: { plan: Plan; billing: Billing }) {
                 <div className="flex items-end gap-2">
                   <span className="text-5xl font-extrabold tracking-tight text-ink">{formatUsd(promo)}</span>
                   {promo > 0 && <span className="pb-2 text-[12px] text-ink-secondary">{whiloText("plans.perMonth")}</span>}
-                  <span className="pb-2 text-lg font-semibold text-ink-secondary/70 line-through decoration-rose-400/70">{formatUsd(plan.priceMonthly)}</span>
+                  <span className="pb-2 text-lg font-semibold text-ink-secondary/70 line-through decoration-rose-400/70">{formatUsd(shown.priceMonthly)}</span>
                 </div>
-                <p className="text-[12px] font-medium text-emerald-300">Agent Pro+ por {formatUsd(promo)}/mês (era {formatUsd(plan.priceMonthly)}) na Black Friday — 50% de desconto até o fim de novembro.</p>
+                <p className="text-[12px] font-medium text-emerald-300">Agent Pro+ por {formatUsd(promo)}/mês (era {formatUsd(shown.priceMonthly)}) na Black Friday — 50% de desconto até o fim de novembro.</p>
               </>
             );
           }
           return (
             <div className="flex items-end gap-1.5">
-              <span className="text-5xl font-extrabold tracking-tight text-ink">{priceLabel(plan, billing)}</span>
+              <span className="text-5xl font-extrabold tracking-tight text-ink">{priceLabel(shown, billing)}</span>
               {monthly !== null && monthly > 0 && <span className="pb-2 text-[12px] text-ink-secondary">{whiloText("plans.perMonth")}</span>}
             </div>
           );
         })()}
       </div>
-      {billing === "annual" && monthly !== null && monthly > 0 && plan.priceMonthly !== null && (
-        <p className="text-[11px] font-medium text-accent">Billed annually · save 20% vs monthly ({formatUsd(plan.priceMonthly)}/mo)</p>
+      {billing === "annual" && monthly !== null && monthly > 0 && shown.priceMonthly !== null && (
+        <p className="text-[11px] font-medium text-accent">Billed annually · save 20% vs monthly ({formatUsd(shown.priceMonthly)}/mo)</p>
       )}
       <ul className="flex flex-col gap-3 border-t border-white/10 pt-6" aria-label={`${whiloText(plan.nameKey)} limits`}>
-        {plan.limitKeys.map((limit) => (
+        {shown.limitKeys.map((limit) => (
           <li key={limit.key} className="flex items-center justify-between gap-3 text-[13px]">
             <span className="text-ink-secondary">{whiloText(limit.key)}</span>
             <span className="font-semibold tabular-nums text-ink">{isNamedPlanValue(limit.value) ? whiloText(planValueKey(limit.value)) : limit.value}</span>
@@ -331,8 +354,8 @@ export function PricingSite() {
   const totalPlans = PERSONAL_PLANS.length + TEAM_PLANS.length;
   return (
     <div data-skin="midnight" data-pricing-page className="min-h-dvh bg-[#08080b] font-sans text-ink antialiased">
-      <div aria-hidden className="pointer-events-none fixed inset-x-0 top-0 h-[560px] bg-[radial-gradient(60%_60%_at_50%_0%,rgba(99,102,241,0.22),transparent_70%)]" />
-      <div aria-hidden className="pointer-events-none fixed right-[-10%] top-[20%] h-72 w-72 rounded-full bg-cyan-500/10 blur-3xl" />
+      <div aria-hidden className="pointer-events-none fixed inset-x-0 top-0 h-[560px] bg-[radial-gradient(60%_60%_at_50%_0%,rgba(31,107,247,0.22),transparent_70%)]" />
+      <div aria-hidden className="pointer-events-none fixed right-[-10%] top-[20%] h-72 w-72 rounded-full bg-accent/10 blur-3xl" />
       <header className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
         <a href="/" className="flex items-center gap-2.5 text-[17px] font-extrabold tracking-tight text-ink">
           <WhiloMark className="size-8 shadow-lg shadow-accent/30" />
@@ -352,10 +375,10 @@ export function PricingSite() {
             <span className="size-1.5 rounded-full bg-emerald-400" /> {totalPlans} plans · 2 extra monetization channels · midnight skin
           </span>
           <h1 className="max-w-4xl bg-gradient-to-b from-ink via-ink to-ink-secondary bg-clip-text text-4xl font-extrabold leading-[1.05] tracking-tight text-transparent sm:text-6xl">
-            Start free. Scale to a full company of agents.
+            Premium for daily work. Pro+ to scale without limits.
           </h1>
           <p className="max-w-2xl text-[15px] leading-6 text-ink-secondary">
-            Pick the right plan for one operator or a whole team — including <strong className="font-semibold text-ink">Agent Pro+</strong> and <strong className="font-semibold text-ink">Max 20x</strong> — then add revenue with server rentals and the Domynik API.
+            Three clear plans — <strong className="font-semibold text-ink">Premium</strong>, <strong className="font-semibold text-ink">Agent Pro+ (Max / Ultra)</strong> and <strong className="font-semibold text-ink">Enterprise</strong> — plus extra revenue with server rentals and the Domynik API.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-2">
             {TRUST_POINTS.map((point) => (
@@ -383,8 +406,8 @@ export function PricingSite() {
           </div>
         </section>
 
-        <PlanBand id="personal-plans" title="For you" subtitle="4 personal plans for solo operators and power users." plans={PERSONAL_PLANS} billing={billing} />
-        <PlanBand id="team-plans" title="Teams & Enterprise" subtitle="4 plans for teams, scale and custom procurement." plans={TEAM_PLANS} billing={billing} />
+        <PlanBand id="personal-plans" title="For you" subtitle="Premium and Agent Pro+ (Max / Ultra) for solo operators and power users." plans={PERSONAL_PLANS} billing={billing} />
+        <PlanBand id="team-plans" title="Enterprise" subtitle="Custom seats, procurement and dedicated support for your company." plans={TEAM_PLANS} billing={billing} />
         <ServersBand />
         <ApiBand />
 
@@ -415,13 +438,13 @@ export function PricingSite() {
         </section>
 
         <section className="flex flex-col items-center gap-5 rounded-[2rem] border border-white/10 bg-gradient-to-b from-accent/[0.14] to-transparent px-8 py-14 text-center">
-          <h2 className="max-w-2xl text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">Your first agent is free. Grow when the work grows.</h2>
+          <h2 className="max-w-2xl text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">Start on Premium. Scale with Pro+ when the work grows.</h2>
           <p className="max-w-xl text-[14px] text-ink-secondary">
-            Start on Starter, move to Agent Pro+ or Max 20x for throughput, and monetize further with hourly servers and the Domynik API.
+            Begin with Premium, move to Agent Pro+ (Max / Ultra) for throughput, and reach Enterprise for custom scale — monetizing further with hourly servers and the Domynik API.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <a href="/app?signup=1&plan=starter" className="flex h-12 items-center gap-2 rounded-xl bg-accent px-7 text-[15px] font-semibold text-white shadow-lg shadow-accent/30 transition-all hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70">
-              Start free <ArrowRight size={17} aria-hidden="true" />
+            <a href="/app?signup=1&plan=premium" className="flex h-12 items-center gap-2 rounded-xl bg-accent px-7 text-[15px] font-semibold text-white shadow-lg shadow-accent/30 transition-all hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70">
+              Start with Premium <ArrowRight size={17} aria-hidden="true" />
             </a>
             <a href="/app?signup=1&plan=agent-pro-plus" className="flex h-12 items-center rounded-xl border border-white/15 bg-white/[0.03] px-6 text-[15px] font-semibold text-ink transition-colors hover:border-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70">
               Try Agent Pro+
